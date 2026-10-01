@@ -1,6 +1,6 @@
 # Plan: what the app shows when things go wrong, are empty, or are old
 
-Written Oct 1, 2026. Status after v5.16: built are the 404 page, the start-up timeout, the phone bad-link notice, print styles, the hosted-site offline notice, and the tab icon. Still open: the desktop bad-link notice, the empty-result pass, storage-blocked and copied messages, the last-good-update line, and the Tell us button.
+Written Oct 1, 2026. Status after v5.16: built are the 404 page, the start-up timeout, the phone and desktop bad-link notices, print styles, the hosted-site offline notice, the tab icon, helpful empty results on the phone and the desktop ledger and dictionary, and a blocked-storage message in the You sheet. Copy confirmations already announced themselves. Still open: empty states in the compiled app's own search box and dictionary, a blocked-storage message on desktop, the last-good-update line for a failed nightly run, and the Tell us button.
 
 The goal: a resident never meets a blank screen, a browser error page, or a dead end. Every state says
 what happened in plain words and offers one clear next step. It follows the same voice rules as

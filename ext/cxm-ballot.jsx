@@ -211,6 +211,7 @@ function CxmLocalIssues() {
       <h2 className="cxm-h2">Which local issues are on your ballot?</h2>
       <p className="cxm-mut">A local issue can apply to just one precinct. Check your sample ballot, then add the ones that apply to you.</p>
       <label className="cxm-field"><span>Search by place, precinct, or words</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cleveland 03-Q, Sunday sales, school…" /></label>
+      {!list.length && <CxmEmpty title={`No local issue matches "${q.trim()}"`} body="Local issues are listed by place and precinct. Try a place name, a precinct code, or a word from the issue. Your sample ballot from the Board of Elections shows exactly which ones apply to you." actions={[[`Clear the search`, () => setQ(``)], [`Open the official sample ballot lookup`, () => globalThis.open(`https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address`, `_blank`, `noopener`)]]} />}
       {list.slice(0, 60).map((i) => {
         const on = practice.state.localIssues.includes(i.id);
         return (

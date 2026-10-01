@@ -95,7 +95,7 @@ function CxmSearch() {
     <div className="cxm-pad">
       <label className="cxm-field"><span>Search rooms, people, laws, ballot, and terms</span><input type="search" autoFocus value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try Howse-Jones, data centers, Issue 3, TIF" /></label>
       {!res && <div className="cxm-chips">{[`Howse-Jones`, `data center`, `liquor`, `Issue 3`, `levy`, `ward`].map((s) => <button key={s} type="button" onClick={() => setQ(s)}>{s}</button>)}</div>}
-      {res && !res.length && <p className="cxm-mut">Nothing matches "{q}". Try a shorter word.</p>}
+      {res && !res.length && <CxmEmpty title={`Nothing matches "${q.trim()}"`} body="Try a shorter word, a name, an issue number, or a file number. The search covers rooms, people, laws, the ballot, and terms." actions={[[`Clear the search`, () => setQ(``)], [`Open the dictionary`, () => openSheet(`dict`)]]} />}
       {res && res.map(([g, list]) => (
         <section key={g} className="cxm-section">
           <CxmKicker>{g} · {list.length}</CxmKicker>
@@ -137,7 +137,7 @@ function CxmDict({ focus }) {
           <small className="cxm-mut">{e.example}</small>
         </div>
       ))}
-      {!list.length && !featured && <p className="cxm-mut">No definition yet. Try a shorter word or another category.</p>}
+      {!list.length && !featured && <CxmEmpty title={t ? `No definition for "${q.trim()}" yet` : `Nothing in this category`} body="The dictionary explains civic words. Try a shorter word, or look at every category." actions={[[`Show every word`, () => { setQ(``); setCat(`all`); }]]} />}
       <p className="cxm-fine">Plain-language summaries, not legal definitions.</p>
     </div>
   );
@@ -146,6 +146,7 @@ function CxmDict({ focus }) {
 /* ---------- You ---------- */
 function CxmYou() {
   const { prio, home, openSheet, guide, setGuide, theme, setTheme, large, setLarge, liked, room, setEasy, closeSheet } = useCxm();
+  const canSave = cxStorageOk();
   const [msg, setMsg] = u.useState(``);
   const share = async () => {
     const url = String(location.href).replace(/#.*$/, ``);
@@ -198,6 +199,7 @@ function CxmYou() {
         <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
         <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
+        {!canSave && <p className="cxm-fine" role="status">This browser is not saving settings, so Easy mode, style, and your guide start over each time you open the page. Private browsing can cause this.</p>}
       </section>
       <section className="cxm-section">
         <CxmKicker>More</CxmKicker>
@@ -259,7 +261,7 @@ function CxmLedger() {
       <div className="cxm-chips"><button type="button" className={dom === `all` ? `on` : ``} onClick={() => setDom(`all`)}>All topics</button>{domains.map((d) => <button key={d} type="button" className={dom === d ? `on` : ``} onClick={() => setDom(d)}>{CX_DOMAIN_LABEL[d] ?? d}</button>)}</div>
       <span className="cxm-kicker">Evidence</span>
       <div className="cxm-chips"><button type="button" className={ev === `all` ? `on` : ``} onClick={() => setEv(`all`)}>All evidence</button>{Object.entries(CX_EVIDENCE_LABEL).map(([k, l]) => <button key={k} type="button" className={ev === k ? `on` : ``} onClick={() => setEv(k)}>{l}</button>)}</div>
-      {!list.length && <p className="cxm-status-line"><CxmStatusDot k="read" />No records match these filters.</p>}
+      {!list.length && <CxmEmpty title="No records match these filters" body={`The ledger holds ${entries.length} records. Clearing the filters shows all of them.`} actions={[[`Clear the filters`, () => { setDom(`all`); setEv(`all`); }]]} />}
       {list.map((e) => (
         <CxmDrop key={e.id} title={e.short || e.title} sub={`${CX_DOMAIN_LABEL[e.domain] ?? e.domain} · ${CX_EVIDENCE_LABEL[e.evidence]}`}>
           <strong>{e.title}</strong>

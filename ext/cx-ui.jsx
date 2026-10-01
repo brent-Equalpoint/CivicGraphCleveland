@@ -464,7 +464,7 @@ function CX_Ledger({ onGo }) {
               <em>{CX_EVIDENCE_LABEL[e.evidence]}</em>
             </button>
           ))}
-          {!list.length && <p className="atlas-muted">No records match these filters.</p>}
+          {!list.length && <CX_Empty title="No records match these filters" body={`The ledger holds ${entries.length} records. Clearing the filters shows all of them.`} actions={[[`Clear the filters`, () => { setDomain(`all`); setState(`all`); }]]} />}
         </div>
         {cur && (
           <article className="ledger-detail" aria-live="polite">
@@ -718,7 +718,7 @@ function CX_Dictionary({ query, setQuery, category, setCategory, onRoom, onClose
             <button type="button" onClick={() => { onRoom(e.room); onClose(); }}>Show me where this fits <CXI.Arrow size={14} /></button>
           </article>
         ))}
-        {!results.length && <p>No definition yet. Try a shorter word or another category.</p>}
+        {!results.length && <CX_Empty title={query.trim() ? `No definition for "${query.trim()}" yet` : `Nothing in this category`} body="The dictionary explains civic words. Try a shorter word, or look at every category." actions={[[`Show every word`, () => { setQuery(``); setCategory(`all`); }]]} />}
       </div>
       <span className="atlas-muted">{all.length} plain-language definitions. These are summaries to help you read records, not legal definitions.</span>
     </>
@@ -753,4 +753,15 @@ function cxArea(area, name) {
   if (/^county wide district$/i.test(a)) return `Countywide`;
   if (/^8th district court of appeals$/i.test(a)) return `8th District Court of Appeals`;
   return a;
+}
+
+/* v5.16 desktop empty result: the same three parts as the phone (what was looked for, why, one next step) */
+function CX_Empty({ title, body, actions }) {
+  return (
+    <div className="cx-empty" role="status">
+      <strong>{title}</strong>
+      <p>{body}</p>
+      {actions && actions.length > 0 && <div className="cx-empty-actions">{actions.map(([label, fn]) => <button key={label} type="button" className="cx-link-button" onClick={fn}>{label}</button>)}</div>}
+    </div>
+  );
 }

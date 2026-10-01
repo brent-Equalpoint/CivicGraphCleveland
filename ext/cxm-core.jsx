@@ -32,7 +32,7 @@ function CX_Root() {
   u.useEffect(() => { document.documentElement.classList.toggle(`cxm-on`, phone); }, [phone]);
   return (
     <CxBoundary label="The Civic Graph" phone={phone} resetKey={phone ? `phone` : `desktop`}>
-      {phone ? <CxmApp /> : <><Qh /><CX_HoverCard /></>}
+      {phone ? <CxmApp /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /></>}
     </CxBoundary>
   );
 }
@@ -505,4 +505,38 @@ function CxmHomePicker() {
       </div>
     </div>
   );
+}
+
+/* ---------- v5.16 screen states: empty results, blocked storage, and links that lead nowhere ---------- */
+/* An empty result says what was looked for, why nothing came up, and gives one thing to do next. */
+function CxmEmpty({ title, body, actions }) {
+  return (
+    <div className="cxm-empty" role="status">
+      <strong>{title}</strong>
+      <p>{body}</p>
+      {actions && actions.length > 0 && <div className="cxm-row2">{actions.map(([label, fn]) => <button key={label} type="button" className="cxm-btn2" onClick={fn}>{label}</button>)}</div>}
+    </div>
+  );
+}
+/* Private browsing and some locked-down browsers refuse to save anything. Say so instead of silently forgetting. */
+function cxStorageOk() {
+  try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
+}
+/* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`];
+function cxLinkProblem() {
+  let q;
+  try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }
+  const panel = q.get(`panel`), room = q.get(`room`), node = q.get(`node`);
+  if (!panel && !room && !node) return null;
+  if (panel) return CX_PANELS_KNOWN.includes(panel) ? null : `We could not find that page, so here is the start.`;
+  const r = Uh.find((x) => x.id === room);
+  if (!r) return `We could not find that page, so here is the start.`;
+  if (node && !r.nodes.some((n) => n.id === node)) return `We could not find that record, so here is the room.`;
+  return null;
+}
+function CX_LinkNotice() {
+  const [note, setNote] = u.useState(cxLinkProblem);
+  if (!note) return null;
+  return <div className="cx-notice" role="status"><span>{note}</span><button type="button" onClick={() => setNote(null)}>Got it</button></div>;
 }
