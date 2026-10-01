@@ -309,6 +309,14 @@ const CHECKS = {
     expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
     await clickText(p, 'Index', '.us-tabs button');
     const rows = await count(p, '.us-index tbody tr'); expect(rows > 800, `the Index lists only ${rows} rows`);
+    // your members: a state and a district give two senators and a representative, kept off the address bar
+    await clickText(p, 'Your members', '.us-tabs button');
+    await p.select('.us-mine select', 'OH'); await wait(300);
+    await p.select('.us-mine label:nth-of-type(2) select', '11'); await wait(300);
+    expect((await count(p, '.us-mine-card')) === 3, `expected 2 senators and 1 representative, found ${await count(p, '.us-mine-card')}`);
+    const mt = (await txt(p, '.us-mine-list')) || '';
+    expect(/United States senator for Ohio/.test(mt) && /Representative for Ohio's 11th district/.test(mt) && /as of 20\d\d-\d\d-\d\d \(a sourced field/.test(mt), 'the member cards are missing office or dated party');
+    expect(/state=|district=|OH/.test(await p.evaluate(() => location.href)) === false, 'the place was put in the address');
     await clickText(p, 'Sky', '.us-tabs button');
     await p.type('.us-search input', 'Husted'); await wait(300);
     expect((await count(p, '.us-results .us-pick')) >= 1, 'searching for a senator found nothing');
@@ -332,6 +340,17 @@ const CHECKS = {
     await done(p);
     const off = await open('/#phone', { mobile: true, easy: false });
     await done(off);
+    // Easy mode: a fourth question, in the same one-step-at-a-time shape
+    const e = await open('/#phone', { mobile: true, easy: true });
+    expect((await count(e, '.cxe-choice')) === 4, 'Easy mode does not offer four questions');
+    await clickText(e, 'Who represents me in Washington?'); await wait(1200);
+    await e.select('.cxe select', 'OH'); await wait(300);
+    await e.select('.cxe label:nth-of-type(2) select', '11'); await wait(300);
+    await clickText(e, 'Show me'); await wait(400);
+    expect(/senator/i.test((await txt(e, '.cxe-main')) || '') || /Your senators/.test((await txt(e, '.cxe-main')) || ''), 'the Easy story does not start with the senators');
+    const steps = await walkEasy(e); expect(steps >= 2, `the Washington story has only ${steps} steps`);
+    expect(/not shown yet|isn't public/.test((await txt(e, '.cxe-main')) || ''), 'the last step does not say votes are not shown yet');
+    await done(e);
   },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);

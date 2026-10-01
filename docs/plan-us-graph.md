@@ -1,6 +1,6 @@
 # Plan: a United States graph, built from official records
 
-Written Oct 1, 2026. Status after v5.16 work: U1 (source list and key) done. U2 built as data (members, committees with chairs, active agencies, the CRS policy-area list written out by hand), not yet the reviewed policy-area map. U3 built for desktop as a preview with Sky, Index, Linked, and Tree views, written fresh in `ext/cx-us.jsx` (the vcfest source was not available, so nothing was reused from it); Cleveland does not use it yet. Not built: U4 (bills and votes by category), U5 (your members by state and district, stories), U6 (federal Bench packets), U7 (testing with people), and a phone layout.
+Written Oct 1, 2026. Status after v5.16 work: U1 (source list and key) done. U2 built as data (members, committees with chairs, active agencies, the CRS policy-area list written out by hand), not yet the reviewed policy-area map. U3 built for desktop as a preview with Sky, Index, Linked, and Tree views, written fresh in `ext/cx-us.jsx` (the vcfest source was not available, so nothing was reused from it); Cleveland does not use it yet. U5 is built in part: Your members (state and district to two senators and a representative, with committees and links) and an Easy mode question, with no federal story in the Stories engine yet. Not built: U4 (bills and votes by category), U6 (federal Bench packets), U7 (testing with people), and a phone layout.
 
 ## What it is
 

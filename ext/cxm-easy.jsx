@@ -9,6 +9,7 @@ const CXE_JOURNEYS = [
   [`rep`, `Who represents me?`, `Meet your council member and see what they did this year.`],
   [`ballot`, `What is on my ballot?`, `Dates, deadlines, and the issues on the November ballot.`],
   [`council`, `What did City Council do this year?`, `The big picture, in a few short steps.`],
+  [`us`, `Who represents me in Washington?`, `Your two senators and your representative in Congress.`],
 ];
 const CXE_UNSURE = `https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address`;
 
@@ -60,17 +61,24 @@ function CxmEasy() {
     if (boxRef.current) { boxRef.current.scrollTop = 0; boxRef.current.focus({ preventScroll: !0 }); }
   }, [view.k, view.j, view.f, view.seat]);
 
+  // the Washington question loads its data file on demand (hosted site only)
+  const [usData, setUsData] = u.useState(CX_US.v);
+  const [usLoad, setUsLoad] = u.useState(CX_US.p ? `ready` : `idle`);
+  u.useEffect(() => { if (view.k !== `usplace` || usLoad !== `idle`) return; setUsLoad(`loading`); cxUsLoad().then((d) => { setUsData(d); setUsLoad(d ? `ready` : `none`); }); }, [view.k, usLoad]);
+  const [usSt, setUsSt] = u.useState(CX_US_PLACE.state);
+  const [usDi, setUsDi] = u.useState(CX_US_PLACE.district);
   const story = u.useMemo(() => {
     if (view.k !== `story`) return null;
+    if (view.j === `us`) return usData && CX_US.graph && usSt ? cxUsStory(usData, CX_US.graph, usSt, usDi) : null;
     if (view.j === `rep`) return home?.ward ? cxmWardStory(home.ward, answers) : null;
     return view.j === `council` ? cxmCouncilStory() : cxmBallotStory();
-  }, [view.k, view.j, home?.ward]);
+  }, [view.k, view.j, home?.ward, usData, usSt, usDi]);
   const frames = story ? cxeFrames(story) : [];
   const f = Math.min(view.f || 0, Math.max(frames.length - 1, 0));
   const fr = frames[f];
   const last = story && f === frames.length - 1;
 
-  const begin = (j) => setView(j === `rep` && !home?.ward ? { k: `place`, j } : { k: `story`, j, f: 0 });
+  const begin = (j) => setView(j === `rep` && !home?.ward ? { k: `place`, j } : j === `us` ? { k: `usplace` } : { k: `story`, j, f: 0 });
   const toHome = () => setView({ k: `home` });
   // on a phone, "full" is the phone app; on a desktop it is the desktop site, which needs a moment to draw before it can be steered
   const toFull = (after, deskAfter) => {
@@ -157,10 +165,43 @@ function CxmEasy() {
                 <p className="cxe-big2">That is the end of this one.</p>
                 {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => setView({ k: `profile`, j: `rep`, seat: `ward-${home.ward}` })}>Read the short profile of {cxmMember(home.ward)}</button>}
                 {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`), () => CX_NAV.panel(`ballot`))}>Open my ballot</button>}
+                {view.j === `us` && !deskEasy && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`))}>Open the full app</button>}
+                {view.j === `us` && deskEasy && <button type="button" className="cxe-btn" onClick={() => toFull(() => CX_NAV.panel(`us`), () => CX_NAV.panel(`us`))}>See them in the United States graph</button>}
                 {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`), () => CX_NAV.panel(`news`))}>{deskEasy ? `See what is new in Council's record` : `See City Hall's receipts`}</button>}
                 <button type="button" className="cxe-btn alt" onClick={toHome}>Pick another question</button>
               </div>
             )}
+          </>
+        )}
+        {view.k === `usplace` && (
+          <>
+            <h1>Who represents you in Washington?</h1>
+            {usLoad === `none` && <p className="cxe-text">This question needs the hosted site, because it loads a data file. Try again online.</p>}
+            {usLoad !== `none` && !usData && <p className="cxe-text" role="status">Loading the list of members of Congress...</p>}
+            {usData && (() => {
+              const states = [...new Set(usData.members.map((m) => m.state))].sort((a, b) => cxStateName(a).localeCompare(cxStateName(b)));
+              const mine = usSt ? cxUsMine(usData, usSt, usDi) : null;
+              return (
+                <>
+                  <p className="cxe-text">Pick your state. If your state has more than one district, pick yours too. This stays on your device and is not saved or sent.</p>
+                  <label className="cxe-field"><span>Your state</span>
+                    <select value={usSt} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setUsSt(e.target.value); setUsDi(``); }}>
+                      <option value="">Choose your state</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}
+                    </select>
+                  </label>
+                  {mine && mine.dists.length > 0 && (
+                    <label className="cxe-field"><span>Your district</span>
+                      <select value={usDi} onChange={(e) => { CX_US_PLACE.district = e.target.value; setUsDi(e.target.value); }}>
+                        <option value="">Choose your district</option>{mine.dists.map((d) => <option key={d} value={d}>{d === 0 ? `The whole state (at-large)` : `District ${d}`}</option>)}
+                      </select>
+                    </label>
+                  )}
+                  <p className="cxe-text">Not sure of your district? Your address decides it. The House's lookup will tell you.</p>
+                  <a className="cxe-btn alt" href={CX_HOUSE_FIND} target="_blank" rel="noreferrer">Find my district (opens in a new tab)</a>
+                  <button type="button" className="cxe-btn" disabled={!usSt || (mine && mine.dists.length > 0 && usDi === ``)} onClick={() => setView({ k: `story`, j: `us`, f: 0 })}>Show me</button>
+                </>
+              );
+            })()}
           </>
         )}
         {view.k === `profile` && <CxeProfile seat={view.seat} onFull={() => toFull(() => openSheet(`profile`, { seat: view.seat }), () => cxOpenProfile(view.seat))} />}

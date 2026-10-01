@@ -93,6 +93,81 @@ function cxUsLink(n) {
 }
 const CX_US_COLORS = { senate: `#7aa2ff`, house: `#5fd6c4`, joint: `#d6a3ff`, exec: `#ffc66b` };
 
+
+/* ---------- Your members (D5): a state and a district, kept in memory only, never in a link ---------- */
+const CX_US_PLACE = { state: ``, district: `` };
+const CX_HOUSE_FIND = `https://www.house.gov/representatives/find-your-representative`;
+function cxDistrictWord(d) { return d === 0 || d === null || d === undefined ? `at-large` : cxOrd(d); }
+function cxUsMine(data, state, district) {
+  const ms = data.members.filter((m) => m.state === state);
+  const senators = ms.filter((m) => m.chamber === `senate`);
+  const dists = [...new Set(ms.filter((m) => m.chamber === `house`).map((m) => m.district ?? 0))].sort((a, b) => a - b);
+  const rep = district === `` ? null : ms.find((m) => m.chamber === `house` && String(m.district ?? 0) === String(district)) || null;
+  return { senators, dists, rep };
+}
+function cxCommitteeLine(g, m) {
+  const parts = [];
+  m.committees.forEach((c) => {
+    const parent = g.byId.get(`c:${c.id}`) || g.byId.get(`c:${c.id.slice(0, 4)}`);
+    if (!parent || c.id.length > 4) return;  // seats on full committees only here; subcommittees are in the Linked view
+    parts.push(c.role === `Member` ? parent.label : `${parent.label} (${c.role.toLowerCase()})`);
+  });
+  return parts;
+}
+/* A short story about the three people, in the same shape the story engine uses, for Easy mode. */
+function cxUsStory(data, g, state, district) {
+  const { senators, rep } = cxUsMine(data, state, district);
+  const sn = cxStateName(state);
+  const frames = [];
+  if (senators.length) frames.push({ k: `Your senators`, big: senators.length === 2 ? `${senators[0].name} and ${senators[1].name}.` : `${senators[0].name}.`, small: `Every state has two United States senators, and each one represents the whole state of ${sn}. ${senators.map((s) => `${s.name}'s current term runs to ${s.term_end}.`).join(` `)}` });
+  else frames.push({ k: `Your senators`, big: `${sn} has no senators.`, small: `${sn} is represented in Congress by a delegate in the House, who does not vote on final passage of most bills.` });
+  if (rep) frames.push({ k: `Your representative`, big: `${rep.name}.`, small: `${rep.name} represents ${district === `` || rep.district === 0 || rep.district === null ? `all of ${sn}` : `${sn}'s ${cxOrd(rep.district)} district`} in the United States House. The current term runs to ${rep.term_end}.` });
+  const lines = [...senators, ...(rep ? [rep] : [])].map((m) => { const c = cxCommitteeLine(g, m); return c.length ? `${m.name}: ${c.slice(0, 4).join(`, `)}${c.length > 4 ? `, and ${c.length - 4} more` : ``}.` : `${m.name}: no committee seat is listed.`; });
+  frames.push({ k: `What they work on`, big: `Committees do much of the work in Congress.`, small: lines.join(` `) });
+  frames.push({ k: `What isn't public here yet`, big: `How they voted isn't shown yet.`, small: `Roll call votes are public records, but this app does not show them yet. A missing record here is not a no.` });
+  return { id: `us`, label: `Washington`, ini: `US`, name: `Who represents me in Washington?`, when: `${sn}${rep && rep.district ? `, district ${rep.district}` : ``}`, frames,
+           source: { label: `the congress-legislators record of current members (public domain)`, url: `https://github.com/unitedstates/congress-legislators` } };
+}
+function CX_UsMine({ data, g, onSee }) {
+  const [st, setSt] = u.useState(CX_US_PLACE.state);
+  const [di, setDi] = u.useState(CX_US_PLACE.district);
+  const states = [...new Set(data.members.map((m) => m.state))].sort((a, b) => cxStateName(a).localeCompare(cxStateName(b)));
+  const mine = st ? cxUsMine(data, st, di) : null;
+  const card = (m, role) => {
+    const c = cxCommitteeLine(g, m);
+    return (
+      <li key={m.id} className="us-mine-card">
+        <h3>{m.name}</h3>
+        <p className="us-kind">{role}</p>
+        <p>Current term: {m.term_start} to {m.term_end}. Party on this term: {m.party}, as of {m.party_as_of} (a sourced field, not a judgment).</p>
+        <p>{c.length ? `Committees: ${c.join(`, `)}.` : `No committee seat is listed.`}</p>
+        <p>{m.url && <a href={m.url} target="_blank" rel="noreferrer">{m.name}'s official website<span className="sp-ext"> (opens in a new tab)</span></a>}</p>
+        <p><button type="button" className="cx-link-button" onClick={() => onSee(g.byId.get(`m:${m.id}`))}>See {m.name} in the graph</button></p>
+      </li>
+    );
+  };
+  return (
+    <div className="us-mine">
+      <h2>Your members of Congress</h2>
+      <p>Choose your state and, for your representative, your district. This stays on your device for this visit and is never put in a link.</p>
+      <div className="us-tools">
+        <label>Your state <select value={st} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setSt(e.target.value); setDi(``); }}><option value="">Choose a state</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        {mine && mine.dists.length > 0 && <label>Your district <select value={di} onChange={(e) => { CX_US_PLACE.district = e.target.value; setDi(e.target.value); }}><option value="">Choose a district</option>{mine.dists.map((d) => <option key={d} value={d}>{d === 0 ? `At-large (the whole state)` : `District ${d}`}</option>)}</select></label>}
+      </div>
+      <p className="us-src">Not sure of your district? Your address decides it. <a href={CX_HOUSE_FIND} target="_blank" rel="noreferrer">The House's official lookup<span className="sp-ext"> (opens in a new tab)</span></a> finds it.</p>
+      {mine && (
+        <ul className="us-mine-list">
+          {mine.senators.map((m) => card(m, `United States senator for ${cxStateName(st)}`))}
+          {mine.senators.length === 0 && <li className="us-mine-card"><p>{cxStateName(st)} has no senators. It is represented in Congress by a delegate in the House.</p></li>}
+          {mine.rep && card(mine.rep, mine.rep.district ? `Representative for ${cxStateName(st)}'s ${cxOrd(mine.rep.district)} district` : `${mine.rep.chamber === `house` ? `Representative or delegate` : ``} for ${cxStateName(st)}`)}
+        </ul>
+      )}
+      {mine && di === `` && mine.dists.length > 0 && <p className="us-hint">Choose a district to see your representative.</p>}
+      <p className="us-hint">How they voted is not shown yet. Roll call votes are public records, and a missing record here is not a no.</p>
+    </div>
+  );
+}
+
 function CX_UsGraph() {
   const [data, setData] = u.useState(CX_US.v);
   const [state, setState] = u.useState(CX_US.p ? `ready` : `loading`);
@@ -193,7 +268,7 @@ function CX_UsGraph() {
   const rows = g.nodes.filter((n) => n.kind !== `hub` && visible(n) && !dim(n));
   const connected = cur ? g.adj[cur.i].map((ei) => { const e = g.edges[ei]; return { e, other: g.nodes[e.a === cur.i ? e.b : e.a], out: e.a === cur.i }; }) : [];
   const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, hub: `Group` };
-  const tabs = [[`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
+  const tabs = [[`mine`, `Your members`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
     <section className="us" ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
@@ -213,6 +288,7 @@ function CX_UsGraph() {
       {results.length > 0 && <ul className="us-results" aria-label="Search results">{results.map((n) => <li key={n.id}>{pickBtn(n)}</li>)}</ul>}
       <div className="us-body">
         <div className="us-main">
+          {view === `mine` && <CX_UsMine data={data} g={g} onSee={(n) => { focus(n); setView(`sky`); }} />}
           {view === `sky` && (
             <div className="us-stage">
               <canvas ref={cvs} className="us-canvas" tabIndex={0} role="img" aria-label={`Map of ${order.length} federal nodes: members of Congress, committees, and agencies. Use the Index, Linked, or Tree view for the same information as text. Keys: right and left bracket move between nodes, arrows pan, plus and minus zoom, Escape clears, slash searches.`}

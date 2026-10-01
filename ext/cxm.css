@@ -880,3 +880,10 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .us-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media print { .us-canvas, .us-zoom, .us-tools, .us-tabs { display: none !important; } }
 @media (forced-colors: active) { .us-canvas { border: 2px solid CanvasText; } }
+
+/* United States: your members */
+.us-mine { max-width: 760px; }
+.us-mine-list { list-style: none; margin: 14px 0; padding: 0; display: grid; gap: 12px; }
+.us-mine-card { padding: 14px 16px; border-radius: 14px; background: #ffffff0d; }
+.us-mine-card h3 { margin: 0 0 2px; font-size: 20px; }
+.us-mine-card p { margin: 6px 0; font-size: 16px; line-height: 1.5; }
