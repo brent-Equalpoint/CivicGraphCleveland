@@ -16,7 +16,7 @@ Open `Cleveland-Civic-Graph-v5.html` in any modern browser. It is one file and r
 | Look and feel of the Sep 24 version | `Cleveland Civic Graph 32_files/*.css` (saved stylesheets) | Used as the stylesheet |
 | Sep 24 features whose code was lost (the ChatGPT-hosted site now returns 401): 4-step guided view, Resident check, My local context, Cities & municipalities, Local decisions, contract ledger, inline definitions, dictionary categories and featured term, text-view connections, research-preview card, larger text | Saved v32 page markup and its CSS class names as the spec | Rebuilt in `ext/cx-ui.jsx` and `ext/cx-data.jsx` |
 | Civic ecosystem room (22 institutions) | `Cleveland-Civic-Graph-Ecosystem-Architecture-v1.html` | Data ported into a chamber room |
-| How this is built (pipeline, 16 seats, states, review gates, delivery stages 0 to 10, acceptance cases, evidence states) | `Civic-Intelligence-*-v1.md` and the Bench doc | Rebuilt as an in-app page |
+| How this is built (pipeline, 16 seats, states, review gates, delivery stages 0 to 10, acceptance cases, evidence states) | `docs/civic-agent/Civic-Intelligence-*-v1.md` and the Bench doc | Rebuilt as an in-app page; the first running stages live in `bench/` (see `bench/README.md`) |
 
 ## v5.1 additions
 

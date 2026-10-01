@@ -4,3 +4,7 @@ dist/
 __pycache__/
 *.pyc
 .DS_Store
+# Bench shadow files rebuild from data/ (python scripts/packets.py); approvals and approved/ are kept
+bench/shadow/registry-2026.json
+bench/shadow/entities-2026.json
+bench/shadow/packets-2026.json

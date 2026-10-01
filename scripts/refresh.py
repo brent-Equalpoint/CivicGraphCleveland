@@ -13,7 +13,7 @@ Steps:
   4. append the differences to data/changes-2026.json (scripts/changes.py)
 
 Official records only. News never enters through this script: news items need a person's
-approval (see docs/data-policy.md) and are not part of this pipeline.
+approval (see the Rules in CLAUDE.md) and are not part of this pipeline.
 """
 import json, os, shutil, sys, tempfile
 

@@ -18,6 +18,9 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
 - App code: `ext/*.jsx` and `ext/*.css`. Shared desktop and phone logic: `ext/cx-live.jsx`. Phone: `ext/cxm-*.jsx`.
 - Changes to the compiled app: an exact-match `patch()` in `build.py`. Never edit `inputs/` or `build/`.
 - Data: only `scripts/refresh.py` writes `data/`. Never hand-edit a snapshot.
+- The Bench (agent pipeline, `bench/`): `scripts/packets.py` writes `bench/shadow/` from `data/`; a named
+  person decides with `scripts/approve.py`; `scripts/commit.py` writes `bench/approved/`. Never hand-edit
+  either folder, and never let a script approve. Design docs: `docs/civic-agent/`. Tests: `scripts/test_bench.py`.
 - After editing a "Why supporters backed it" summary in `ext/cx-reasons.jsx`, re-read it against
   `data/reasons-2026.json`, then run `python build.py --mark-reviewed <file numbers>`.
 
