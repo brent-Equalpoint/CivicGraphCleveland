@@ -80,7 +80,7 @@ def main():
     b = build_hashes()
     if a != b:
         fail(f"two clean builds differ:\n  {a}\n  {b}")
-    print(f"  identical: single file {a['single'][:16]}…, site/index.html {a['index'][:16]}…")
+    print(f"  identical: single file {a['single'][:16]}..., site/index.html {a['index'][:16]}...")
 
     step(3, "Unit tests and data safety check")
     for cmd in ([sys.executable, "scripts/test_bench.py"], [sys.executable, "scripts/test_bench_gate.py"], [sys.executable, "scripts/test_links.py"], [sys.executable, "scripts/refresh.py", "--check"]):
@@ -156,7 +156,7 @@ def main():
     except urllib.error.HTTPError as e:
         if e.code != 404:
             fail(f"a wrong address answered {e.code}, not 404")
-    print(f"\nSHIPPED. {LIVE} serves {built[:16]}…, commit {sha}.")
+    print(f"\nSHIPPED. {LIVE} serves {built[:16]}..., commit {sha}.")
 
 
 if __name__ == "__main__":
