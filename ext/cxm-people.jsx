@@ -76,7 +76,7 @@ function CxmProfiles() {
           </span>
         </div>
         <div className="cxm-tile cxm-tile-acc">
-          <span className="cxm-kicker">COMMON GROUND</span>
+          <span className="cxm-kicker">Common ground</span>
           {chosen.length ? (
             <>
               <p><strong className="cxm-big">{common.length}<small>/{chosen.length}</small></strong> of your priorities show up in what {first} {isAdmin ? `sent to Council` : `led or joined`} this year.</p>
@@ -97,7 +97,7 @@ function CxmProfiles() {
         </div>
         {chosen.length > 0 && (
           <div className="cxm-tile">
-            <span className="cxm-kicker">ON WHAT YOU CARE ABOUT</span>
+            <span className="cxm-kicker">On what you care about</span>
             {chosen.map((k) => {
               const o = parts.own.filter((x) => x.m.topics[k]).length, j = parts.joined.filter((x) => x.m.topics[k]).length, d = parts.dept.filter((x) => x.m.topics[k]).length;
               const val = isAdmin ? (d ? `${d} sent` : `None`) : o || j ? [o ? `Led ${o}` : ``, j ? `Joined ${j}` : ``].filter(Boolean).join(` · `) : `Nothing yet`;
@@ -219,7 +219,7 @@ function CxmLetter({ seatId }) {
   const copy = async () => { try { await navigator.clipboard.writeText(text); setMsg(`Copied. Paste it into an email or letter.`); } catch { setMsg(`Select the text and copy it.`); } };
   return (
     <div className="cxm-pad">
-      <CxmKicker>YOUR LETTER</CxmKicker>
+      <CxmKicker>Your letter</CxmKicker>
       <h2 className="cxm-h2">Write to {seat.ward ? seat.name : `the mayor`}</h2>
       <p className="cxm-mut">A starting draft built from your priorities, the proposals you saved, and this record. Edit it in your own words. Nothing is sent from here.</p>
       <label className="cxm-field"><span className="cxm-sr">Letter draft</span><textarea rows={14} value={text} onChange={(e) => setText(e.target.value)} /></label>
@@ -343,7 +343,7 @@ function CxmConstellation() {
             <CX_Why q={q} />
             {hl.size > 0 && (office === `council` || office === `mayor`) && (
               <>
-                <span className="cxm-kicker">PUT THEIR NAME ON IT</span>
+                <span className="cxm-kicker">Put their name on it</span>
                 <div className="cxm-chips">{stats.filter((p) => hl.has(p.id)).map((p) => <button key={p.id} type="button" onClick={() => tap(p)}>{short(p)}{/^council-ward-(\d+)/.test(p.id) ? ` · Ward ${p.id.replace(/\D+/g, ``)}` : ``} ›</button>)}</div>
               </>
             )}

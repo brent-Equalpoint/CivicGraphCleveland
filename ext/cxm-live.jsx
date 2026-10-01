@@ -42,7 +42,7 @@ function CxmWhatsNew() {
   const parts = [[`passed`, `passed`], [`new`, `new`], [`moved`, `moved`], [`stopped`, `paused or stopped`]].filter(([k]) => c[k]);
   return (
     <section className="cxm-section cxm-newsbox">
-      <CxmKicker>WHAT'S NEW · SINCE {since ? cxShortDate(since).toUpperCase() : `THE LAST CHECK`}</CxmKicker>
+      <CxmKicker>What's new since {since ? cxShortDate(since) : `the last check`}</CxmKicker>
       <h2 className="cxm-h2">{main.length ? `${main.length} changes at City Hall` : `A quiet week at City Hall`}<span className="cxm-dot">.</span></h2>
       {parts.length > 0 && <div className="cxm-chips static cxm-news-chips">{parts.map(([k, l]) => <span key={k} className={`k-${k}`}><b>{c[k]}</b> {l}</span>)}</div>}
       {w && <p className="cxm-mut">{mine.length ? `${cxmPl(mine.length, `change involves`, `changes involve`)} ${cxmMember(w)}, your council member.` : `Nothing new from ${cxmMember(w)} this week. No record is not a no.`}</p>}
@@ -62,7 +62,7 @@ function CxmNews() {
   const items = [[`all`, `Everything`], ...(home?.ward ? [[`ward`, `Ward ${home.ward}`]] : []), [`mayor`, `Mayor's office`]];
   return (
     <div className="cxm-pad">
-      <CxmKicker>COUNCIL'S PUBLIC RECORD</CxmKicker>
+      <CxmKicker>Council's public record</CxmKicker>
       <h2 className="cxm-h2">What's new</h2>
       <p className="cxm-mut">What changed in City Council's 2026 record since {since ? cxShortDate(since) : `the last check`}, found by comparing two snapshots of the official record. Pulled {f.when} (Eastern).</p>
       {f.stale && <p className="cxm-status-line"><CxmStatusDot k="hold" /><span>These records were pulled {f.ago}. Newer actions may be on the <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">Council site</a>.</span></p>}
@@ -96,7 +96,7 @@ function CxmLatest({ seat, limit = 3 }) {
   const list = (seat.ward ? cxNewsFor(rows, { ward: seat.ward }) : cxNewsFor(rows, { admin: !0 })).filter((r) => r.kind !== `routine`);
   return (
     <div className="cxm-tile cxm-latest">
-      <span className="cxm-kicker">LATEST · SINCE {since ? cxShortDate(since).toUpperCase() : `THE LAST CHECK`}</span>
+      <span className="cxm-kicker">Latest since {since ? cxShortDate(since) : `the last check`}</span>
       {list.length ? list.slice(0, limit).map((r) => <CxmNewsRow key={r.f} r={r} />) : <p className="cxm-mut">Nothing new on {seat.ward ? `${seat.name}'s` : `the administration's`} proposals since {since ? cxShortDate(since) : `the last check`}. No record is not a no.</p>}
       {list.length > limit && <button type="button" className="cxm-link" onClick={() => openSheet(`news`)}>{cxmPl(list.length - limit, `more change`, `more changes`)}</button>}
     </div>

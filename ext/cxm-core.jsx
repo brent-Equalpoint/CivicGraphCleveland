@@ -157,6 +157,8 @@ function useCxmPrio() {
 }
 
 /* ---------- links: the same room, record and panel addresses as the desktop app ---------- */
+/* v5.16: when a link points at something that does not exist, say so once instead of silently showing Today */
+const CXM_NOTICE = { v: null };
 function cxmFromUrl() {
   const out = { tab: `today`, room: null, sheet: null, mode: null };
   let q;
@@ -171,6 +173,8 @@ function cxmFromUrl() {
   } else if (r && node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) {
     out.tab = `explore`; out.sheet = { type: `record`, room: r.id, node };
   }
+  if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
+  else if (r && node && !r.nodes.some((n) => n.id === node)) CXM_NOTICE.v = `We could not find that record, so here is the room.`;
   return out;
 }
 function cxmToUrl(tab, room, top, peopleMode) {
@@ -446,7 +450,7 @@ function CxmSays({ children }) {
   return (
     <div className="cxm-says">
       <CxmGuide kind={guide} size={56} />
-      <div className="cxm-bubble"><span className="cxm-kicker">{(CXM_GUIDES[guide] || `Erie`).toUpperCase()}</span><p>{children}</p></div>
+      <div className="cxm-bubble"><span className="cxm-kicker">{CXM_GUIDES[guide] || `Erie`}</span><p>{children}</p></div>
     </div>
   );
 }
@@ -466,7 +470,7 @@ function CxmHomePicker() {
   const list = hoods.filter((h) => h.toLowerCase().includes(q.trim().toLowerCase()));
   return (
     <div className="cxm-pad">
-      <CxmKicker>YOUR PLACE</CxmKicker>
+      <CxmKicker>Your place</CxmKicker>
       <h2 className="cxm-h2">Where do you call home?</h2>
       <p className="cxm-mut">Pick your neighborhood. It stays on this visit only and is never sent anywhere. Your exact address decides your ward; the Board of Elections lookup confirms it.</p>
       <label className="cxm-field"><span>Find a neighborhood</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hough, Ohio City, Kamm's…" /></label>

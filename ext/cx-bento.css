@@ -77,3 +77,8 @@ html[data-cx-theme="bento"] .ledger-list button.selected { background: #1c2233; 
 .cx-theme-switch b { font-weight: 600; }
 .cx-theme-dot { width: 10px; height: 10px; border-radius: 50%; display: block; background: #ffa46f; box-shadow: 10px 0 0 -1px #6b5a4c; margin-right: 10px; }
 html[data-cx-theme="bento"] .cx-theme-dot { background: #4c82ff; box-shadow: 10px 0 0 -1px #ecebe7; }
+
+/* v5.16 Stories: keep the headline and body text at full strength in Bento (the color remap greys them) */
+html[data-cx-theme="bento"] .cx-stories h1, html[data-cx-theme="bento"] .cx-stories .cx-story-big { color: #fff; }
+html[data-cx-theme="bento"] .cx-stories-lede, html[data-cx-theme="bento"] .cx-stories .cx-story-small, html[data-cx-theme="bento"] .cx-stories .cx-story-act p { color: #eef0f5; }
+html[data-cx-theme="bento"] .cx-stories .cx-story-src, html[data-cx-theme="bento"] .cx-stories .cx-story-count, html[data-cx-theme="bento"] .cx-stories .cx-story-head { color: #d5d9e3; }

@@ -1,6 +1,6 @@
 # Plan: guided stories on phone and desktop
 
-Written Oct 1, 2026. A plan only; nothing in the app has changed.
+Written Oct 1, 2026. Status Oct 1, 2026 (v5.16): Phase 1 (shared engine), Phase 1b on the phone (quiet text), the 404 page, start-up timeout and phone bad-link notice from Phase 1d, and a simple desktop Stories page from Phase 2 are built. Easy mode (1c), the desktop landing-page Stories row, Phases 3 to 7, and the rest of 1d are not.
 
 ## Goal
 

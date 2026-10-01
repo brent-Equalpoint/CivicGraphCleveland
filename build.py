@@ -123,6 +123,51 @@ def geo_svg(geo):
             "overlap": geo["overlap"], "downtown": geo["downtown"]}
 
 
+# v5.16: if the app has not drawn after 12 seconds (old browser, blocked script, very slow connection) say so in plain words
+BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');if(!b)return;"
+                "b.innerHTML='This is taking longer than usual.<small>Your connection may be slow, or your browser may be out of date. "
+                "Try again, or open this page in a newer browser.</small>"
+                "<button type=\"button\" onclick=\"location.reload()\" style=\"margin-top:10px;min-height:48px;padding:0 22px;border:0;border-radius:12px;"
+                "background:#d9541f;color:#fff;font:600 17px system-ui,sans-serif;cursor:pointer\">Try again</button>';},12000);")
+
+# v5.16: the page shown for an address that does not exist (Vercel serves site/404.html automatically)
+NOT_FOUND = """<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Page not found | Cleveland Civic Graph</title>
+<style>
+html,body{margin:0;background:#141210;color:#f4eee8}
+body{font:18px/1.5 system-ui,-apple-system,'Segoe UI',Roboto,sans-serif}
+main{max-width:560px;margin:0 auto;padding:48px 20px}
+h1{font-size:34px;line-height:1.15;margin:0 0 12px}
+p{margin:0 0 16px;color:#e7ded6}
+ul{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px}
+a{color:#ffd1a9}
+a.go{display:flex;align-items:center;min-height:56px;padding:0 18px;border-radius:14px;background:#1e1a17;border:1px solid #ffffff2e;color:#f4eee8;font-weight:600;text-decoration:none}
+a.go:focus-visible,a:focus-visible{outline:3px solid #f1b083;outline-offset:2px}
+a.main{background:#d9541f;border-color:#d9541f;color:#fff}
+</style>
+</head>
+<body>
+<main>
+<h1>We could not find that page.</h1>
+<p>The link may be old or mistyped. Nothing is wrong with your device. Here are good places to start.</p>
+<ul>
+<li><a class="go main" href="/">Go to the start</a></li>
+<li><a class="go" href="/?panel=place">Who decides where I live?</a></li>
+<li><a class="go" href="/?panel=ballot">What is on my ballot?</a></li>
+<li><a class="go" href="/?room=council">What is City Council doing?</a></li>
+</ul>
+<p style="margin-top:24px">Every record in the Cleveland Civic Graph links to a public source.</p>
+</main>
+</body>
+</html>
+"""
+
+
 def main():
     # 0. clean
     for d in (BUILD, DIST):
@@ -210,7 +255,7 @@ def main():
          "funds": {f: {k: r.get(k) for k in ("file", "text_url", "amounts", "limit", "wards")} for f, r in pl["funds"].items()}},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx",
                  "cxm-core.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -364,6 +409,19 @@ def main():
                 "          F === `place` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Who decides here?`, resetKey: F, children: (0, W.jsx)(CX_Place, { onGo: cxGo }) }) }),\n"
                 "          F === `news` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `What's new`, resetKey: F, children: (0, W.jsx)(CX_News, {}) }) }),\n",
                 label="aux page: my leaders")
+    # v5.16 Stories (shared story engine, ext/cx-story.jsx): sidebar entry, address panel, page
+    src = patch(src, "`context`, `ledger`, `bench`, `leaders`, `place`, `news`]", "`context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`]", count=2, label="url panels: stories")
+    src = patch(src,
+                "(0, W.jsx)(`span`, { children: `My leaders` })],\n                  }),\n",
+                "(0, W.jsx)(`span`, { children: `My leaders` })],\n                  }),\n"
+                "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `Stories`,\n                    className: F === `stories` ? `active` : ``,\n"
+                "                    onClick: () => cxPanel(`stories`),\n                    children: [(0, W.jsx)(CXI.Sparkles, { size: 18 }), (0, W.jsx)(`span`, { children: `Stories` })],\n                  }),\n",
+                label="sidebar: stories")
+    src = patch(src,
+                "          F === `place` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Who decides here?`, resetKey: F, children: (0, W.jsx)(CX_Place, { onGo: cxGo }) }) }),\n",
+                "          F === `place` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Who decides here?`, resetKey: F, children: (0, W.jsx)(CX_Place, { onGo: cxGo }) }) }),\n"
+                "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n",
+                label="aux page: stories")
 
     src = patch(src,
                 "            className: `atlas-header-actions`,\n            children: [\n",
@@ -605,6 +663,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 <body class="antialiased">
 <noscript><style>#cx-boot{{display:none}}</style><p style="padding:24px;font:16px system-ui">The Cleveland Civic Graph needs JavaScript to run. Every record in it links to a public source.</p></noscript>
 <div id="root"><div id="cx-boot" role="status"><i aria-hidden="true"></i>Loading the Cleveland Civic Graph<small>Public records, in plain English</small></div></div>
+<script>{BOOT_TIMEOUT}</script>
 <style>
 {css}
 </style>
@@ -635,6 +694,8 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
         shutil.copy(os.path.join(ROOT, "node_modules", "@fontsource", slug, "files", f"{slug}-latin-{w}-normal.woff2"), os.path.join(SITE, "fonts"))
     site_html = page(False, self_fonts)
     write(os.path.join(SITE, "index.html"), site_html)
+    write(os.path.join(SITE, "404.html"), NOT_FOUND)
+    log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")
     site_bytes = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(SITE) for f in fs)
     log(f"SITE   {sha(os.path.join(SITE, 'index.html'))}  site/index.html  {os.path.getsize(os.path.join(SITE, 'index.html'))} bytes "
         f"(+ {len(assets)} assets and {len(font_files)} fonts as files; {site_bytes} bytes in site/)")

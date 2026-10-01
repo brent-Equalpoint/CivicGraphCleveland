@@ -50,6 +50,16 @@ Open `Cleveland-Civic-Graph-v5.html` in any modern browser. It is one file and r
 
 - Simple mode on wide screens (1180px and up) places the guided view to the right of the map; the map stays in view while the guide scrolls. With a record panel open, or on narrower screens, the page stacks as before.
 
+## v5.16 changes (stories everywhere, quieter text, not-found page)
+
+- **Shared story engine.** The story builders moved out of the phone file into `ext/cx-story.jsx`, so the phone and the desktop read the same stories from the same records. Every story now names where its facts come from.
+- **Desktop Stories page.** A new Stories entry in the sidebar (address `?panel=stories`) opens one story at a time with Back and Next, arrow keys, a screen reader announcement for each step, and "Read this story as text" for the whole story at once.
+- **Quieter text.** About 50 small all-caps grey labels across the phone app are now plain sentence-case words in readable ink, and fine print is 14px at full reading contrast. Story copy was rewritten in warmer, shorter words ("Council set aside 2 items this year", "How each member voted isn't public yet").
+- **Page not found.** `site/404.html` offers the start, who decides where I live, my ballot, and what Council is doing. A link to a room or record that does not exist now shows a short "We could not find that page" notice on the phone.
+- **Start-up message.** If the app has not drawn after 12 seconds, the loading screen says so in plain words and offers Try again.
+- **Not done yet from the plans:** Easy mode, read-aloud, print styles, an offline notice, the desktop notice for bad links, and the rest of the screen-state and accessibility passes (see `docs/plan-*.md`).
+- Checked in headless Chrome at phone (390 px) and desktop (1280 px) widths in Bento and Original: no console errors; two clean builds gave the same hash. Not tested with a screen reader or on a real phone.
+
 ## v5.15 changes (live updates)
 
 Think of v5.15 as giving the app a morning newspaper route. Every night it walks to City Hall's public record, compares what it finds with yesterday, and leaves a short list of what changed on the doorstep.

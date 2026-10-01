@@ -120,7 +120,7 @@ function CxmRail() {
         <button key={i} type="button" data-tick="1" className={`cxm-tick ${rail.level === i ? `on` : ``}`} style={{ top: along(t, 18) }} aria-label={`Jump to ${CXM_LEVELS[i][1].toLowerCase()}`} onClick={() => jump(i)}><i /></button>
       ))}
       <span className="cxm-rail-guide" aria-hidden="true" style={{ top: along(rail.prog) }}><CxmGuide kind={guide} size={36} /></span>
-      {bubble && <span className="cxm-rail-bubble cxm-pop" role="status" style={{ top: along(rail.prog) }}><b>{(CXM_GUIDES[guide] || `Erie`).toUpperCase()}</b>{CXM_LEVELS[rail.level][3]}</span>}
+      {bubble && <span className="cxm-rail-bubble cxm-pop" role="status" style={{ top: along(rail.prog) }}><b>{CXM_GUIDES[guide] || `Erie`}</b>{CXM_LEVELS[rail.level][3]}</span>}
     </div>
   );
 }
@@ -274,7 +274,7 @@ function CxmRoom({ roomId }) {
       {view === `map` && room.id === `council` && <CxmWardMap ward={home?.ward} onWard={(w) => openSeat(`ward-${w}`)} />}
       {view === `text` && (
         <div className="cxm-tile">
-          <span className="cxm-kicker">{room.label.toUpperCase()}, IN WORDS</span>
+          <span className="cxm-kicker">{room.label}, in words</span>
           <p className="cxm-fine">Every line on the map, written out. Solid lines on the map are sourced or recorded; dashed lines are interpretation or a missing record.</p>
           {room.edges.length ? room.edges.map((e) => (
             <div key={e.id} className="cxm-conn">
@@ -291,13 +291,13 @@ function CxmRoom({ roomId }) {
         <CxmSeg label="Guided view" items={[[0, `Start`], [1, `Meaning`], [2, `Power`], [3, `Proof`]]} value={step} onChange={setStep} />
         {step === 0 && <div className="cxm-fade"><h3>{room.question}</h3><p><CX_Definable text={room.answer} onTerm={term} limit={2} /></p>
           {room.prompts?.length > 0 && <div className="cxm-chips">{room.prompts.map((p) => <button key={p.label} type="button" onClick={() => open(p.node)}>{p.label}</button>)}</div>}</div>}
-        {step === 1 && <div className="cxm-fade"><span className="cxm-kicker">IN PLAIN WORDS</span>{termEntries.map((t) => <div key={t.term} className="cxm-term"><button type="button" className="cxm-link" onClick={() => term(t.term)}>{t.term}</button><p>{t.meaning}</p></div>)}</div>}
-        {step === 2 && <div className="cxm-fade"><span className="cxm-kicker">WHO CAN ACT</span><p className="cxm-mut">Suggested stops, not a chain of command.</p>{pathNodes.map((n, i) => <button key={n.id} type="button" className="cxm-row" onClick={() => open(n.id)}><span><strong>{i + 1}. {n.name}</strong><small>{n.region}</small></span><CXI.Arrow size={15} /></button>)}</div>}
-        {step === 3 && <div className="cxm-fade"><span className="cxm-kicker">CHECK THE RECORD</span><div className="cxm-chips static">{Object.entries(counts).map(([k, c]) => <span key={k}><CxmEvidence state={k} /> {c}</span>)}</div><p>{room.gap}</p><CxmSrc href={room.actionUrl}>{room.action}</CxmSrc></div>}
+        {step === 1 && <div className="cxm-fade"><span className="cxm-kicker">In plain words</span>{termEntries.map((t) => <div key={t.term} className="cxm-term"><button type="button" className="cxm-link" onClick={() => term(t.term)}>{t.term}</button><p>{t.meaning}</p></div>)}</div>}
+        {step === 2 && <div className="cxm-fade"><span className="cxm-kicker">Who can act</span><p className="cxm-mut">Suggested stops, not a chain of command.</p>{pathNodes.map((n, i) => <button key={n.id} type="button" className="cxm-row" onClick={() => open(n.id)}><span><strong>{i + 1}. {n.name}</strong><small>{n.region}</small></span><CXI.Arrow size={15} /></button>)}</div>}
+        {step === 3 && <div className="cxm-fade"><span className="cxm-kicker">Check the record</span><div className="cxm-chips static">{Object.entries(counts).map(([k, c]) => <span key={k}><CxmEvidence state={k} /> {c}</span>)}</div><p>{room.gap}</p><CxmSrc href={room.actionUrl}>{room.action}</CxmSrc></div>}
       </div>
       {room.id === `history` && (
         <section className="cxm-section">
-          <CxmKicker>SELECTED DATED RECORDS</CxmKicker>
+          <CxmKicker>Dated records</CxmKicker>
           {Gh.map((g) => (
             <div key={g.date + g.title} className="cxm-tl">
               <span className="cxm-tl-d">{g.date}</span>
@@ -307,7 +307,7 @@ function CxmRoom({ roomId }) {
         </section>
       )}
       <section className="cxm-section">
-        <CxmKicker>RECORDS IN THIS ROOM · {room.nodes.length}</CxmKicker>
+        <CxmKicker>Records in this room · {room.nodes.length}</CxmKicker>
         {[...byLayer, ...(orphan.length ? [[{ id: `other`, label: `Other records` }, orphan]] : [])].map(([l, list]) => (
           <div key={l.id} className="cxm-rgroup">
             <div className="cxm-rgroup-h"><strong><i className="cxm-layer-dot" style={{ background: l.color || `#8f93a0` }} />{l.label}</strong><small>{list.length}</small></div>
@@ -400,7 +400,7 @@ function CxmCheck({ roomId, nodeId }) {
   const nearby = room.edges.filter((e) => e.source === node.id || e.target === node.id).slice(0, 5).map((e) => ({ e, other: room.nodes.find((x) => x.id === (e.source === node.id ? e.target : e.source)) })).filter((x) => x.other);
   return (
     <div className="cxm-pad">
-      <CxmKicker>{room.label.toUpperCase()} · {node.label}</CxmKicker>
+      <CxmKicker>{room.label} · {node.label}</CxmKicker>
       <h2 className="cxm-h2">Can you answer these three questions?</h2>
       <p className="cxm-mut">Mark each one when it makes sense to you. Nothing here is saved or sent anywhere. {n} of 3 answered.</p>
       {cards.map(([id, t, body]) => (

@@ -36,7 +36,7 @@ function CxmBallot() {
   const [open, setOpen] = u.useState({});
   return (
     <div className="cxm-page cxm-rise">
-      <CxmKicker>TUESDAY, NOV. 3, 2026 · POLLS 6:30 A.M. TO 7:30 P.M.</CxmKicker>
+      <CxmKicker>Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.</CxmKicker>
       <CxmH1>My ballot</CxmH1>
       <p className="cxm-lede">Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.</p>
       <p className="cxm-status-line"><CxmStatusDot k="talk" /><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
@@ -59,7 +59,7 @@ function CxmBallot() {
         <CxmSrc href={ah}>Find my districts by address</CxmSrc>
       </div>
       <div className="cxm-tile">
-        <span className="cxm-kicker">MAKE ROOM FOR A QUESTION</span>
+        <span className="cxm-kicker">Make room for a question</span>
         <strong>You don't have to know everything.</strong>
         <p className="cxm-mut">Open a race to see what someone has said or voted on, and what their office controls. Missing evidence stays missing. Choosing "Still deciding" is okay.</p>
       </div>
@@ -70,7 +70,7 @@ function CxmBallot() {
       )}
       {groups.map(([g, list]) => (
         <section key={g} className="cxm-section">
-          <CxmKicker>{g.toUpperCase()} · {list.length}</CxmKicker>
+          <CxmKicker>{g} · {list.length}</CxmKicker>
           <div className="cxm-tile cxm-tile-list">
             {(open[g] || list.length <= 8 ? list : list.slice(0, 8)).map((it) => {
               const sel = st.selections[it.id];
@@ -98,7 +98,7 @@ function CxmBallot() {
         <button type="button" className="cxm-link" onClick={() => openOffice(`governor`)}>See how governor candidates line up with your answers</button>
       </div>
       <section className="cxm-section">
-        <CxmKicker>VOTER EDUCATION</CxmKicker>
+        <CxmKicker>Voter education</CxmKicker>
         <h2 className="cxm-h2">A little understanding goes a long way.</h2>
         <p className="cxm-mut">One question at a time. Learn who decides, what a vote means, and where to get help.</p>
         <h3 className="cxm-h3">Who does what?</h3>
@@ -141,7 +141,7 @@ function CxmContest({ id }) {
   const others = c.candidates.filter((x) => !Qm(x.status));
   return (
     <div className="cxm-pad">
-      <CxmKicker>RECORD & ROLE · {cxArea(c.area, c.name).toUpperCase()}</CxmKicker>
+      <CxmKicker>Record and role · {cxArea(c.area, c.name)}</CxmKicker>
       <h2 className="cxm-h2">{c.name}</h2>
       {c.term && <small className="cxm-mut">{c.term}</small>}
       <p><strong>What this office can do.</strong> {info.can}</p>
@@ -181,7 +181,7 @@ function CxmIssue({ id }) {
   const onBallot = th(practice.state).some((it) => it.id === id);
   return (
     <div className="cxm-pad">
-      <CxmKicker>ISSUE {i.number} · {cxArea(i.area, g.title).toUpperCase()}</CxmKicker>
+      <CxmKicker>Issue {i.number} · {cxArea(i.area, g.title)}</CxmKicker>
       <h2 className="cxm-h2">{g.title}</h2>
       {!Ym(i) && <p className="cxm-status-line"><CxmStatusDot k="talk" />A detailed plain-language review is not loaded for this issue. Read the official wording below.</p>}
       <p className="cxm-fine">Tap yes or no to practice your pick. It stays in this browser.</p>
@@ -207,7 +207,7 @@ function CxmLocalIssues() {
   const toggle = (id) => practice.update((s) => ({ ...s, localIssues: s.localIssues.includes(id) ? s.localIssues.filter((x) => x !== id) : [...s.localIssues, id] }));
   return (
     <div className="cxm-pad">
-      <CxmKicker>LOCAL ISSUES · {local.length}</CxmKicker>
+      <CxmKicker>Local issues · {local.length}</CxmKicker>
       <h2 className="cxm-h2">Which local issues are on your ballot?</h2>
       <p className="cxm-mut">A local issue can apply to just one precinct. Check your sample ballot, then add the ones that apply to you.</p>
       <label className="cxm-field"><span>Search by place, precinct, or words</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Cleveland 03-Q, Sunday sales, school…" /></label>
@@ -265,7 +265,7 @@ function CxmOutcomes({ items }) {
   const chosen = items.filter((it) => st.selections[it.id] && ![`undecided`, `skip`].includes(st.selections[it.id]));
   return (
     <section className="cxm-section">
-      <CxmKicker>POSSIBILITIES, WITH LIMITS</CxmKicker>
+      <CxmKicker>What could happen, with limits</CxmKicker>
       <h2 className="cxm-h2">What might your choices affect?</h2>
       <p className="cxm-mut">Start with the person or proposal you selected. A future outcome depends on other voters, other officials, laws, funding and implementation. We do not calculate winning odds or promise results.</p>
       {!chosen.length && <p className="cxm-status-line"><CxmStatusDot k="talk" />Make a practice choice first. You can still open any candidate's record from a race above.</p>}
@@ -275,7 +275,7 @@ function CxmOutcomes({ items }) {
         const g = it.issue ? Xm(it.issue) : null;
         return (
           <div key={it.id} className="cxm-tile">
-            <span className="cxm-kicker">{it.contest ? it.contest.name.toUpperCase() : `ISSUE ${it.issue.number}`}</span>
+            <span className="cxm-kicker">{it.contest ? it.contest.name : `Issue ${it.issue.number}`}</span>
             <strong>{cand ? cand.name : `${v === `yes` ? `Yes` : `No`} · ${g.title}`}</strong>
             {cand ? (
               <>
@@ -308,11 +308,11 @@ function CxmCand({ id }) {
   const ans = (v) => (CXM_ANS.find((a) => a[0] === v) || [])[1] || `Not answered`;
   return (
     <div className="cxm-pad">
-      <CxmKicker>CANDIDATE RECORD</CxmKicker>
+      <CxmKicker>Candidate record</CxmKicker>
       <h2 className="cxm-h2">{cand.name}</h2>
       <small className="cxm-mut">{cand.party} · {c.name} · {cxArea(c.area, c.name)}</small>
       <div className="cxm-tile">
-        <span className="cxm-kicker">WHAT THIS OFFICE CAN DO</span>
+        <span className="cxm-kicker">What this office can do</span>
         <p>{info.can}</p>
         <p className="cxm-mut">{info.limits}</p>
         <CxmSrc href={info.url}>Authority reference</CxmSrc>
@@ -387,7 +387,7 @@ function CxmReview() {
   };
   return (
     <div className="cxm-pad">
-      <CxmKicker>REVIEW</CxmKicker>
+      <CxmKicker>Review</CxmKicker>
       <h2 className="cxm-h2">Your practice review</h2>
       <p className="cxm-mut">{cxmPl(n, `choice`, `choices`)} made. This is your practice worksheet, not a verified precinct ballot or a vote submission.</p>
       <button type="button" className="cxm-btn cxm-wide" onClick={() => cxmWorksheet(st)}>Download my private worksheet</button>

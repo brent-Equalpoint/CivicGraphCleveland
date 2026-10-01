@@ -613,3 +613,35 @@
   .atlas-svg path.atlas-edge { animation: none !important; transition: none !important; }
   .atlas-svg .atlas-node { transition: none !important; }
 }
+
+/* ---- v5.16 desktop Stories page (ext/cx-story.jsx) ---- */
+.cx-stories { max-width: 860px; padding-bottom: 40px; }
+.cx-stories h1 { margin: 0 0 8px; font-size: 32px; line-height: 1.1; color: #f4eee8; }
+.cx-stories-lede { margin: 0 0 18px; font-size: 18px; line-height: 1.5; color: #e7ded6; max-width: 62ch; }
+.cx-stories-pick { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 18px; }
+.cx-stories-pick button { display: inline-flex; align-items: center; gap: 10px; min-height: 52px; padding: 6px 16px 6px 8px; border-radius: 999px; background: #1e1a17; color: #f4eee8; border: 1px solid #ffffff2e; font: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
+.cx-stories-pick button.on { background: #3a2a21; border-color: #f1b083; }
+.cx-stories-ring { width: 38px; height: 38px; border-radius: 50%; display: grid; place-items: center; overflow: hidden; background: #27221e; font-size: 13px; font-weight: 700; flex: none; }
+.cx-stories-ring img { width: 100%; height: 100%; object-fit: cover; }
+.cx-story-reader { padding: 24px 28px; border-radius: 18px; background: #1e1a17; border: 1px solid #ffffff1f; }
+.cx-story-head { display: flex; flex-wrap: wrap; gap: 4px 14px; align-items: baseline; margin-bottom: 18px; color: #e7ded6; font-size: 16px; }
+.cx-story-head strong { color: #f4eee8; }
+.cx-story-body { min-height: 200px; }
+.cx-stories .cx-story-k { margin: 0 0 6px; font-size: 16px; font-weight: 600; color: #ffd1a9; }
+.cx-stories .cx-story-big { margin: 0 0 12px; font-size: 36px; line-height: 1.12; font-weight: 700; letter-spacing: -.02em; color: #fff; }
+.cx-stories .cx-story-small { margin: 0 0 14px; font-size: 19px; line-height: 1.5; color: #e7ded6; max-width: 62ch; }
+.cx-story-act { display: grid; gap: 10px; justify-items: start; margin: 12px 0; }
+.cx-stories .cx-story-act p { margin: 0; font-size: 18px; color: #f4eee8; }
+.cx-stories .cx-story-src { margin: 14px 0 0; font-size: 15px; line-height: 1.5; color: #c9bdb2; }
+.cx-stories .cx-story-src a, .cx-stories .cx-story-link { color: #ffd1a9; text-underline-offset: 3px; }
+.cx-story-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 14px; }
+.cx-stories .cx-story-count { font-size: 16px; color: #e7ded6; }
+.cx-story-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 12px; border: 0; background: #d9541f; color: #fff; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+.cx-story-btn.alt { background: transparent; color: #f4eee8; border: 1px solid #ffffff3d; }
+.cx-story-btn:disabled { opacity: .45; cursor: default; }
+.cx-story-btn:focus-visible, .cx-stories-pick button:focus-visible, .cx-story-reader .cx-link-button:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
+.cx-story-reader .cx-link-button { font-size: 16px; color: #ffd1a9; }
+.cx-story-all { margin: 0; padding-left: 22px; display: grid; gap: 22px; }
+.cx-stories .cx-story-all .cx-story-big { font-size: 26px; }
+.cx-stories .cx-story-all .cx-story-small { font-size: 17px; }
+@media (prefers-reduced-motion: reduce) { .cx-story-body * { animation: none !important; } }

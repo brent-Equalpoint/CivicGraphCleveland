@@ -1,0 +1,181 @@
+/* Story engine shared by the phone app (Today) and the desktop Stories page.
+   A story is data: { id, label, ini, portrait, name, when, frames: [{ k, big, small, type?, qid?, match?, cta?, go? }] }.
+   Builders read the same records as every other screen and write nothing. Presentation lives elsewhere:
+   CxmStory (phone, full screen) in cxm-today.jsx and CX_Stories (desktop) below. Every frame says
+   where its facts come from in `small`; a frame with a record behind it carries `file` so a reader can open it.
+   Plain, warm, direct words. No all-caps labels. */
+
+function cxmSplit(seat) {
+  return { own: seat.items.filter((x) => x.role === `own`), joined: seat.items.filter((x) => x.role === `joined`), dept: seat.items.filter((x) => x.role === `dept`) };
+}
+function cxmPl(n, one, many) {
+  return `${n} ${n === 1 ? one : many}`;
+}
+function cxmRecordFor(cand, qid) {
+  return Gm.find((g) => g.candidate === cand && g.question === qid && g.answer === `yes`);
+}
+
+/* ---------- stories ---------- */
+function cxmWardStory(w, answers) {
+  const seat = cxLegIndex().seats[w - 1];
+  const parts = cxmSplit(seat);
+  const money = cxPlWardMoney(w);
+  const first = seat.name.split(` `)[0];
+  const frames = [];
+  if (money.counted.length) {
+    frames.push({ k: `Ward ${w}, this year`, big: `Ward ${w} steered ${cxmMoney(money.total)} to local groups.`, small: `Casino revenue and Neighborhood Equity money that the ordinance text ties to Ward ${w}: ${cxmPl(money.counted.length, `item`, `items`)}.` });
+    const top = money.counted[0];
+    frames.push({ k: `The biggest item`, big: `${cxmMoney(top.amount)}${top.who ? ` to ${top.who}` : ``}.`, small: `${cxWords(cxShortTitle(top.m.title), 22)} ${top.m.file}.` });
+  } else {
+    frames.push({ k: `Ward ${w}, this year`, big: `No ward money tied to Ward ${w} in this year's records yet.`, small: `Missing here means none was found in the ordinance text, not that nothing happened.` });
+  }
+  const liq = cxPlCity().liquorRows.filter((r) => r.ward === w);
+  if (liq.length) {
+    const wd = liq.filter((r) => r.withdraw).length, ob = liq.length - wd;
+    const big = ob && wd ? `${cxmPl(ob, `objection`, `objections`)} filed, ${wd} withdrawn.` : ob ? `${cxmPl(ob, `objection`, `objections`)} filed.` : `${cxmPl(wd, `objection`, `objections`)} withdrawn.`;
+    frames.push({ k: `Liquor permits`, big, small: liq.filter((r) => r.addr).slice(0, 3).map((r) => `${r.withdraw ? `Withdrew` : `Objected`}: ${r.addr}, ${cxmDate(r.date)}`).join(`. `) || `The addresses are not in these titles.` });
+  }
+  frames.push({ k: `What ${first} led`, big: parts.own.length ? `${first} led ${cxmPl(parts.own.length, `proposal`, `proposals`)} this year.` : `${first} did not lead a proposal in this record.`, small: cxSummary(seat, parts.own, parts.joined, parts.dept) });
+  const q = [...CX_COUNCIL_Q, ...CX_MAYOR_Q].map((x) => ({ x, m: cxmMatter(x[0]), w: Wm.find((z) => z.id === x[1]) }))
+    .filter((o) => o.m && o.w && o.m.sponsors.some((s) => CX_SPONSOR_WARD[s] === w))
+    .sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
+  if (q) frames.push({ k: `Your turn`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: seat.name, seat: seat.id, portrait: seat.portrait, question: q.w.question, how: `put their name on the proposal`, file: q.x[0], cand: `council-ward-${w}` } });
+  return { id: `ward`, label: `Ward ${w}`, ini: cxmInitials(seat.name), portrait: seat.portrait, name: `${seat.name} · Ward ${w}`, when: `Your council member, 2026 so far`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+}
+function cxmCouncilStory() {
+  const idx = cxLegIndex();
+  const c = cxPlCity();
+  const withFinal = idx.measures.filter((m) => cxPlPath(m).days !== null).length;
+  const denied = c.unusual.filter((x) => x.m.status === `Passed` && x.p.flags.some((f) => /denial/.test(f[1])));
+  const tabled = idx.measures.filter((m) => m.status === `Tabled`);
+  const frames = [
+    { k: `This year so far`, big: `Council has taken up ${CX_LEG.count.toLocaleString(`en-US`)} items this year.`, small: `That is the count in Council's public record on ${cxmDate(CX_LEG.retrieved_at)}. ${idx.measures.length} are ordinances or resolutions. The rest are ceremonial resolutions, letters, and agenda items.` },
+    { k: `How fast`, big: `Half passed within ${c.cityDays} days.`, small: `That counts the ${withFinal} proposals with a recorded final vote, from the day each was introduced.` },
+  ];
+  if (denied.length) frames.push({ k: `A reversal`, big: `${denied.length === 1 ? `One proposal` : `${denied.length} proposals`} passed after a committee recommended denial.`, small: `${cxmStatus(denied[0].m).flip} ${cxWords(cxShortTitle(denied[0].m.title), 16)} ${denied[0].m.file}.` });
+  if (tabled.length) frames.push({ k: `Set aside`, big: `Council set aside ${cxmPl(tabled.length, `item`, `items`)} this year.`, small: `Tabled means put on hold. ` + tabled.map((m) => cxWords(cxShortTitle(m.title), 12)).join(` · `) });
+  frames.push({ k: `What isn't public`, big: `How each member voted isn't public yet.`, small: `Council's database records what passed, not each member's vote, and the 2026 City Record lists passed legislation without roll calls. So we show outcomes and sponsors, and nothing more.` });
+  return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+}
+function cxmMayorStory(answers) {
+  const admin = cxLegIndex().admin;
+  const qs = CX_MAYOR_Q.map((x) => ({ x, w: Wm.find((z) => z.id === x[1]), r: CX_REASONS[x[1]] })).filter((o) => o.w);
+  const frames = [{ k: `From the Mayor's office`, big: `${admin.items.length} requests sent to Council this year.`, small: `City departments send requests like contracts, grants, and project steps. Council still decides each one.` }];
+  qs.filter((o) => o.r && o.r.points.length).slice(0, 2).forEach((o) => frames.push({ k: ``, big: `${o.w.title}.`, small: `${o.r.points[0]} ${o.x[0]}.` }));
+  const q = [...qs].sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
+  if (q) frames.push({ k: `Your turn`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: `Mayor Bibb's administration`, seat: `mayor`, portrait: admin.portrait, question: q.w.question, how: `sent the proposal to Council`, file: q.x[0], cand: `mayor-bibb` } });
+  return { id: `mayor`, label: `Mayor`, ini: `JB`, portrait: admin.portrait, name: `Mayor Bibb's administration`, when: `What it sent to Council in 2026`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+}
+function cxmLevies() {
+  return Um.filter((i) => Jm[i.number] && /\$\d+ per \$100,000/.test(Jm[i.number].yes)).map((i) => ({ issue: i, title: Jm[i.number].title, per: Number(Jm[i.number].yes.match(/\$(\d+) per \$100,000/)[1]), note: Jm[i.number].consider }));
+}
+function cxmBallotStory() {
+  const days = cxmDaysTo(CXM_ELECTION);
+  const county = Um.filter((i) => i.area === `COUNTY WIDE DISTRICT`).length;
+  const i3 = Um.find((i) => i.number === 3);
+  const nx = cxDatesNow().find((x) => x.state === `next` || x.state === `today`);
+  const frames = [{ k: `Election Day`, big: days > 1 ? `${days} days. Tuesday, Nov. 3.` : days === 1 ? `Tomorrow. Tuesday, Nov. 3.` : days === 0 ? `Today is Election Day.` : `Election Day has passed.`, small: days < 0 ? `Official results come from the Cuyahoga County Board of Elections.` : `${Hm.length} contests on the county's candidate list and ${county} countywide issues, plus local issues that depend on your precinct.` }];
+  if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `Today` : `Next deadline`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Times are Eastern. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Times are Eastern.` });
+  if (i3) frames.push({ k: `State Issue 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
+  const lv = cxmLevies();
+  if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Type your home's value and see the county's own estimate.`, type: `cta`, cta: `Type my home's value`, go: `keypad` });
+  return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
+}
+function cxmSamePerson(a, b) {
+  const n = (s) => String(s).toLowerCase().replace(/[^a-z\s-]/g, ``).trim().split(/\s+/);
+  const x = n(a), y = n(b);
+  if (!x.length || !y.length || x[0] !== y[0]) return !1;
+  const sx = x[x.length - 1], sy = y[y.length - 1];
+  return sx === sy || sy.startsWith(`${sx}-`) || sx.startsWith(`${sy}-`);
+}
+function cxmHoodStory(hood) {
+  const before = cxPlShares(`wards2014`, hood);
+  const now = cxPlShares(`wards2026`, hood);
+  if (!now.length) return null;
+  const b = before[0], n0 = now[0];
+  const frames = [];
+  if (b && b.ward !== n0.ward) frames.push({ k: `Your ward`, big: `${hood} and Ward ${b.ward}: it's complicated.`, small: `${Math.round(b.share * 100)}% of ${hood} was Ward ${b.ward} on the 2014 map, used through 2025.` });
+  else frames.push({ k: `Your ward`, big: `${hood} and Ward ${n0.ward}: still together.`, small: `The ward number stayed the same when the map changed from 17 wards to 15.` });
+  frames.push({ k: `The new map`, big: `${Math.round(n0.share * 100)}% of ${hood} is now Ward ${n0.ward}.`, small: `${now.slice(1).map((r) => `${Math.round(r.share * 100)}% Ward ${r.ward}`).join(`, `)}${now.length > 1 ? `. ` : ``}Shares are by land area, not by how many people live there.` });
+  const m14 = b ? cxPlMember(`wards2014`, b.ward).trim() : ``, m26 = cxPlMember(`wards2026`, n0.ward).trim();
+  const same = m14 && m26 && cxmSamePerson(m14, m26);
+  frames.push({ k: `What changed`, big: same && b.ward !== n0.ward ? `Same council member, new ward number.` : same ? `Same council member.` : `A different council member now.`, small: `The city's 2014 map file lists ${m14 || `no member`} for Ward ${b ? b.ward : `?`}; the 2026 file lists ${m26} for Ward ${n0.ward}.`, type: `cta`, cta: `Open My place`, go: `place` });
+  return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
+}
+function cxmStories(home, answers) {
+  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+}
+
+/* ---------- desktop Stories page (sidebar: Stories) ---------- */
+function cxStoryHome() {
+  const w = /^ward-(\d+)$/.exec(CX_PLACE.v || ``);
+  return w ? { hood: ``, ward: Number(w[1]) } : null;
+}
+function CX_StoryFrame({ fr, s }) {
+  const m = fr.match ? cxmMatter(fr.match.file) : null;
+  return (
+    <>
+      {fr.k ? <p className="cx-story-k">{fr.k}</p> : null}
+      <p className="cx-story-big">{fr.big}</p>
+      <p className="cx-story-small">{fr.small}</p>
+      {fr.type === `react` && (
+        <div className="cx-story-act">
+          <p><strong>{fr.small}</strong></p>
+          <button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(`constellation`)}>Think it over in My constellation <CXI.Arrow size={14} /></button>
+          {m && <a className="cx-story-link" href={m.url} target="_blank" rel="noreferrer">Read the record, file {m.file} (opens in a new tab)</a>}
+        </div>
+      )}
+      {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(fr.go === `place` ? `place` : `ballot`)}>{fr.go === `place` ? `Open Who decides here?` : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
+      {s.source && <p className="cx-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}. Official records only.</p>}
+    </>
+  );
+}
+function CX_Stories() {
+  const stories = u.useMemo(() => cxmStories(cxStoryHome(), {}), []);
+  const [i, setI] = u.useState(0);
+  const [f, setF] = u.useState(0);
+  const [text, setText] = u.useState(!1);
+  const s = stories[i];
+  const fr = s.frames[Math.min(f, s.frames.length - 1)];
+  const lastFrame = f === s.frames.length - 1;
+  const pick = (n) => { setI(n); setF(0); };
+  const next = () => (!lastFrame ? setF(f + 1) : i < stories.length - 1 ? pick(i + 1) : null);
+  const prev = () => (f > 0 ? setF(f - 1) : i > 0 ? (setI(i - 1), setF(stories[i - 1].frames.length - 1)) : null);
+  const onKey = (e) => {
+    if (e.target.closest && e.target.closest(`a, select, input, textarea`)) return;
+    if (e.key === `ArrowRight`) { e.preventDefault(); next(); }
+    else if (e.key === `ArrowLeft`) { e.preventDefault(); prev(); }
+  };
+  return (
+    <section className="cx-stories" aria-labelledby="cx-stories-h">
+      <h1 id="cx-stories-h">Stories</h1>
+      <p className="cx-stories-lede">Short, plain stories made from official records. Pick one, then use the Next button or the arrow keys.{!cxStoryHome() ? ` Choose your ward in Who decides here? to add a story about your own council member.` : ``}</p>
+      <div className="cx-stories-pick" role="list">
+        {stories.map((x, n) => (
+          <button key={x.id} type="button" role="listitem" className={n === i ? `on` : ``} aria-current={n === i ? `true` : undefined} onClick={() => pick(n)}>
+            <span className="cx-stories-ring">{x.portrait ? <img src={cxmAsset(x.portrait)} alt="" /> : <span>{x.ini}</span>}</span>
+            <span>{x.label}</span>
+          </button>
+        ))}
+      </div>
+      <div className="cx-story-reader" role="region" aria-label={`${s.name} story`} onKeyDown={onKey}>
+        <div className="cx-story-head"><strong>{s.name}</strong><span>{s.when}</span></div>
+        {!text && (
+          <>
+            <div className="cx-story-body" aria-live="polite" aria-atomic="true"><CX_StoryFrame key={`${i}-${f}`} fr={fr} s={s} /></div>
+            <div className="cx-story-nav">
+              <button type="button" className="cx-story-btn alt" onClick={prev} disabled={i === 0 && f === 0}>Back</button>
+              <span className="cx-story-count">Step {f + 1} of {s.frames.length}</span>
+              <button type="button" className="cx-story-btn" onClick={next} disabled={lastFrame && i === stories.length - 1}>{lastFrame && i < stories.length - 1 ? `Next story` : `Next`}</button>
+            </div>
+          </>
+        )}
+        {text && (
+          <ol className="cx-story-all">{s.frames.map((x, n) => <li key={n}><CX_StoryFrame fr={x} s={{ ...s, source: null }} /></li>)}</ol>
+        )}
+        {text && s.source && <p className="cx-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}. Official records only.</p>}
+        <button type="button" className="cx-link-button" aria-pressed={text} onClick={() => setText(!text)}>{text ? `Show one step at a time` : `Read this story as text`}</button>
+      </div>
+    </section>
+  );
+}

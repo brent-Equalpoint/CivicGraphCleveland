@@ -33,7 +33,7 @@ function CxmLeg({ file }) {
       <h2 className="cxm-h2">{cxShortTitle(m.title)}</h2>
       <p className="cxm-status-line"><CxmStatusDot k={st.k} /><span><strong>Relationship status: {st.label}.</strong> {st.note}</span></p>
       {st.flip && <p className="cxm-flip">{st.flip}</p>}
-      {latest && <p className="cxm-latest-line"><span className="cxm-kicker">LATEST</span> {latest.what} <small>Found in the {cxShortDate(cxDayET(Date.parse(latest.at)))} check of the record.</small></p>}
+      {latest && <p className="cxm-latest-line"><span className="cxm-kicker">Latest</span> {latest.what} <small>Found in the {cxShortDate(cxDayET(Date.parse(latest.at)))} check of the record.</small></p>}
       {f && (
         <div className="cxm-receipt">
           <span className="cxm-rbig">{f.amount ? cxmMoney(f.amount) : `Amount not stated`}</span>
@@ -98,7 +98,7 @@ function CxmSearch() {
       {res && !res.length && <p className="cxm-mut">Nothing matches "{q}". Try a shorter word.</p>}
       {res && res.map(([g, list]) => (
         <section key={g} className="cxm-section">
-          <CxmKicker>{g.toUpperCase()} · {list.length}</CxmKicker>
+          <CxmKicker>{g} · {list.length}</CxmKicker>
           {list.map(([a, b, fn], k) => <button key={g + k} type="button" className="cxm-row" onClick={fn}><span><strong>{a}</strong><small>{b}</small></span><CXI.Arrow size={15} /></button>)}
         </section>
       ))}
@@ -117,12 +117,12 @@ function CxmDict({ focus }) {
   const related = featured ? Wh.filter((e) => e !== featured && (e.room === featured.room || cxDictCategory(e) === cxDictCategory(featured))).slice(0, 6) : [];
   return (
     <div className="cxm-pad">
-      <CxmKicker>CIVIC DICTIONARY · {Wh.length} TERMS</CxmKicker>
+      <CxmKicker>Civic dictionary · {Wh.length} terms</CxmKicker>
       <label className="cxm-field"><span>Look up a word</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Try ward, levy, jurisdiction…" /></label>
       <div className="cxm-chips cxm-hchips"><button type="button" className={cat === `all` ? `on` : ``} onClick={() => setCat(`all`)}>All</button>{CX_DICT_CATEGORIES.map((c) => <button key={c} type="button" className={cat === c ? `on` : ``} onClick={() => setCat(c)}>{c}</button>)}</div>
       {featured && (
         <div className="cxm-tile cxm-tile-acc">
-          <span className="cxm-kicker">{cxDictCategory(featured).toUpperCase()}</span>
+          <span className="cxm-kicker">{cxDictCategory(featured)}</span>
           <h3 className="cxm-h2">{featured.term}</h3>
           <p>{featured.meaning}</p>
           <small className="cxm-mut">Example: {featured.example}</small>
@@ -157,7 +157,7 @@ function CxmYou() {
       <p className="cxm-mut">Everything here stays in this browser on this phone. Nothing is sent anywhere.</p>
       <button type="button" className="cxm-row" onClick={() => openSheet(`home`)}><span><strong>My place</strong><small>{cxmHomeLabel(home)}</small></span><CXI.Arrow size={15} /></button>
       <section className="cxm-section">
-        <CxmKicker>MY PRIORITIES · UP TO FIVE</CxmKicker>
+        <CxmKicker>My priorities · pick up to five</CxmKicker>
         <p className="cxm-mut">Start with what matters. Then look at a real decision. A priority tells the atlas what you want to examine. Your position on a specific policy is a separate choice. Everything is optional. "Still deciding" means you want to learn more.</p>
         <div className="cxm-progress" aria-live="polite"><span>{prio.chosen.length} of 5 priorities selected</span><span aria-hidden="true">{[1, 2, 3, 4, 5].map((k) => <i key={k} className={k <= prio.chosen.length ? `on` : ``} />)}</span></div>
         {wm.map((w) => (
@@ -172,7 +172,7 @@ function CxmYou() {
         {prio.msg && <p className="cxm-fine" role="status">{prio.msg}</p>}
       </section>
       <section className="cxm-section">
-        <CxmKicker>THEN LOOK AT A REAL DECISION</CxmKicker>
+        <CxmKicker>Then look at a real decision</CxmKicker>
         {Dm.map((d) => (
           <button key={d.id} type="button" className="cxm-row" onClick={() => openSheet(`decision`, { id: d.id })}>
             <span><strong>{d.title}</strong><small>{d.status}{prio.s[d.id] ? ` · Your view: ${Em.find((e) => e.id === prio.s[d.id])?.label}` : ``}</small></span><CXI.Arrow size={15} />
@@ -186,20 +186,20 @@ function CxmYou() {
         <button type="button" className="cxm-btn2" onClick={prio.clear}>Clear my choices</button>
       </div>
       <section className="cxm-section">
-        <CxmKicker>LETTERS</CxmKicker>
+        <CxmKicker>Letters</CxmKicker>
         <button type="button" className="cxm-row" onClick={() => openSheet(`letter`, { seat: home?.ward ? `ward-${home.ward}` : `mayor` })}><span><strong>{home?.ward ? `Write to ${cxmMember(home.ward)}` : `Write to the mayor`}</strong><small>{liked.length ? `${cxmPl(liked.length, `proposal`, `proposals`)} saved to ask about` : `No proposals saved yet`}</small></span><CXI.Arrow size={15} /></button>
       </section>
       <section className="cxm-section">
-        <CxmKicker>YOUR GUIDE</CxmKicker>
+        <CxmKicker>Your guide</CxmKicker>
         <div className="cxm-guides">{Object.entries(CXM_GUIDES).map(([k, n]) => <button key={k} type="button" className={guide === k ? `on` : ``} aria-pressed={guide === k} onClick={() => setGuide(k)}><CxmGuide kind={k} size={52} /><span>{n}</span></button>)}</div>
       </section>
       <section className="cxm-section">
-        <CxmKicker>DISPLAY</CxmKicker>
+        <CxmKicker>Display</CxmKicker>
         <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
       </section>
       <section className="cxm-section">
-        <CxmKicker>MORE</CxmKicker>
+        <CxmKicker>More</CxmKicker>
         <button type="button" className="cxm-row" onClick={() => openSheet(`check`, { room: room || `overview`, node: (Uh.find((r) => r.id === (room || `overview`))?.path || [])[0] })}><span><strong>Resident check</strong><small>Three questions every resident should be able to answer</small></span><CXI.Arrow size={15} /></button>
         <button type="button" className="cxm-row" onClick={() => openSheet(`ledger`)}><span><strong>Decision ledger</strong><small>Follow a decision to its record</small></span><CXI.Arrow size={15} /></button>
         <button type="button" className="cxm-row" onClick={() => openSheet(`bench`)}><span><strong>How this is built</strong><small>Sources, method, and what is not running yet</small></span><CXI.Arrow size={15} /></button>
@@ -217,7 +217,7 @@ function CxmPriorityGuide({ id }) {
   if (!g) return null;
   return (
     <div className="cxm-pad">
-      <CxmKicker>WHAT THIS MEANS IN CLEVELAND</CxmKicker>
+      <CxmKicker>What this means in Cleveland</CxmKicker>
       <h2 className="cxm-h2">{w?.label}</h2>
       <p>{g.means}</p>
       <p className="cxm-mut">{g.like}</p>
@@ -244,7 +244,7 @@ function CxmLedger() {
   const n = (k) => entries.filter((e) => e.evidence === k).length;
   return (
     <div className="cxm-pad">
-      <CxmKicker>DECISION & CONTRACT LEDGER</CxmKicker>
+      <CxmKicker>Decisions and contracts</CxmKicker>
       <h2 className="cxm-h2">Follow a decision to its record.</h2>
       <p className="cxm-mut">Each entry is a real Cleveland record already loaded in this atlas. The ledger shows what the record supports and lists what is still missing. It does not total money, score officials, or infer votes.</p>
       <div className="cxm-stats">
@@ -254,9 +254,9 @@ function CxmLedger() {
         <div><b>{n(`missing`)}</b><span>Records needed</span></div>
       </div>
       <p className="cxm-fine">Filters change the list, not the records.</p>
-      <span className="cxm-kicker">TOPIC</span>
+      <span className="cxm-kicker">Topic</span>
       <div className="cxm-chips"><button type="button" className={dom === `all` ? `on` : ``} onClick={() => setDom(`all`)}>All topics</button>{domains.map((d) => <button key={d} type="button" className={dom === d ? `on` : ``} onClick={() => setDom(d)}>{CX_DOMAIN_LABEL[d] ?? d}</button>)}</div>
-      <span className="cxm-kicker">EVIDENCE</span>
+      <span className="cxm-kicker">Evidence</span>
       <div className="cxm-chips"><button type="button" className={ev === `all` ? `on` : ``} onClick={() => setEv(`all`)}>All evidence</button>{Object.entries(CX_EVIDENCE_LABEL).map(([k, l]) => <button key={k} type="button" className={ev === k ? `on` : ``} onClick={() => setEv(k)}>{l}</button>)}</div>
       {!list.length && <p className="cxm-status-line"><CxmStatusDot k="read" />No records match these filters.</p>}
       {list.map((e) => (
@@ -285,11 +285,11 @@ function CxmBench() {
   const groups = [...new Set(CX_SEATS.map((x) => x[1]))];
   return (
     <div className="cxm-pad">
-      <CxmKicker>CIVIC INTELLIGENCE BENCH</CxmKicker>
+      <CxmKicker>How this is built</CxmKicker>
       <h2 className="cxm-h2">How a resident question becomes a public record.</h2>
       <p className="cxm-mut">A resident asks "Who decided this?" The system should return a short answer with jurisdiction, date, source, and uncertainty. The map, text view, Simple view, and Audit view all read the same approved records. No agent publishes. A named person approves each public change.</p>
       <div className="cxm-tile">
-        <span className="cxm-kicker">HONEST STATUS · SEPTEMBER 24, 2026</span>
+        <span className="cxm-kicker">Where things stand · September 24, 2026</span>
         <strong>The architecture is designed. The machinery is not running.</strong>
         <p className="cxm-mut">Research agents, source polling, the evidence store, the review console, and the publishing service are specified here, not live. The records in this atlas were gathered and reviewed by hand, with sources and gaps labeled.</p>
         <p className="cxm-fine">{CX_BUILD.version}. Base: {CX_BUILD.base}. Sources reviewed {CX_BUILD.sources}. Council records: Cleveland Legistar, {CX_LEG.count} items, retrieved {CX_LEG.retrieved_at.slice(0, 10)}. This phone app reads the same records as the desktop app.</p>
@@ -359,8 +359,8 @@ function CxmBench() {
           <h3 className="cxm-h3">Acceptance cases</h3>
           {CX_CASES.map(([when, then]) => (
             <div key={when} className="cxm-tile">
-              <span className="cxm-kicker">WHEN</span><strong>{when}</strong>
-              <span className="cxm-kicker">THEN</span><p className="cxm-mut">{then}</p>
+              <span className="cxm-kicker">When</span><strong>{when}</strong>
+              <span className="cxm-kicker">Then</span><p className="cxm-mut">{then}</p>
             </div>
           ))}
         </>

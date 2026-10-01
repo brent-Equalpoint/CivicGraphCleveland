@@ -54,7 +54,7 @@ function CxmPlace() {
   const complicated = before0 && now0 && before0.ward !== now0.ward;
   return (
     <div className="cxm-page cxm-rise">
-      <CxmKicker>WHO DECIDES HERE?</CxmKicker>
+      <CxmKicker>Who decides here?</CxmKicker>
       <CxmH1>{hood}</CxmH1>
       <p className="cxm-mut">Everything here comes from public records: the city's ward maps, Council's legislative database, and the ordinance text. Nothing scores anyone. Where the record is silent, it says so.</p>
       <label className="cxm-field"><span>Neighborhood</span>
@@ -69,7 +69,7 @@ function CxmPlace() {
       {complicated && <p className="cxm-status-line"><CxmStatusDot k="talk" />Relationship status with Ward {before0.ward}: it's complicated. The 2026 map moved most of {hood} to Ward {now0.ward}.</p>}
       {localCards.length > 0 && (
         <section className="cxm-section">
-          <CxmKicker>CLOSEST TO YOU · {cxmHomeLabel(home).toUpperCase()}</CxmKicker>
+          <CxmKicker>Closest to you · {cxmHomeLabel(home)}</CxmKicker>
           <p className="cxm-mut">{localNote}</p>
           {localCards.map(([Icon, title, body, status, links]) => (
             <div key={title} className="cxm-tile">

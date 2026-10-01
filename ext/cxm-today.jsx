@@ -1,106 +1,6 @@
 /* v5.14 phone app: Today. Stories, City Hall receipts, and moments, all generated from the records
    for the resident's ward (or citywide before they pick a place). */
 
-function cxmSplit(seat) {
-  return { own: seat.items.filter((x) => x.role === `own`), joined: seat.items.filter((x) => x.role === `joined`), dept: seat.items.filter((x) => x.role === `dept`) };
-}
-function cxmPl(n, one, many) {
-  return `${n} ${n === 1 ? one : many}`;
-}
-function cxmRecordFor(cand, qid) {
-  return Gm.find((g) => g.candidate === cand && g.question === qid && g.answer === `yes`);
-}
-
-/* ---------- stories ---------- */
-function cxmWardStory(w, answers) {
-  const seat = cxLegIndex().seats[w - 1];
-  const parts = cxmSplit(seat);
-  const money = cxPlWardMoney(w);
-  const first = seat.name.split(` `)[0];
-  const frames = [];
-  if (money.counted.length) {
-    frames.push({ k: `WARD ${w} · 2026`, big: `Ward ${w} steered ${cxmMoney(money.total)} to local groups.`, small: `Casino revenue and Neighborhood Equity money that the ordinance text ties to Ward ${w}: ${cxmPl(money.counted.length, `item`, `items`)}.` });
-    const top = money.counted[0];
-    frames.push({ k: `BIGGEST ITEM`, big: `${cxmMoney(top.amount)}${top.who ? ` to ${top.who}` : ``}.`, small: `${cxWords(cxShortTitle(top.m.title), 22)} ${top.m.file}.` });
-  } else {
-    frames.push({ k: `WARD ${w} · 2026`, big: `No ward money tied to Ward ${w} in this year's records yet.`, small: `Missing here means none was found in the ordinance text, not that nothing happened.` });
-  }
-  const liq = cxPlCity().liquorRows.filter((r) => r.ward === w);
-  if (liq.length) {
-    const wd = liq.filter((r) => r.withdraw).length, ob = liq.length - wd;
-    const big = ob && wd ? `${cxmPl(ob, `objection`, `objections`)} filed, ${wd} withdrawn.` : ob ? `${cxmPl(ob, `objection`, `objections`)} filed.` : `${cxmPl(wd, `objection`, `objections`)} withdrawn.`;
-    frames.push({ k: `LIQUOR PERMITS`, big, small: liq.filter((r) => r.addr).slice(0, 3).map((r) => `${r.withdraw ? `Withdrew` : `Objected`}: ${r.addr}, ${cxmDate(r.date)}`).join(`. `) || `The addresses are not in these titles.` });
-  }
-  frames.push({ k: `WHAT ${first.toUpperCase()} LED`, big: parts.own.length ? `${first} led ${cxmPl(parts.own.length, `proposal`, `proposals`)} this year.` : `${first} did not lead a proposal in this record.`, small: cxSummary(seat, parts.own, parts.joined, parts.dept) });
-  const q = [...CX_COUNCIL_Q, ...CX_MAYOR_Q].map((x) => ({ x, m: cxmMatter(x[0]), w: Wm.find((z) => z.id === x[1]) }))
-    .filter((o) => o.m && o.w && o.m.sponsors.some((s) => CX_SPONSOR_WARD[s] === w))
-    .sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
-  if (q) frames.push({ k: `YOUR TURN`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: seat.name, seat: seat.id, portrait: seat.portrait, question: q.w.question, how: `put their name on the proposal`, file: q.x[0], cand: `council-ward-${w}` } });
-  return { id: `ward`, label: `Ward ${w}`, ini: cxmInitials(seat.name), portrait: seat.portrait, name: `${seat.name} · Ward ${w}`, when: `Your council member, 2026 so far`, frames };
-}
-function cxmCouncilStory() {
-  const idx = cxLegIndex();
-  const c = cxPlCity();
-  const withFinal = idx.measures.filter((m) => cxPlPath(m).days !== null).length;
-  const denied = c.unusual.filter((x) => x.m.status === `Passed` && x.p.flags.some((f) => /denial/.test(f[1])));
-  const tabled = idx.measures.filter((m) => m.status === `Tabled`);
-  const frames = [
-    { k: `2026 SO FAR`, big: `${CX_LEG.count.toLocaleString(`en-US`)} items introduced.`, small: `As of ${cxmDate(CX_LEG.retrieved_at)}, from Council's Legistar record. ${idx.measures.length} are ordinances or resolutions; the rest are ceremonial resolutions, communications, and agenda items.` },
-    { k: `SPEED`, big: `Half passed within ${c.cityDays} days.`, small: `Of the ${withFinal} proposals with a recorded final vote, counted from the day each was introduced.` },
-  ];
-  if (denied.length) frames.push({ k: `ON AGAIN, OFF AGAIN`, big: `${denied.length === 1 ? `One proposal` : `${denied.length} proposals`} passed after a committee recommended denial.`, small: `${cxmStatus(denied[0].m).flip} ${cxWords(cxShortTitle(denied[0].m.title), 16)} ${denied[0].m.file}.` });
-  if (tabled.length) frames.push({ k: `LEFT ON READ`, big: `${cxmPl(tabled.length, `item was`, `items were`)} tabled.`, small: tabled.map((m) => cxWords(cxShortTitle(m.title), 12)).join(` · `) });
-  frames.push({ k: `WHAT WE WON'T SHOW`, big: `Votes we can't prove.`, small: `Council's database records outcomes, not how each member voted, and the 2026 City Record lists passed legislation without roll calls. So this app shows outcomes and sponsors only.` });
-  return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, frames };
-}
-function cxmMayorStory(answers) {
-  const admin = cxLegIndex().admin;
-  const qs = CX_MAYOR_Q.map((x) => ({ x, w: Wm.find((z) => z.id === x[1]), r: CX_REASONS[x[1]] })).filter((o) => o.w);
-  const frames = [{ k: `SENT BY THE MAYOR'S ADMINISTRATION`, big: `${admin.items.length} requests sent to Council this year.`, small: `City departments send requests like contracts, grants, and project steps. Council still decides each one.` }];
-  qs.filter((o) => o.r && o.r.points.length).slice(0, 2).forEach((o) => frames.push({ k: o.w.title.toUpperCase(), big: `${o.w.title}.`, small: `${o.r.points[0]} ${o.x[0]}.` }));
-  const q = [...qs].sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
-  if (q) frames.push({ k: `YOUR TURN`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: `Mayor Bibb's administration`, seat: `mayor`, portrait: admin.portrait, question: q.w.question, how: `sent the proposal to Council`, file: q.x[0], cand: `mayor-bibb` } });
-  return { id: `mayor`, label: `Mayor`, ini: `JB`, portrait: admin.portrait, name: `Mayor Bibb's administration`, when: `What it sent to Council in 2026`, frames };
-}
-function cxmLevies() {
-  return Um.filter((i) => Jm[i.number] && /\$\d+ per \$100,000/.test(Jm[i.number].yes)).map((i) => ({ issue: i, title: Jm[i.number].title, per: Number(Jm[i.number].yes.match(/\$(\d+) per \$100,000/)[1]), note: Jm[i.number].consider }));
-}
-function cxmBallotStory() {
-  const days = cxmDaysTo(CXM_ELECTION);
-  const county = Um.filter((i) => i.area === `COUNTY WIDE DISTRICT`).length;
-  const i3 = Um.find((i) => i.number === 3);
-  const nx = cxDatesNow().find((x) => x.state === `next` || x.state === `today`);
-  const frames = [{ k: `ELECTION DAY`, big: days > 1 ? `${days} days. Tuesday, Nov. 3.` : days === 1 ? `Tomorrow. Tuesday, Nov. 3.` : days === 0 ? `Today is Election Day.` : `Election Day has passed.`, small: days < 0 ? `Official results come from the Cuyahoga County Board of Elections.` : `${Hm.length} contests on the county's candidate list and ${county} countywide issues, plus local issues that depend on your precinct.` }];
-  if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `TODAY` : `NEXT DEADLINE`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Times are Eastern. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Times are Eastern.` });
-  if (i3) frames.push({ k: `STATE ISSUE 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
-  const lv = cxmLevies();
-  if (lv.length) frames.push({ k: `THE LEVIES`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Type your home's value and see the county's own estimate.`, type: `cta`, cta: `Type my home's value`, go: `keypad` });
-  return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, frames };
-}
-function cxmSamePerson(a, b) {
-  const n = (s) => String(s).toLowerCase().replace(/[^a-z\s-]/g, ``).trim().split(/\s+/);
-  const x = n(a), y = n(b);
-  if (!x.length || !y.length || x[0] !== y[0]) return !1;
-  const sx = x[x.length - 1], sy = y[y.length - 1];
-  return sx === sy || sy.startsWith(`${sx}-`) || sx.startsWith(`${sy}-`);
-}
-function cxmHoodStory(hood) {
-  const before = cxPlShares(`wards2014`, hood);
-  const now = cxPlShares(`wards2026`, hood);
-  if (!now.length) return null;
-  const b = before[0], n0 = now[0];
-  const frames = [];
-  if (b && b.ward !== n0.ward) frames.push({ k: `RELATIONSHIP STATUS`, big: `${hood} and Ward ${b.ward}: it's complicated.`, small: `${Math.round(b.share * 100)}% of ${hood} was Ward ${b.ward} on the 2014 map, used through 2025.` });
-  else frames.push({ k: `RELATIONSHIP STATUS`, big: `${hood} and Ward ${n0.ward}: still together.`, small: `The ward number stayed the same when the map changed from 17 wards to 15.` });
-  frames.push({ k: `2026 MAP`, big: `${Math.round(n0.share * 100)}% of ${hood} is now Ward ${n0.ward}.`, small: `${now.slice(1).map((r) => `${Math.round(r.share * 100)}% Ward ${r.ward}`).join(`, `)}${now.length > 1 ? `. ` : ``}Shares are by land area, not by how many people live there.` });
-  const m14 = b ? cxPlMember(`wards2014`, b.ward).trim() : ``, m26 = cxPlMember(`wards2026`, n0.ward).trim();
-  const same = m14 && m26 && cxmSamePerson(m14, m26);
-  frames.push({ k: `THE TWIST`, big: same && b.ward !== n0.ward ? `Same council member, new ward number.` : same ? `Same council member.` : `A different council member now.`, small: `The city's 2014 map file lists ${m14 || `no member`} for Ward ${b ? b.ward : `?`}; the 2026 file lists ${m26} for Ward ${n0.ward}.`, type: `cta`, cta: `Open My place`, go: `place` });
-  return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, frames };
-}
-function cxmStories(home, answers) {
-  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
-}
 
 /* ---------- City Hall receipts ---------- */
 const CXM_NEWEST = CX_LEG.matters.reduce((a, m) => (m.passed && m.passed > a ? m.passed : a), ``);
@@ -232,6 +132,7 @@ function CxmToday() {
   const answers = practice.state.answers;
   const stories = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
   const moments = u.useMemo(() => cxmMoments(home), [home?.ward]);
+  const [note, setNote] = u.useState(CXM_NOTICE.v);
   const days = cxmDaysTo(CXM_ELECTION);
   const nextDate = cxDatesNow().find((x) => x.state === `next` || x.state === `today`);
   const line = !home ? `Hey neighbor. Tell me where home is and I'll show you what City Hall decided for your block.`
@@ -240,6 +141,7 @@ function CxmToday() {
     : `Tap any receipt to see who paid whom and who signed off.`;
   return (
     <div className="cxm-page cxm-rise">
+      {note && <div className="cxm-notice" role="status"><span>{note}</span><button type="button" onClick={() => { CXM_NOTICE.v = null; setNote(null); }}>Got it</button></div>}
       <CxmSays>{line}</CxmSays>
       {!home && (
         <button type="button" className="cxm-card cxm-card-acc" onClick={() => openSheet(`home`)}>
@@ -265,7 +167,7 @@ function CxmToday() {
       <CxmWhatsNew />
       <CxmReceipts />
       <section className="cxm-section">
-        <CxmKicker>MOMENTS FOR YOU</CxmKicker>
+        <h2 className="cxm-h2">Close to home<span className="cxm-dot">.</span></h2>
         {moments.map((m, i) => (
           <button key={m.id} type="button" className="cxm-card cxm-moment-card" onClick={() => setOverlay({ type: `moment`, list: moments, i, lens: 0 })}>
             <span className="cxm-kicker cxm-soft">{m.kicker}</span>
@@ -307,7 +209,7 @@ function CxmStory() {
       </div>
       <div className="cxm-story-body">
         <div key={`${i}-${f}`} className="cxm-rise">
-          <span className="cxm-kicker">{fr.k}</span>
+          {fr.k ? <span className="cxm-kicker">{fr.k}</span> : null}
           <p className="cxm-story-big">{fr.big}</p>
           <p className="cxm-story-small">{fr.small}</p>
         </div>
@@ -318,6 +220,7 @@ function CxmStory() {
           </>
         )}
       </div>
+      {s.source && <p className="cxm-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}</p>}
       {fr.type === `react` && (
         <div className="cxm-story-react cxm-rise">
           <CxmAnswers value={val} onPick={pick} />
@@ -398,7 +301,7 @@ function CxmCrush() {
     <div className="cxm-overlay cxm-crush" role="dialog" aria-modal="true" aria-label="Common ground">
       <div className="cxm-burst" aria-hidden="true">{dots.map((d, k) => <i key={k} className={`c${d.c}`} style={{ "--x": `${d.x}px`, "--y": `${d.y}px`, width: d.s, height: d.s, animationDelay: `${d.dl}s` }} />)}</div>
       <div className="cxm-pair cxm-beat"><span className="cxm-pair-you">You</span>{match.portrait ? <img src={cxmAsset(match.portrait)} alt="" /> : <span>{cxmInitials(match.who)}</span>}</div>
-      <span className="cxm-kicker cxm-soft">IT'S A</span>
+      <span className="cxm-kicker cxm-soft">It's a</span>
       <h2 className="cxm-crush-h">Common ground<span>!</span></h2>
       <p>You and {match.who} land on the same side of this one.</p>
       <p className="cxm-crush-q">{match.question}</p>
@@ -418,7 +321,7 @@ function CxmToast() {
     <div className="cxm-toast cxm-pop" role="status">
       <CxmGuide kind={guide} size={52} />
       <span>
-        <span className="cxm-kicker">{(CXM_GUIDES[guide] || `Erie`).toUpperCase()}</span>
+        <span className="cxm-kicker">{CXM_GUIDES[guide] || `Erie`}</span>
         <strong>Your first question for City Hall is saved. Send it whenever you're ready.</strong>
         <button type="button" className="cxm-link" onClick={() => { setToast(null); openSheet(`letter`, { seat: home?.ward ? `ward-${home.ward}` : `mayor` }); }}>Open my letter · {cxmPl(liked.length, `question`, `questions`)}</button>
       </span>
