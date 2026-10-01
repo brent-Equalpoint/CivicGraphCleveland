@@ -40,7 +40,7 @@ function CX_Root() {
   u.useEffect(() => { document.documentElement.classList.toggle(`cxm-on`, phone || deskEasy); }, [phone, deskEasy]);
   return (
     <CxBoundary label="The Civic Graph" phone={phone} resetKey={phone ? `phone` : `desktop`}>
-      {phone || deskEasy ? <CxmApp deskEasy={!phone && deskEasy} onLeaveEasy={() => CX_EASY_HOOK.set(!1)} /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /></>}
+      {phone || deskEasy ? <CxmApp deskEasy={!phone && deskEasy} onLeaveEasy={() => CX_EASY_HOOK.set(!1)} /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /><CX_StorageNotice /></>}
     </CxBoundary>
   );
 }
@@ -227,6 +227,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [guide, setGuideState] = u.useState(() => cxmStore(`cx-guide`, `erie`));
   const [large, setLarge] = u.useState(!1);
   // v5.16 Easy mode: remembered on this device only. First visit: Easy, unless the link points somewhere specific.
+  const [storyBack, setStoryBack] = u.useState(null);  // the story you were in when you chose Go deeper
   const [easy, setEasyState] = u.useState(() => {
     if (deskEasy) return !0;
     const saved = cxmStore(`cx-easy`, ``);
@@ -252,7 +253,8 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const openSheet = (type, data = {}, replace = !1) => setSheets((s) => (replace ? [...s.slice(0, -1), { type, ...data }] : [...s, { type, ...data }]));
   const closeSheet = () => setSheets([]);
   const backSheet = () => setSheets((s) => s.slice(0, -1));
-  const go = (t) => { setSheets([]); setOverlay(null); setTab(t); };
+  const go = (t) => { setSheets([]); setOverlay(null); setTab(t); setStoryBack(null); };
+  const backToStory = () => { if (!storyBack) return; setSheets([]); setOverlay(storyBack); setStoryBack(null); };
   const openRoom = (roomId, nodeId) => {
     setSheets([]); setOverlay(null); setTab(`explore`); setRoom(roomId);
     if (nodeId) setTimeout(() => openSheet(`record`, { room: roomId, node: nodeId }), 30);
@@ -277,7 +279,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const ctx = {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
-    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy,
+    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
   };
   const top = sheets[sheets.length - 1];
   const TABS = [
@@ -322,6 +324,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `crush` && <CxmCrush />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}
+          {storyBack && !overlay && <button type="button" className="cxm-storyback" onClick={backToStory}><CXI.Back size={16} /> Back to the story</button>}
           {toast && <CxmToast />}
         </div>}
       </div>
@@ -545,6 +548,12 @@ function cxLinkProblem() {
   if (!r) return `We could not find that page, so here is the start.`;
   if (node && !r.nodes.some((n) => n.id === node)) return `We could not find that record, so here is the room.`;
   return null;
+}
+/* Desktop: private browsing and some locked-down browsers refuse to save anything. Say so once, in plain words. */
+function CX_StorageNotice() {
+  const [note, setNote] = u.useState(() => !cxStorageOk());
+  if (!note) return null;
+  return <div className="cx-notice cx-notice-2" role="status"><span>This browser is not saving settings, so your style and your Easy mode choice start over each time you open the page. Private browsing can cause this.</span><button type="button" onClick={() => setNote(!1)}>Got it</button></div>;
 }
 function CX_LinkNotice() {
   const [note, setNote] = u.useState(cxLinkProblem);

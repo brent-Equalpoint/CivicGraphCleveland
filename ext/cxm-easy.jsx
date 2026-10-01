@@ -21,6 +21,32 @@ function cxeFrames(story) {
   return story.frames.filter((f) => f.type !== `react` && f.type !== `cta`);
 }
 
+/* A profile in five short parts, for Easy mode. The full page is one tap away. Same facts, same sources, same rules as the full profile. */
+function CxeProfile({ seat, onFull }) {
+  const d = u.useMemo(() => cxSeatData(seat), [seat]);
+  if (!d) return <p className="cxe-text">We could not find that seat.</p>;
+  const { name, parts, hoods, person } = d;
+  const w = d.seat.ward;
+  const rev = CX_OFFICE_REVIEW;
+  const near = hoods.slice(0, 3).map((x) => x.h);
+  return (
+    <>
+      <h1>{name}</h1>
+      <p className="cxe-step">Council Member, Ward {w}{person ? `. Term: ${cxLongDate(person.start)} to ${cxLongDate(person.end)}` : ``}</p>
+      <h2 className="cxe-h2">The job</h2>
+      <p className="cxe-text">{CX_OFFICE_TEXT.council.summary}{rev.ok ? `` : ` A person has not yet reviewed this description, so check the source.`}</p>
+      <h2 className="cxe-h2">This year</h2>
+      <p className="cxe-text">{name.split(` `)[0]} led {cxmPl(parts.own.length, `proposal`, `proposals`)}, joined {cxmPl(parts.joined.length, `other`, `others`)}, and signed for a city department on {parts.dept.length}. These are counts, not grades. Putting your name on a proposal is not the same as voting for it.</p>
+      <h2 className="cxe-h2">The ward</h2>
+      <p className="cxe-text">{near.length ? `Ward ${w} covers all or part of ${near.join(`, `)}.` : `Ward ${w} is one of Cleveland's 15 wards.`}</p>
+      <h2 className="cxe-h2">How they voted</h2>
+      <p className="cxe-text">How each member voted is not public yet. A missing record is not a no.</p>
+      <p className="cxe-text">Where this comes from: <a href={CX_COUNCIL_SITE} target="_blank" rel="noreferrer">Cleveland City Council</a> and <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">its legislative record</a>.</p>
+      <button type="button" className="cxe-btn alt" onClick={onFull}>Read the full profile</button>
+    </>
+  );
+}
+
 function CxmEasy() {
   const { home, setHome, practice, setEasy, go, openSeat, openSheet, deskEasy, leaveEasy } = useCxm();
   const answers = practice.state.answers;
@@ -32,7 +58,7 @@ function CxmEasy() {
   u.useEffect(() => {
     stopSpeaking();
     if (boxRef.current) { boxRef.current.scrollTop = 0; boxRef.current.focus({ preventScroll: !0 }); }
-  }, [view.k, view.j, view.f]);
+  }, [view.k, view.j, view.f, view.seat]);
 
   const story = u.useMemo(() => {
     if (view.k !== `story`) return null;
@@ -129,7 +155,7 @@ function CxmEasy() {
             {last && (
               <div className="cxe-end">
                 <p className="cxe-big2">That is the end of this one.</p>
-                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => toFull(() => openSheet(`profile`, { seat: `ward-${home.ward}` }), () => cxOpenProfile(`ward-${home.ward}`))}>Read the profile of {cxmMember(home.ward)}</button>}
+                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => setView({ k: `profile`, j: `rep`, seat: `ward-${home.ward}` })}>Read the short profile of {cxmMember(home.ward)}</button>}
                 {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`), () => CX_NAV.panel(`ballot`))}>Open my ballot</button>}
                 {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`), () => CX_NAV.panel(`news`))}>{deskEasy ? `See what is new in Council's record` : `See City Hall's receipts`}</button>}
                 <button type="button" className="cxe-btn alt" onClick={toHome}>Pick another question</button>
@@ -137,6 +163,7 @@ function CxmEasy() {
             )}
           </>
         )}
+        {view.k === `profile` && <CxeProfile seat={view.seat} onFull={() => toFull(() => openSheet(`profile`, { seat: view.seat }), () => cxOpenProfile(view.seat))} />}
         {view.k === `story` && !story && (
           <>
             <h1>We need your ward first.</h1>

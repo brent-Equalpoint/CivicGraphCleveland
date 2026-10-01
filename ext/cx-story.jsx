@@ -40,7 +40,7 @@ function cxmWardStory(w, answers) {
     .filter((o) => o.m && o.w && o.m.sponsors.some((s) => CX_SPONSOR_WARD[s] === w))
     .sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
   if (q) frames.push({ k: `Your turn`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: seat.name, seat: seat.id, portrait: seat.portrait, question: q.w.question, how: `put their name on the proposal`, file: q.x[0], cand: `council-ward-${w}` } });
-  return { id: `ward`, label: `Ward ${w}`, ini: cxmInitials(seat.name), portrait: seat.portrait, name: `${seat.name} · Ward ${w}`, when: `Your council member, 2026 so far`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+  return { id: `ward`, label: `Ward ${w}`, ini: cxmInitials(seat.name), portrait: seat.portrait, name: `${seat.name} · Ward ${w}`, when: `Your council member, 2026 so far`, deeper: { label: `Read the profile of ${seat.name}`, kind: `profile`, seat: seat.id }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
 function cxmCouncilStory() {
   const idx = cxLegIndex();
@@ -55,7 +55,7 @@ function cxmCouncilStory() {
   if (denied.length) frames.push({ k: `A reversal`, big: `${denied.length === 1 ? `One proposal` : `${denied.length} proposals`} passed after a committee recommended denial.`, small: `${cxmStatus(denied[0].m).flip} ${cxWords(cxShortTitle(denied[0].m.title), 16)} ${denied[0].m.file}.` });
   if (tabled.length) frames.push({ k: `Set aside`, big: `Council set aside ${cxmPl(tabled.length, `item`, `items`)} this year.`, small: `Tabled means put on hold. ` + tabled.map((m) => cxWords(cxShortTitle(m.title), 12)).join(` · `) });
   frames.push({ k: `What isn't public`, big: `How each member voted isn't public yet.`, small: `Council's database records what passed, not each member's vote, and the 2026 City Record lists passed legislation without roll calls. So we show outcomes and sponsors, and nothing more.` });
-  return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+  return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, deeper: { label: `See what is new in Council's record`, kind: `sheet`, sheet: `news`, panel: `news` }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
 function cxmMayorStory(answers) {
   const admin = cxLegIndex().admin;
@@ -64,7 +64,7 @@ function cxmMayorStory(answers) {
   qs.filter((o) => o.r && o.r.points.length).slice(0, 2).forEach((o) => frames.push({ k: ``, big: `${o.w.title}.`, small: `${o.r.points[0]} ${o.x[0]}.` }));
   const q = [...qs].sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
   if (q) frames.push({ k: `Your turn`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: `Mayor Bibb's administration`, seat: `mayor`, portrait: admin.portrait, question: q.w.question, how: `sent the proposal to Council`, file: q.x[0], cand: `mayor-bibb` } });
-  return { id: `mayor`, label: `Mayor`, ini: `JB`, portrait: admin.portrait, name: `Mayor Bibb's administration`, when: `What it sent to Council in 2026`, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
+  return { id: `mayor`, label: `Mayor`, ini: `JB`, portrait: admin.portrait, name: `Mayor Bibb's administration`, when: `What it sent to Council in 2026`, deeper: { label: `Read the profile of the Mayor`, kind: `profile`, seat: `mayor` }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
 function cxmLevies() {
   return Um.filter((i) => Jm[i.number] && /\$\d+ per \$100,000/.test(Jm[i.number].yes)).map((i) => ({ issue: i, title: Jm[i.number].title, per: Number(Jm[i.number].yes.match(/\$(\d+) per \$100,000/)[1]), note: Jm[i.number].consider }));
@@ -79,7 +79,7 @@ function cxmBallotStory() {
   if (i3) frames.push({ k: `State Issue 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
   const lv = cxmLevies();
   if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Type your home's value and see the county's own estimate.`, type: `cta`, cta: `Type my home's value`, go: `keypad` });
-  return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
+  return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, deeper: { label: `Open my ballot`, kind: `tab`, tab: `ballot`, panel: `ballot` }, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
 }
 function cxmSamePerson(a, b) {
   const n = (s) => String(s).toLowerCase().replace(/[^a-z\s-]/g, ``).trim().split(/\s+/);
@@ -100,7 +100,7 @@ function cxmHoodStory(hood) {
   const m14 = b ? cxPlMember(`wards2014`, b.ward).trim() : ``, m26 = cxPlMember(`wards2026`, n0.ward).trim();
   const same = m14 && m26 && cxmSamePerson(m14, m26);
   frames.push({ k: `What changed`, big: same && b.ward !== n0.ward ? `Same council member, new ward number.` : same ? `Same council member.` : `A different council member now.`, small: `The city's 2014 map file lists ${m14 || `no member`} for Ward ${b ? b.ward : `?`}; the 2026 file lists ${m26} for Ward ${n0.ward}.`, type: `cta`, cta: `Open My place`, go: `place` });
-  return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
+  return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
   return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
@@ -130,14 +130,21 @@ function CX_StoryFrame({ fr, s }) {
     </>
   );
 }
+const CX_STORY_POS = { id: null, f: 0 };  // where the desktop reader was, so coming back from Go deeper lands in the same place
+function cxGoDeeper(d) {
+  if (d.kind === `profile`) cxOpenProfile(d.seat);
+  else CX_NAV.panel(d.panel);
+}
 function CX_Stories() {
   const stories = u.useMemo(() => cxmStories(cxStoryHome(), {}), []);
-  const [i, setI] = u.useState(0);
-  const [f, setF] = u.useState(0);
+  const start = Math.max(0, stories.findIndex((x) => x.id === CX_STORY_POS.id));
+  const [i, setI] = u.useState(start);
+  const [f, setF] = u.useState(start >= 0 && CX_STORY_POS.id ? Math.min(CX_STORY_POS.f, stories[start].frames.length - 1) : 0);
   const [text, setText] = u.useState(!1);
   const s = stories[i];
   const fr = s.frames[Math.min(f, s.frames.length - 1)];
   const lastFrame = f === s.frames.length - 1;
+  u.useEffect(() => { CX_STORY_POS.id = s.id; CX_STORY_POS.f = f; }, [s.id, f]);
   const pick = (n) => { setI(n); setF(0); };
   const next = () => (!lastFrame ? setF(f + 1) : i < stories.length - 1 ? pick(i + 1) : null);
   const prev = () => (f > 0 ? setF(f - 1) : i > 0 ? (setI(i - 1), setF(stories[i - 1].frames.length - 1)) : null);
@@ -163,6 +170,7 @@ function CX_Stories() {
         {!text && (
           <>
             <div className="cx-story-body" aria-live="polite" aria-atomic="true"><CX_StoryFrame key={`${i}-${f}`} fr={fr} s={s} /></div>
+            {lastFrame && s.deeper && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => cxGoDeeper(s.deeper)}>{s.deeper.label} <CXI.Arrow size={14} /></button></div>}
             <div className="cx-story-nav">
               <button type="button" className="cx-story-btn alt" onClick={prev} disabled={i === 0 && f === 0}>Back</button>
               <span className="cx-story-count">Step {f + 1} of {s.frames.length}</span>

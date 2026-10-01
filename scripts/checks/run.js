@@ -99,6 +99,36 @@ const CHECKS = {
     }
     await done(p);
   },
+  async 'stories-deeper'() {
+    // phone: text version, a spoken step, Go deeper, and the way back
+    const p = await open('/#phone', { mobile: true, easy: false });
+    const btns = await p.$$('.cxm-story-btn'); let council = null;
+    for (const b of btns) { if (/Council/.test(await b.evaluate((e) => e.getAttribute('aria-label') || ''))) council = b; }
+    expect(!!council, 'no Council story on the phone Today screen');
+    await council.click(); await wait(500);
+    expect(/^Step 1 of \d+\./.test(((await p.evaluate(() => document.querySelector('.cxm-sr').textContent)) || '')), 'the story does not announce its first step');
+    await clickText(p, 'Read as text', 'button'); await wait(300);
+    expect((await count(p, '.cxm-story-all li')) >= 3, 'the text version of the story has too few steps');
+    await clickText(p, 'Back to the story', 'button'); await wait(300);
+    let n = 0; while (!(await p.evaluate(() => /last step/.test((document.querySelector('.cxm-story-hint') || {}).textContent || ''))) && n++ < 10) { await (await p.$('.cxm-tap-r')).click(); await wait(200); }
+    expect(/last step/.test((await txt(p, '.cxm-story-hint')) || ''), 'the last step is not marked');
+    const frameBefore = await txt(p, '.cxm-story-big');
+    await clickText(p, "See what is new in Council's record", 'button'); await wait(600);
+    expect(await has(p, '.cxm-sheet'), 'Go deeper did not open the news sheet');
+    expect(/Back to the story/.test((await txt(p, '.cxm-storyback')) || ''), 'no Back to the story chip after Go deeper');
+    await clickText(p, 'Back to the story', 'button'); await wait(500);
+    expect(await has(p, '.cxm-story[role=dialog]') && (await txt(p, '.cxm-story-big')) === frameBefore, 'Back to the story did not return to the same step');
+    await done(p);
+    // desktop: the same button on the last step, and the reader remembers its place
+    const d = await open('/?panel=stories#desktop');
+    n = 0; while (await d.evaluate(() => { const b = document.querySelector('.cx-story-nav .cx-story-btn:not(.alt)'); return b && !b.disabled && !/Next story/.test(b.textContent); }) && n++ < 10) await clickText(d, 'Next', '.cx-story-nav button');
+    expect(await d.evaluate(() => !![...document.querySelectorAll('.cx-stories .cx-story-act button')].find((b) => /new in Council/.test(b.textContent))), 'no Go deeper button on the desktop last step');
+    await clickText(d, "See what is new in Council's record", '.cx-stories button'); await wait(700);
+    expect(await has(d, '.atlas-shell') && !(await has(d, '.cx-stories')), 'Go deeper did not leave the Stories page');
+    await clickText(d, 'Stories', '.atlas-sidebar button'); await wait(700);
+    expect(/Step \d+ of \d+/.test((await txt(d, '.cx-story-count')) || '') && !/Step 1 of/.test((await txt(d, '.cx-story-count')) || ''), 'the desktop reader forgot where it was');
+    await done(d);
+  },
   async 'map-cards'() {
     const p = await open('/?room=voting#desktop', { settle: 1500 });
     const center = (id) => p.evaluate((id) => { const r = document.querySelector(`[data-node="${id}"]`).getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, id);
@@ -149,6 +179,8 @@ const CHECKS = {
     p = await open('/?room=voting#phone', { mobile: true }); await clickText(p, 'Search'); await p.type('input[type=search]', 'zzzqx'); await wait(300);
     expect(/Nothing matches/.test((await txt(p, '.cxm-empty strong')) || ''), 'empty search has no helpful message');
     await clickText(p, 'Clear the search'); expect((await txt(p, '.cxm-empty')) === null, 'Clear the search did not clear the empty state'); await done(p);
+    const blocked = await open('/#desktop', { pre: () => { Storage.prototype.setItem = () => { throw new DOMException('blocked', 'QuotaExceededError'); }; } });
+    expect(/not saving settings/.test((await txt(blocked, '.cx-notice')) || ''), 'blocked storage is not explained on desktop'); await done(blocked);
     p = await open('/?room=voting#phone', { mobile: true, pre: () => { Storage.prototype.setItem = () => { throw new DOMException('blocked', 'QuotaExceededError'); }; } });
     await clickText(p, 'You and settings'); await wait(300);
     expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-fine')].some((e) => /not saving settings/.test(e.innerText))), 'blocked storage is not explained'); await done(p);
@@ -161,6 +193,11 @@ const CHECKS = {
       const r = await p.evaluate(() => { const a = document.querySelector('.sp'); const t = a.innerText; return { name: a.querySelector('h1').innerText, h2: a.querySelectorAll('h2').length, bad: /undefined|NaN|\[object|\bnull\b/.test(t), arrow: /→/.test(t), pron: /\b(he|she|his|her)\b/i.test(t.replace(/\b(she|he) is\b/gi, '')) }; });
       expect(!r.bad && !r.arrow, `profile for ${r.name} has broken text`); expect(r.h2 >= 6, `profile for ${r.name} has only ${r.h2} sections`);
     }
+    await (await p.$$('.sp-pick button'))[0].click(); await wait(300);  // the Mayor
+    const mh = await p.evaluate(() => [...document.querySelectorAll('.sp h2')].map((h) => h.innerText));
+    expect(mh.includes('City departments and executive orders'), `the Mayor's profile lacks the departments section: ${mh}`);
+    expect((await count(p, '.sp-list li a[href*="clevelandohio.gov"]')) >= 3, 'the Mayor profile lists too few department links');
+    expect(/Executive Order 2025-01/.test((await txt(p, '.sp')) || ''), 'the Mayor profile lacks the executive order in the record');
     await (await p.$$('.sp-pick button'))[9].click(); await wait(300);
     expect((await count(p, '.sp-map path')) === 15 && (await count(p, '.sp-map path.on')) === 1, 'ward map is not 15 wards with one highlighted');
     expect(/Legistar does not list committee seats|does not list committee seats/.test((await txt(p, '.sp-dl')) || ''), 'committee statement missing');
@@ -173,8 +210,11 @@ const CHECKS = {
     expect(/Howse-Jones/.test((await txt(q, '.sp h1')) || ''), 'the drawer button did not open the profile'); await done(q);
     const m = await open('/#phone', { mobile: true }); await clickText(m, 'Who represents me?');
     await m.select('.cxe select', await m.evaluate(() => [...document.querySelector('.cxe select').options].find((o) => /Hough/.test(o.text)).value)); await wait(500); await walkEasy(m);
-    await clickText(m, 'Read the profile of'); await wait(900);
-    expect(await has(m, '.cxm-sheet .sp'), 'the Easy mode profile button did not open the phone sheet'); await done(m);
+    await clickText(m, 'Read the short profile of'); await wait(500);
+    expect(/Howse-Jones/.test((await txt(m, '.cxe h1')) || '') && /led \d+ proposal/.test((await txt(m, '.cxe-main')) || ''), 'the Easy mode short profile is missing its name or its counts');
+    expect(/not public yet/.test((await txt(m, '.cxe-main')) || ''), 'the short profile does not say the votes are not public');
+    await clickText(m, 'Read the full profile'); await wait(900);
+    expect(await has(m, '.cxm-sheet .sp'), 'the full profile button did not open the phone sheet'); await done(m);
   },
   async 'bench-records'() {
     // with nothing approved, the profile says so plainly

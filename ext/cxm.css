@@ -812,3 +812,18 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .sp-reviewed p, .sp-reviewed li { font-size: 16px; }
 .cx-bench-status ul { margin: 8px 0 12px; padding-left: 22px; }
 .cx-bench-status li { margin: 4px 0; font-size: 17px; }
+
+/* phone stories: text version, spoken step, Go deeper, and the way back */
+.cxm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cxm-story-tools { display: inline-flex; align-items: center; gap: 6px; }
+.cxm-story-text { min-height: 44px; padding: 0 12px; border-radius: 999px; border: 1px solid #ffffff59; background: transparent; color: #fff; font-size: 14px; font-weight: 600; }
+.cxm-story-all { flex: 1; min-height: 0; overflow-y: auto; padding: 4px 18px 18px; }
+.cxm-story-all ol { margin: 0 0 16px; padding-left: 22px; display: grid; gap: 22px; }
+.cxm-story-all .cxm-story-big { font-size: 24px; margin: 4px 0 6px !important; }
+.cxm-story-all .cxm-story-small { font-size: 16px; }
+.cxm-storyback { position: absolute; left: 50%; transform: translateX(-50%); bottom: 76px; z-index: 60; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 0; background: #ffd36b; color: #141210; font: 700 15px system-ui, sans-serif; box-shadow: 0 6px 20px #0008; display: inline-flex; align-items: center; gap: 6px; }
+
+/* Easy mode short profile */
+.cxe h2.cxe-h2 { margin: 22px 0 6px; font-size: 24px; line-height: 1.25; }
+
+.cx-notice-2 { top: 76px; }

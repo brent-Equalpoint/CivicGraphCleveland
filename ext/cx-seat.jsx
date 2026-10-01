@@ -78,7 +78,14 @@ function cxSeatData(seatId) {
     hoods = cxPlCity().hoods.map((h) => { const s = cxPlShares(`wards2026`, h).find((r) => r.ward === seat.ward); return s ? { h, share: s.share } : null; })
       .filter(Boolean).sort((a, b) => b.share - a.share);
   }
-  return { isMayor, seat, node, name, person, parts, recent: byWhen.slice(0, 5), money, liquor, hoods, council: cxSeatNode(`council`) };
+  // the Mayor's page also lists the city departments and the executive orders already in the app's room data
+  let depts = [], orders = [];
+  if (isMayor) {
+    const all = [...new Map(Uh.flatMap((r) => r.nodes).map((n) => [n.id, n])).values()].filter((n) => n.layer === `executive` && n.id !== `mayor`);
+    orders = all.filter((n) => /^eo-/.test(n.id));
+    depts = all.filter((n) => !/^eo-/.test(n.id) && n.kind !== `law` && n.summary).sort((a, b) => a.name.localeCompare(b.name));
+  }
+  return { isMayor, seat, node, name, person, parts, recent: byWhen.slice(0, 5), money, liquor, hoods, depts, orders, council: cxSeatNode(`council`) };
 }
 
 /* A source link, with a plain notice beside it if the weekly link check (scripts/check_links.py) found it dead twice in a row. */
@@ -96,7 +103,7 @@ function SpFile({ m }) {
 function CX_SeatProfile({ seatId }) {
   const d = u.useMemo(() => cxSeatData(seatId), [seatId]);
   if (!d) return <p>We could not find that seat.</p>;
-  const { isMayor, seat, node, name, person, parts, recent, money, liquor, hoods, council } = d;
+  const { isMayor, seat, node, name, person, parts, recent, money, liquor, hoods, council, depts, orders } = d;
   const office = isMayor ? `Mayor of Cleveland` : `Council Member, Ward ${seat.ward}`;
   const role = !isMayor ? CX_OFFICE_TEXT.roles[seat.ward] || null : null;
   const termText = person ? `${cxLongDate(person.start)} to ${cxLongDate(person.end)}` : node && node.term ? node.term : `Not in the record`;
@@ -184,6 +191,19 @@ function CX_SeatProfile({ seatId }) {
         ) : <p>No proposals under this seat are in the record yet.</p>}
       </section>
 
+      {isMayor && (
+        <section aria-labelledby={sec(`depts`)}>
+          <h2 id={sec(`depts`)}>City departments and executive orders</h2>
+          <p>The Mayor directs the city administration, which includes these bodies. Each name links to the source the app holds for it. Several are the city's general contact page, not a page about that department, so use them as a way in, not as proof of what a department does.</p>
+          <ul className="sp-list">{depts.map((n) => <li key={n.id}>{n.url ? <SpLink href={n.url}>{n.name}</SpLink> : n.name}: {n.summary}</li>)}</ul>
+          <h3>Executive orders in the record</h3>
+          {orders.length > 0
+            ? <ul className="sp-list">{orders.map((n) => <li key={n.id}>{n.url ? <SpLink href={n.url}>{n.name}</SpLink> : n.name}: {n.summary}</li>)}</ul>
+            : <p>No executive order is loaded in the app yet.</p>}
+          <p className="sp-note">Only the executive orders already in this atlas are listed, and the department descriptions come from the app's room data, which a person has not re-read for this page. The Mayor's own list is the complete one: <SpLink href={CX_EO_SITE}>executive orders</SpLink>.</p>
+        </section>
+      )}
+
       <section aria-labelledby={sec(`votes`)}>
         <h2 id={sec(`votes`)}>How they voted</h2>
         <p>Council's database records what passed and who sponsored it. It does not publish each member's vote. The roll calls are in the City Record, and they are not part of this page yet. A missing record is not a no, and an absence here is not an abstention.</p>
@@ -210,7 +230,7 @@ function CX_SeatProfile({ seatId }) {
           <li>Committee and Council actions: the same record, pulled {cxShortDate(cxDayET(Date.parse(CX_PL.retrieved)))}.</li>
           <li>Who holds the seat and the term: Legistar's office records, pulled {cxShortDate(cxDayET(Date.parse(CX_PEOPLE.retrieved_at)))}. <SpLink href={CX_LEGISTAR_PEOPLE}>People in Legistar</SpLink>.</li>
           {!isMayor && <li>Ward map and neighborhoods: the City of Cleveland's open data ward and neighborhood maps.</li>}
-          {node && node.sourceUrl && <li>Portrait and role: <SpLink href={node.sourceUrl}>{node.sourceLabel || `official directory`}</SpLink>.</li>}
+          {node && node.url && <li>Portrait and role: <SpLink href={node.url}>{node.source || `official directory`}</SpLink>.</li>}
         </ul>
         <p className="sp-src">Spotted a mistake? <SpLink href={cxReportLink(`Profile of ${isMayor ? `the Mayor` : `Ward ${seat.ward}`}`)}>Report it on GitHub</SpLink>. A free GitHub account is needed, and reports are public, so leave out anything personal.{CX_CORRECTION.email ? <> Or write to <a href={`mailto:${CX_CORRECTION.email}`}>{CX_CORRECTION.email}</a>.</> : null} A person checks each report against the official record, and what they decide is listed under Corrections on the How this is built page. The official records above are always the place to check a fact yourself.</p>
         <p className="sp-actions"><button type="button" onClick={() => globalThis.print()}>Print this profile</button></p>

@@ -182,9 +182,18 @@ function CxmToday() {
 
 /* ---------- story viewer ---------- */
 function CxmStory() {
-  const { overlay, setOverlay, practice, answer, like, liked, seen, setSeen, go, openSheet } = useCxm();
+  const { overlay, setOverlay, practice, answer, like, liked, seen, setSeen, go, openSheet, setStoryBack } = useCxm();
   const { list, i, f } = overlay;
   const s = list[i];
+  const [asText, setAsText] = u.useState(!1);
+  const deeper = (d) => {
+    const back = { ...overlay };
+    setOverlay(null);
+    if (d.kind === `profile`) openSheet(`profile`, { seat: d.seat });
+    else if (d.kind === `sheet`) openSheet(d.sheet);
+    else go(d.tab);
+    setStoryBack(back);
+  };
   const fr = s.frames[Math.min(f, s.frames.length - 1)];
   u.useEffect(() => { if (!seen[s.id]) setSeen((x) => ({ ...x, [s.id]: !0 })); }, [s.id]);
   const next = () => {
@@ -205,9 +214,19 @@ function CxmStory() {
       <div className="cxm-bars">{s.frames.map((_, k) => <i key={k} className={k <= f ? `on` : ``} />)}</div>
       <div className="cxm-story-head">
         <span className="cxm-story-who">{s.portrait ? <img src={cxmAsset(s.portrait)} alt="" /> : <span>{s.ini}</span>}<span><strong>{s.name}</strong><small>{s.when}</small></span></span>
-        <button type="button" aria-label="Close story" onClick={() => setOverlay(null)}><CXI.X size={22} /></button>
+        <span className="cxm-story-tools">
+          <button type="button" className="cxm-story-text" aria-pressed={asText} onClick={() => setAsText(!asText)}>{asText ? `Back to the story` : `Read as text`}</button>
+          <button type="button" aria-label="Close story" onClick={() => setOverlay(null)}><CXI.X size={22} /></button>
+        </span>
       </div>
-      <div className="cxm-story-body">
+      <p className="cxm-sr" aria-live="polite" aria-atomic="true">{asText ? `` : `Step ${Math.min(f, s.frames.length - 1) + 1} of ${s.frames.length}. ${fr.k ? `${fr.k}. ` : ``}${fr.big} ${fr.small}`}</p>
+      {asText && (
+        <div className="cxm-story-all">
+          <ol>{s.frames.map((x, n) => <li key={n}>{x.k ? <span className="cxm-kicker">{x.k}</span> : null}<p className="cxm-story-big">{x.big}</p><p className="cxm-story-small">{x.small}</p></li>)}</ol>
+          {s.deeper && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
+        </div>
+      )}
+      {!asText && <div className="cxm-story-body">
         <div key={`${i}-${f}`} className="cxm-rise">
           {fr.k ? <span className="cxm-kicker">{fr.k}</span> : null}
           <p className="cxm-story-big">{fr.big}</p>
@@ -219,7 +238,7 @@ function CxmStory() {
             <button type="button" className="cxm-tap cxm-tap-r" aria-label="Next" onClick={next} />
           </>
         )}
-      </div>
+      </div>}
       {s.source && <p className="cxm-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}</p>}
       {fr.type === `react` && (
         <div className="cxm-story-react cxm-rise">
@@ -233,7 +252,8 @@ function CxmStory() {
       {fr.type === `cta` && (
         <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
-      {!fr.type && <span className="cxm-story-hint">Tap the right side to keep going</span>}
+      {!asText && !fr.type && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
+      {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}
     </div>
   );
 }
