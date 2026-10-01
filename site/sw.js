@@ -1,4 +1,4 @@
-/* Cleveland Civic Graph service worker, build f40dfa67d2e4.
+/* Cleveland Civic Graph service worker, build 827a8aff2ae3.
    Purpose: the hosted site opens with no signal, using the copy this browser last loaded.
    Rules that keep it safe:
      - A page load and the /bench/ data files go to the NETWORK FIRST. Online, a visitor always gets the newest
@@ -7,7 +7,7 @@
      - Nothing else is touched, and nothing from another site.
      - Each build has its own cache name. When a new build installs, every older cache is deleted, so no one is
        left on an old version. */
-const V = "cx-f40dfa67d2e4";
+const V = "cx-827a8aff2ae3";
 const SLOW = 8000;
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(V).then((c) => c.addAll(["/", "/favicon.svg"])).then(() => self.skipWaiting()));
@@ -36,7 +36,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\/(fonts|portraits|records)\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }

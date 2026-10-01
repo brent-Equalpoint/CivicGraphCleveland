@@ -181,7 +181,8 @@ function cxmFromUrl() {
   } else if (r && node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) {
     out.tab = `explore`; out.sheet = { type: `record`, room: r.id, node };
   }
-  if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
+  if (panel === `us`) CXM_NOTICE.v = `The United States graph is on the desktop site for now. Open this link on a computer, or choose Desktop view in the You sheet.`;
+  else if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
   else if (r && node && !r.nodes.some((n) => n.id === node)) CXM_NOTICE.v = `We could not find that record, so here is the room.`;
   return out;
 }
@@ -537,7 +538,7 @@ function cxStorageOk() {
   try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
 }
 /* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
-const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`];
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`];
 function cxLinkProblem() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }

@@ -302,6 +302,37 @@ const CHECKS = {
     server.closeAllConnections(); server.close();
     fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(Bd, { recursive: true, force: true });
   },
+  async 'us-graph'() {
+    const p = await open('/?panel=us#desktop', { settle: 1800 });
+    expect(await has(p, '.us canvas'), 'the United States page has no graph canvas');
+    expect(/Preview/.test((await txt(p, '.us-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.us-preview')) || ''), 'the page does not say its source terms are unconfirmed');
+    expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
+    await clickText(p, 'Index', '.us-tabs button');
+    const rows = await count(p, '.us-index tbody tr'); expect(rows > 800, `the Index lists only ${rows} rows`);
+    await clickText(p, 'Sky', '.us-tabs button');
+    await p.type('.us-search input', 'Husted'); await wait(300);
+    expect((await count(p, '.us-results .us-pick')) >= 1, 'searching for a senator found nothing');
+    await (await p.$('.us-results .us-pick')).click(); await wait(400);
+    expect(/Jon Husted/.test((await txt(p, '.us-side h2')) || '') && /United States senator for Ohio/.test((await txt(p, '.us-side')) || ''), 'the chosen senator is not described');
+    expect(/Party on this term: \w+, as of 20\d\d-\d\d-\d\d \(a sourced field, not a judgment\)/.test((await txt(p, '.us-side')) || ''), 'party is not shown as a dated, sourced field');
+    await clickText(p, 'Linked', '.us-tabs button');
+    const facts = (await txt(p, '.us-linked')) || '';
+    expect(/serves on|is the (chair|ranking)/.test(facts) && /Connected to \d+/.test(facts), 'the Linked view lacks committee sentences or the connection count');
+    expect(!/(conservative|liberal|moderate|score|rank(ed|ing) \d)/i.test(facts), 'an ideology word or a score appeared');
+    await clickText(p, 'Sky', '.us-tabs button');
+    const before = await txt(p, '.us-side h2');
+    await p.focus('.us-canvas'); await p.keyboard.press(']'); await wait(250);
+    expect((await txt(p, '.us-side h2')) !== before, 'the ] key did not move to another node');
+    await p.keyboard.press('Escape'); await wait(150);
+    expect(/Select anyone or anything/.test((await txt(p, '.us-side')) || ''), 'Escape did not clear the selection');
+    await p.select('.us-tools select:nth-of-type(1)', 'senate'); await wait(250);
+    await clickText(p, 'Index', '.us-tabs button');
+    const senateRows = await count(p, '.us-index tbody tr'); expect(senateRows < rows && senateRows > 150, `the Senate filter left ${senateRows} rows`);
+    await clickText(p, 'Tree', '.us-tabs button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
+    await done(p);
+    const off = await open('/#phone', { mobile: true, easy: false });
+    await done(off);
+  },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);
     const d = await p.evaluate(() => ['.atlas-header', '.atlas-sidebar', '.sp-pick'].map((s) => (document.querySelector(s) ? getComputedStyle(document.querySelector(s)).display : 'none')));
@@ -328,7 +359,7 @@ const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /story, (new|seen)"\]/, why: 'initials in the story ring are decorative (aria-hidden); the name holds the visible word' },
 ];
 const AXE_PAGES = [
-  ['desktop home', '/#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
+  ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
   ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
   ['desktop ledger original', '/?panel=ledger#desktop', { theme: 'original' }], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop ballot', '/?panel=ballot#desktop', {}],
   ['desktop bench', '/?panel=bench#desktop', {}], ['desktop easy', '/#desktop', { easy: true }],

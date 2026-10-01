@@ -39,6 +39,7 @@ jobs:
           python scripts/test_bench.py
           python scripts/test_bench_gate.py
           python scripts/test_links.py
+          python scripts/test_us.py
 
       - name: Data safety check
         run: python scripts/refresh.py --check

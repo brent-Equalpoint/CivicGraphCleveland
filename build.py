@@ -184,7 +184,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -351,7 +351,7 @@ def main():
     log(f"data   {sha(pe_path)}  people-2026.json  ({pe['count']} people, retrieved {pe['retrieved_at']})")
     ext_js += "/* ---- data/people-2026.json ---- */\nconst CX_PEOPLE = " + json.dumps(pe, ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx", "cx-seat.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -531,6 +531,19 @@ def main():
                 "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n"
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
                 label="aux page: profiles")
+    # v5.16 United States graph: sidebar entry, address panel, page
+    src = patch(src, "`news`, `stories`, `profiles`]", "`news`, `stories`, `profiles`, `us`]", count=2, label="url panels: us")
+    src = patch(src,
+                "(0, W.jsx)(`span`, { children: `Profiles` })],\n                  }),\n",
+                "(0, W.jsx)(`span`, { children: `Profiles` })],\n                  }),\n"
+                "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `United States`,\n                    className: F === `us` ? `active` : ``,\n"
+                "                    onClick: () => cxPanel(`us`),\n                    children: [(0, W.jsx)(CXI.Layers, { size: 18 }), (0, W.jsx)(`span`, { children: `United States` })],\n                  }),\n",
+                label="sidebar: united states")
+    src = patch(src,
+                "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
+                "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n"
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
+                label="aux page: united states")
     # v5.16 drawer: a way from a council member's or the Mayor's map record to their formal profile
     src = patch(src,
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n",
@@ -832,6 +845,11 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 
     # v5.16 Bench (stage 8): the approved records, the review status, and the correction history, as small files the app fetches
     os.makedirs(os.path.join(SITE, "bench"), exist_ok=True)
+    # v5.16 United States graph data: not embedded (about half a megabyte); the hosted page fetches it
+    os.makedirs(os.path.join(SITE, "us"), exist_ok=True)
+    us_body = open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8").read()
+    write(os.path.join(SITE, "us", "landscape-2026.json"), us_body)
+    log(f"SITE   {sha(us_body.encode())}  site/us/landscape-2026.json")
     for name, src_rel, empty in (("public-2026.json", "bench/approved/public-2026.json", {"about": "No record has been approved yet.", "count": 0, "records": {}}),
                                  ("status-2026.json", "bench/status-2026.json", None),
                                  ("corrections-2026.json", "bench/approved/corrections-2026.json", {"about": "No correction has been recorded yet.", "count": 0, "corrections": []})):
