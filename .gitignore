@@ -8,3 +8,7 @@ __pycache__/
 bench/shadow/registry-2026.json
 bench/shadow/entities-2026.json
 bench/shadow/packets-2026.json
+
+# Local secrets (API keys). Never commit these.
+.env
+.env.*
