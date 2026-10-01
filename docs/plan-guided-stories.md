@@ -121,6 +121,29 @@ Build the Easy/Full switch and the one-screen-at-a-time shell on the phone first
 engine as its content. Add the read-aloud button and the print/save page. Desktop gets the same switch
 once stories are on the desktop.
 
+**Phase 1e: map hover card fixes (small, mostly copy and timing; found Oct 1, 2026 from screenshots of Ward 8).**
+
+Problem 1, wrong information on every council member. Hover over any council member on the map and the
+card lists "15-ward map maps → this" and "Residents elects → this". The same two lines appear on all 15
+members, because one edge from the 15-ward map and one from Residents is drawn to each of them. It reads
+as if the whole 15-ward map belongs to that one person, and "ward 15" shows on every member next to
+Ward 8, Ward 5, and the rest. The member's own ward ("Cleveland Ward 8") is the only ward fact that is
+specific to them.
+
+- Fix: on a council member's hover card, show only facts that belong to that person: their name, office, their own ward, and "serves on City Council". Drop the "15-ward map maps → this" line. Decision for you: also drop "Residents elects → this", since it is identical for all 15; the plan assumes yes.
+- Where: the edge list is built from the room's data in the compiled Sep 23 app; the card is `CX_HoverCard` in `ext/cx-live.jsx`. The change is a filter in the card (hide a relationship when the same one is drawn to every sibling node), so no source data is edited.
+- Also check the record drawer and the Text view's "Connections, in words" for the same repeated line, and give the Council room one plain sentence once, at the top: "Each of Cleveland's 15 wards elects one council member."
+- Done when: no council member's card or drawer mentions the 15-ward map as a connection to them, in both layouts and both styles, and a person with two wards in the data (none today) would still show correctly.
+- Tell the Council: this is a note to flag to whoever owns the Council room content. It is a labeling problem in how the connections are drawn, not an error in any member's ward.
+
+Problem 2, the card appears too fast. It pops up the instant the pointer touches a node, so sweeping
+across the map flashes cards at every node.
+
+- Fix: wait about 300 ms of hovering before showing the card, then fade it in over about 250 ms with an ease-out. Moving from one node to a neighbor while a card is open swaps content without restarting the wait. Keyboard focus shows the card after the same short delay so it never flickers while tabbing.
+- Where: `cxHoverNode` and `cxHoverSet` in `ext/cx-live.jsx` (the timer), and `.cx-hovercard` in `ext/cx.css` (the fade).
+- Keep: the reduced-motion rule that already turns the animation off. With reduced motion on, keep the short wait but skip the fade.
+- Done when: sweeping the pointer across the map shows no cards, a pause shows one smoothly, and keyboard and touch (long press) behave the same way.
+
 **Phase 2: stories on the desktop (the biggest win).**
 - A "Stories" row at the top of the chamber landing, same five stories as the phone.
 - A reader opens in the right panel (the existing slide-out), not a full screen. Arrow keys and
@@ -173,6 +196,7 @@ Phases are ordered so each one is useful on its own and you can stop after any o
 | --- | --- | --- | --- |
 | 1 | Share the story engine; strings stored as data | Phone looks and behaves the same; both layouts can import the builders | 1 session |
 | 1b | Quiet the text and rewrite in warm, direct words | Phone Today, stories, and room headers have no all-caps labels; every kept grey line passes 4.5:1 in Bento and Original | 1 session |
+| 1e | Map hover card: remove the repeated 15-ward map line from council members, slow the card down | No member card mentions the 15-ward map; cards need a pause to appear and fade in; reduced motion respected | under 1 session |
 | 1c | Easy mode on the phone, with read-aloud and print/save | A first-time visitor reaches "who represents me" in 3 taps with no jargon; every screen reads aloud; choice persists locally | 2 sessions |
 | 2 | Stories and Easy mode on the desktop | Stories row on the landing page; reader in the right panel; last frame hands off to the room guide; keyboard works | 2 sessions |
 | 3 | Connect stories to Explore both ways | Every frame has Go deeper and Back to the story; deep links round-trip | 1 session |
