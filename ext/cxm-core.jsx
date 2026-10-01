@@ -218,6 +218,14 @@ function CxmApp() {
   const [liked, setLiked] = u.useState([]);
   const [guide, setGuideState] = u.useState(() => cxmStore(`cx-guide`, `erie`));
   const [large, setLarge] = u.useState(!1);
+  // v5.16 Easy mode: remembered on this device only. First visit: Easy, unless the link points somewhere specific.
+  const [easy, setEasyState] = u.useState(() => {
+    const saved = cxmStore(`cx-easy`, ``);
+    if (saved === `on`) return !0;
+    if (saved === `off`) return !1;
+    return !(start.tab !== `today` || start.sheet || start.room || CXM_NOTICE.v);
+  });
+  const setEasy = (v) => { setEasyState(v); cxmPut(`cx-easy`, v ? `on` : `off`); };
   const [theme, setThemeState] = u.useState(() => document.documentElement.getAttribute(`data-cx-theme`) || `bento`);
   const [room, setRoom] = u.useState(start.room);
   const [placeHood, setPlaceHood] = u.useState(null);
@@ -260,7 +268,7 @@ function CxmApp() {
   const ctx = {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
-    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef,
+    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy,
   };
   const top = sheets[sheets.length - 1];
   const TABS = [
@@ -269,7 +277,7 @@ function CxmApp() {
   return (
     <CXM.Provider value={ctx}>
       <div className={`cxm-stage`}>
-        <div className={`cxm ${large ? `cxm-large` : ``}`}>
+        {easy ? <CxmEasy /> : <div className={`cxm ${large ? `cxm-large` : ``}`}>
           <header className="cxm-top">
             <button type="button" className="cxm-brand" onClick={() => go(`today`)}><b>Civic Graph</b> <span>· Cleveland</span></button>
             <div className="cxm-top-actions">
@@ -305,7 +313,7 @@ function CxmApp() {
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}
           {toast && <CxmToast />}
-        </div>
+        </div>}
       </div>
     </CXM.Provider>
   );

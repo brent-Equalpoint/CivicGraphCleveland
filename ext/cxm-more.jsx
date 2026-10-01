@@ -145,7 +145,7 @@ function CxmDict({ focus }) {
 
 /* ---------- You ---------- */
 function CxmYou() {
-  const { prio, home, openSheet, guide, setGuide, theme, setTheme, large, setLarge, liked, room } = useCxm();
+  const { prio, home, openSheet, guide, setGuide, theme, setTheme, large, setLarge, liked, room, setEasy, closeSheet } = useCxm();
   const [msg, setMsg] = u.useState(``);
   const share = async () => {
     const url = String(location.href).replace(/#.*$/, ``);
@@ -197,6 +197,7 @@ function CxmYou() {
         <CxmKicker>Display</CxmKicker>
         <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
+        <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
       </section>
       <section className="cxm-section">
         <CxmKicker>More</CxmKicker>

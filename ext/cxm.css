@@ -651,3 +651,38 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
   .cx-story-small, .cxm-story-small, p, li { font-size: 12pt !important; line-height: 1.45 !important; }
   @page { margin: 16mm; }
 }
+
+/* ---- v5.16 Easy mode (ext/cxm-easy.jsx): one thing at a time, large type, plain ink, no motion ---- */
+.cxe { position: relative; width: 100%; max-width: 560px; height: 100%; display: flex; flex-direction: column; background: var(--bg); color: var(--ink); font-size: 20px; line-height: 1.5;
+  --mut: var(--ink); --faint: var(--ink); --soft: var(--ink); }
+.cxe, .cxe * { animation: none !important; transition: none !important; }
+.cxe-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--line); }
+.cxe-brand { font-weight: 700; font-size: 18px; white-space: nowrap; }
+.cxe-bar-actions { display: flex; gap: 8px; }
+.cxe-bar-actions button { min-height: 48px; padding: 0 12px; border-radius: 12px; border: 2px solid var(--ink); background: transparent; color: var(--ink); font-family: inherit; font-size: 16px; font-weight: 600; white-space: nowrap; }
+.cxe-main { flex: 1; min-height: 0; overflow-y: auto; padding: 22px 20px 24px; outline: none; }
+.cxe h1 { margin: 0 0 14px; font-size: 30px; line-height: 1.2; font-weight: 700; }
+.cxe h1.cxe-big { font-size: 34px; line-height: 1.15; letter-spacing: -.01em; margin: 6px 0 16px; }
+.cxe-text { margin: 0 0 18px; font-size: 21px; line-height: 1.55; }
+.cxe-step { margin: 0 0 4px; font-size: 18px; font-weight: 600; }
+.cxe-kicker { margin: 10px 0 0; font-size: 19px; font-weight: 600; }
+.cxe-big2 { margin: 0 0 14px; font-size: 24px; font-weight: 700; }
+.cxe-choice { display: block; width: 100%; text-align: left; min-height: 76px; padding: 16px 18px; margin: 0 0 14px; border-radius: 16px; background: var(--tile2); color: var(--ink); border: 2px solid var(--line); font: inherit; }
+.cxe-choice strong { display: block; font-size: 23px; margin-bottom: 4px; }
+.cxe-choice span { display: block; font-size: 19px; }
+.cxe-field { display: block; margin: 0 0 18px; }
+.cxe-field span { display: block; margin-bottom: 8px; font-size: 20px; font-weight: 600; }
+.cxe select { width: 100%; min-height: 60px; padding: 0 12px; font-size: 20px; border-radius: 12px; background: var(--tile); color: var(--ink); border: 2px solid var(--ink); font-family: inherit; }
+.cxe-btn { display: flex; align-items: center; justify-content: center; text-align: center; width: 100%; min-height: 60px; margin: 0 0 12px; padding: 10px 20px; border-radius: 14px; border: 0; background: var(--acc); color: var(--on-acc); font-family: inherit; font-size: 20px; font-weight: 700; text-decoration: none; }
+.cxe-btn.alt { background: transparent; color: var(--ink); border: 2px solid var(--ink); }
+.cxe-btn:disabled { opacity: .4; }
+.cxe-nav { display: flex; gap: 12px; padding: 12px 16px 0; }
+.cxe-nav .cxe-btn { margin: 0; }
+.cxe-actions { display: flex; gap: 10px; padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); }
+.cxe-actions button { flex: 1; display: flex; align-items: center; justify-content: center; text-align: center; min-height: 56px; padding: 6px 10px; font-family: inherit; font-size: 17px; font-weight: 600; line-height: 1.25; border-radius: 12px; border: 2px solid var(--ink); background: transparent; color: var(--ink); }
+.cxe a { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+.cxe a.cxe-btn { text-decoration: none; }
+.cxe button:focus-visible, .cxe select:focus-visible, .cxe a:focus-visible { outline: 4px solid var(--acc2); outline-offset: 2px; }
+.cxe-main:focus, .cxe-main:focus-visible { outline: none; }
+.cxe-end { margin-top: 20px; }
+@media print { .cxe-bar, .cxe-nav, .cxe-actions { display: none !important; } .cxe, .cxe-main { height: auto !important; overflow: visible !important; display: block !important; } }
