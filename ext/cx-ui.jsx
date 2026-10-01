@@ -519,10 +519,11 @@ function CX_Bench() {
       <h1>How a resident question becomes a public record.</h1>
       <p className="civic-lede">A resident asks "Who decided this?" The system should return a short answer with jurisdiction, date, source, and uncertainty. The map, text view, Simple view, and Audit view all read the same approved records. No agent publishes. A named person approves each public change.</p>
       <div className="atlas-release-card cx-status-card">
-        <span className="atlas-eyebrow">HONEST STATUS · SEPTEMBER 24, 2026</span>
-        <h3 aria-level="2">The architecture is designed. The machinery is not running.</h3>
-        <p>Research agents, source polling, the evidence store, the review console, and the publishing service are specified here, not live. The records in this atlas were gathered and reviewed by hand, with sources and gaps labeled.</p>
+        <span className="atlas-eyebrow">HONEST STATUS · OCTOBER 1, 2026</span>
+        <h3 aria-level="2">The architecture is designed. Part of the machinery now runs.</h3>
+        <p>Every night a script turns Council's public record into one packet per ordinance or resolution. Rule-based checks play the Examiner and the Skeptic, and only a named publisher, through a signed GitHub workflow, can approve an exact version. Approved records show a Reviewed mark on profiles, with who checked them and what they found. Not running yet: agents that read documents, a member-by-member vote source, and a correction desk. Anything not marked Reviewed was gathered by hand, with sources and gaps labeled.</p>
       </div>
+      <CX_BenchStatus />
       <div className="cx-tabs" role="tablist" aria-label="Architecture sections">
         {tabs.map(([id, label]) => (
           <button type="button" role="tab" key={id} aria-selected={tab === id} className={tab === id ? `active` : ``} onClick={() => setTab(id)}>{label}</button>

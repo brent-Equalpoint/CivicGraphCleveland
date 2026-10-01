@@ -12,6 +12,7 @@ on:
 
 permissions:
   contents: write
+  issues: write
 
 concurrency:
   group: records-refresh
@@ -46,8 +47,21 @@ jobs:
       - name: Pull the official records and log what changed
         run: python scripts/refresh.py
 
+      - name: Bench, build packets and apply signed approvals
+        env:
+          BENCH_APPROVAL_KEY: ${{ secrets.BENCH_APPROVAL_KEY }}
+        run: |
+          python scripts/packets.py
+          python scripts/commit.py
+
       - name: Build the app
         run: python build.py
+
+      - name: Check the built site (if this fails nothing is published and the live site stays as it was)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          CI: "true"
+        run: node scripts/checks/run.js
 
       - name: Flag summaries whose source changed
         if: hashFiles('dist/review-needed.json') != ''
@@ -61,10 +75,24 @@ jobs:
         run: |
           git config user.name "civic-graph-refresh"
           git config user.email "civic-graph-refresh@users.noreply.github.com"
-          git add data site
+          git add data site bench
           if git diff --cached --quiet; then
             echo "Nothing changed."
             exit 0
           fi
           git commit -m "Nightly records refresh $(date -u +%Y-%m-%d)"
           git push
+
+      - name: Tell the team when the refresh fails (an issue, so everyone watching the repository is notified)
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          title="Nightly records refresh failed"
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body "Failed again on $(date -u +%Y-%m-%d). Run: $url"
+          else
+            gh issue create --title "$title" --body "The nightly refresh failed on $(date -u +%Y-%m-%d). Nothing was published, so the live site still shows the last good data and its own Updated time. Open the run to see which step failed: $url"
+          fi

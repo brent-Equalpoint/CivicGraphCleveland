@@ -1,66 +1,104 @@
 # Civic Intelligence Bench: what runs today
 
-The Bench turns official records into source-backed, human-approved graph records. The design is in
-[docs/civic-agent/](../docs/civic-agent/) (read the Implementation file first). This folder holds the
-running part. Nothing in it reaches the app yet.
+The Bench turns official records into source-backed, human-approved records. The design is in
+[docs/civic-agent/](../docs/civic-agent/). This folder is the running part. Approved records reach the
+app through `site/bench/public-2026.json`, and profiles show them with a Reviewed mark.
 
 ## One journey, end to end
 
 "Who authorized a named city decision, and what was the recorded vote?" For every 2026 ordinance and
-resolution in Council's Legistar record (510 files on Oct 1, 2026), the Bench can now go from the
-nightly snapshot to an approved projection record, with a gate at each step:
+resolution in Council's Legistar record, the Bench goes from the nightly snapshot to a published record,
+with a gate at each step.
 
-| Step | Script | Writes | Who acts |
+| Step | Who or what | Writes | Rule |
 | --- | --- | --- | --- |
-| Research and examine | `python scripts/packets.py` | `shadow/registry-2026.json`, `shadow/entities-2026.json`, `shadow/packets-2026.json` | A script, from `data/` only |
-| Decide | `python scripts/approve.py --reviewer "Your Name" --approve ... --reason "..." --no-dissent` | `shadow/approvals.jsonl` (append only) | A named person |
-| Publish | `python scripts/commit.py` | `approved/graph-2026.json`, `approved/receipts.jsonl` (append only) | A deterministic service |
-| Check | `python scripts/test_bench.py` | nothing | Anyone, any time |
+| 1. Research | `scripts/packets.py`, every night | `shadow/` (rebuilt, not in git) and `status-2026.json` | Reads `data/` only. Cannot approve. |
+| 2. Examine | rule-based Examiner, inside packets.py | each packet's verdict: MERGE, HUMAN_REQUIRED, QUARANTINE, BLOCK | A claim needs a source anchor; a vote needs a roll call source |
+| 3. Challenge | rule-based Skeptic, inside packets.py | each packet's dissent notes and any veto | A veto stops approval unless a publisher overrides it in writing |
+| 4. Decide | a person, in the **Approve Bench packets** workflow | `shadow/approvals.jsonl` (append only) | The account that starts the run is the reviewer. It must be in `reviewers.json`, and only a publisher may approve. The decision is signed. |
+| 5. Publish | `scripts/commit.py`, every night and after each approval | `approved/graph-2026.json`, `approved/public-2026.json`, `approved/evidence/`, `approved/receipts.jsonl` | Applies only signed decisions that still match the packet's hash |
+| 6. Show | the app | nothing | Reads `site/bench/public-2026.json` and shows a Reviewed mark |
+| 7. Correct | the **Record a correction** workflow | `corrections.jsonl`, `approved/corrections-2026.json` | A report never edits the graph; a confirmed one starts a new packet |
 
-The three shadow files rebuild from `data/` on demand and are not in git; the packet hashes are the
-same on every machine, and each approval records the hash it was given. `approvals.jsonl` and
-`approved/` are the record and are kept.
+The scripts never share a write path: research cannot approve, approval cannot publish, and the
+publisher interprets nothing.
 
-The three scripts never share a write path. The research script has no way to approve; the approval
-script has no way to publish; the publisher has no way to interpret. That is the whole point.
+## How approving works
+
+1. Run **Approve Bench packets** from the Actions tab. Choose approve, reject, or revise; list packet IDs
+   or write `all-merge`; give a reason; tick "no dissent" or write the counterevidence.
+2. The workflow rebuilds the packets, records your decision, signs it, publishes it, rebuilds the site,
+   and commits. Look at a packet first with `python scripts/packets.py` then
+   `python scripts/approve.py --show packet_xxxx`, or read it in the shadow files.
+3. To approve a packet the Skeptic vetoed, fill in "override veto" with the reason. Only a publisher can.
+
+**What the signature proves, and what it does not.** `BENCH_APPROVAL_KEY` is a GitHub secret. Only
+workflows can use it, and only an account in `reviewers.json` gets a decision signed. A decision typed
+into `approvals.jsonl` by hand has no valid signature, and `commit.py` refuses it. This is not
+unbreakable: someone with write access to the repository could change a workflow to use the key, so keep
+branch protection on `main`, require a pull request for changes to `.github/` and `bench/reviewers.json`,
+and keep the number of people with write access small. If the key is ever replaced, every earlier decision
+stops verifying and must be made again.
 
 ## What a packet holds
 
-One packet per file, as in the Data Contracts: the entities it names, atomic claims with an exact
-source anchor each (snapshot ID, record locator, URL), typed edges, the operations a commit would
-perform, and a SHA-256 of the frozen content. A deterministic examiner then records a claim verdict
-and a structural verdict (`MERGE`, `BLOCK`, `QUARANTINE`, `HUMAN_REQUIRED`) with its reasons.
+One packet per file: the entities it names, atomic claims with an exact source anchor each (snapshot ID,
+record locator, URL), typed edges, the operations a commit would perform, and a SHA-256 of the frozen
+content. The claims a packet can make, and only these: introduced on a date; a named sponsor sponsored it
+(a `sponsorship` edge, never a vote); a body took a recorded action on a date; Council passed it on a
+date; and the roll call.
 
-Claims a packet can make, and only these:
+**The roll call is `missing` today.** Legistar publishes no member-by-member votes: I checked its
+roll call fields, its vote endpoint, and its event minutes files for Council meetings, and all are empty
+(Oct 1, 2026). A member outside their term shows `not_applicable` with the term dates. Nothing is ever
+shown as an abstention or a no.
 
-- The file was introduced to Council on a date (index record).
-- A named sponsor sponsored it (sponsor list). This becomes a `sponsorship` edge, never a `vote`.
-- A committee or Council took a recorded action on a date (action history). A decision becomes a
-  `vote` edge from the body.
-- Council passed it on the record's passed date: `verified` when a matching Council action exists,
-  `partial` when it does not.
-- The roll call: `missing`. Legistar records that Council approved a file and does not publish each
-  member's vote. That record is in the City Record, which is not registered as a source yet. A
-  member outside their term shows `not_applicable` with the term dates. Nothing is ever shown as
-  an abstention or a no.
+**People are resolved by Legistar's person ID** (kept for every sponsor by `scripts/fetch_legistar.py`),
+checked against the office records in `data/people-2026.json`, with office, ward and term as before. An ID
+that belongs to someone other than the name on the sponsor line is an ambiguity and the packet is
+quarantined. Without an ID, only a roster name and a term can resolve a person.
 
-People are resolved by office, ward and term from the oath record (file 1-2026), never by name
-alone. Two members with the same name would both be quarantined. A sponsor who is not on the
-roster stays `unreviewed`, and the packet needs a person (file 683-2026, sponsored by the Mayor,
-is the one such case today).
+## Plugging in a roll call source
 
-## What is still a design
+When a person has found and checked an official roll call source, put its votes in `data/votes-2026.json`
+and the Bench uses them. Format:
 
-- The Skeptic seat. Today the approving person records dissent or an explicit no-dissent review.
-- Source polling and change detection beyond the nightly refresh; raw HTTP snapshots (the
-  registry hashes the normalized record in `data/`, and says so).
-- A roll call source (the City Record minutes) and Legistar's stable sponsor IDs in the snapshot.
-- Stage 8: the app reading `approved/graph-2026.json`. The Explore and Audit views still use
-  `data/` directly.
-- Geography on records (ward and neighborhood from addresses) and the correction intake.
+```json
+{
+  "source": "Name of the record and who published it",
+  "retrieved_at": "2026-10-01T12:00:00+00:00",
+  "votes": {
+    "27-2026": {
+      "date": "2026-03-23",
+      "question": "Passage",
+      "members": { "Joseph T. Jones": "yea", "Kevin L. Bishop": "nay" },
+      "anchor": { "url": "https://...", "locator": "page 2, roll call on file 27-2026" }
+    }
+  }
+}
+```
+
+Values: `yea`, `nay`, `abstain`, `absent`, `recused`. A member in office who is not listed is `missing`
+(the roll call becomes `partial`), never a no. A member's vote is accepted only when it rests on this
+source; a vote anchored to the action history is blocked. Register the source's owner and terms in
+`docs/civic-agent/votes-source-research.md` first. Nothing parses the City Record for you yet.
+
+## What is kept
+
+- `approved/evidence/`: for every approved packet, the exact source records the reviewer saw, with
+  their hashes, so the evidence survives even if the official record later changes.
+- `approved/receipts.jsonl`: every publish and every refusal (a repeated refusal is logged once).
+- `status-2026.json`: counts of approved, stale (approved before the source changed), waiting, held back.
+
+## Still a design
+
+Agents that read documents and judge them (the Examiner and Skeptic here are rules a script can state,
+not readers), raw HTTP snapshot storage (the registry hashes the normalized record in `data/`, and says
+so), a roll call source, automatic correction of the graph, and a review console beyond the GitHub
+workflow form. See `docs/ROADMAP.md`.
 
 ## Ontology note
 
-The Data Contracts list fifteen relationship families. The Bench adds `sponsorship`, because
-putting a file forward is a formal legislative act that is neither a `statement` nor a `vote`.
-This is a proposed stage 0 addition; the examiner refuses any other type.
+The Data Contracts list fifteen relationship families. The Bench adds `sponsorship`, because putting a
+file forward is a formal legislative act that is neither a `statement` nor a `vote`. The examiner refuses
+any other type.

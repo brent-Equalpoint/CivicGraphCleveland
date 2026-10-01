@@ -90,6 +90,24 @@ def mark_reviewed(files):
     write(path, json.dumps(dict(sorted(rv.items(), key=lambda kv: int(kv[0].split("-")[0]))), indent=1) + "\n")
 
 
+def office_fp():
+    """Fingerprint of the profile office text and leadership roles: everything between the OFFICE-TEXT markers in ext/cx-seat.jsx."""
+    src = open(os.path.join(EXT, "cx-seat.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* OFFICE-TEXT-START.*?OFFICE-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the OFFICE-TEXT markers are missing from ext/cx-seat.jsx")
+    return hashlib.sha256(m.group(0).encode()).hexdigest()[:16]
+
+
+def mark_office_reviewed(who):
+    """Record that a person read the profile office text against its sources, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-office-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "office-reviewed.json")
+    write(path, json.dumps({"fp": office_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the profile office text reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def geo_svg(geo):
     """Project the ward and neighborhood layers to SVG paths (simple equirectangular at Cleveland's latitude)."""
     import math
@@ -269,6 +287,18 @@ def main():
         {"retrieved": pl["retrieved_at"], "histories": pl["histories"], "addresses": pl["addresses"],
          "funds": {f: {k: r.get(k) for k in ("file", "text_url", "amounts", "limit", "wards")} for f, r in pl["funds"].items()}},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
+    # v5.16 profile office text: reviewed by a person only while its fingerprint still matches what they read
+    of_path = os.path.join(ROOT, "data", "office-reviewed.json")
+    of = json.load(open(of_path, encoding="utf-8")) if os.path.exists(of_path) else {}
+    of_ok = of.get("fp") == office_fp()
+    log(f"office text: {'reviewed by ' + of['by'] + ' on ' + of['checked'] if of_ok else 'NOT reviewed by a person (' + ('text changed since review' if of else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/office-reviewed.json ---- */\nconst CX_OFFICE_REVIEW = " + json.dumps({"ok": of_ok, "by": of.get("by") if of_ok else None, "checked": of.get("checked") if of_ok else None}) + ";\n"
+    # v5.16 weekly link check (scripts/check_links.py): only links that failed twice running are shown to residents
+    lk_path = os.path.join(ROOT, "data", "links-2026.json")
+    lk = json.load(open(lk_path, encoding="utf-8")) if os.path.exists(lk_path) else {"checked_at": None, "broken": []}
+    lk_shown = {b["url"]: {"since": b["since"], "status": b["status"]} for b in lk["broken"] if b["consecutive"] >= 2}
+    log(f"data   {sha(lk_path) if os.path.exists(lk_path) else '-' * 64}  links-2026.json  (checked {lk['checked_at']}; {len(lk['broken'])} failing, {len(lk_shown)} shown to residents)")
+    ext_js += "/* ---- data/links-2026.json (links broken on two checks in a row) ---- */\nconst CX_LINKS = " + json.dumps({"checked": lk["checked_at"], "broken": lk_shown}, separators=(",", ":")) + ";\n"
     # v5.16 profiles: who holds each seat and the term, from Legistar's office records (scripts/fetch_people.py)
     pe_path = os.path.join(ROOT, "data", "people-2026.json")
     pe = json.load(open(pe_path, encoding="utf-8"))
@@ -751,6 +781,21 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     site_html = page(False, self_fonts)
     write(os.path.join(SITE, "index.html"), site_html)
     write(os.path.join(SITE, "404.html"), NOT_FOUND)
+
+    # v5.16 Bench (stage 8): the approved records, the review status, and the correction history, as small files the app fetches
+    os.makedirs(os.path.join(SITE, "bench"), exist_ok=True)
+    for name, src_rel, empty in (("public-2026.json", "bench/approved/public-2026.json", {"about": "No record has been approved yet.", "count": 0, "records": {}}),
+                                 ("status-2026.json", "bench/status-2026.json", None),
+                                 ("corrections-2026.json", "bench/approved/corrections-2026.json", {"about": "No correction has been recorded yet.", "count": 0, "corrections": []})):
+        sp = os.path.join(ROOT, *src_rel.split("/"))
+        if os.path.exists(sp):
+            body = open(sp, encoding="utf-8").read()
+        elif empty is not None:
+            body = json.dumps(empty) + "\n"
+        else:
+            continue
+        write(os.path.join(SITE, "bench", name), body)
+        log(f"SITE   {sha(body.encode())}  site/bench/{name}")
     write(os.path.join(SITE, "favicon.svg"), FAVICON_SVG + "\n")
     log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")
     site_bytes = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(SITE) for f in fs)
@@ -765,5 +810,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--mark-reviewed":
         mark_reviewed(sys.argv[2:])
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-office-reviewed":
+        mark_office_reviewed(" ".join(sys.argv[2:]))
     else:
         main()

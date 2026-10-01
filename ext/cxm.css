@@ -801,3 +801,14 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
   .cxm-stage .cxe { max-width: 760px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
   .cxm-stage .cxe .cxe-main { padding-left: 32px; padding-right: 32px; }
 }
+
+/* a source link that failed its weekly check twice running */
+.sp-broken { font-size: 15px; color: #ffe08a; }
+
+/* the Bench's reviewed records on profiles, and the review status card */
+.sp-rev { display: inline-block; padding: 1px 9px; border-radius: 999px; background: #9fe6c326; color: #bff3d8; font-size: 14px; font-weight: 700; }
+.sp-reviewed { margin: 6px 0 12px 0; padding: 8px 12px; border-radius: 12px; background: #ffffff0d; }
+.sp-reviewed summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
+.sp-reviewed p, .sp-reviewed li { font-size: 16px; }
+.cx-bench-status ul { margin: 8px 0 12px; padding-left: 22px; }
+.cx-bench-status li { margin: 4px 0; font-size: 17px; }

@@ -5,8 +5,10 @@ Output: data/people-2026.json (a build input; the build never fetches live).
 Source: https://webapi.legistar.com/v1/cityofcleveland (Granicus Legistar, public), the
 /officerecords and /persons endpoints.
 
-What it keeps, per person: the office record's person ID, name, title, body, start and end dates,
-and the address of the person's own page in Legistar. That is all Legistar says. It lists Council
+What it keeps, per person: the office record's person ID, name, title, body, and start and end dates.
+That is all Legistar says. (Cleveland's Legistar no longer serves individual person pages: PersonDetail
+returns HTTP 410 to browsers and robots alike, found by scripts/check_links.py on Oct 1, 2026, so no
+per-person address is kept. The People list page, People.aspx, works and profiles link to it.) It lists Council
 membership and the Mayor but not committee seats, and it holds no phone number, email, or address
 for these people, so none of that is invented or copied here. Committee assignments and contact
 details are on Council's own website, and profiles link there.
@@ -47,7 +49,6 @@ def main():
         people.append({
             "person_id": pid, "name": (r["OfficeRecordFullName"] or "").strip(), "title": title, "body": body,
             "start": r["OfficeRecordStartDate"][:10], "end": r["OfficeRecordEndDate"][:10],
-            "url": f"{SITE}/PersonDetail.aspx?ID={pid}&GUID={p['PersonGuid']}" if p.get("PersonGuid") else None,
         })
     people.sort(key=lambda x: (x["title"] != "Mayor", x["name"].split()[-1].lower()))
     snap = {"source": B, "retrieved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),

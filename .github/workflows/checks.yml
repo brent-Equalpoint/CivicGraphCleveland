@@ -1,0 +1,62 @@
+# Checks that run on every push to main and on every pull request.
+# The same checks run by hand with scripts/release.py, so a change is held to one standard either way.
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request: {}
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: checks-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  checks:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Packages
+        run: npm ci
+
+      - name: Unit tests (Bench, approval gate, link checker)
+        run: |
+          python scripts/test_bench.py
+          python scripts/test_bench_gate.py
+          python scripts/test_links.py
+
+      - name: Data safety check
+        run: python scripts/refresh.py --check
+
+      - name: Build twice from clean and require the same hash
+        run: |
+          python build.py
+          grep -E "^(OUTPUT|SITE)" dist/build-log.txt > first.txt
+          python build.py
+          grep -E "^(OUTPUT|SITE)" dist/build-log.txt > second.txt
+          diff first.txt second.txt
+          cat second.txt
+
+      - name: The committed site is exactly what the build produces
+        run: git diff --exit-code -- site
+
+      - name: Browser checks and accessibility audit
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          CI: "true"
+        run: node scripts/checks/run.js

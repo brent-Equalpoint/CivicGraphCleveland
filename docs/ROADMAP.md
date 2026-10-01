@@ -52,6 +52,15 @@ Steps 1 and 2 can run beside any build work, since they are people and calendar 
 
 ## Every build still needed
 
+**Status, Oct 1, 2026 (paths A and B):** built and tested are A1 to A5, B1 to B4, B6, B8, and B9. Built in part:
+B5 (the plumbing for member votes exists and is tested, but no roll call source has been chosen, so every
+roll call is still `missing`; see `docs/civic-agent/votes-source-research.md`), B7 (the exact approved source
+records are kept; raw HTTP bytes are not), and B10 (a rule-based Skeptic is built; agents that read documents
+are not). Things that only start working once the workflows are on GitHub: the Checks workflow, the nightly
+packets and checks, the failure issue, and the approval and correction workflows. Things that need a person: add
+reviewers and publishers to `bench/reviewers.json`, set branch protection, and make the first approvals.
+The tables below are the original inventory.
+
 Sizes: S is under one session, M is one to two, L is three or more. "Needs" lists what must exist first.
 Nothing here has a date. Items that only a person can do are in the sections below, not in this table.
 
@@ -119,7 +128,7 @@ Nothing here has a date. Items that only a person can do are in the sections bel
 | F3 | A second city | L | F1 |
 
 Totals: 33 builds. Thirteen are small, ten are medium, and ten are large.
-A1 to A5, B2, B6, B9, C2, C3, C5, and F1 can start any time. D1 can start as soon as you answer it.
+C2, C3, C5, and F1 can start any time. D1 can start as soon as you answer it. A and B are built (see the status above).
 
 ## People and operations
 
@@ -129,7 +138,7 @@ These roles are not named yet. The Bench design needs them, and nothing else her
 | --- | --- | --- |
 | Accountable editor for sources and wording | Owns what the app claims and the source list | Not yet |
 | Second reviewer | A different person from whoever wrote a claim | Not yet |
-| Publisher | The only person who approves a change to approved records | Not yet |
+| Publisher | The only person who approves a change to approved records (`bench/reviewers.json`) | One account is listed: the repository owner. Add the second reviewer there. |
 | Correction triage | Decides what happens to a reported mistake | Not yet |
 | Maintainer | Keeps the build, the nightly job, and the keys healthy | Not yet |
 | Privacy policy steward | Owns the data policy and its yearly review | Not yet |
@@ -149,17 +158,14 @@ A change counts as shipped only when every step below is done, in this order:
 6. Confirm the live page has the same hash as the built one.
 7. Update `STATE-OF-BUILD.md` with the new hashes, from `dist/build-log.txt`.
 
-**Gap to close first:** the browser checks and the audit currently live outside the repository, in a
-scratch folder. Move them into `scripts/`, make them runnable with one command, and run them in the
-nightly job so a bad deploy is caught by a machine as well as a person.
+`python scripts/release.py` does steps 1 to 6 (and `--push` does 7). The browser checks and the audit are now in `scripts/checks/run.js`. They run on every push (the Checks workflow) and in the nightly job before anything is published.
 
 ## Plans still to write
 
-- Bench stage 8: how approved records reach the app, and how a correction works.
 - People and operations: the roles above, the on-call routine, and what happens after any busy period.
-- The "Tell us what is wrong" feature and the correction intake behind it.
 - The anonymous insights policy, rewritten for Equalpoint, with the board decisions and counsel review it needs.
-- A test and release plan: automated checks for the app, a weekly check for broken source links, and the release routine above as a script.
+- Branch protection and who has write access, since the approval signature is only as strong as the repository's access rules.
+- Choosing a member-by-member vote source (B5 needs a person's decision, not code).
 - Expansion beyond Cleveland and Washington: states and other cities, after the research step.
 
 ## Decisions waiting for you

@@ -286,7 +286,7 @@ function CX_News() {
       <span className="atlas-eyebrow"><CXI.Sparkles size={15} /> COUNCIL'S PUBLIC RECORD · UPDATED {f.when.toUpperCase()}</span>
       <h1 id="cx-news-h">What's new</h1>
       <p className="cx-lede">What changed in Cleveland City Council's 2026 record since {since ? cxShortDate(since) : `the last check`}. Every line comes from comparing two snapshots of the official record. Sponsorship is not a vote, and a missing record is not a no.</p>
-      {f.stale && <p className="cx-stale">These records were pulled {f.ago}. Newer actions may exist on the <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">Council site <CXI.Ext size={11} /></a>.</p>}
+      {f.stale && <p className="cx-stale">These records were pulled {f.ago}. Newer actions may exist on the <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">Council site <CXI.Ext size={11} /></a>. The nightly refresh may be failing; the team is told automatically when it does.</p>}
       <div className="cx-news-controls">
         <label>Show <select value={ward} onChange={(e) => setWard(Number(e.target.value))}>
           <option value={0}>All of Cleveland</option>

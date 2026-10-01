@@ -15,7 +15,7 @@ Steps:
 Official records only. News never enters through this script: news items need a person's
 approval (see the Rules in CLAUDE.md) and are not part of this pipeline.
 """
-import json, os, shutil, sys, tempfile
+import datetime, json, os, shutil, sys, tempfile
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
@@ -85,6 +85,12 @@ def main():
     if bad:
         restore("; ".join(bad))
     _, entry = changes.update(keep, DATA)
+    try:  # weekly source-link check; a problem here must never stop the data refresh
+        import check_links
+        if datetime.date.today().weekday() == 0 or os.environ.get("CX_LINKS"):
+            check_links.run()
+    except Exception as e:
+        print(f"link check skipped: {type(e).__name__}: {e}")
     print(f"changes {entry['from']} -> {entry['at']}: {changes.summary(entry)}")
     shutil.rmtree(keep, ignore_errors=True)
 

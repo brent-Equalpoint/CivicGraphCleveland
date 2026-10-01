@@ -1,0 +1,105 @@
+# A named person records what they decided about a mistake report (a GitHub issue made with the "Report a mistake" form).
+# The decision is signed like an approval and listed publicly under Corrections on the "How this is built" page.
+# A confirmed correction does not edit anything: it starts a new Bench packet, which goes through review like any other.
+name: Record a correction
+
+on:
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: "The issue number of the report"
+        required: true
+      disposition:
+        description: "What was decided"
+        type: choice
+        options: [confirmed, unconfirmed, duplicate, out_of_scope]
+        required: true
+      page:
+        description: "Where the mistake was seen, e.g. Profile of Ward 8"
+        required: true
+      note:
+        description: "What you found, in plain words. This is public: no email addresses or phone numbers."
+        required: true
+      packet:
+        description: "Optional: the packet that fixes it"
+        required: false
+      duplicate_of:
+        description: "For a duplicate: the issue number it repeats"
+        required: false
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: bench-approvals
+  cancel-in-progress: false
+
+jobs:
+  record:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Packages
+        run: npm ci
+
+      - name: Record the decision (signed)
+        env:
+          BENCH_APPROVAL_KEY: ${{ secrets.BENCH_APPROVAL_KEY }}
+          ISSUE: ${{ inputs.issue }}
+          DISPOSITION: ${{ inputs.disposition }}
+          PAGE: ${{ inputs.page }}
+          NOTE: ${{ inputs.note }}
+          PACKET: ${{ inputs.packet }}
+          DUP: ${{ inputs.duplicate_of }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$ISSUE" =~ ^[0-9]+$ ]]; then echo "The issue must be a number."; exit 1; fi
+          args=(--actions --issue "$ISSUE" --disposition "$DISPOSITION" --page "$PAGE" --note "$NOTE")
+          if [ -n "$PACKET" ]; then args+=(--packet "$PACKET"); fi
+          if [ -n "$DUP" ]; then args+=(--duplicate-of "$DUP"); fi
+          python scripts/corrections.py "${args[@]}"
+
+      - name: Build the site so the correction is published
+        run: python build.py
+
+      - name: Commit
+        run: |
+          git config user.name "civic-graph-bench"
+          git config user.email "civic-graph-bench@users.noreply.github.com"
+          git add bench site
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "Correction recorded for report ${ISSUE} by ${GITHUB_ACTOR}"
+          git push
+        env:
+          ISSUE: ${{ inputs.issue }}
+
+      - name: Tell the person who reported it
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ inputs.issue }}
+          DISPOSITION: ${{ inputs.disposition }}
+          NOTE: ${{ inputs.note }}
+        run: |
+          case "$DISPOSITION" in
+            confirmed) say="Thank you. A person checked this against the official record and confirmed it. A corrected record goes through review before it is published, so the fix can take a little while.";;
+            unconfirmed) say="Thank you for looking closely. A person checked this against the official record and it does not support the report.";;
+            duplicate) say="Thank you. This was already reported.";;
+            *) say="Thank you. A person looked, and this is not about a fact in the app.";;
+          esac
+          gh issue comment "$ISSUE" --body "$say"$'\n\n'"What they found: $NOTE"$'\n\n'"The decision is listed publicly under Corrections on the How this is built page."
+          if [ "$DISPOSITION" != "confirmed" ]; then gh issue close "$ISSUE"; fi

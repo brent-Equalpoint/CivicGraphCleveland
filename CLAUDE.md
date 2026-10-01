@@ -18,9 +18,16 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
 - App code: `ext/*.jsx` and `ext/*.css`. Shared desktop and phone logic: `ext/cx-live.jsx`. Phone: `ext/cxm-*.jsx`.
 - Changes to the compiled app: an exact-match `patch()` in `build.py`. Never edit `inputs/` or `build/`.
 - Data: only `scripts/refresh.py` writes `data/`. Never hand-edit a snapshot.
-- The Bench (agent pipeline, `bench/`): `scripts/packets.py` writes `bench/shadow/` from `data/`; a named
-  person decides with `scripts/approve.py`; `scripts/commit.py` writes `bench/approved/`. Never hand-edit
-  either folder, and never let a script approve. Design docs: `docs/civic-agent/`. Tests: `scripts/test_bench.py`.
+- The Bench (agent pipeline, `bench/`): `scripts/packets.py` writes `bench/shadow/` and `bench/status-2026.json`
+  from `data/`; a named person decides only in the "Approve Bench packets" workflow (the GitHub account is the
+  reviewer and the decision is signed with `BENCH_APPROVAL_KEY`); `scripts/commit.py` writes `bench/approved/` and
+  publishes only signed decisions. Never hand-edit those folders, never type a name into `approvals.jsonl`, and never
+  let a script approve. Reviewers live in `bench/reviewers.json`. Design docs: `docs/civic-agent/`; what runs:
+  `bench/README.md`. Tests: `scripts/test_bench.py`, `test_bench_gate.py`, `test_links.py`; browser checks:
+  `node scripts/checks/run.js`. To ship: `python scripts/release.py`.
+- Profile office text and leadership roles (`ext/cx-seat.jsx`, between the OFFICE-TEXT markers) are interpretive: after a
+  person reads them against their sources, run `python build.py --mark-office-reviewed "Name"`. Until then profiles say
+  a person has not reviewed them.
 - After editing a "Why supporters backed it" summary in `ext/cx-reasons.jsx`, re-read it against
   `data/reasons-2026.json`, then run `python build.py --mark-reviewed <file numbers>`.
 

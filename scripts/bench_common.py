@@ -12,7 +12,7 @@ packets. approve.py writes only bench/shadow/approvals.jsonl. commit.py writes o
 No script here writes data/ or anything the app reads today (stage 8, the public projection, is
 not wired into build.py yet). Design: docs/civic-agent/Civic-Intelligence-*-v1.md.
 """
-import datetime, hashlib, json, os
+import datetime, hashlib, hmac, json, os
 
 ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
 JURISDICTION = "city:cleveland"
@@ -37,6 +37,14 @@ def paths(bench_dir=None):
         "approvals": os.path.join(b, "shadow", "approvals.jsonl"),
         "graph": os.path.join(b, "approved", "graph-2026.json"),
         "receipts": os.path.join(b, "approved", "receipts.jsonl"),
+        "public": os.path.join(b, "approved", "public-2026.json"),
+        "evidence": os.path.join(b, "approved", "evidence"),
+        "status": os.path.join(b, "status-2026.json"),
+        "reviewers": os.path.join(b, "reviewers.json"),
+        "corrections": os.path.join(b, "corrections.jsonl"),
+        "corrections_public": os.path.join(b, "approved", "corrections-2026.json"),
+        "votes": os.path.join(ROOT, "data", "votes-2026.json"),
+        "people": os.path.join(ROOT, "data", "people-2026.json"),
     }
 
 
@@ -95,5 +103,28 @@ def packet_hash(packet):
     """Hash of the frozen candidate: everything a reviewer approves, nothing about when or by whom.
     The graph precondition is left out on purpose: it is checked at commit time, and a commit must not
     change the hash of the very packet it just applied (replay would never settle)."""
-    body = {k: v for k, v in packet.items() if k not in ("candidate_sha256", "examiner", "state", "created_at", "version", "graph_precondition")}
+    body = {k: v for k, v in packet.items() if k not in ("candidate_sha256", "examiner", "skeptic", "state", "created_at", "version", "graph_precondition", "supersedes_sha256")}
     return sha(canon(body))
+
+
+# ---------------------------------------------------------------- who may approve, and proof that they did
+APPROVAL_KEY_ENV = "BENCH_APPROVAL_KEY"
+
+
+def attest(record, key):
+    """Signature over a decision, made only by the approval workflow, which holds the secret key.
+    Anyone who can edit a file in the repository can type a name into it; they cannot produce this."""
+    body = {k: v for k, v in record.items() if k != "attestation"}
+    return hmac.new(key.encode("utf-8"), canon(body), hashlib.sha256).hexdigest()
+
+
+def attestation_ok(record, key):
+    a = record.get("attestation") or {}
+    return bool(a.get("hmac")) and hmac.compare_digest(str(a["hmac"]), attest(record, key))
+
+
+def load_reviewers(path):
+    """{github login (lower case): set of roles}. Roles: reviewer (may reject, ask for changes, record dissent),
+    publisher (may approve, and may override a Skeptic veto)."""
+    d = load_json(path, {"people": []})
+    return {p["github"].lower(): set(p.get("roles", [])) for p in d.get("people", [])}

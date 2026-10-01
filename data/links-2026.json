@@ -1,0 +1,8 @@
+{
+ "checked_at": "2026-10-01",
+ "checked": 114,
+ "ok": 110,
+ "uncertain": 4,
+ "about": "Weekly check of public source links (scripts/check_links.py). A link is shown to residents as broken only after it failed on two checks in a row.",
+ "broken": []
+}

@@ -1,0 +1,36 @@
+name: Report a mistake
+description: Tell us about a fact in the Cleveland Civic Graph that looks wrong or out of date.
+title: "Mistake: "
+labels: ["mistake"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **This report is public.** Please do not write your name, address, phone number, or anything personal here.
+
+        A person checks what you say against the official record. What they decide, and why, is listed under Corrections on the "How this is built" page. We never edit a published fact without that check, so a fix can take a little while.
+  - type: input
+    id: page
+    attributes:
+      label: Where did you see it?
+      description: The page, profile, or screen. For a profile, the name of the seat.
+      placeholder: "Profile of Ward 8"
+    validations:
+      required: true
+  - type: textarea
+    id: wrong
+    attributes:
+      label: What looks wrong?
+      description: Say what the app shows and why you think it is wrong.
+    validations:
+      required: true
+  - type: textarea
+    id: official
+    attributes:
+      label: What does the official record say?
+      description: Optional. If you know, tell us what the official record says instead.
+  - type: input
+    id: link
+    attributes:
+      label: Link to the official record
+      description: Optional. A link to the public page that shows it.

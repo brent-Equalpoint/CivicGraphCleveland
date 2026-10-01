@@ -27,7 +27,7 @@ What this does not do, on purpose:
 import os, re, sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from bench_common import (ROOT, JURISDICTION, EDGE_TYPES, canon, sha, short_id, load_json, write_json,
+from bench_common import (ROOT, JURISDICTION, EDGE_TYPES, canon, sha, short_id, load_json, load_jsonl, write_json,
                           packet_hash, paths)
 
 LEGISTAR = "https://webapi.legistar.com/v1/cityofcleveland"
@@ -39,6 +39,11 @@ ROSTER_FILE = "1-2026"  # Oaths of Office for the 2026-2029 term: the official w
 DECISIONS = {"approved", "approved as amended", "adopted", "adopted as amended", "recommended for approval",
              "recommended for denial", "tabled", "passed on second reading", "withdrawn"}
 PASSING = {"approved", "approved as amended", "adopted", "adopted as amended"}
+# Context shared by the builders for one run: Legistar person ID -> entity ID, and the roll call source if one is registered.
+CTX = {"people_by_id": {}, "votes": None}
+VOTES_SOURCE_ID = short_id("src_", "cleveland-city-record-votes")
+VOTE_VALUES = {"yea", "nay", "abstain", "absent", "recused"}  # what a roll call can record; a member missing from it is `missing`, never a no
+PEOPLE_URL = "https://cityofcleveland.legistar.com/People.aspx"
 OFFICE_LABELS = {"By Departmental Request": "Legistar's sponsor label for legislation submitted by a city department",
                  "Mayor's Administration": "Legistar's sponsor label for legislation submitted by the Mayor's administration"}
 
@@ -65,6 +70,10 @@ def sources():
         "matters": src("/matters", "legislation_index", "File number, type, status, title, introduced and passed dates. Snapshot: data/legistar-2026.json"),
         "sponsors": src("/matters/{id}/sponsors", "sponsor_list", "Sponsors in sequence. Sponsorship is not a vote. Snapshot: data/legistar-2026.json"),
         "histories": src("/matters/{id}/histories", "action_history", "Committee and Council actions with dates. No per-member roll call is published. Snapshot: data/place-2026.json"),
+        "people": src("/officerecords", "office_records", "Who holds each Council seat and the Mayor, with person IDs and terms. Snapshot: data/people-2026.json"),
+        "votes": {"source_id": VOTES_SOURCE_ID, "owner": "Cleveland City Council (the City Record, or another official roll call record)", "canonical_url": None,
+                  "jurisdiction_id": JURISDICTION, "record_type": "roll_call", "access_method": "manual", "license_status": "review_required", "refresh_policy": "event",
+                  "fetched_by": "not wired yet", "note": "Member-by-member votes. Legistar publishes none. When a person registers a source, its votes go in data/votes-2026.json (format in bench/README.md)."},
     }
 
 
@@ -75,7 +84,7 @@ def snapshot(reg, source_id, record, locator_prefix, retrieved_at, url):
     prev = reg.get("_prev", {}).get(sid)
     reg.setdefault(sid, {"snapshot_id": sid, "source_id": source_id, "record": locator_prefix, "content_sha256": sha(canon(record)),
                          "first_seen_at": prev["first_seen_at"] if prev else retrieved_at, "last_seen_at": retrieved_at, "url": url,
-                         "storage_ref": "data/ (normalized record, not raw HTTP bytes)", "parser_version": "v1"})
+                         "storage_ref": "data/ (normalized record, not raw HTTP bytes)", "parser_version": "v1", "body": record})
     return sid
 
 
@@ -90,7 +99,7 @@ def roster(leg):
     return m, term.group(0), [(int(w), n.strip()) for w, n in rows]
 
 
-def build_entities(leg, hist, reg, srcs):
+def build_entities(leg, hist, reg, srcs, people_file=None):
     """Council, committees, the 15 members (from the oath record), and every file in scope."""
     ents = {}
 
@@ -125,12 +134,40 @@ def build_entities(leg, hist, reg, srcs):
                             "resolution_state": "ambiguous" if amb else "resolved",
                             "resolution_evidence": [{"snapshot_id": snap, "locator": f"MatterId {rm['id']}, title line 'Ward {w} - {n}'", "url": rm["url"]}]
                             + (["Another member of the same body and term has the same first and last name"] if amb else [])})]
+    # Legistar's person IDs: a stable key, so a sponsor is matched by ID and not by a name that might be shared
+    CTX["people_by_id"] = {}
+    pf = people_file or {"people": [], "retrieved_at": leg["retrieved_at"]}
+    for pr in pf["people"]:
+        psnap = snapshot(reg, srcs["people"]["source_id"], pr, f"/officerecords person {pr['person_id']}", pf["retrieved_at"], PEOPLE_URL)
+        anchor = {"snapshot_id": psnap, "locator": f"/officerecords, OfficeRecordPersonId {pr['person_id']}, title {pr['title']}", "url": PEOPLE_URL}
+        if pr["title"] == "Council Member":
+            hit = [m for m in members.values() if name_key(m["display_name"]) == name_key(pr["name"])]
+            if len(hit) == 1:
+                hit[0]["canonical_identifier"] = f"legistar:cityofcleveland:person:{pr['person_id']}"
+                hit[0]["resolution_evidence"].append(anchor)
+                CTX["people_by_id"][pr["person_id"]] = hit[0]["entity_id"]
+        elif pr["title"] == "Mayor":
+            eid = short_id("entity_", "person", JURISDICTION, "Mayor", pr["start"])
+            put({"entity_id": eid, "kind": "person", "display_name": pr["name"], "canonical_identifier": f"legistar:cityofcleveland:person:{pr['person_id']}",
+                 "jurisdiction_id": JURISDICTION, "aliases": [], "office": "Mayor of Cleveland", "term": f"{pr['start'][:4]}-{pr['end'][:4]} term",
+                 "valid_from": pr["start"], "valid_to": pr["end"], "resolution_state": "resolved", "resolution_evidence": [anchor]})
+            CTX["people_by_id"][pr["person_id"]] = eid
     return ents, bodies, members, collisions
 
 
-def resolve_sponsor(name, ents, members, collisions):
-    """A sponsor name becomes an entity only through office, ward and term. Otherwise it stays unreviewed."""
+def resolve_sponsor(name, ents, members, collisions, pid=None):
+    """A sponsor becomes an entity through Legistar's person ID when there is one, else through office, ward and term.
+    Otherwise it stays unreviewed. An ID whose person does not match the name on the sponsor line is an ambiguity, not a guess."""
     key = name_key(name)
+    if pid is not None and pid in CTX["people_by_id"]:
+        eid = CTX["people_by_id"][pid]
+        if name_key(ents[eid]["display_name"]) == key:
+            return eid
+        bad = short_id("entity_", "person", JURISDICTION, "sponsor-id-mismatch", pid, name)
+        ents.setdefault(bad, {"entity_id": bad, "kind": "person", "display_name": name, "canonical_identifier": None, "jurisdiction_id": JURISDICTION,
+                              "aliases": [], "valid_from": None, "valid_to": None, "resolution_state": "ambiguous",
+                              "resolution_evidence": [f"Legistar sponsor ID {pid} belongs to {ents[eid]['display_name']}, but the sponsor line says {name}"]})
+        return bad
     hits = [m for m in members.values() if name_key(m["display_name"]) == key]
     if len(hits) == 1 and key not in collisions:
         return hits[0]["entity_id"]
@@ -208,7 +245,8 @@ def build_packet(m, rows, leg, hist_meta, ents, members, collisions, bodies, reg
           [{"snapshot_id": snap_m, "locator": f"MatterId {m['id']}, field MatterIntroDate", "url": m["url"]}], "verified",
           "The official Legistar index record gives the introduction date.", m["intro"])
     for i, s in enumerate(m["sponsors"]):
-        eid = resolve_sponsor(s, ents, members, collisions)
+        ids = m.get("sponsor_ids") or []
+        eid = resolve_sponsor(s, ents, members, collisions, ids[i] if i < len(ids) else None)
         nodes[eid] = ents[eid]
         term_note = ""
         mem = members.get(eid)
@@ -237,11 +275,39 @@ def build_packet(m, rows, leg, hist_meta, ents, members, collisions, bodies, reg
             state, reason = "partial", f"The index record gives a passed date of {m['passed']}, but the registered action history has no {COUNCIL} approval on that date."
         claim(f"{COUNCIL} passed {label}; the record's passed date is {m['passed']}.", council, "passed", mid,
               [{"snapshot_id": snap_m, "locator": f"MatterId {m['id']}, field MatterPassedDate", "url": m["url"]}], state, reason, m["passed"])
-        claim(f"The roll call on {label}: how each member of {COUNCIL} voted.", council, "roll_call", mid,
-              [{"snapshot_id": snap_h or snap_m, "locator": f"/matters/{m['id']}/histories, MatterHistoryRollCallFlag 0, no vote records", "url": m["url"]}],
-              "missing", "Legistar records that Council approved this file and does not publish each member's vote. The roll call is in the City Record minutes, "
-              "which are not registered as a source yet. A missing record is not a no.", m["passed"],
-              {"member_states": member_states(members, m["passed"])})
+        vote = ((CTX["votes"] or {}).get("votes") or {}).get(m["file"])
+        if vote:
+            va = vote["anchor"]
+            vsnap = snapshot(reg, VOTES_SOURCE_ID, vote, va["locator"], CTX["votes"]["retrieved_at"], va["url"])
+            by_key = {name_key(n): v for n, v in vote["members"].items()}
+            ms = {"missing": [], "not_applicable": {}, "recorded": {}}
+            for eid, mem in sorted(members.items()):
+                na = member_vote_state(mem, vote["date"])
+                if na["state"] == "not_applicable":
+                    ms["not_applicable"][eid] = na["reason"]
+                    continue
+                val = by_key.get(name_key(mem["display_name"]))
+                if val in VOTE_VALUES:
+                    ms["recorded"][eid] = val
+                    nodes[eid] = ents[eid]
+                    cid = claim(f"{mem['display_name']} voted {val} on {label} on {vote['date']}.", eid, f"voted_{val}", mid,
+                                [{"snapshot_id": vsnap, "locator": va["locator"], "url": va["url"]}], "verified",
+                                "The roll call record lists this member's vote.", vote["date"])
+                    edge("vote", eid, mid, [cid], vote["date"])
+                else:
+                    ms["missing"].append(eid)
+            claim(f"The roll call on {label}: how each member of {COUNCIL} voted.", council, "roll_call", mid,
+                  [{"snapshot_id": vsnap, "locator": va["locator"], "url": va["url"]}],
+                  "partial" if ms["missing"] else "verified",
+                  ("The roll call record lists a vote for every member who was in office." if not ms["missing"] else
+                   f"The roll call record has no entry for {len(ms['missing'])} member(s) who were in office. A missing entry is not a no."), vote["date"],
+                  {"member_states": ms})
+        else:
+            claim(f"The roll call on {label}: how each member of {COUNCIL} voted.", council, "roll_call", mid,
+                  [{"snapshot_id": snap_h or snap_m, "locator": f"/matters/{m['id']}/histories, MatterHistoryRollCallFlag 0, no vote records", "url": m["url"]}],
+                  "missing", "Legistar records that Council approved this file and does not publish each member's vote. No roll call source is registered yet. "
+                  "A missing record is not a no.", m["passed"],
+                  {"member_states": member_states(members, m["passed"])})
     ops = [f"upsert_node:{mid}"] + [f"upsert_node:{n}" for n in sorted(nodes) if n != mid] + [f"upsert_edge:{e['edge_id']}" for e in edges]
     owned = [mid] + [e["edge_id"] for e in edges]
     prev = (prev_graph or {}).get("records", {})
@@ -254,6 +320,43 @@ def build_packet(m, rows, leg, hist_meta, ents, members, collisions, bodies, reg
 
 
 # ---------------------------------------------------------------- examiner (deterministic, stage 5 in part)
+
+def from_votes(claim, reg):
+    """True when every anchor of the claim is a snapshot of the registered roll call source."""
+    return bool(claim["anchors"]) and all(reg.get(x["snapshot_id"], {}).get("source_id") == VOTES_SOURCE_ID for x in claim["anchors"])
+
+
+def skeptic(p, reg):
+    """The Skeptic seat, rule-based: looks for what is wrong, stale, misleading, or missing, and keeps a dissent note.
+    It can VETO: a veto stops approval unless a publisher overrides it in writing. It does not edit the packet.
+    This covers rules a script can state. It does not read documents or judge context; that is for a person."""
+    notes, veto = [], []
+    m, claims, nodes = p["matter"], p["claims"], p["nodes"]
+    acts = [c for c in claims if nodes.get(c["subject_id"], {}).get("kind") == "body" and c["valid_from"] and c["predicate"] not in ("introduced_to", "passed", "roll_call")]
+    last = max(acts, key=lambda c: c["valid_from"], default=None)
+    if m["status"] == "Passed" and last and last["predicate"] in ("tabled", "withdrawn", "recommended_for_denial"):
+        veto.append(f"The index record says Passed, but the latest recorded action is: {last['statement']}")
+    if m["status"] in ("Failed", "Tabled", "Withdrawn") and any(c["predicate"] in {slug(x) for x in PASSING} for c in acts):
+        veto.append(f"The index record says {m['status']}, but a Council approval is recorded.")
+    passed = [c for c in claims if c["predicate"] == "passed"]
+    if passed and passed[0]["evidence_state"] != "verified":
+        notes.append("The passed date has no matching recorded Council action. Either the action history is incomplete or the date is wrong.")
+    if m["status"] == "Passed" and any(c["predicate"] == "recommended_for_denial" for c in claims):
+        notes.append("A committee recommended denial and the file passed anyway. That is allowed and unusual; read the record before relying on a plain summary.")
+    for n in nodes.values():
+        if n["kind"] == "person" and n["resolution_state"] == "ambiguous":
+            veto.append(f"The identity of {n['display_name']} is ambiguous.")
+        elif n["kind"] == "person" and n["resolution_state"] == "unreviewed":
+            notes.append(f"{n['display_name']} is not resolved to an office.")
+    if any(c["predicate"] == "roll_call" and c["evidence_state"] == "missing" for c in claims):
+        notes.append("How each member voted is not in this packet. That is a missing record, not a no.")
+    if any(c["predicate"] == "roll_call" and c["evidence_state"] == "partial" for c in claims):
+        notes.append("The roll call record is missing at least one member who was in office.")
+    if not any(c["predicate"] in {slug(x) for x in PASSING} for c in acts) and m["status"] == "Passed":
+        notes.append("No Council approval step is in the action history even though the record says Passed.")
+    return {"review_id": short_id("skeptic_", p["candidate_id"], p["candidate_sha256"]), "method": "rule-based checks (scripts/packets.py); no documents are read",
+            "dissent": notes, "no_dissent": not notes, "veto": bool(veto), "veto_reasons": veto}
+
 
 def examine(p, reg, examined_at):
     """Independent of how the packet was built: it sees only the packet and the registry."""
@@ -278,7 +381,7 @@ def examine(p, reg, examined_at):
             elif n and n["kind"] == "person" and n["resolution_state"] == "unreviewed" and v in ("verified", "verified_with_limits"):
                 v = "needs_specialist_review"
                 notes.append(f"{c['claim_id']}: {n['display_name']} is not resolved to an office")
-        if c["predicate"] == "roll_call" and c["evidence_state"] == "verified":
+        if c["predicate"] == "roll_call" and c["evidence_state"] == "verified" and not from_votes(c, reg):
             v = "unsupported"
             notes.append(f"{c['claim_id']}: a roll call cannot be verified from the action history alone")
         verdicts[c["claim_id"]] = v
@@ -300,8 +403,10 @@ def examine(p, reg, examined_at):
             notes.append(f"{e['edge_id']}: a vote edge cannot rest on a sponsorship claim")
         elif e["relationship_type"] == "sponsorship" and any(c["predicate"] != "sponsored" for c in cited):
             notes.append(f"{e['edge_id']}: a sponsorship edge may cite only sponsorship claims")
-        elif e["relationship_type"] == "vote" and any(p["nodes"].get(c["subject_id"], {}).get("kind") != "body" for c in cited):
-            notes.append(f"{e['edge_id']}: only a body's recorded action is a vote here; no per-member vote source is registered")
+        elif e["relationship_type"] == "vote" and any(p["nodes"].get(c["subject_id"], {}).get("kind") not in ("body", "person") for c in cited):
+            notes.append(f"{e['edge_id']}: a vote edge needs a body's recorded action or a member's recorded vote")
+        elif e["relationship_type"] == "vote" and any(p["nodes"].get(c["subject_id"], {}).get("kind") == "person" and not from_votes(c, reg) for c in cited):
+            notes.append(f"{e['edge_id']}: a member's vote needs a roll call source; sponsorship and committee action are not votes")
     edge_problems = [n for n in notes if n.startswith("edge_")]
     vs = set(verdicts.values())
     if edge_problems or "unsupported" in vs or "duplicate claim IDs" in notes:
@@ -328,7 +433,9 @@ def build(data_dir=None, bench_dir=None):
     prev_graph = load_json(P["graph"])
     srcs = sources()
     reg = {"_prev": load_json(P["registry"], {"snapshots": {}})["snapshots"]}  # carried forward for first_seen_at only
-    ents, bodies, members, collisions = build_entities(leg, place["histories"], reg, srcs)
+    people_file = load_json(os.path.join(data_dir, "people-2026.json"))
+    CTX["votes"] = load_json(os.path.join(data_dir, "votes-2026.json"))
+    ents, bodies, members, collisions = build_entities(leg, place["histories"], reg, srcs, people_file)
     packets = {}
     for m in sorted(leg["matters"], key=lambda x: x["id"]):
         if m["type"] not in SUBSTANTIVE:
@@ -344,6 +451,7 @@ def build(data_dir=None, bench_dir=None):
                 p["supersedes_sha256"] = old["candidate_sha256"]
         p["candidate_sha256"] = h
         p["examiner"] = examine(p, reg, leg["retrieved_at"])
+        p["skeptic"] = skeptic(p, reg)
         p["state"] = STATE[p["examiner"]["structural_verdict"]]
         packets[p["candidate_id"]] = p
     del reg["_prev"]
@@ -367,12 +475,43 @@ def summary(packets):
             f"claims by evidence state: " + ", ".join(f"{k} {v}" for k, v in sorted(es.items())))
 
 
+def status_summary(out, approvals):
+    """Where every packet stands against the latest decision on it. Lists are capped; the counts are exact."""
+    packets = out["packets"]["packets"]
+    latest = {}
+    for a in approvals:
+        latest[a["candidate_id"]] = a
+    cats = {k: [] for k in ("approved_current", "approved_stale", "awaiting_review", "human_required", "blocked", "quarantined", "rejected", "revision_requested")}
+    for p in packets.values():
+        v, a, f = p["examiner"]["structural_verdict"], latest.get(p["candidate_id"]), p["matter"]["file"]
+        same = a and a["candidate_sha256"] == p["candidate_sha256"]
+        if a and a["decision"] == "approved":
+            cats["approved_current" if same else "approved_stale"].append(f)
+        elif a and a["decision"] in ("rejected", "revision_requested") and same:
+            cats[a["decision"]].append(f)
+        elif v == "BLOCK":
+            cats["blocked"].append(f)
+        elif v == "QUARANTINE":
+            cats["quarantined"].append(f)
+        elif v == "HUMAN_REQUIRED":
+            cats["human_required"].append(f)
+        else:
+            cats["awaiting_review"].append(f)
+    scope = out["packets"]["scope"]
+    return {"about": "Where each Bench packet stands. Written by scripts/packets.py. Approved means a named publisher approved this exact version.",
+            "as_of": scope["as_of"], "packets": len(packets), "counts": {k: len(v) for k, v in cats.items()},
+            "files": {k: sorted(v)[:60] for k, v in cats.items() if k not in ("approved_current", "awaiting_review")},
+            "with_skeptic_veto": sorted(p["matter"]["file"] for p in packets.values() if p["skeptic"]["veto"])[:60]}
+
+
 def write_out(out, bench_dir=None):
     P = paths(bench_dir)
     for k in ("registry", "entities", "packets"):
         write_json(P[k], out[k])
         with open(P[k], "rb") as f:
             print(f"wrote {os.path.relpath(P[k], ROOT)}  {sha(f.read())}")
+    write_json(P["status"], status_summary(out, load_jsonl(P["approvals"])))
+    print(f"wrote {os.path.relpath(P['status'], ROOT)}")
 
 
 def main():

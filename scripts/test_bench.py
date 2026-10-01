@@ -73,7 +73,7 @@ class Bench(unittest.TestCase):
         return quiet(approve.main, ["--reviewer", reviewer, "--approve", *ids, "--reason", "test", "--no-dissent", *extra], self.bench)[1]
 
     def commit(self, dry=False):
-        return quiet(commit.main, ["--dry-run"] if dry else [], self.bench)[1]
+        return quiet(commit.main, (["--dry-run"] if dry else []) + ["--allow-unattested"], self.bench)[1]
 
     # --- research and examination
 

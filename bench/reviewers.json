@@ -1,0 +1,6 @@
+{
+  "about": "Who may decide on Bench packets and mistake reports. Add each person by GitHub username. Roles: reviewer may reject, ask for changes, record dissent, and record a correction decision; publisher may also approve a packet and override a Skeptic veto. Names appear publicly next to a Reviewed mark, so use the name the person wants shown. The same person should not be the only researcher and the only approver on one packet. Change this file only through a reviewed pull request.",
+  "people": [
+    { "github": "brent-Equalpoint", "name": "brent-Equalpoint", "roles": ["reviewer", "publisher"] }
+  ]
+}

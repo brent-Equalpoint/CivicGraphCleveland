@@ -30,12 +30,15 @@ def main():
     print("matters:", len(matters))
 
     def sponsors(m):
-        return m["MatterId"], [s["MatterSponsorName"] for s in sorted(get(f"/matters/{m['MatterId']}/sponsors"), key=lambda s: s["MatterSponsorSequence"])]
+        rows = sorted(get(f"/matters/{m['MatterId']}/sponsors"), key=lambda s: s["MatterSponsorSequence"])
+        # the person ID is Legistar's stable key for a sponsor; the name alone can be shared or spelled two ways
+        return m["MatterId"], [s["MatterSponsorName"] for s in rows], [s.get("MatterSponsorNameId") for s in rows]
 
-    sp = {}
+    sp, sp_ids = {}, {}
     with cf.ThreadPoolExecutor(12) as ex:
-        for mid, names in ex.map(sponsors, matters):
+        for mid, names, ids in ex.map(sponsors, matters):
             sp[mid] = names
+            sp_ids[mid] = ids
     rows = []
     for m in matters:
         rows.append({
@@ -43,7 +46,7 @@ def main():
             "title": (m["MatterTitle"] or m["MatterName"] or "").strip(),
             "intro": (m["MatterIntroDate"] or "")[:10], "passed": (m["MatterPassedDate"] or "")[:10] or None,
             "url": f"https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID={m['MatterId']}&GUID={m['MatterGuid']}",
-            "sponsors": sp.get(m["MatterId"], []),
+            "sponsors": sp.get(m["MatterId"], []), "sponsor_ids": sp_ids.get(m["MatterId"], []),
         })
     snap = {"source": B, "retrieved_at": datetime.datetime.now(datetime.timezone.utc).isoformat(timespec="seconds"),
             "filter": "MatterIntroDate >= 2026-01-01", "count": len(rows), "matters": rows}

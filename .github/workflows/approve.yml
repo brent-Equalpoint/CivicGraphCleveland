@@ -1,0 +1,104 @@
+# A named person approves, rejects, or asks for changes to Bench packets, here and nowhere else.
+#
+# Run it from the Actions tab: "Approve Bench packets", Run workflow. GitHub tells this job which
+# account started it (github.actor); scripts/approve.py checks that account against bench/reviewers.json
+# and signs the decision with BENCH_APPROVAL_KEY, a secret only workflows can use. scripts/commit.py
+# publishes only signed decisions made by a publisher. A decision typed into a file by hand has no
+# valid signature and is refused.
+name: Approve Bench packets
+
+on:
+  workflow_dispatch:
+    inputs:
+      decision:
+        description: "What to record"
+        type: choice
+        options: [approve, reject, revise]
+        required: true
+      packets:
+        description: "Packet IDs separated by spaces, or all-merge to approve every packet the checks passed that has no veto and no decision yet"
+        required: true
+      reason:
+        description: "Why, in a sentence. This is public."
+        required: true
+      no_dissent:
+        description: "I looked for counterevidence and found none to record"
+        type: boolean
+        default: false
+      dissent:
+        description: "Counterevidence or doubt to keep on the record (public). Leave empty if you ticked the box above."
+        required: false
+      override_veto:
+        description: "Only to approve a packet the Skeptic vetoed: say why. Publishers only."
+        required: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: bench-approvals
+  cancel-in-progress: false
+
+jobs:
+  decide:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Packages
+        run: npm ci
+
+      - name: Build the packets from the committed records
+        run: python scripts/packets.py
+
+      - name: Record the decision (signed)
+        env:
+          BENCH_APPROVAL_KEY: ${{ secrets.BENCH_APPROVAL_KEY }}
+          DECISION: ${{ inputs.decision }}
+          PACKETS: ${{ inputs.packets }}
+          REASON: ${{ inputs.reason }}
+          NO_DISSENT: ${{ inputs.no_dissent }}
+          DISSENT: ${{ inputs.dissent }}
+          OVERRIDE: ${{ inputs.override_veto }}
+        run: |
+          set -euo pipefail
+          if ! [[ "$PACKETS" =~ ^(all-merge|[A-Za-z0-9_\ ]+)$ ]]; then echo "Packet list has characters that are not allowed."; exit 1; fi
+          case "$DECISION" in approve) flag="--approve";; reject) flag="--reject";; revise) flag="--revise";; *) exit 1;; esac
+          args=(--actions --reason "$REASON")
+          if [ "$PACKETS" = "all-merge" ]; then args+=("$flag" --all-merge); else read -ra ids <<< "$PACKETS"; args+=("$flag" "${ids[@]}"); fi
+          if [ "$NO_DISSENT" = "true" ]; then args+=(--no-dissent); fi
+          if [ -n "$DISSENT" ]; then args+=(--dissent "$DISSENT"); fi
+          if [ -n "$OVERRIDE" ]; then args+=(--override-veto "$OVERRIDE"); fi
+          python scripts/approve.py "${args[@]}"
+
+      - name: Publish what was approved, and refresh the status
+        env:
+          BENCH_APPROVAL_KEY: ${{ secrets.BENCH_APPROVAL_KEY }}
+        run: |
+          python scripts/commit.py
+          python scripts/packets.py
+
+      - name: Build the site so the approved records are published
+        run: python build.py
+
+      - name: Commit the decision, the approved records, and the site
+        run: |
+          git config user.name "civic-graph-bench"
+          git config user.email "civic-graph-bench@users.noreply.github.com"
+          git add bench site
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "Bench decision recorded by ${GITHUB_ACTOR}"
+          git push
