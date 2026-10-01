@@ -50,6 +50,77 @@ By dependency and value, not by date. Each step says what "done" means.
 
 Steps 1 and 2 can run beside any build work, since they are people and calendar time.
 
+## Every build still needed
+
+Sizes: S is under one session, M is one to two, L is three or more. "Needs" lists what must exist first.
+Nothing here has a date. Items that only a person can do are in the sections below, not in this table.
+
+**A. Release safety**
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| A1 | Move the browser checks and the accessibility audit into `scripts/`, runnable with one command | S | nothing |
+| A2 | Run the checks and a two-build hash comparison on every push, and in the nightly job | S | A1 |
+| A3 | A release script that performs the seven "shipped" steps | S | A1 |
+| A4 | A weekly check that every source link still works, and what a record page says when its source disappears | S | nothing |
+| A5 | A "last good update" line, and failure alerts to more than the repository owner | S | nothing |
+
+**B. Trust and review (the Bench)**
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| B1 | Stage 8: the app reads approved records and shows sources, approval date, and reviewer | L | B3 |
+| B2 | Run packets in the nightly job, keep approvals, and surface what awaits a decision | S | nothing |
+| B3 | A real approval gate: reviewer identity proven by signed commits or an approved pull request, replacing a typed name | M | named reviewers |
+| B4 | A small review console for approving, rejecting, and recording dissent | M | B3 |
+| B5 | Register the City Record minutes and parse member-by-member votes into packets, so "how they voted" can show real data | L | B1 |
+| B6 | Keep Legistar's stable person IDs in the snapshot, and use them to resolve people | S | nothing |
+| B7 | Store raw source snapshots with hashes where the source allows it | M | nothing |
+| B8 | The mistake-report feature ("Tell us"), the intake behind it, and a public correction history | M | B3 |
+| B9 | A reviewed-by-a-person step for profile office text, like the existing summary review | S | nothing |
+| B10 | Automated Examiner and Skeptic seats that read sources in separate sessions | L | B1, B3 |
+
+**C. Resident experience**
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| C1 | Phone stories: a read-as-text view, a spoken announcement for each frame, and Go deeper and Back to the story links | M | nothing |
+| C2 | An Easy mode version of profiles | S | nothing |
+| C3 | Empty-result messages in the compiled app's own search box and dictionary, and a blocked-storage message on desktop | S | nothing |
+| C4 | A cached app shell so the hosted site opens with no signal, built so no visitor gets an old version after a deploy | M | A2 |
+| C5 | Mayor profile depth: the departments the Mayor leads and a sourced list of executive orders | M | nothing |
+| C6 | Contact details on profiles, if you decide to show them | S | a decision |
+| C7 | Spanish: reviewed copy, a language choice that persists, and screen readers that switch voice | L | a reviewer |
+
+**D. Federal graph** (details in `plan-us-graph.md`)
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| D1 | Get vcfest.app's graph source, or decide to rebuild it, and record CivLab's status | S | an answer from you |
+| D2 | Landscape data: bodies, members, committees, categories, and a reviewed policy-area map | L | source terms read |
+| D3 | The graph component (Sky, Linked, Tree, Index, filters, keyboard, text version), also giving Cleveland its own node-edge view | L | D1 |
+| D4 | Bills and votes by category, with member links | L | D2, D3 |
+| D5 | Place picker, "Your members", and three federal stories | M | D2 |
+| D6 | Nightly refresh and Bench packets for federal records | M | D2, B2 |
+| D7 | Accessibility and testing for the federal views | M | D3 |
+
+**E. Anonymous insights**
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| E1 | The opt-in switch, fixed menu, on-device coin flip, count-only function, public dashboard, privacy notice, and changelog | L | the policy rewritten for Equalpoint, board decisions, counsel review |
+
+**F. Beyond Cleveland and Washington**
+
+| # | Build | Size | Needs |
+| --- | --- | --- | --- |
+| F1 | Research state legislature and other city sources, terms first | S | nothing |
+| F2 | A state graph | L | F1 |
+| F3 | A second city | L | F1 |
+
+Totals: 33 builds. Thirteen are small, ten are medium, and ten are large.
+A1 to A5, B2, B6, B9, C2, C3, C5, and F1 can start any time. D1 can start as soon as you answer it.
+
 ## People and operations
 
 These roles are not named yet. The Bench design needs them, and nothing else here is safe without them.
