@@ -165,7 +165,7 @@ function cxmFromUrl() {
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`today`, `you`] };
+    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`today`, `you`], profiles: [`people`, null, `profiles`] };
   if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: mode || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
@@ -341,6 +341,7 @@ const CXM_SHEETS = {
   decision: (s) => <CxmDecision id={s.id} />,
   review: () => <CxmReview />,
   news: () => <CxmNews />,
+  profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,
 };
 function CxmSheet({ sheet, depth }) {
   const { closeSheet, backSheet } = useCxm();
@@ -523,7 +524,7 @@ function cxStorageOk() {
   try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
 }
 /* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
-const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`];
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`];
 function cxLinkProblem() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }

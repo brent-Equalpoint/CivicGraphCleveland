@@ -6,7 +6,7 @@
 
 Steps:
   1. keep a copy of today's data/*.json
-  2. run fetch_legistar.py, fetch_reasons.py, fetch_place.py (each retries with growing pauses)
+  2. run fetch_legistar.py, fetch_reasons.py, fetch_place.py, fetch_people.py (each retries with growing pauses)
   3. safety checks: if the new snapshot looks broken (far fewer items than before, missing
      histories or ward maps), put the old files back and stop with an error, so a bad night
      never replaces good data. GitHub then emails the repository owner.
@@ -20,7 +20,7 @@ import json, os, shutil, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 DATA = os.path.join(HERE, "..", "data")
-FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json")
+FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json", "people-2026.json")
 
 
 def load(d, name):
@@ -44,6 +44,11 @@ def check(old_dir, new_dir):
         lost = [f for f, r in orr["items"].items() if r.get("whereas") and not nr["items"].get(f, {}).get("whereas")]
         if lost:
             bad.append(f"reasons: lost the official text for {', '.join(lost)}")
+    pp = load(new_dir, "people-2026.json")
+    n_council = sum(1 for x in pp["people"] if x["title"] == "Council Member")
+    n_mayor = sum(1 for x in pp["people"] if x["title"] == "Mayor")
+    if n_council != 15 or n_mayor != 1:
+        bad.append(f"people: {n_council} council members and {n_mayor} mayor, expected 15 and 1")
     g = load(new_dir, "geo-2026.json")
     for k, want in (("wards2026", 15), ("wards2014", 17)):
         n = len(g["layers"].get(k, {}).get("features", []))
@@ -68,11 +73,12 @@ def main():
             shutil.copy(os.path.join(keep, f), DATA)
         sys.exit(f"REFRESH STOPPED, previous data kept: {why}")
 
-    import fetch_legistar, fetch_reasons, fetch_place, changes
+    import fetch_legistar, fetch_reasons, fetch_place, fetch_people, changes
     try:
         fetch_legistar.main()
         fetch_reasons.main()
         fetch_place.main()
+        fetch_people.main()
     except Exception as e:  # network or source failure after all retries
         restore(f"{type(e).__name__}: {e}")
     bad = check(keep, DATA)

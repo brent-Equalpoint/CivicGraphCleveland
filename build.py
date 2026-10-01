@@ -269,8 +269,13 @@ def main():
         {"retrieved": pl["retrieved_at"], "histories": pl["histories"], "addresses": pl["addresses"],
          "funds": {f: {k: r.get(k) for k in ("file", "text_url", "amounts", "limit", "wards")} for f, r in pl["funds"].items()}},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
+    # v5.16 profiles: who holds each seat and the term, from Legistar's office records (scripts/fetch_people.py)
+    pe_path = os.path.join(ROOT, "data", "people-2026.json")
+    pe = json.load(open(pe_path, encoding="utf-8"))
+    log(f"data   {sha(pe_path)}  people-2026.json  ({pe['count']} people, retrieved {pe['retrieved_at']})")
+    ext_js += "/* ---- data/people-2026.json ---- */\nconst CX_PEOPLE = " + json.dumps(pe, ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx", "cx-seat.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -437,6 +442,19 @@ def main():
                 "          F === `place` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Who decides here?`, resetKey: F, children: (0, W.jsx)(CX_Place, { onGo: cxGo }) }) }),\n"
                 "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n",
                 label="aux page: stories")
+    # v5.16 Profiles: sidebar entry, address panel, page
+    src = patch(src, "`news`, `stories`]", "`news`, `stories`, `profiles`]", count=2, label="url panels: profiles")
+    src = patch(src,
+                "(0, W.jsx)(`span`, { children: `Stories` })],\n                  }),\n",
+                "(0, W.jsx)(`span`, { children: `Stories` })],\n                  }),\n"
+                "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `Profiles`,\n                    className: F === `profiles` ? `active` : ``,\n"
+                "                    onClick: () => cxPanel(`profiles`),\n                    children: [(0, W.jsx)(CXI.Users, { size: 18 }), (0, W.jsx)(`span`, { children: `Profiles` })],\n                  }),\n",
+                label="sidebar: profiles")
+    src = patch(src,
+                "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n",
+                "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n"
+                "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
+                label="aux page: profiles")
 
     src = patch(src,
                 "            className: `atlas-header-actions`,\n            children: [\n",

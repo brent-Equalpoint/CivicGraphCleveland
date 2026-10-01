@@ -700,3 +700,42 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .cx-notice button { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid #141210; border-radius: 10px; background: transparent; color: #141210; font: 700 15px Inter, system-ui, sans-serif; cursor: pointer; }
 .cx-notice button:focus-visible { outline: 3px solid #141210; outline-offset: 2px; }
 @media print { .cx-notice, .cxm-empty .cxm-row2, .cx-empty-actions { display: none !important; } }
+
+/* ---- v5.16 formal profiles (ext/cx-seat.jsx). Fixed colors: it sits on a dark page on desktop and in a dark phone sheet. ---- */
+.sp, .sp-page { color: #f4f2ee; }
+.sp-page { max-width: 880px; padding-bottom: 40px; }
+.sp-page-h { margin: 0 0 8px; font-size: 32px; line-height: 1.15; }
+.sp-lede { margin: 0 0 16px; max-width: 62ch; font-size: 18px; line-height: 1.5; color: #e7e4de; }
+.sp-pick { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
+.sp-pick button { display: flex; flex-direction: column; align-items: flex-start; min-height: 52px; padding: 6px 14px; border-radius: 12px; background: #ffffff0f; color: #f4f2ee; border: 1px solid #ffffff2e; font: inherit; text-align: left; cursor: pointer; }
+.sp-pick button span { font-weight: 700; font-size: 15px; }
+.sp-pick button small { font-size: 14px; color: #e1ded8; }
+.sp-pick button.on { background: #ffffff24; border-color: #ffd1a9; }
+.sp { max-width: 760px; font-size: 17px; line-height: 1.6; }
+.sp-head { display: flex; align-items: center; gap: 18px; margin: 0 0 22px; }
+.sp-head img { width: 96px; height: 96px; border-radius: 50%; object-fit: cover; flex: none; border: 2px solid #ffffff3a; }
+.sp h1 { margin: 0 0 4px; font-size: 32px; line-height: 1.15; }
+.sp h2 { margin: 28px 0 10px; font-size: 22px; line-height: 1.25; }
+.sp h3 { margin: 16px 0 6px; font-size: 18px; }
+.sp p { margin: 0 0 12px; }
+.sp-office { font-size: 19px; }
+.sp-chips { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.sp-chip { display: inline-block; padding: 3px 10px; border-radius: 999px; background: #9fe6c326; color: #bff3d8; font-size: 14px; font-weight: 600; }
+.sp-asof { font-size: 15px; color: #e1ded8; }
+.sp-dl { display: grid; grid-template-columns: 9.5em 1fr; gap: 10px 16px; margin: 0; }
+.sp-dl dt { font-weight: 700; }
+.sp-dl dd { margin: 0; }
+.sp-list { margin: 8px 0 12px; padding-left: 22px; }
+.sp-list li { margin: 5px 0; }
+.sp-counts { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 6px; }
+.sp-counts strong { display: inline-block; min-width: 1.7em; font-size: 24px; }
+.sp-note, .sp-src { font-size: 15.5px; color: #e1ded8; }
+.sp a { color: #ffd1a9; text-underline-offset: 3px; }
+.sp-ext { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.sp details { margin: 8px 0; }
+.sp summary { min-height: 36px; font-weight: 600; cursor: pointer; }
+.sp-actions { margin-top: 16px; }
+.sp-actions button { min-height: 44px; padding: 0 16px; border-radius: 10px; border: 1px solid #ffffff4d; background: transparent; color: #f4f2ee; font-family: inherit; font-size: 16px; font-weight: 600; cursor: pointer; }
+.sp a:focus-visible, .sp button:focus-visible, .sp summary:focus-visible, .sp-pick button:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
+@media (max-width: 760px) { .sp-dl { grid-template-columns: 1fr; gap: 2px 0; } .sp-dl dt { margin-top: 10px; } .sp h1 { font-size: 26px; } .sp-head img { width: 72px; height: 72px; } }
+@media print { .sp-pick, .sp-actions { display: none !important; } .sp-ext { display: none !important; } .sp-dl { grid-template-columns: 9.5em 1fr; } }

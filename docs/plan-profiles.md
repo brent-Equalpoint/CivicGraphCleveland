@@ -1,6 +1,6 @@
 # Plan: formal profiles for every seat, including the Mayor
 
-Written Oct 1, 2026. A plan only; nothing in the app has changed.
+Written Oct 1, 2026. Status after v5.16: P1 and P2 are built, and the phone sheet and several entry points from P3 and P4 came with them. Findings from P1: Legistar's office records give each member's person ID and the 2026 to 2029 term, plus the Mayor's term, and nothing else. It has no committee seats and no contact details, so committees are left out and contact is a link to the official pages (decisions 1 and 2 below, as recommended). Still open: the ward map, the Easy mode version, reviewed office text (P5), the hover card button, the Council list, and testing (P6).
 
 ## What this is, and how it differs from My leaders
 

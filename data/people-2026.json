@@ -1,0 +1,152 @@
+{
+ "source": "https://webapi.legistar.com/v1/cityofcleveland",
+ "retrieved_at": "2026-10-01T19:27:27+00:00",
+ "filter": "office records ending on or after 2026-01-05, Council Member and Mayor only",
+ "count": 16,
+ "people": [
+  {
+   "person_id": 258,
+   "name": "Justin M. Bibb",
+   "title": "Mayor",
+   "body": "Sponsors - Mayor",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=258&GUID=9074241C-7B3E-4635-B714-519E454F6EE6"
+  },
+  {
+   "person_id": 241,
+   "name": "Kevin L. Bishop",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=241&GUID=B3B475EC-6C13-4F6B-9880-56D62BAAE486"
+  },
+  {
+   "person_id": 192,
+   "name": "Kevin Conwell",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=192&GUID=2AFB62D7-7704-4854-9B25-25BD7917FB41"
+  },
+  {
+   "person_id": 265,
+   "name": "Austin Davis",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=265&GUID=28F71FC7-6C73-4AF2-B47D-E0CA3C1A6875"
+  },
+  {
+   "person_id": 256,
+   "name": "Deborah A. Gray",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=256&GUID=3DD18368-8608-45E4-BD60-816B8455F056"
+  },
+  {
+   "person_id": 238,
+   "name": "Blaine A. Griffin",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=238&GUID=7704F614-EAC1-48E1-ACCC-A93A66AA4940"
+  },
+  {
+   "person_id": 254,
+   "name": "Kris Harsh",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=254&GUID=2511782B-61FA-4230-9256-5664A10FC986"
+  },
+  {
+   "person_id": 257,
+   "name": "Stephanie Howse-Jones",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=257&GUID=92DABCF1-8A46-4EA6-904D-D27EC683ED5C"
+  },
+  {
+   "person_id": 264,
+   "name": "Nikki Hudson",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=264&GUID=0BACDB3D-298E-4743-9CC0-C1B6A5A72D13"
+  },
+  {
+   "person_id": 240,
+   "name": "Joseph T. Jones",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=240&GUID=970D30E1-16C2-4CEF-A0AF-8A1E3F50F706"
+  },
+  {
+   "person_id": 199,
+   "name": "Brian Kazy",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=199&GUID=9F5C4044-6F71-4811-BB0F-C9F530847445"
+  },
+  {
+   "person_id": 191,
+   "name": "Michael Polensek",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=191&GUID=2178BDC6-C3D4-4A55-9A6F-DB42DE4BF2AB"
+  },
+  {
+   "person_id": 244,
+   "name": "Jasmin Santana",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=244&GUID=AB71A1C0-CD39-499F-BB1C-A552A3BC35F4"
+  },
+  {
+   "person_id": 263,
+   "name": "Tanmay Shah",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=263&GUID=EA742AC2-D67F-4F3B-8C83-70CF4CC9E86E"
+  },
+  {
+   "person_id": 246,
+   "name": "Charles Slife",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=246&GUID=898FFAC0-9D74-401C-BD9D-E6BCD4EFC607"
+  },
+  {
+   "person_id": 255,
+   "name": "Richard A. Starr",
+   "title": "Council Member",
+   "body": "City Council",
+   "start": "2026-01-05",
+   "end": "2029-12-31",
+   "url": "https://cityofcleveland.legistar.com/PersonDetail.aspx?ID=255&GUID=D3BBA4B5-B69D-4764-9571-0507839FADCD"
+  }
+ ]
+}

@@ -449,6 +449,7 @@ function CX_Profile({ seat, parts, chosen, liked, onLike, onPrev, onNext, pos, t
 
       <div className="cxp-tile cxp-cta cxp-blue-soft">
         <button type="button" className="cxp-primary" onClick={() => onOpen(`story`)}>Read the full story <CXI.Arrow size={16} /></button>
+        <button type="button" className="cxp-secondary" onClick={() => cxOpenProfile(seat.id)}>Read the formal profile <CXI.Arrow size={16} /></button>
         <button type="button" className="cxp-secondary" onClick={() => onOpen(`letter`)}><CXI.File size={15} /> Write to {isAdmin ? `the mayor` : first}</button>
         <span className="cxp-fine">Receipts, not scores. Sponsorship is not a vote.</span>
       </div>

@@ -22,7 +22,7 @@ function cxeFrames(story) {
 }
 
 function CxmEasy() {
-  const { home, setHome, practice, setEasy, go, openSeat } = useCxm();
+  const { home, setHome, practice, setEasy, go, openSeat, openSheet } = useCxm();
   const answers = practice.state.answers;
   const [view, setView] = u.useState({ k: `home` });
   const [speaking, setSpeaking] = u.useState(!1);
@@ -125,7 +125,7 @@ function CxmEasy() {
             {last && (
               <div className="cxe-end">
                 <p className="cxe-big2">That is the end of this one.</p>
-                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => toFull(() => openSeat(`ward-${home.ward}`))}>Read more about {cxmMember(home.ward)}</button>}
+                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => toFull(() => openSheet(`profile`, { seat: `ward-${home.ward}` }))}>Read the profile of {cxmMember(home.ward)}</button>}
                 {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`))}>Open my ballot</button>}
                 {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`))}>See City Hall's receipts</button>}
                 <button type="button" className="cxe-btn alt" onClick={toHome}>Pick another question</button>

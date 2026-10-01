@@ -125,6 +125,7 @@ function CxmProfiles() {
         <p className="cxm-summary">{cxSummary(seat, parts.own, parts.joined, parts.dept)}</p>
         <div className="cxm-row2">
           <button type="button" className="cxm-btn" onClick={() => openSheet(`seat`, { seat: seat.id })}>Read the full story</button>
+          <button type="button" className="cxm-btn2" onClick={() => openSheet(`profile`, { seat: seat.id })}>Read the formal profile</button>
           <button type="button" className="cxm-btn2" onClick={() => openSheet(`letter`, { seat: seat.id })}>Write to {isAdmin ? `the mayor` : first}</button>
         </div>
         <p className="cxm-fine">Receipts, not scores. Sponsorship is not a vote. 2026 council records.</p>
