@@ -124,6 +124,10 @@ Think of v5.15 as giving the app a morning newspaper route. Every night it walks
 - The architecture page states plainly that agents, polling, the review console, and publishing are designed but not running.
 - Record PDFs are verified against `records/manifest.json` SHA-256 values on every build.
 
+## Roadmap
+
+`docs/ROADMAP.md` is the one page that ties the plans together: where things stand, the order of work, the people and operations still to name, and what "shipped" means.
+
 ## Rebuild from clean
 
 ```
