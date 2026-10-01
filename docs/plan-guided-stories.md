@@ -155,12 +155,41 @@ then add more stories.
   `cx-ui.jsx`, and the new shared story file.
 - Build and browser-check once per phase, not after every edit.
 
-## Decisions for you
+## Decisions (taken as the working answer; change any of them before the phase it affects)
 
-1. Should the desktop reader open in the right panel (recommended, matches the record drawer) or full screen like the phone?
-2. Which three starter journeys on the phone? The three above are the suggestion.
-3. Is Spanish in scope for the first release? It changes how frames are written, so decide before Phase 1.
-4. Should Easy mode be the default for first-time visitors, with "Full" one tap away? (Recommended.)
+1. The desktop reader opens in the right panel, matching the record drawer. Affects Phase 2.
+2. The three starter journeys are "Who represents me", "What is on my ballot", and "What did Council do this year". Affects Phase 1c.
+3. Spanish is in scope, as Phase 7. To keep it cheap, Phase 1 stores every story and Easy mode string as
+   data, not inline text, so translating later means adding a file, not rewriting screens. Spanish copy
+   needs review by a Spanish-speaking resident before it ships.
+4. Easy mode is the default for first-time visitors, with "Full" one tap away. Affects Phase 1c.
+
+## Roadmap
+
+A session is one sitting of focused work ending in a clean build, a browser check, and a commit.
+Phases are ordered so each one is useful on its own and you can stop after any of them.
+
+| # | Phase | Done when | Size |
+| --- | --- | --- | --- |
+| 1 | Share the story engine; strings stored as data | Phone looks and behaves the same; both layouts can import the builders | 1 session |
+| 1b | Quiet the text and rewrite in warm, direct words | Phone Today, stories, and room headers have no all-caps labels; every kept grey line passes 4.5:1 in Bento and Original | 1 session |
+| 1c | Easy mode on the phone, with read-aloud and print/save | A first-time visitor reaches "who represents me" in 3 taps with no jargon; every screen reads aloud; choice persists locally | 2 sessions |
+| 2 | Stories and Easy mode on the desktop | Stories row on the landing page; reader in the right panel; last frame hands off to the room guide; keyboard works | 2 sessions |
+| 3 | Connect stories to Explore both ways | Every frame has Go deeper and Back to the story; deep links round-trip | 1 session |
+| 4 | Text version and announcements for stories | Every story has a Read as text view; a screen reader announces each frame; focus moves in and back out | 1 session |
+| 5 | Access pass across the app | Skip link, heading outline, landmarks; labels match names; no drag or hover needed; 44px targets; high-contrast option; follows system contrast, motion, and text size | 2 sessions |
+| 6 | Device and resident testing | VoiceOver, TalkBack, NVDA, switch, and voice control each recorded as passed, failed, or not tested; five residents, one task each, fixes made | 2 sessions plus people's time |
+| 7 | Spanish | Reviewed Spanish for stories, Easy mode, and navigation; language choice persists locally; screen readers switch voice | 2 sessions plus a reviewer |
+
+Rules that apply to every phase: both styles (Bento and Original), both layouts, receipts not scores,
+no em dashes, no left accent stripes, nothing personal in links or requests, a clean rebuild with the
+hash recorded next to any claim, and an updated STATE-OF-BUILD.md.
+
+## What to claim, and when
+
+Until Phase 6 is done, the app says only what is true: it has keyboard support, a text view, and
+reduced motion, and it has not been tested with assistive technology. After Phase 6, publish what
+passed and what did not. A WCAG 2.2 AA claim waits for the manual tests the Implementation doc lists.
 
 ## Not in this plan
 
