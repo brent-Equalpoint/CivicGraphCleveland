@@ -57,7 +57,8 @@ Open `Cleveland-Civic-Graph-v5.html` in any modern browser. It is one file and r
 - **Quieter text.** About 50 small all-caps grey labels across the phone app are now plain sentence-case words in readable ink, and fine print is 14px at full reading contrast. Story copy was rewritten in warmer, shorter words ("Council set aside 2 items this year", "How each member voted isn't public yet").
 - **Page not found.** `site/404.html` offers the start, who decides where I live, my ballot, and what Council is doing. A link to a room or record that does not exist now shows a short "We could not find that page" notice on the phone.
 - **Start-up message.** If the app has not drawn after 12 seconds, the loading screen says so in plain words and offers Try again.
-- **Not done yet from the plans:** Easy mode, read-aloud, print styles, an offline notice, the desktop notice for bad links, and the rest of the screen-state and accessibility passes (see `docs/plan-*.md`).
+- **Tab icon, print, offline notice.** The site and the single file now have a small network-mark tab icon (`site/favicon.svg`). Printing a story, a record, or a phone sheet gives plain black text on white with each link's address written out, and no menus or buttons. The hosted site shows "You appear to be offline" if the connection drops; the single file never does, since it is built to work offline. If a visitor is already offline before the first load, the browser's own error page shows, because there is no cached copy yet.
+- **Not done yet from the plans:** Easy mode, read-aloud, the desktop notice for bad links, and the rest of the screen-state and accessibility passes (see `docs/plan-*.md`).
 - Checked in headless Chrome at phone (390 px) and desktop (1280 px) widths in Bento and Original: no console errors; two clean builds gave the same hash. Not tested with a screen reader or on a real phone.
 
 ## v5.15 changes (live updates)

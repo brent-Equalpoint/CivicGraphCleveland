@@ -626,3 +626,28 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .cxm-story-src a { color: #fff; text-underline-offset: 3px; }
 .cxm-notice { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin: 0 0 12px; padding: 12px 14px; border-radius: 14px; background: var(--tile2); color: var(--ink); font-size: 16px; line-height: 1.45; }
 .cxm-notice button { flex: none; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: none; color: var(--soft); font: inherit; font-weight: 600; }
+
+/* ---- v5.16 print: a record, a story, or a page prints as plain black text on white, with each link's address spelled out.
+   Lives here (outside the Bento color remap) so print colors stay exactly as written. ---- */
+@media print {
+  html, body { background: #fff !important; color: #000 !important; height: auto !important; }
+  html body #root, html body #root * { background: transparent !important; color: #000 !important; box-shadow: none !important; text-shadow: none !important; animation: none !important; }
+  html body #root .cxm-row, html body #root .cxm-card, html body #root .cxm-rcpt, html body #root .cxm-tile { border: 1px solid #999 !important; }
+  /* app chrome and controls that do nothing on paper */
+  .atlas-header, .atlas-sidebar, .atlas-sidebar-bottom, .cxm-top, .cxm-tabs, .cxm-scrim, .cxm-sheet-bar, #cx-offline, .cxm-notice,
+  .cx-story-nav, .cx-stories-pick, .cx-story-reader > .cx-link-button, .cxm-story-hint, .cx-fresh-chip { display: none !important; }
+  /* let every scroll area run to its full length instead of cutting off at the screen */
+  #root, .atlas-shell, .atlas-main, .atlas-body, .auxiliary-page, .cxm, .cxm-main, .cxm-overlay, .cxm-sheet-wrap, .cxm-sheet {
+    position: static !important; display: block !important; height: auto !important; max-height: none !important; overflow: visible !important; inset: auto !important;
+    border: 0 !important; border-radius: 0 !important; transform: none !important; }
+  /* when a phone sheet is open, print that and not the page behind it */
+  .cxm:has(.cxm-sheet) .cxm-main { display: none !important; }
+  main, section, article, .cx-story-reader { padding: 0 !important; margin: 0 0 12px !important; max-width: none !important; border: 0 !important; }
+  h1, h2, h3 { break-after: avoid; }
+  li, tr, img, svg, .cxm-rcpt, .cx-story-all > li { break-inside: avoid; }
+  a { text-decoration: underline; }
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 11px; font-weight: 400; word-break: break-all; }
+  .cx-story-big, .cxm-story-big { font-size: 24pt !important; }
+  .cx-story-small, .cxm-story-small, p, li { font-size: 12pt !important; line-height: 1.45 !important; }
+  @page { margin: 16mm; }
+}

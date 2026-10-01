@@ -17,7 +17,7 @@ of times, so a changed input fails loudly instead of silently producing a
 different app. Tools: node_modules/.bin/{prettier,esbuild} (versions pinned in
 package.json).
 """
-import base64, hashlib, json, os, re, shutil, subprocess, sys, tarfile, datetime
+import base64, hashlib, json, os, re, shutil, subprocess, sys, tarfile, datetime, urllib.parse
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
 INP = os.path.join(ROOT, "inputs")
@@ -123,6 +123,20 @@ def geo_svg(geo):
             "overlap": geo["overlap"], "downtown": geo["downtown"]}
 
 
+# v5.16: a small network mark as the tab icon (SVG; the single file carries it inline, the site serves it as a file)
+FAVICON_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#141210"/>'
+               '<path d="M18 42 L32 20 L46 42 Z" fill="none" stroke="#ffd36b" stroke-width="4" stroke-linejoin="round"/>'
+               '<g fill="#d9541f"><circle cx="32" cy="20" r="8"/><circle cx="18" cy="42" r="8"/><circle cx="46" cy="42" r="8"/></g></svg>')
+
+# v5.16: hosted site only. The single file is built to work offline, so it never shows this.
+OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be offline. You can keep reading what is already open. '
+                  'New records will show up when you reconnect.</div>\n'
+                  '<style>#cx-offline{position:fixed;left:12px;right:12px;bottom:max(12px,env(safe-area-inset-bottom));z-index:99999;max-width:560px;margin:0 auto;'
+                  'padding:14px 16px;border-radius:14px;background:#ffd36b;color:#141210;font:600 16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;'
+                  'box-shadow:0 6px 24px #0008}#cx-offline[hidden]{display:none}</style>\n'
+                  '<script>(function(){var n=document.getElementById("cx-offline");function u(){n.hidden=navigator.onLine!==false;}'
+                  'addEventListener("offline",u);addEventListener("online",u);u();})();</script>\n')
+
 # v5.16: if the app has not drawn after 12 seconds (old browser, blocked script, very slow connection) say so in plain words
 BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');if(!b)return;"
                 "b.innerHTML='This is taking longer than usual.<small>Your connection may be slow, or your browser may be out of date. "
@@ -137,6 +151,7 @@ NOT_FOUND = """<!doctype html>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <title>Page not found | Cleveland Civic Graph</title>
 <style>
 html,body{margin:0;background:#141210;color:#f4eee8}
@@ -649,6 +664,8 @@ def main():
             "@media (prefers-reduced-motion:reduce){#cx-boot i{animation:none}}</style>\n")
 
     def page(inline_assets, fonts):
+        icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else '<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n'
+        offline = "" if inline_assets else OFFLINE_NOTICE
         return f"""<!doctype html>
 <html lang="en" class="dark">
 <head>
@@ -656,14 +673,14 @@ def main():
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cleveland Civic Graph</title>
 <meta name="description" content="A question-led map of who decides what in Cleveland, in plain English, with public sources, visible gaps, What's new from Council's record, and a practice ballot.">
-{fonts}<style>
+{icon}{fonts}<style>
 html,body{{margin:0;background:#141210;color:#f4eee8}}
 </style>
 {boot}</head>
 <body class="antialiased">
 <noscript><style>#cx-boot{{display:none}}</style><p style="padding:24px;font:16px system-ui">The Cleveland Civic Graph needs JavaScript to run. Every record in it links to a public source.</p></noscript>
 <div id="root"><div id="cx-boot" role="status"><i aria-hidden="true"></i>Loading the Cleveland Civic Graph<small>Public records, in plain English</small></div></div>
-<script>{BOOT_TIMEOUT}</script>
+{offline}<script>{BOOT_TIMEOUT}</script>
 <style>
 {css}
 </style>
@@ -695,6 +712,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     site_html = page(False, self_fonts)
     write(os.path.join(SITE, "index.html"), site_html)
     write(os.path.join(SITE, "404.html"), NOT_FOUND)
+    write(os.path.join(SITE, "favicon.svg"), FAVICON_SVG + "\n")
     log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")
     site_bytes = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(SITE) for f in fs)
     log(f"SITE   {sha(os.path.join(SITE, 'index.html'))}  site/index.html  {os.path.getsize(os.path.join(SITE, 'index.html'))} bytes "
