@@ -144,6 +144,17 @@ across the map flashes cards at every node.
 - Keep: the reduced-motion rule that already turns the animation off. With reduced motion on, keep the short wait but skip the fade.
 - Done when: sweeping the pointer across the map shows no cards, a pause shows one smoothly, and keyboard and touch (long press) behave the same way.
 
+Problem 3, arrows instead of sentences. The card writes each connection as a fragment with an arrow,
+such as "serves on → City Council", "Residents elects → this", and "15-ward map maps → this". The
+word "this" and the arrow make a reader work out who is doing what to whom.
+
+- Fix: write every connection as one short plain sentence that uses the person's or body's name, with no arrow and never the word "this". For example: "Stephanie D. Howse-Jones serves on City Council." and "Voters in Ward 8 elect Stephanie D. Howse-Jones." Group them under a small plain heading such as "Who they work with" and "Who chooses them".
+- How: a small table that turns each relationship word (serves on, elects, appoints, maps, oversees, funds, and the rest in the data) into a sentence for both directions, written once and used by the hover card, the record drawer, the phone's connection lists, and the Text view's "Connections, in words". A relationship with no sentence in the table is hidden rather than shown as a raw fragment, so nothing unreadable can appear.
+- Use names, not pronouns, so the card never has to guess how to refer to someone.
+- Where: the card lists come from `CX_HoverCard` in `ext/cx-live.jsx` (the two lines that print the arrow). The same arrow wording appears in the phone's `ext/cxm-explore.jsx` and once in `ext/cxm-today.jsx`; check each, since some arrows there may be button icons and can stay.
+- Keep the evidence rule: a sentence states only the recorded relationship, as the card's footer already says ("lines show recorded relationships, not control"). Sponsorship is not a vote, and a connection is not control.
+- Done when: no hover card, drawer, or connection list shows an arrow or the word "this", every line reads as a full sentence aloud, and a screen reader reads it naturally.
+
 **Phase 2: stories on the desktop (the biggest win).**
 - A "Stories" row at the top of the chamber landing, same five stories as the phone.
 - A reader opens in the right panel (the existing slide-out), not a full screen. Arrow keys and
@@ -196,7 +207,7 @@ Phases are ordered so each one is useful on its own and you can stop after any o
 | --- | --- | --- | --- |
 | 1 | Share the story engine; strings stored as data | Phone looks and behaves the same; both layouts can import the builders | 1 session |
 | 1b | Quiet the text and rewrite in warm, direct words | Phone Today, stories, and room headers have no all-caps labels; every kept grey line passes 4.5:1 in Bento and Original | 1 session |
-| 1e | Map hover card: remove the repeated 15-ward map line from council members, slow the card down | No member card mentions the 15-ward map; cards need a pause to appear and fade in; reduced motion respected | under 1 session |
+| 1e | Map hover card: remove the repeated 15-ward map line, write connections as plain sentences instead of arrows, slow the card down | No member card mentions the 15-ward map; no arrows or the word this anywhere in connections; cards need a pause to appear and fade in; reduced motion respected | about 1 session |
 | 1c | Easy mode on the phone, with read-aloud and print/save | A first-time visitor reaches "who represents me" in 3 taps with no jargon; every screen reads aloud; choice persists locally | 2 sessions |
 | 2 | Stories and Easy mode on the desktop | Stories row on the landing page; reader in the right panel; last frame hands off to the room guide; keyboard works | 2 sessions |
 | 3 | Connect stories to Explore both ways | Every frame has Go deeper and Back to the story; deep links round-trip | 1 session |
