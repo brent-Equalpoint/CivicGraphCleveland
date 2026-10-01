@@ -20,14 +20,15 @@ const SITE = path.resolve(ROOT, argv('--site') || 'site');
 const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 function argv(flag) { const i = process.argv.indexOf(flag); return i < 0 ? null : (process.argv[i + 1] && !process.argv[i + 1].startsWith('--') ? process.argv[i + 1] : true); }
 
-const MIME = { '.html': 'text/html; charset=utf-8', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.pdf': 'application/pdf', '.json': 'application/json' };
-function serve() {
+const MIME = { '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.pdf': 'application/pdf', '.json': 'application/json' };
+function serve(rootFn = () => SITE) {
   const server = http.createServer((q, r) => {
+    const root = rootFn();
     const u = decodeURIComponent(q.url.split('?')[0]);
-    let f = u === '/' ? path.join(SITE, 'index.html') : path.join(SITE, u);
-    if (!f.startsWith(SITE)) { r.writeHead(403); return r.end(); }
+    let f = u === '/' ? path.join(root, 'index.html') : path.join(root, u);
+    if (!f.startsWith(root)) { r.writeHead(403); return r.end(); }
     fs.readFile(f, (e, d) => {
-      if (e) { fs.readFile(path.join(SITE, '404.html'), (e2, d2) => { r.writeHead(404, { 'content-type': MIME['.html'] }); r.end(d2 || 'not found'); }); return; }
+      if (e) { fs.readFile(path.join(root, '404.html'), (e2, d2) => { r.writeHead(404, { 'content-type': MIME['.html'] }); r.end(d2 || 'not found'); }); return; }
       r.writeHead(200, { 'content-type': MIME[path.extname(f)] || 'application/octet-stream' }); r.end(d);
     });
   });
@@ -257,6 +258,49 @@ const CHECKS = {
     await done(p);
     const nf = await open('/404.html', { mobile: true }); expect(/could not find that page/.test((await txt(nf, 'h1')) || ''), '404 page text'); expect((await count(nf, 'a.go')) === 4, '404 page lacks its four links'); await done(nf);
     expect(fs.existsSync(path.join(SITE, '404.html')) && fs.existsSync(path.join(SITE, 'favicon.svg')), 'site/ lacks 404.html or favicon.svg');
+  },
+  async 'offline-shell'() {
+    // the hosted site opens with no signal: load it, let the service worker save it, shut the server, reload
+    const { server, base } = await serve();
+    const ctx = await B.createBrowserContext(); const p = await ctx.newPage();
+    await p.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    p.errors = []; p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
+    await p.goto(base + '/#phone', { waitUntil: 'networkidle2' });
+    expect(await p.evaluate(() => navigator.serviceWorker.ready.then((r) => !!r.active)), 'the service worker did not become active');
+    await wait(1500);
+    const id = (fs.readFileSync(path.join(SITE, 'sw.js'), 'utf8').match(/build ([0-9a-f]{12})/) || [])[1];
+    const keys = await p.evaluate(() => caches.keys());
+    expect(keys.length === 1 && keys[0] === `cx-${id}`, `expected one cache named cx-${id}, found ${JSON.stringify(keys)}`);
+    server.closeAllConnections(); await new Promise((r) => server.close(r)); await wait(300);
+    await p.reload({ waitUntil: 'load' });
+    await wait(1200);
+    expect(await p.evaluate(() => !!document.querySelector('.cxm, .cxe')), 'the app did not open from the saved copy with the server shut down');
+    expect(await p.evaluate(() => !!document.querySelector('link[rel=icon]')), 'the saved page is not the real page');
+    await done({ errors: p.errors, close2: () => ctx.close() });
+  },
+  async 'update-wins'() {
+    // after a deploy, an online visitor gets the NEW version, and the old saved copy is thrown away
+    const os = require('os');
+    const mk = (tag) => { const d = fs.mkdtempSync(path.join(os.tmpdir(), `cx-${tag}-`)); fs.cpSync(SITE, d, { recursive: true }); return d; };
+    const A = mk('a'), Bd = mk('b');
+    const idOld = (fs.readFileSync(path.join(A, 'sw.js'), 'utf8').match(/build ([0-9a-f]{12})/) || [])[1];
+    for (const f of ['index.html']) fs.writeFileSync(path.join(Bd, f), fs.readFileSync(path.join(Bd, f), 'utf8').replace('<title>Cleveland Civic Graph</title>', '<title>Cleveland Civic Graph VERSION TWO</title>'));
+    fs.writeFileSync(path.join(Bd, 'sw.js'), fs.readFileSync(path.join(Bd, 'sw.js'), 'utf8').split(idOld).join('bbbbbbbbbbbb'));
+    let root = A;
+    const { server, base } = await serve(() => root);
+    const ctx = await B.createBrowserContext(); const p = await ctx.newPage();
+    p.errors = []; p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
+    await p.goto(base + '/#phone', { waitUntil: 'networkidle2' });
+    await p.evaluate(() => navigator.serviceWorker.ready); await wait(1500);
+    expect(!/VERSION TWO/.test(await p.title()), 'version one already says version two');
+    root = Bd;  // the deploy happens
+    await p.reload({ waitUntil: 'networkidle2' }); await wait(2500);
+    expect(/VERSION TWO/.test(await p.title()), 'an online reload after a deploy showed the OLD page');
+    const keys = await p.evaluate(() => caches.keys());
+    expect(keys.length === 1 && keys[0] === 'cx-bbbbbbbbbbbb', `old caches were not removed: ${JSON.stringify(keys)}`);
+    await done({ errors: p.errors, close2: () => ctx.close() });
+    server.closeAllConnections(); server.close();
+    fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(Bd, { recursive: true, force: true });
   },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);

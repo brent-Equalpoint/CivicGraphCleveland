@@ -146,6 +146,51 @@ FAVICON_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rec
                '<path d="M18 42 L32 20 L46 42 Z" fill="none" stroke="#ffd36b" stroke-width="4" stroke-linejoin="round"/>'
                '<g fill="#c2410c"><circle cx="32" cy="20" r="8"/><circle cx="18" cy="42" r="8"/><circle cx="46" cy="42" r="8"/></g></svg>')
 
+SERVICE_WORKER = """/* Cleveland Civic Graph service worker, build __ID__.
+   Purpose: the hosted site opens with no signal, using the copy this browser last loaded.
+   Rules that keep it safe:
+     - A page load and the /bench/ data files go to the NETWORK FIRST. Online, a visitor always gets the newest
+       version. The saved copy is used only when the network fails, or after 8 seconds with no answer.
+     - Fonts, portraits, and record PDFs are saved the first time and reused (they change rarely).
+     - Nothing else is touched, and nothing from another site.
+     - Each build has its own cache name. When a new build installs, every older cache is deleted, so no one is
+       left on an old version. */
+const V = "cx-__ID__";
+const SLOW = 8000;
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(V).then((c) => c.addAll(["/", "/favicon.svg"])).then(() => self.skipWaiting()));
+});
+self.addEventListener("activate", (e) => {
+  e.waitUntil(caches.keys().then((ks) => Promise.all(ks.filter((k) => k.startsWith("cx-") && k !== V).map((k) => caches.delete(k)))).then(() => self.clients.claim()));
+});
+function networkFirst(req, key) {
+  return new Promise((resolve) => {
+    let done = false;
+    const fromCache = () => caches.match(key).then((hit) => hit || null);
+    const timer = setTimeout(() => fromCache().then((hit) => { if (hit && !done) { done = true; resolve(hit); } }), SLOW);
+    fetch(req).then((r) => {
+      clearTimeout(timer);
+      if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(key, copy)); }
+      if (!done) { done = true; resolve(r); }
+    }).catch(() => {
+      clearTimeout(timer);
+      fromCache().then((hit) => { if (!done) { done = true; resolve(hit || new Response("You are offline, and this page has not been saved on this device yet.", { status: 503, headers: { "content-type": "text/plain; charset=utf-8" } })); } });
+    });
+  });
+}
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  if (req.method !== "GET") return;
+  const url = new URL(req.url);
+  if (url.origin !== self.location.origin) return;
+  if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
+  if (url.pathname.startsWith("/bench/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
+    e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
+  }
+});
+"""
+
 # v5.16: hosted site only. The single file is built to work offline, so it never shows this.
 OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be offline. You can keep reading what is already open. '
                   'New records will show up when you reconnect.</div>\n'
@@ -153,7 +198,8 @@ OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be of
                   'padding:14px 16px;border-radius:14px;background:#ffd36b;color:#141210;font:600 16px/1.4 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;'
                   'box-shadow:0 6px 24px #0008}#cx-offline[hidden]{display:none}</style>\n'
                   '<script>(function(){var n=document.getElementById("cx-offline");function u(){n.hidden=navigator.onLine!==false;}'
-                  'addEventListener("offline",u);addEventListener("online",u);u();})();</script>\n')
+                  'addEventListener("offline",u);addEventListener("online",u);u();})();</script>\n'
+                  '<script>if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost"))addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});</script>\n')
 
 # v5.16: if the app has not drawn after 12 seconds (old browser, blocked script, very slow connection) say so in plain words
 BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');if(!b)return;"
@@ -780,6 +826,8 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
         shutil.copy(os.path.join(ROOT, "node_modules", "@fontsource", slug, "files", f"{slug}-latin-{w}-normal.woff2"), os.path.join(SITE, "fonts"))
     site_html = page(False, self_fonts)
     write(os.path.join(SITE, "index.html"), site_html)
+    write(os.path.join(SITE, "sw.js"), SERVICE_WORKER.replace("__ID__", sha(site_html.encode())[:12]))
+    log(f"SITE   {sha(os.path.join(SITE, 'sw.js'))}  site/sw.js  (service worker for the hosted site)")
     write(os.path.join(SITE, "404.html"), NOT_FOUND)
 
     # v5.16 Bench (stage 8): the approved records, the review status, and the correction history, as small files the app fetches

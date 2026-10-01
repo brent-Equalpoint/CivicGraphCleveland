@@ -52,7 +52,7 @@ Steps 1 and 2 can run beside any build work, since they are people and calendar 
 
 ## Every build still needed
 
-**Status, Oct 1, 2026, after path C work:** built are C1 (phone story text, announcements, Go deeper, Back to the story), C2 (Easy mode short profile), C3 (desktop blocked-storage notice; the compiled search already says what to do), and C5 (the Mayor's departments and executive order). Open in path C: C4 (offline app shell), C6 (contact details, needs a decision), C7 (Spanish, needs a reviewer).
+**Status, Oct 1, 2026, after path C work:** built are C1 (phone story text, announcements, Go deeper, Back to the story), C2 (Easy mode short profile), C3 (desktop blocked-storage notice; the compiled search already says what to do), and C5 (the Mayor's departments and executive order). C4 (offline app shell, with a test that a deploy replaces the saved copy) is built too. Open in path C: C6 (contact details, needs a decision) and C7 (Spanish, needs a reviewer).
 
 **Status, Oct 1, 2026 (paths A and B):** built and tested are A1 to A5, B1 to B4, B6, B8, and B9. Built in part:
 B5 (the plumbing for member votes exists and is tested, but no roll call source has been chosen, so every
