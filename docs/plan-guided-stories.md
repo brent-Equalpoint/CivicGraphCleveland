@@ -55,6 +55,54 @@ Before and after, as the model for the rewrite:
 | WHAT WE WON'T SHOW, then "Votes we can't prove." | "How each member voted isn't public yet. Here is what is." |
 | WARD 5 · 2026, then the headline | The headline, with "Ward 5, this year" in normal-size ink beneath it |
 
+## Accessibility: what we have, what we do not
+
+Checked in the source on Oct 1, 2026. Nothing here has been tested with a screen reader or on a real
+device, and no WCAG conformance is claimed (README, "Known limits").
+
+Have today:
+- Labeled controls throughout (about 57 labels, 48 roles), dialogs marked as dialogs, 7 live regions, Escape closes sheets and stories.
+- Visible keyboard focus styles and reduced-motion styles in the stylesheets.
+- A Text view that states every map connection in words, so the map is never the only route.
+- Phone buttons at 46 to 56px high, bottom tabs at 56px. A "Larger text" switch on the phone.
+- Story tap zones are real buttons with names ("Previous", "Next").
+- Portraits and decorative icons are marked so screen readers skip the decoration.
+
+Missing:
+- No read-aloud. No high-contrast mode, and the page ignores the system contrast and light/dark settings.
+- Stories have no text version and do not announce a new frame to a screen reader.
+- No plain "easy" way in: a first-time visitor sees five tabs, a search bar, a dictionary, and a profile at once.
+- No Spanish. No testing with VoiceOver, TalkBack, NVDA, switch or voice control, or with disabled residents.
+- Some small controls (36px) and grey small text fall under the target and contrast goals.
+
+## Easy mode
+
+A switch offered on first open, and always available on the You sheet and desktop header: "Easy" or "Full".
+Remembered on this device only. Nothing about the choice leaves the browser.
+
+What Easy mode does:
+1. **One thing at a time.** One question or one story frame per screen, with one big button.
+2. **Only the guided path.** Three starter journeys and a plain "Start over". Explore, Audit, the map,
+   the dictionary tab, and settings sit behind a single "More" button.
+3. **Big and clear.** Text at 20px or larger, buttons at least 56px, full-strength ink on plain backgrounds, no grey fine print, no motion.
+4. **Everyday words.** Jargon is replaced by the dictionary's own plain definitions, shown in place.
+5. **Always a way back.** "Back" and "Start over" are on every screen, in the same place.
+6. **Read it to me.** A button on every screen reads the screen aloud using the browser's built-in
+   voice. It works offline and sends nothing anywhere.
+7. **Take it with you.** "Save or print this page" for people who prefer paper, and a plain list of the
+   official source links.
+
+## Blind, low-vision, and motor-access work
+
+- Every story has a "Read as text" view listing all frames, and each new frame is announced politely.
+- A real heading outline and landmarks on every screen. The first control is a visible "Skip to content".
+- Visible text matches the control's accessible name, so voice control ("tap Next") works.
+- No action needs dragging, hovering, or a double tap. Everything works by one tap or one key.
+- A high-contrast option, and respect for the system contrast, reduced-motion, and text-size settings.
+- Targets at least 44px everywhere, including the 36px small buttons.
+- Test with VoiceOver on iPhone and TalkBack on Android, then NVDA on desktop, then switch and voice
+  control. Record each result as passed, failed, or not tested. Claim nothing until it is tested.
+
 ## Phases, in the order to spend your limit
 
 **Phase 1: share the engine (small, no visible change).**
@@ -67,6 +115,11 @@ Apply the rules above. Start with the phone Today tab and the story frames, sinc
 first, then the room headers on both layouts. Mechanically: drop most `cxm-kicker` and `atlas-eyebrow`
 uses, raise the color and size of `cxm-fine` and `cxm-mut` where they carry real information, and
 rewrite the story frame copy. Check Bento and Original at phone and desktop widths.
+
+**Phase 1c: Easy mode (after 1b, before desktop stories).**
+Build the Easy/Full switch and the one-screen-at-a-time shell on the phone first, using the story
+engine as its content. Add the read-aloud button and the print/save page. Desktop gets the same switch
+once stories are on the desktop.
 
 **Phase 2: stories on the desktop (the biggest win).**
 - A "Stories" row at the top of the chamber landing, same five stories as the phone.
@@ -86,9 +139,9 @@ Every frame's "Go deeper" opens the matching room, record, or panel using the li
 (`?room=`, `?node=`, `?panel=`). Add a visible "Back to the story" so people do not get lost.
 
 **Phase 5: accessibility pass.**
-Every story gets a plain text version (all frames as a list, no tapping). Focus moves into the reader
-and returns on close. Reduced motion turns off the rise animation. Tap zones also work by keyboard.
-Targets 44px. Test with VoiceOver or TalkBack on a real phone; record what was and was not tested.
+Do everything under "Blind, low-vision, and motor-access work" above. Stories get a text version and
+announce each frame; focus moves into the reader and returns on close; high contrast and 44px targets
+land everywhere. Then test on real devices and record what was and was not tested.
 
 **Phase 6: watch real people.**
 Five residents, phone in hand, one task each ("find who represents you"). Fix what stalls them. Only
@@ -96,7 +149,7 @@ then add more stories.
 
 ## Cost guidance for a limited weekly limit
 
-- Phases 1, 1b, and 2 are the core. Do them first, in one or two sessions, and stop there if needed.
+- Phases 1, 1b, 1c, and 2 are the core. Do them first, in one or two sessions, and stop there if needed.
 - Use Sonnet for the build work. Keep the larger model for one final review before a release.
 - Do not re-read the whole app each session: the files that matter are `cxm-today.jsx`, `cxm-core.jsx`,
   `cx-ui.jsx`, and the new shared story file.
@@ -107,6 +160,7 @@ then add more stories.
 1. Should the desktop reader open in the right panel (recommended, matches the record drawer) or full screen like the phone?
 2. Which three starter journeys on the phone? The three above are the suggestion.
 3. Is Spanish in scope for the first release? It changes how frames are written, so decide before Phase 1.
+4. Should Easy mode be the default for first-time visitors, with "Full" one tap away? (Recommended.)
 
 ## Not in this plan
 
