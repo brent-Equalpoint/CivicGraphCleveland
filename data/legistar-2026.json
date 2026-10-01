@@ -1,8 +1,8 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-01T11:45:30+00:00",
+"retrieved_at": "2026-10-01T19:45:18+00:00",
 "filter": "MatterIntroDate >= 2026-01-01",
-"count": 1353,
+"count": 1375,
 "matters": [
 {
 "id": 36207,
@@ -13424,7 +13424,7 @@
 "id": 37247,
 "file": "902-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Port Control to exercise the second option to renew Contract No. PS 2023-0298 with PMG Executive Program Management, LLC to provide executive airport development programming, financing, planning, design and related services.",
 "intro": "2026-08-13",
 "passed": null,
@@ -13752,7 +13752,7 @@
 "id": 37269,
 "file": "924-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Determining the method of making the public improvement of designing and constructing an upgrade and improvement to the in-line baggage system at Cleveland Hopkins International Airport; authorizing the director of Port Control to enter into one or more contracts with Cleveland Terminal & Equipment Company for that purpose; authorizing the purchase of materials, equipment, supplies and services if not provided under the public improvement; and authorizing one or more agreements to implement the improvement.",
 "intro": "2026-08-13",
 "passed": null,
@@ -13795,7 +13795,7 @@
 "id": 37272,
 "file": "927-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Directors of Public Health, Development and/or Public Safety, to enter into one or more agreements with the Board of Education of the Cleveland Municipal School District for the exchange of lands for future redevelopment and the mutual benefit of the parties; and authorizing the Mayor and the Commissioner of Purchases and Supplies to acquire and convey the properties.",
 "intro": "2026-08-13",
 "passed": null,
@@ -15279,7 +15279,7 @@
 "id": 37383,
 "file": "1035-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Safety to cause payment to Cuyahoga County for services rendered through the County Medical Examiner’s Office to reimburse the County for the City’s share of costs for maintaining and use of the Automated Fingerprint Identification System.",
 "intro": "2026-09-10",
 "passed": null,
@@ -17151,7 +17151,7 @@
 "id": 37527,
 "file": "1166-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Health to enter into one or more agreements with The Ohio State University, East 66th Street Services Inc and other entities to support the administration of the City of Cleveland’s community gardening program known as the “Summer Sprout Community Gardening program”, for a period of one year with an option to renew for an additional one-year term, exercisable by the Director of Public Health.",
 "intro": "2026-09-24",
 "passed": null,
@@ -17734,6 +17734,302 @@
 "url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37570&GUID=70F2AB32-15C4-483C-A239-DD4174D27066",
 "sponsors": [
 "Stephanie Howse-Jones"
+]
+},
+{
+"id": 37571,
+"file": "1204-2026",
+"type": "Emergency Ordinance",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY ORDINANCE To amend Section 20 of Ordinance No. 194-2021, passed March 29, 2021, as amended, relating to compensation for various classifications.",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37571&GUID=29C3FFA2-F7BA-4821-BF61-CE7326B76EA9",
+"sponsors": [
+"Blaine A. Griffin",
+"By Departmental Request"
+]
+},
+{
+"id": 37572,
+"file": "1205-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of Capital Projects to enter into one or more agreements with the cities of Brook Park and Parma to resurface a portion of Brookpark Road located in the City of Cleveland; giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio for the improvement; authorizing agreements; and authorizing payment to the City of Brook Park for the City of Cleveland’s portion of the improvement.",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37572&GUID=706EC8F9-6B46-4857-8019-08D5C89BEE70",
+"sponsors": [
+"Brian Kazy",
+"Charles Slife",
+"Kevin L. Bishop",
+"Jasmin Santana",
+"Blaine A. Griffin",
+"By Departmental Request"
+]
+},
+{
+"id": 37573,
+"file": "1206-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Nannie Bell Sanders",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37573&GUID=A50CB9E7-670D-482F-9AF7-7D002B7D1CF8",
+"sponsors": [
+"Stephanie Howse-Jones"
+]
+},
+{
+"id": 37574,
+"file": "1207-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Roger Lopez",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37574&GUID=FEA214BC-FB07-4FC8-9A94-F52AAA4F43C5",
+"sponsors": [
+"Brian Kazy"
+]
+},
+{
+"id": 37575,
+"file": "1208-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Gregory “GVP” Van Prince",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37575&GUID=22982FF3-AF01-4C4E-880C-F5625C5FE55F",
+"sponsors": [
+"Stephanie Howse-Jones"
+]
+},
+{
+"id": 37576,
+"file": "1209-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Ida Mae Grant",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37576&GUID=D5419E72-36E9-45CC-A77D-A1C771F4C958",
+"sponsors": [
+"Kevin Conwell"
+]
+},
+{
+"id": 37577,
+"file": "1210-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Elder Cedric D.T. Jackson, Sr.",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37577&GUID=828ED8C0-F5B8-425D-8757-87F8FCD61280",
+"sponsors": [
+"Blaine A. Griffin"
+]
+},
+{
+"id": 37578,
+"file": "1211-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Patricia A. McGinty (nee Grabski)",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37578&GUID=4EB48F4F-C7E8-44CF-87F9-7D3875B47330",
+"sponsors": [
+"Brian Kazy"
+]
+},
+{
+"id": 37579,
+"file": "1212-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for “The Girl Friends,” Inc. Cleveland Chapter 75th Anniversary",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37579&GUID=F60D9A59-F057-4F6C-8FEE-AB7A0FE6B639",
+"sponsors": [
+"Blaine A. Griffin"
+]
+},
+{
+"id": 37580,
+"file": "1213-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Journey Center for Safety & Healing 50th Anniversary",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37580&GUID=B05B93BB-F145-4915-874F-C77D1F1DEED1",
+"sponsors": [
+"Stephanie Howse-Jones"
+]
+},
+{
+"id": 37581,
+"file": "1214-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Marcella Caffie",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37581&GUID=E5BC5297-210C-4EF1-A9E2-B947FD9E7F13",
+"sponsors": [
+"Joseph T. Jones"
+]
+},
+{
+"id": 37582,
+"file": "1215-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Wynton Marsalis",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37582&GUID=349CF7D4-F61C-414A-A597-207ED7138D0B",
+"sponsors": [
+"Blaine A. Griffin"
+]
+},
+{
+"id": 37583,
+"file": "1216-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Minuteman Press Grand Opening",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37583&GUID=B610E881-5E3C-4D87-819A-DBB675BF819F",
+"sponsors": [
+"Stephanie Howse-Jones"
+]
+},
+{
+"id": 37584,
+"file": "1217-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Frank G. Jackson",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37584&GUID=F7CCEA62-5BF4-4C3D-8A7F-EB30F569CAC7",
+"sponsors": [
+"Blaine A. Griffin"
+]
+},
+{
+"id": 37586,
+"file": "1219-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Frank Barresi Italian Am. Honoree",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37586&GUID=F71C92BA-315F-4225-A8E1-92B824F8BDD3",
+"sponsors": [
+"Blaine A. Griffin",
+"Michael Polensek"
+]
+},
+{
+"id": 37587,
+"file": "1220-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Alicia Louise Mazzi Italian Am. Honoree",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37587&GUID=2FC6D292-6CC3-4D9C-8FE3-93CACE5D2467",
+"sponsors": [
+"Blaine A. Griffin",
+"Michael Polensek"
+]
+},
+{
+"id": 37588,
+"file": "1221-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Maria Costanzo Italian Am. Honoree",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37588&GUID=2BF9EBB2-E3A5-413C-AD87-CAD8536FF826",
+"sponsors": [
+"Blaine A. Griffin",
+"Michael Polensek"
+]
+},
+{
+"id": 37589,
+"file": "1222-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Lisa Gasbarre Black Italian Am. Honoree",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37589&GUID=78141046-D8D4-49FD-A5B9-6ABE9F6A6018",
+"sponsors": [
+"Blaine A. Griffin",
+"Michael Polensek"
+]
+},
+{
+"id": 37590,
+"file": "1223-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Gamma Alpha Sigma Chapter of Beta Sigma Fraternity, Inc. 75th Anniversary",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37590&GUID=FE62C3F1-1D99-46C8-85AF-732D555AC8F9",
+"sponsors": [
+"Blaine A. Griffin"
+]
+},
+{
+"id": 37591,
+"file": "1224-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for ROSY Restaurant N.Y. Times 50 Favorite Honoree",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37591&GUID=09C35EBA-73F6-406B-9EDC-ECB300F2C74B",
+"sponsors": [
+"Austin Davis"
+]
+},
+{
+"id": 37592,
+"file": "1225-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition of Resolution for Mary France Allen Pritchett",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37592&GUID=834F5D5A-160C-4AD2-A250-F8F22FF76793",
+"sponsors": [
+"Michael Polensek"
+]
+},
+{
+"id": 37593,
+"file": "1226-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition of Resolution forLaura Cowan",
+"intro": "2026-10-01",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37593&GUID=91A7328E-B5A3-453B-97C0-AD4E6B87F440",
+"sponsors": [
+"Blaine A. Griffin"
 ]
 }
 ]
