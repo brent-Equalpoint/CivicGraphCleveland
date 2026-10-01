@@ -19,8 +19,16 @@ function cxmWantPhone() {
     return globalThis.matchMedia(`(pointer: coarse)`).matches && !!sc && Math.min(sc.width, sc.height) <= 500;
   } catch { return !1; }
 }
+/* Desktop Easy mode: the same one-thing-at-a-time screens, centered, reached from the header's Easy mode button. */
+const CX_EASY_HOOK = { set: () => {} };
+function cxEasyOn() { CX_EASY_HOOK.set(!0); }
+function cxHasDeepLink() {
+  try { const q = new URLSearchParams(globalThis.location?.search || ``); return !!(q.get(`room`) || q.get(`node`) || q.get(`panel`)); } catch { return !1; }
+}
 function CX_Root() {
   const [phone, setPhone] = u.useState(cxmWantPhone);
+  const [deskEasy, setDeskEasy] = u.useState(() => !cxmWantPhone() && cxmStore(`cx-easy`, ``) === `on` && !cxHasDeepLink());
+  u.useEffect(() => { CX_EASY_HOOK.set = (v) => { cxmPut(`cx-easy`, v ? `on` : `off`); setDeskEasy(v); }; }, []);
   u.useEffect(() => {
     const f = () => setPhone(cxmWantPhone());
     let mq = null;
@@ -29,10 +37,10 @@ function CX_Root() {
     globalThis.addEventListener(`orientationchange`, f);
     return () => { try { mq && mq.removeEventListener(`change`, f); } catch {} globalThis.removeEventListener(`hashchange`, f); globalThis.removeEventListener(`orientationchange`, f); };
   }, []);
-  u.useEffect(() => { document.documentElement.classList.toggle(`cxm-on`, phone); }, [phone]);
+  u.useEffect(() => { document.documentElement.classList.toggle(`cxm-on`, phone || deskEasy); }, [phone, deskEasy]);
   return (
     <CxBoundary label="The Civic Graph" phone={phone} resetKey={phone ? `phone` : `desktop`}>
-      {phone ? <CxmApp /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /></>}
+      {phone || deskEasy ? <CxmApp deskEasy={!phone && deskEasy} onLeaveEasy={() => CX_EASY_HOOK.set(!1)} /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /></>}
     </CxBoundary>
   );
 }
@@ -203,7 +211,7 @@ function cxmPut(key, v) {
   try { localStorage.setItem(key, v); } catch {}
 }
 
-function CxmApp() {
+function CxmApp({ deskEasy, onLeaveEasy }) {
   const practice = lh();
   const prio = useCxmPrio();
   const start = u.useMemo(cxmFromUrl, []);
@@ -220,6 +228,7 @@ function CxmApp() {
   const [large, setLarge] = u.useState(!1);
   // v5.16 Easy mode: remembered on this device only. First visit: Easy, unless the link points somewhere specific.
   const [easy, setEasyState] = u.useState(() => {
+    if (deskEasy) return !0;
     const saved = cxmStore(`cx-easy`, ``);
     if (saved === `on`) return !0;
     if (saved === `off`) return !1;
@@ -268,7 +277,7 @@ function CxmApp() {
   const ctx = {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
-    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy,
+    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy,
   };
   const top = sheets[sheets.length - 1];
   const TABS = [

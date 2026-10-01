@@ -461,6 +461,13 @@ def main():
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n"
                 "                                (0, W.jsx)(CX_DrawerProfile, { node: U }),\n",
                 label="drawer: formal profile button")
+    # v5.16 desktop Easy mode: a header button next to Resident check
+    src = patch(src,
+                "                  (0, W.jsx)(`span`, { children: `Resident check` }),\n                ],\n              }),\n",
+                "                  (0, W.jsx)(`span`, { children: `Resident check` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`button`, {\n                onClick: () => cxEasyOn(),\n                children: [\n"
+                "                  (0, W.jsx)(CXI.Help, { size: 17 }),\n                  (0, W.jsx)(`span`, { children: `Easy mode` }),\n                ],\n              }),\n",
+                label="header: easy mode")
     # v5.16 accessibility: an accessible name must contain the words a person can see, so voice control can say them
     src = patch(src,
                 "                      \"aria-label\": `${i.name}, ${i.region}. ${i.evidence === `missing` ? `Record needed.` : ``}`,\n",

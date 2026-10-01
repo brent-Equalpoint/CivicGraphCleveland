@@ -22,7 +22,7 @@ function cxeFrames(story) {
 }
 
 function CxmEasy() {
-  const { home, setHome, practice, setEasy, go, openSeat, openSheet } = useCxm();
+  const { home, setHome, practice, setEasy, go, openSeat, openSheet, deskEasy, leaveEasy } = useCxm();
   const answers = practice.state.answers;
   const [view, setView] = u.useState({ k: `home` });
   const [speaking, setSpeaking] = u.useState(!1);
@@ -46,7 +46,11 @@ function CxmEasy() {
 
   const begin = (j) => setView(j === `rep` && !home?.ward ? { k: `place`, j } : { k: `story`, j, f: 0 });
   const toHome = () => setView({ k: `home` });
-  const toFull = (after) => { setEasy(!1); if (after) setTimeout(after, 0); };
+  // on a phone, "full" is the phone app; on a desktop it is the desktop site, which needs a moment to draw before it can be steered
+  const toFull = (after, deskAfter) => {
+    if (deskEasy) { leaveEasy(); const fn = deskAfter || after; if (fn && deskAfter) setTimeout(fn, 500); return; }
+    setEasy(!1); if (after) setTimeout(after, 0);
+  };
   const speak = () => {
     if (!cxeCanSpeak()) return;
     if (speaking) { stopSpeaking(); return; }
@@ -79,7 +83,7 @@ function CxmEasy() {
         <span className="cxe-brand">Civic Graph</span>
         <span className="cxe-bar-actions">
           {view.k !== `home` && <button type="button" onClick={toHome}>Start over</button>}
-          <button type="button" onClick={() => toFull()}>Full app</button>
+          <button type="button" onClick={() => toFull()}>{deskEasy ? `Full site` : `Full app`}</button>
         </span>
       </header>
       <main className="cxe-main" ref={boxRef} tabIndex={-1} id="cxe-content">
@@ -90,7 +94,7 @@ function CxmEasy() {
             {CXE_JOURNEYS.map(([id, title, sub]) => (
               <button key={id} type="button" className="cxe-choice" onClick={() => begin(id)}><strong>{title}</strong><span>{sub}</span></button>
             ))}
-            <p className="cxe-text">Want to look around on your own? Choose Full app at the top.</p>
+            <p className="cxe-text">Want to look around on your own? Choose {deskEasy ? `Full site` : `Full app`} at the top.</p>
           </>
         )}
         {view.k === `place` && (
@@ -125,9 +129,9 @@ function CxmEasy() {
             {last && (
               <div className="cxe-end">
                 <p className="cxe-big2">That is the end of this one.</p>
-                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => toFull(() => openSheet(`profile`, { seat: `ward-${home.ward}` }))}>Read the profile of {cxmMember(home.ward)}</button>}
-                {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`))}>Open my ballot</button>}
-                {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`))}>See City Hall's receipts</button>}
+                {view.j === `rep` && home?.ward && <button type="button" className="cxe-btn" onClick={() => toFull(() => openSheet(`profile`, { seat: `ward-${home.ward}` }), () => cxOpenProfile(`ward-${home.ward}`))}>Read the profile of {cxmMember(home.ward)}</button>}
+                {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`), () => CX_NAV.panel(`ballot`))}>Open my ballot</button>}
+                {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`), () => CX_NAV.panel(`news`))}>{deskEasy ? `See what is new in Council's record` : `See City Hall's receipts`}</button>}
                 <button type="button" className="cxe-btn alt" onClick={toHome}>Pick another question</button>
               </div>
             )}

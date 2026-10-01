@@ -795,3 +795,9 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 @media (pointer: coarse) {
   html:not(.cxm-on) .atlas-shell :is(button, summary, select, input[type="search"], input[type="text"]):not(.inline-definition) { min-height: 44px; }
 }
+
+/* Easy mode on a wide screen: the same column, a little wider, with a quiet edge so it reads as a page and not a phone */
+@media (min-width: 761px) {
+  .cxm-stage .cxe { max-width: 760px; border-left: 1px solid var(--line); border-right: 1px solid var(--line); }
+  .cxm-stage .cxe .cxe-main { padding-left: 32px; padding-right: 32px; }
+}
