@@ -1,0 +1,914 @@
+{
+ "about": "What changed between snapshots of Cleveland City Council's public Legistar record. Written by scripts/changes.py; read by build.py for What's new.",
+ "source": "https://webapi.legistar.com/v1/cityofcleveland",
+ "updates": [
+  {
+   "at": "2026-10-01T11:45:30+00:00",
+   "from": "2026-09-25T03:00:01+00:00",
+   "count": 1353,
+   "changes": [
+    {
+     "f": "927-2026",
+     "steps": [
+      [
+       "2026-09-29",
+       "recommended for approval",
+       "Development, Planning and Sustainability Committee"
+      ],
+      [
+       "2026-09-30",
+       "recommended for approval",
+       "Safety Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1035-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-09-30",
+       "recommended for approval",
+       "Safety Committee"
+      ]
+     ]
+    },
+    {
+     "f": "921-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ],
+     "steps": [
+      [
+       "2026-09-29",
+       "recommended for approval",
+       "Development, Planning and Sustainability Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1034-2026",
+     "steps": [
+      [
+       "2026-09-29",
+       "recommended for approval",
+       "Development, Planning and Sustainability Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1031-2026",
+     "steps": [
+      [
+       "2026-09-29",
+       "withdrawn",
+       "Development, Planning and Sustainability Committee"
+      ]
+     ]
+    },
+    {
+     "f": "937-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "936-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "935-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "930-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "910-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "907-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "906-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "688-2026",
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1203-2026",
+     "new": true
+    },
+    {
+     "f": "1183-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1182-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1181-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1180-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1179-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1178-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1177-2026",
+     "new": true,
+     "steps": [
+      [
+       "2026-09-28",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1161-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1152-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1151-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1150-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1149-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1148-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1147-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1146-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1145-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1144-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1143-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1142-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1141-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1140-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1139-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1138-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1136-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1044-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1043-2026",
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1033-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ],
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ],
+      [
+       "2026-09-28",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1032-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-09-28",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "Item-1263",
+     "new": true
+    },
+    {
+     "f": "Item-1262",
+     "new": true
+    },
+    {
+     "f": "Item-1261",
+     "new": true
+    },
+    {
+     "f": "Item-1260",
+     "new": true
+    },
+    {
+     "f": "Item-1259",
+     "new": true
+    },
+    {
+     "f": "1202-2026",
+     "new": true
+    },
+    {
+     "f": "1201-2026",
+     "new": true
+    },
+    {
+     "f": "1200-2026",
+     "new": true
+    },
+    {
+     "f": "1199-2026",
+     "new": true
+    },
+    {
+     "f": "1198-2026",
+     "new": true
+    },
+    {
+     "f": "1197-2026",
+     "new": true
+    },
+    {
+     "f": "1196-2026",
+     "new": true
+    },
+    {
+     "f": "1195-2026",
+     "new": true
+    },
+    {
+     "f": "1194-2026",
+     "new": true
+    },
+    {
+     "f": "1193-2026",
+     "new": true
+    },
+    {
+     "f": "1192-2026",
+     "new": true
+    },
+    {
+     "f": "1191-2026",
+     "new": true
+    },
+    {
+     "f": "1190-2026",
+     "new": true
+    },
+    {
+     "f": "1189-2026",
+     "new": true
+    },
+    {
+     "f": "1188-2026",
+     "new": true
+    },
+    {
+     "f": "1187-2026",
+     "new": true
+    },
+    {
+     "f": "1186-2026",
+     "new": true
+    },
+    {
+     "f": "1185-2026",
+     "new": true
+    },
+    {
+     "f": "1184-2026",
+     "new": true
+    },
+    {
+     "f": "1176-2026",
+     "new": true
+    },
+    {
+     "f": "Item-1258",
+     "new": true
+    },
+    {
+     "f": "1175-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1174-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1173-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1172-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1171-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1170-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1169-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1168-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1167-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1166-2026",
+     "st": [
+      "First Reading",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1165-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1164-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1163-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1137-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1135-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1116-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1042-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1038-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1037-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "931-2026",
+     "st": [
+      "Agenda Ready",
+      "Held"
+     ]
+    }
+   ]
+  }
+ ]
+}

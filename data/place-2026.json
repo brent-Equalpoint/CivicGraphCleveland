@@ -1,0 +1,6601 @@
+{
+"retrieved_at": "2026-10-01T11:46:14+00:00",
+"sources": {
+"legistar": "https://webapi.legistar.com/v1/cityofcleveland",
+"geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
+"geo": "data/geo-2026.json"
+},
+"histories": {
+"23-2026": [
+[
+"2026-01-12",
+"adopted",
+"City Council"
+]
+],
+"24-2026": [
+[
+"2026-01-12",
+"adopted",
+"City Council"
+]
+],
+"25-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-02",
+"approved as amended",
+"City Council"
+]
+],
+"26-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"27-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"28-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"29-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"approved as amended",
+"City Council"
+]
+],
+"30-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-26",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"31-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"approved as amended",
+"City Council"
+]
+],
+"32-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"33-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-02",
+"approved as amended",
+"City Council"
+]
+],
+"34-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-01",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"approved",
+"City Council"
+]
+],
+"35-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved as amended",
+"City Council"
+]
+],
+"36-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"71-2026": [
+[
+"2026-01-12",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"74-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"75-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"76-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"77-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"78-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"79-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"80-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"81-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"82-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"83-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"84-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"85-2026": [
+[
+"2026-02-02",
+"adopted",
+"City Council"
+]
+],
+"86-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"87-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"88-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"89-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"approved",
+"City Council"
+]
+],
+"90-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"91-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"92-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"93-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"94-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"95-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"96-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"97-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-02",
+"approved",
+"City Council"
+]
+],
+"98-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"99-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"100-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"101-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"103-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"104-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved as amended",
+"City Council"
+]
+],
+"105-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-11",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved as amended",
+"City Council"
+]
+],
+"106-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"107-2026": [
+[
+"2026-02-02",
+"adopted",
+"City Council"
+]
+],
+"108-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"109-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"110-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"111-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"112-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"113-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"114-2026": [
+[
+"2026-02-02",
+"adopted",
+"City Council"
+]
+],
+"115-2026": [
+[
+"2026-02-02",
+"adopted",
+"City Council"
+]
+],
+"116-2026": [
+[
+"2026-02-02",
+"adopted",
+"City Council"
+]
+],
+"117-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"passed on second reading",
+"City Council"
+],
+[
+"2026-03-23",
+"approved as amended",
+"City Council"
+]
+],
+"118-2026": [
+[
+"2026-02-02",
+"approved",
+"City Council"
+]
+],
+"119-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"122-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"131-2026": [
+[
+"2026-02-02",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"177-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"178-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"179-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"180-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"181-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"182-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-10",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"183-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"184-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-26",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"185-2026": [
+[
+"2026-02-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-24",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"186-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"187-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"188-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"189-2026": [
+[
+"2026-02-09",
+"approved",
+"City Council"
+]
+],
+"200-2026": [
+[
+"2026-02-09",
+"adopted",
+"City Council"
+]
+],
+"203-2026": [
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"226-2026": [
+[
+"2026-04-20",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"227-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved as amended",
+"City Council"
+]
+],
+"228-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved as amended",
+"City Council"
+]
+],
+"229-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"230-2026": [
+[
+"2026-04-01",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"approved",
+"City Council"
+]
+],
+"231-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved as amended",
+"City Council"
+]
+],
+"232-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-08",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"233-2026": [
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"234-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"235-2026": [
+[
+"2026-03-02",
+"adopted",
+"City Council"
+]
+],
+"236-2026": [
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved as amended",
+"City Council"
+]
+],
+"237-2026": [
+[
+"2026-03-26",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"238-2026": [
+[
+"2026-02-23",
+"approved",
+"City Council"
+]
+],
+"239-2026": [
+[
+"2026-03-02",
+"adopted",
+"City Council"
+]
+],
+"240-2026": [
+[
+"2026-03-02",
+"adopted",
+"City Council"
+]
+],
+"241-2026": [
+[
+"2026-02-23",
+"adopted",
+"City Council"
+]
+],
+"243-2026": [
+[
+"2026-02-23",
+"adopted",
+"City Council"
+]
+],
+"244-2026": [
+[
+"2026-02-23",
+"adopted",
+"City Council"
+]
+],
+"245-2026": [
+[
+"2026-03-02",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"246-2026": [
+[
+"2026-03-02",
+"adopted",
+"City Council"
+]
+],
+"271-2026": [
+[
+"2026-03-02",
+"approved",
+"City Council"
+]
+],
+"272-2026": [
+[
+"2026-03-02",
+"adopted",
+"City Council"
+]
+],
+"277-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"278-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"279-2026": [
+[
+"2026-03-09",
+"adopted",
+"City Council"
+]
+],
+"280-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-26",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"281-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"approved as amended",
+"City Council"
+]
+],
+"282-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"approved as amended",
+"City Council"
+]
+],
+"283-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"284-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"287-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"288-2026": [
+[
+"2026-03-09",
+"approved",
+"City Council"
+]
+],
+"309-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-23",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"328-2026": [
+[
+"2026-03-09",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-12",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"333-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"334-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"335-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"336-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"337-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"338-2026": [
+[
+"2026-03-23",
+"adopted",
+"City Council"
+]
+],
+"339-2026": [
+[
+"2026-03-23",
+"adopted",
+"City Council"
+]
+],
+"351-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-12",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"352-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved as amended",
+"City Council"
+]
+],
+"353-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"354-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-28",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"355-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"356-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"357-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"358-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"359-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-08",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-04-13",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"360-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"361-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"362-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-14",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"363-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"364-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"365-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-12",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"366-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-27",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"367-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"approved as amended",
+"City Council"
+]
+],
+"368-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-11",
+"recommended for denial",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"369-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-13",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-04-13",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-13",
+"adopted as amended",
+"City Council"
+]
+],
+"370-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"371-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"372-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-03-30",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-03-30",
+"adopted as amended",
+"City Council"
+]
+],
+"373-2026": [
+[
+"2026-03-23",
+"adopted",
+"City Council"
+]
+],
+"374-2026": [
+[
+"2026-03-23",
+"adopted",
+"City Council"
+]
+],
+"375-2026": [
+[
+"2026-03-23",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-04-21",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-04-27",
+"adopted",
+"City Council"
+]
+],
+"376-2026": [
+[
+"2026-03-23",
+"approved",
+"City Council"
+]
+],
+"400-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-28",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"401-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-21",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"402-2026": [
+[
+"2026-04-21",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"403-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-21",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"404-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"405-2026": [
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"406-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved as amended",
+"City Council"
+]
+],
+"407-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"408-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"409-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"410-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-16",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-04-20",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"411-2026": [
+[
+"2026-03-30",
+"approved",
+"City Council"
+]
+],
+"412-2026": [
+[
+"2026-03-30",
+"adopted",
+"City Council"
+]
+],
+"413-2026": [
+[
+"2026-03-30",
+"adopted",
+"City Council"
+]
+],
+"414-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"adopted",
+"City Council"
+]
+],
+"415-2026": [
+[
+"2026-03-30",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-06",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-06",
+"adopted",
+"City Council"
+]
+],
+"452-2026": [
+[
+"2026-04-06",
+"approved",
+"City Council"
+]
+],
+"453-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-30",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"455-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-30",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"456-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-09-15",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"457-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-03",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"458-2026": [
+[
+"2026-04-06",
+"approved",
+"City Council"
+]
+],
+"459-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-04-13",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-13",
+"adopted",
+"City Council"
+]
+],
+"460-2026": [
+[
+"2026-04-06",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"464-2026": [
+[
+"2026-05-12",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"465-2026": [
+[
+"2026-05-06",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+]
+],
+"466-2026": [
+[
+"2026-09-15",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"467-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"adopted as amended",
+"City Council"
+]
+],
+"468-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"469-2026": [
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"470-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"471-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"472-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"473-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"474-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"475-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"476-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"477-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"478-2026": [
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"479-2026": [
+[
+"2026-04-13",
+"adopted",
+"City Council"
+]
+],
+"480-2026": [
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"481-2026": [
+[
+"2026-04-13",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-13",
+"approved",
+"City Council"
+]
+],
+"507-2026": [
+[
+"2026-04-13",
+"adopted",
+"City Council"
+]
+],
+"511-2026": [
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"513-2026": [
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"514-2026": [
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"515-2026": [
+[
+"2026-04-20",
+"adopted",
+"City Council"
+]
+],
+"516-2026": [
+[
+"2026-04-27",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-04-27",
+"approved",
+"City Council"
+]
+],
+"517-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+]
+],
+"518-2026": [
+[
+"2026-05-12",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"519-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"520-2026": [
+[
+"2026-05-12",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"521-2026": [
+[
+"2026-05-11",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-05-11",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-11",
+"approved as amended",
+"City Council"
+]
+],
+"522-2026": [
+[
+"2026-05-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"523-2026": [],
+"524-2026": [
+[
+"2026-04-20",
+"approved",
+"City Council"
+]
+],
+"549-2026": [
+[
+"2026-04-20",
+"adopted",
+"City Council"
+]
+],
+"551-2026": [
+[
+"2026-05-14",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"552-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved as amended",
+"City Council"
+]
+],
+"553-2026": [
+[
+"2026-05-13",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"554-2026": [
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"555-2026": [
+[
+"2026-05-13",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"556-2026": [
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"557-2026": [
+[
+"2026-06-17",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"558-2026": [
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"559-2026": [],
+"560-2026": [],
+"561-2026": [
+[
+"2026-05-19",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"578-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"579-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"580-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"581-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"582-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"583-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"584-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"585-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"586-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"587-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"588-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"589-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-27",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"590-2026": [
+[
+"2026-05-11",
+"adopted as amended",
+"City Council"
+]
+],
+"591-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+]
+],
+"592-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"593-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-20",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"594-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-19",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"595-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"596-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"597-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-27",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"598-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"599-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"600-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"601-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"602-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"603-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"604-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"605-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-20",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"606-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"607-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"608-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"609-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-19",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"612-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"613-2026": [
+[
+"2026-05-20",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"614-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"615-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved as amended",
+"City Council"
+]
+],
+"617-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"618-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"620-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-14",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-19",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-05-27",
+"recommended for approval",
+"Transportation and Mobility Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"621-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"622-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"623-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-14",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"624-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-14",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved as amended",
+"City Council"
+]
+],
+"625-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-25",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"626-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"630-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-14",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-05-18",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"650-2026": [
+[
+"2026-05-11",
+"approved",
+"City Council"
+]
+],
+"651-2026": [
+[
+"2026-05-11",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"652-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"653-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"654-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"655-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"656-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"657-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"658-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-08-19",
+"tabled",
+"City Council"
+]
+],
+"659-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"660-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"661-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"662-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"663-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"664-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"adopted as amended",
+"City Council"
+]
+],
+"665-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"666-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"667-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"675-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-05-26",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"676-2026": [
+[
+"2026-05-18",
+"approved",
+"City Council"
+]
+],
+"681-2026": [
+[
+"2026-05-18",
+"read and referred to administrative review",
+"City Council"
+],
+[
+"2026-06-01",
+"recommended for approval",
+"Committee of the Whole"
+]
+],
+"683-2026": [
+[
+"2026-06-17",
+"recommended for denial",
+"Safety Committee"
+],
+[
+"2026-07-07",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"684-2026": [
+[
+"2026-06-17",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"685-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"686-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"687-2026": [],
+"688-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"689-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"691-2026": [],
+"692-2026": [
+[
+"2026-08-19",
+"tabled",
+"City Council"
+]
+],
+"693-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved as amended",
+"City Council"
+]
+],
+"694-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"695-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"696-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"697-2026": [],
+"698-2026": [
+[
+"2026-06-03",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved as amended",
+"City Council"
+]
+],
+"699-2026": [],
+"700-2026": [],
+"701-2026": [],
+"702-2026": [],
+"703-2026": [],
+"704-2026": [],
+"705-2026": [],
+"706-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"707-2026": [],
+"708-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"adopted as amended",
+"City Council"
+]
+],
+"709-2026": [],
+"710-2026": [],
+"711-2026": [],
+"712-2026": [],
+"713-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"714-2026": [],
+"715-2026": [],
+"733-2026": [
+[
+"2026-07-15",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"734-2026": [],
+"741-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"742-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"743-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"744-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"745-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Safety Committee"
+]
+],
+"746-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved as amended",
+"City Council"
+]
+],
+"747-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"748-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"749-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"750-2026": [
+[
+"2026-09-15",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"751-2026": [
+[
+"2026-09-15",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"752-2026": [
+[
+"2026-09-15",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"753-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"754-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"755-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"756-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"757-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"758-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+]
+],
+"759-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"760-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"761-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"762-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"763-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"764-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"765-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"766-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"767-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"768-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"769-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"770-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"771-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"772-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"773-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"774-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"775-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"776-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"777-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"778-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"779-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"878-2026": [
+[
+"2026-08-19",
+"recommended for approval",
+"Committee of the Whole"
+],
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"879-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"882-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"883-2026": [
+[
+"2026-07-15",
+"adopted",
+"City Council"
+]
+],
+"884-2026": [
+[
+"2026-07-15",
+"approved",
+"City Council"
+]
+],
+"889-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"890-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"891-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"892-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"893-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"894-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"895-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"896-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"897-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"898-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"899-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"900-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"901-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"902-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Transportation and Mobility Committee"
+]
+],
+"903-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"904-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"905-2026": [
+[
+"2026-09-21",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"906-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved as amended",
+"City Council"
+]
+],
+"907-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved as amended",
+"City Council"
+]
+],
+"908-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"909-2026": [
+[
+"2026-09-21",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"910-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Safety Committee"
+],
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved as amended",
+"City Council"
+]
+],
+"911-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"912-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"913-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"914-2026": [],
+"915-2026": [],
+"916-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"917-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"918-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"919-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"920-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"921-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-29",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
+"922-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"923-2026": [],
+"924-2026": [
+[
+"2026-09-23",
+"recommended for approval",
+"Transportation and Mobility Committee"
+]
+],
+"925-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"926-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"approved as amended",
+"City Council"
+]
+],
+"927-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-09-29",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+],
+[
+"2026-09-30",
+"recommended for approval",
+"Safety Committee"
+]
+],
+"928-2026": [],
+"929-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"930-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved as amended",
+"City Council"
+]
+],
+"931-2026": [],
+"932-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"933-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"934-2026": [
+[
+"2026-09-17",
+"recommended for approval",
+"Utilities Committee"
+],
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"935-2026": [
+[
+"2026-09-22",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"936-2026": [
+[
+"2026-09-22",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"937-2026": [
+[
+"2026-09-22",
+"recommended for approval",
+"Zoning-Development, Planning and Sustainability Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"938-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"939-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"940-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"941-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"942-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"943-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"944-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"945-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"946-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"947-2026": [],
+"948-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"949-2026": [
+[
+"2026-08-19",
+"approved",
+"City Council"
+]
+],
+"950-2026": [],
+"951-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"952-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"953-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"954-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"955-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"956-2026": [
+[
+"2026-09-14",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"957-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"974-2026": [],
+"975-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"1015-2026": [
+[
+"2026-08-19",
+"adopted",
+"City Council"
+]
+],
+"1021-2026": [],
+"1022-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1023-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1024-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1025-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1026-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1027-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1028-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1029-2026": [
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1030-2026": [
+[
+"2026-09-21",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1031-2026": [
+[
+"2026-09-29",
+"withdrawn",
+"Development, Planning and Sustainability Committee"
+]
+],
+"1032-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"1033-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+],
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1034-2026": [
+[
+"2026-09-29",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
+"1035-2026": [
+[
+"2026-09-30",
+"recommended for approval",
+"Safety Committee"
+]
+],
+"1036-2026": [
+[
+"2026-09-14",
+"approved",
+"City Council"
+]
+],
+"1037-2026": [],
+"1038-2026": [],
+"1039-2026": [],
+"1040-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1041-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1042-2026": [],
+"1043-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"1044-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1045-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1046-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1047-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1073-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1112-2026": [
+[
+"2026-09-14",
+"adopted",
+"City Council"
+]
+],
+"1115-2026": [
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1116-2026": [],
+"1135-2026": [],
+"1136-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1137-2026": [],
+"1138-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1139-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1140-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1141-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1142-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1143-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1144-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1145-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1146-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1147-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1148-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1149-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1150-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1151-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1152-2026": [
+[
+"2026-09-28",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1153-2026": [
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"1154-2026": [
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"1155-2026": [
+[
+"2026-09-21",
+"approved",
+"City Council"
+]
+],
+"1156-2026": [
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1157-2026": [],
+"1158-2026": [
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1159-2026": [
+[
+"2026-09-21",
+"adopted",
+"City Council"
+]
+],
+"1161-2026": [
+[
+"2026-09-28",
+"adopted",
+"City Council"
+]
+],
+"1162-2026": [],
+"1163-2026": [],
+"1164-2026": [],
+"1165-2026": [],
+"1166-2026": [],
+"1167-2026": [],
+"1168-2026": [],
+"1169-2026": [],
+"1170-2026": [],
+"1171-2026": [],
+"1172-2026": [],
+"1173-2026": [],
+"1174-2026": [],
+"1175-2026": [],
+"1176-2026": [],
+"1177-2026": [
+[
+"2026-09-28",
+"adopted",
+"City Council"
+]
+],
+"1178-2026": [
+[
+"2026-09-28",
+"adopted",
+"City Council"
+]
+],
+"1179-2026": [
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1180-2026": [
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1181-2026": [
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1182-2026": [
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1183-2026": [
+[
+"2026-09-28",
+"approved",
+"City Council"
+]
+],
+"1199-2026": [],
+"1203-2026": []
+},
+"addresses": {
+"4025 East 131st Street": {
+"files": [
+"23-2026"
+],
+"matched": "4025 E 131ST ST, CLEVELAND, OH, 44105",
+"lon": -81.591052,
+"lat": 41.449453,
+"ward2026": 2,
+"ward2014": 2,
+"hood": "Union-Miles"
+},
+"8302 Carnegie Avenue": {
+"files": [
+"24-2026",
+"413-2026"
+],
+"matched": "8302 CARNEGIE AVE, CLEVELAND, OH, 44103",
+"lon": -81.62952,
+"lat": 41.501232,
+"ward2026": 6,
+"ward2014": 6,
+"hood": "Fairfax"
+},
+"4242 Lorain Avenue": {
+"files": [
+"28-2026"
+],
+"matched": "4242 LORAIN AVE, CLEVELAND, OH, 44113",
+"lon": -81.71544,
+"lat": 41.479689,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Ohio City"
+},
+"2358 Professor Avenue": {
+"files": [
+"32-2026"
+],
+"matched": "2358 PROFESSOR AVE, CLEVELAND, OH, 44113",
+"lon": -81.685181,
+"lat": 41.480003,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Tremont"
+},
+"3890 West 140th Street": {
+"files": [
+"1156-2026",
+"85-2026"
+],
+"matched": "3890 W 140TH ST, CLEVELAND, OH, 44111",
+"lon": -81.790463,
+"lat": 41.448647,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Jefferson"
+},
+"1200 West 58th Street": {
+"files": [
+"104-2026",
+"98-2026"
+],
+"matched": "1200 W 58TH ST, CLEVELAND, OH, 44102",
+"lon": -81.726364,
+"lat": 41.49042,
+"ward2026": 7,
+"ward2014": 15,
+"hood": "Detroit Shoreway"
+},
+"756 East 200th Street": {
+"files": [
+"115-2026"
+],
+"matched": "756 E 200TH ST, CLEVELAND, OH, 44119",
+"lon": -81.540242,
+"lat": 41.586971,
+"ward2026": 10,
+"ward2014": 8,
+"hood": null
+},
+"3232 East 93rd Street": {
+"files": [
+"116-2026"
+],
+"matched": "3232 E 93RD ST, CLEVELAND, OH, 44104",
+"lon": -81.621572,
+"lat": 41.470789,
+"ward2026": 6,
+"ward2014": 6,
+"hood": "Kinsman"
+},
+"3868 East 131st Street": {
+"files": [
+"241-2026"
+],
+"matched": "3868 E 131ST ST, CLEVELAND, OH, 44120",
+"lon": -81.591227,
+"lat": 41.453454,
+"ward2026": 2,
+"ward2014": 2,
+"hood": "Union-Miles"
+},
+"6501 Denison Avenue": {
+"files": [
+"243-2026"
+],
+"matched": "6501 DENISON AVE, CLEVELAND, OH, 44102",
+"lon": -81.731774,
+"lat": 41.459556,
+"ward2026": 11,
+"ward2014": 14,
+"hood": "Stockyards"
+},
+"10300 Union Avenue": {
+"files": [
+"246-2026",
+"373-2026"
+],
+"matched": "10300 UNION AVE, CLEVELAND, OH, 44105",
+"lon": -81.613171,
+"lat": 41.463521,
+"ward2026": 3,
+"ward2014": 6,
+"hood": "Union-Miles"
+},
+"15521 St. Clair Avenue": {
+"files": [
+"272-2026",
+"715-2026"
+],
+"matched": "15521 SAINT CLAIR AVE, CLEVELAND, OH, 44110",
+"lon": -81.571683,
+"lat": 41.556367,
+"ward2026": 10,
+"ward2014": 8,
+"hood": "Collinwood-Nottingham"
+},
+"4166 East 71st Street": {
+"files": [
+"1045-2026",
+"338-2026"
+],
+"matched": "4166 E 71ST ST, CLEVELAND, OH, 44105",
+"lon": -81.638862,
+"lat": 41.445143,
+"ward2026": 2,
+"ward2014": 12,
+"hood": "Broadway-Slavic Village"
+},
+"3704 Superior Avenue": {
+"files": [
+"339-2026"
+],
+"matched": "3704 E SUPERIOR AVE, CLEVELAND, OH, 44114",
+"lon": -81.665148,
+"lat": 41.51261,
+"ward2026": 8,
+"ward2014": 7,
+"hood": "Goodrich-Kirtland Pk"
+},
+"10022 Madison Avenue": {
+"files": [
+"368-2026",
+"457-2026",
+"928-2026"
+],
+"matched": "10022 MADISON AVE, CLEVELAND, OH, 44102",
+"lon": -81.753274,
+"lat": 41.477133,
+"ward2026": 12,
+"ward2014": 11,
+"hood": "Cudell"
+},
+"4200 West 130th Street": {
+"files": [
+"374-2026",
+"773-2026"
+],
+"matched": "4200 W 130TH ST, CLEVELAND, OH, 44135",
+"lon": -81.779907,
+"lat": 41.44062,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Bellaire-Puritas"
+},
+"18105 Cleveland Parkway": {
+"files": [
+"402-2026"
+],
+"matched": "18105 CLEVELAND PKWY DR, CLEVELAND, OH, 44135",
+"lon": -81.82634,
+"lat": 41.425031,
+"ward2026": 15,
+"ward2014": 17,
+"hood": "Hopkins"
+},
+"101 Erieside Avenue": {
+"files": [
+"404-2026"
+],
+"matched": "101 ERIESIDE AVE, CLEVELAND, OH, 44114",
+"lon": -81.696544,
+"lat": 41.506504,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"1301 Chester Avenue": {
+"files": [
+"456-2026"
+],
+"matched": "1301 CHESTER AVE, CLEVELAND, OH, 44114",
+"lon": -81.683663,
+"lat": 41.502981,
+"ward2026": 8,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"12702 Lorain Avenue": {
+"files": [
+"1178-2026",
+"479-2026"
+],
+"matched": "12702 LORAIN AVE, CLEVELAND, OH, 44111",
+"lon": -81.776576,
+"lat": 41.459478,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Jefferson"
+},
+"3315 Clark Avenue": {
+"files": [
+"515-2026"
+],
+"matched": "3315 CLARK AVE, CLEVELAND, OH, 44109",
+"lon": -81.705666,
+"lat": 41.469771,
+"ward2026": 14,
+"ward2014": 14,
+"hood": "Clark-Fulton"
+},
+"1900 Euclid Avenue": {
+"files": [
+"523-2026"
+],
+"matched": "1900 EUCLID AVE, CLEVELAND, OH, 44115",
+"lon": -81.677696,
+"lat": 41.50127,
+"ward2026": 5,
+"ward2014": 5,
+"hood": "Downtown"
+},
+"1105 Carnegie Avenue": {
+"files": [
+"579-2026"
+],
+"matched": "1105 CARNEGIE AVE, CLEVELAND, OH, 44115",
+"lon": -81.681747,
+"lat": 41.496286,
+"ward2026": 5,
+"ward2014": 5,
+"hood": "Downtown"
+},
+"24 Public Square": {
+"files": [
+"1026-2026",
+"580-2026"
+],
+"matched": "24 PUBLIC SQ, CLEVELAND, OH, 44141",
+"lon": -81.628079,
+"lat": 41.320643,
+"ward2026": null,
+"ward2014": null,
+"hood": null
+},
+"6909 Clark Avenue": {
+"files": [
+"1022-2026",
+"581-2026"
+],
+"matched": "6909 CLARK AVE, CLEVELAND, OH, 44102",
+"lon": -81.73277,
+"lat": 41.469536,
+"ward2026": 11,
+"ward2014": 3,
+"hood": "West Boulevard"
+},
+"4611 West 130th Street": {
+"files": [
+"583-2026"
+],
+"matched": "4611 W 130TH ST, CLEVELAND, OH, 44135",
+"lon": -81.780028,
+"lat": 41.428558,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Bellaire-Puritas"
+},
+"629 Euclid Avenue": {
+"files": [
+"594-2026"
+],
+"matched": "629 EUCLID AVE, CLEVELAND, OH, 44114",
+"lon": -81.688955,
+"lat": 41.500025,
+"ward2026": 5,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"1163 East 123rd Street": {
+"files": [
+"650-2026"
+],
+"matched": "1163 E 123RD ST, CLEVELAND, OH, 44108",
+"lon": -81.601245,
+"lat": 41.52671,
+"ward2026": 9,
+"ward2014": 9,
+"hood": "Glenville"
+},
+"5342 Stanard Avenue": {
+"files": [
+"665-2026"
+],
+"matched": "5342 STANARD AVE, CLEVELAND, OH, 44103",
+"lon": -81.654209,
+"lat": 41.52002,
+"ward2026": 8,
+"ward2014": 10,
+"hood": "Goodrich-Kirtland Pk"
+},
+"1936 West 25th Street": {
+"files": [
+"681-2026"
+],
+"matched": "1936 W 25TH ST, CLEVELAND, OH, 44113",
+"lon": -81.704277,
+"lat": 41.485172,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Ohio City"
+},
+"2060 East 9th Street": {
+"files": [
+"686-2026",
+"693-2026"
+],
+"matched": "2060 E 9TH ST, CLEVELAND, OH, 44115",
+"lon": -81.685712,
+"lat": 41.49901,
+"ward2026": 5,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"800 Prospect Avenue": {
+"files": [
+"691-2026"
+],
+"matched": "800 PROSPECT AVE E, CLEVELAND, OH, 44115",
+"lon": -81.686994,
+"lat": 41.498712,
+"ward2026": 5,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"2202 Superior Avenue": {
+"files": [
+"696-2026"
+],
+"matched": "2202 E SUPERIOR AVE, CLEVELAND, OH, 44114",
+"lon": -81.677194,
+"lat": 41.507835,
+"ward2026": 8,
+"ward2014": 7,
+"hood": "Downtown"
+},
+"2164 West 25th Street": {
+"files": [
+"753-2026"
+],
+"matched": "2164 W 25TH ST, CLEVELAND, OH, 44113",
+"lon": -81.701907,
+"lat": 41.482264,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Ohio City"
+},
+"1024 East 152nd Street": {
+"files": [
+"771-2026"
+],
+"matched": "1024 E 152ND ST, CLEVELAND, OH, 44110",
+"lon": -81.575479,
+"lat": 41.551106,
+"ward2026": 9,
+"ward2014": 10,
+"hood": "Collinwood-Nottingham"
+},
+"2218 Broadview Road": {
+"files": [
+"772-2026"
+],
+"matched": "2218 BROADVIEW RD, CLEVELAND, OH, 44109",
+"lon": -81.700057,
+"lat": 41.438576,
+"ward2026": 4,
+"ward2014": 12,
+"hood": "Old Brooklyn"
+},
+"5915 Saint Clair Avenue": {
+"files": [
+"774-2026"
+],
+"matched": "5915 SAINT CLAIR AVE, CLEVELAND, OH, 44103",
+"lon": -81.650737,
+"lat": 41.522888,
+"ward2026": 8,
+"ward2014": 10,
+"hood": "St.Clair-Superior"
+},
+"1917 West 25th Street": {
+"files": [
+"1015-2026",
+"775-2026"
+],
+"matched": "1917 W 25TH ST, CLEVELAND, OH, 44113",
+"lon": -81.704148,
+"lat": 41.485233,
+"ward2026": 7,
+"ward2014": 3,
+"hood": "Ohio City"
+},
+"5517 Memphis Avenue": {
+"files": [
+"890-2026"
+],
+"matched": "5517 MEMPHIS AVE, CLEVELAND, OH, 44144",
+"lon": -81.723998,
+"lat": 41.439843,
+"ward2026": 11,
+"ward2014": 13,
+"hood": "Old Brooklyn"
+},
+"4896 Pearl Road": {
+"files": [
+"891-2026"
+],
+"matched": "4896 PEARL RD, CLEVELAND, OH, 44109",
+"lon": -81.721433,
+"lat": 41.424566,
+"ward2026": 4,
+"ward2014": 13,
+"hood": "Old Brooklyn"
+},
+"4500 Division Avenue": {
+"files": [
+"892-2026"
+],
+"matched": "4500 DIVISION AVE, CLEVELAND, OH, 44102",
+"lon": -81.71779,
+"lat": 41.490867,
+"ward2026": 7,
+"ward2014": 15,
+"hood": "Cuyahoga Valley"
+},
+"4818 Memphis Avenue": {
+"files": [
+"895-2026"
+],
+"matched": "4818 MEMPHIS AVE, CLEVELAND, OH, 44144",
+"lon": -81.719671,
+"lat": 41.43994,
+"ward2026": 11,
+"ward2014": 13,
+"hood": "Old Brooklyn"
+},
+"1938 Euclid Avenue": {
+"files": [
+"896-2026"
+],
+"matched": "1938 EUCLID AVE, CLEVELAND, OH, 44115",
+"lon": -81.677321,
+"lat": 41.501308,
+"ward2026": 5,
+"ward2014": 5,
+"hood": "Downtown"
+},
+"4525 Turney Road": {
+"files": [
+"901-2026"
+],
+"matched": "4525 TURNEY RD, CLEVELAND, OH, 44105",
+"lon": -81.620164,
+"lat": 41.436389,
+"ward2026": 2,
+"ward2014": 2,
+"hood": "Broadway-Slavic Village"
+},
+"11921 Miles Avenue": {
+"files": [
+"951-2026"
+],
+"matched": "11921 MILES AVE, CLEVELAND, OH, 44105",
+"lon": -81.599682,
+"lat": 41.44532,
+"ward2026": 2,
+"ward2014": 2,
+"hood": "Union-Miles"
+},
+"11917 Miles Avenue": {
+"files": [
+"952-2026"
+],
+"matched": "11917 MILES AVE, CLEVELAND, OH, 44105",
+"lon": -81.599723,
+"lat": 41.44532,
+"ward2026": 2,
+"ward2014": 2,
+"hood": "Union-Miles"
+},
+"836 Broadway Avenue": {
+"files": [
+"953-2026"
+],
+"matched": "836 BROADWAY AVE, CLEVELAND, OH, 44115",
+"lon": -81.682129,
+"lat": 41.492916,
+"ward2026": 5,
+"ward2014": 3,
+"hood": "Cuyahoga Valley"
+},
+"7310 Lorain Avenue": {
+"files": [
+"1021-2026"
+],
+"matched": "7310 LORAIN AVE, CLEVELAND, OH, 44102",
+"lon": -81.73518,
+"lat": 41.473026,
+"ward2026": 11,
+"ward2014": 15,
+"hood": "Detroit Shoreway"
+},
+"15435 St. Clair Avenue": {
+"files": [
+"1023-2026"
+],
+"matched": "15435 SAINT CLAIR AVE, CLEVELAND, OH, 44110",
+"lon": -81.572785,
+"lat": 41.555503,
+"ward2026": 10,
+"ward2014": 8,
+"hood": "Collinwood-Nottingham"
+},
+"15315 Bartlett Avenue": {
+"files": [
+"1024-2026",
+"1115-2026"
+],
+"matched": "15315 BARTLETT AVE, CLEVELAND, OH, 44120",
+"lon": -81.574094,
+"lat": 41.457606,
+"ward2026": 1,
+"ward2014": 1,
+"hood": "Mount Pleasant"
+},
+"7025 Fleet Avenue": {
+"files": [
+"1025-2026"
+],
+"matched": "7025 FLEET AVE, CLEVELAND, OH, 44105",
+"lon": -81.639369,
+"lat": 41.456303,
+"ward2026": 3,
+"ward2014": 12,
+"hood": "Broadway-Slavic Village"
+},
+"1293 West 9th Street": {
+"files": [
+"1032-2026"
+],
+"matched": "1293 W 9TH ST, CLEVELAND, OH, 44113",
+"lon": -81.700364,
+"lat": 41.498907,
+"ward2026": 8,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"813 East 152nd Street": {
+"files": [
+"1034-2026"
+],
+"matched": "813 E 152ND ST, CLEVELAND, OH, 44110",
+"lon": -81.575408,
+"lat": 41.557347,
+"ward2026": 10,
+"ward2014": 10,
+"hood": "Collinwood-Nottingham"
+},
+"4051 West 140th Street": {
+"files": [
+"1046-2026"
+],
+"matched": "4051 W 140TH ST, CLEVELAND, OH, 44135",
+"lon": -81.790408,
+"lat": 41.443929,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Jefferson"
+},
+"10207 Madison Avenue": {
+"files": [
+"1158-2026"
+],
+"matched": "10207 MADISON AVE, CLEVELAND, OH, 44102",
+"lon": -81.755858,
+"lat": 41.477008,
+"ward2026": 12,
+"ward2014": 15,
+"hood": "Cudell"
+},
+"3631 Perkins Avenue": {
+"files": [
+"1162-2026"
+],
+"matched": "3631 PERKINS AVE, CLEVELAND, OH, 44114",
+"lon": -81.662809,
+"lat": 41.506153,
+"ward2026": 8,
+"ward2014": 7,
+"hood": "Goodrich-Kirtland Pk"
+},
+"4741 West 130th Street": {
+"files": [
+"1177-2026"
+],
+"matched": "4741 W 130TH ST, CLEVELAND, OH, 44135",
+"lon": -81.780123,
+"lat": 41.425064,
+"ward2026": 13,
+"ward2014": 16,
+"hood": "Bellaire-Puritas"
+}
+},
+"funds": {
+"111-2026": {
+"file": "111-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/5824cbeb-176a-42b7-ba72-70325a925ac9.doc",
+"amounts": [
+50000.0,
+100000.0,
+150000.0,
+500000.0
+],
+"limit": 500000.0,
+"wards": [
+1,
+2,
+4,
+9,
+14
+]
+},
+"112-2026": {
+"file": "112-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/93bc70c8-7ae2-4dd6-b9c5-a02cc5719582.doc",
+"amounts": [
+5000.0,
+24979.0,
+24990.0,
+40030.0,
+94999.0
+],
+"limit": 94999.0,
+"wards": [
+7,
+8,
+9,
+10
+]
+},
+"113-2026": {
+"file": "113-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/4df65773-8fb6-435c-8bf4-3706f172a15f.doc",
+"amounts": [
+10000.0
+],
+"limit": 10000.0,
+"wards": [
+1
+]
+},
+"186-2026": {
+"file": "186-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/31005c26-ff94-41bc-b281-7cee5c14e8b5.doc",
+"amounts": [
+10000.0
+],
+"limit": 10000.0,
+"wards": [
+14
+]
+},
+"188-2026": {
+"file": "188-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/c50c9ca0-450c-4afe-be70-95d8c95abe70.doc",
+"amounts": [
+22420.0
+],
+"limit": 22420.0,
+"wards": [
+7
+]
+},
+"189-2026": {
+"file": "189-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/5b660483-6daf-4975-82bc-f1a5a609d0b5.docx",
+"amounts": [
+400000.0
+],
+"limit": 400000.0,
+"wards": []
+},
+"287-2026": {
+"file": "287-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/80b36c9c-57f2-4fc0-8bbf-257827c6e520.doc",
+"amounts": [
+7500.0
+],
+"limit": 7500.0,
+"wards": [
+8
+]
+},
+"411-2026": {
+"file": "411-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/81e3010d-53cf-4c2b-9b3b-46070e67af31.doc",
+"amounts": [
+65000.0
+],
+"limit": 65000.0,
+"wards": [
+2
+]
+},
+"458-2026": {
+"file": "458-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/3396e89a-65a0-4adc-a4cc-7d2be1af5d4c.docx",
+"amounts": [
+4750.0
+],
+"limit": 4750.0,
+"wards": []
+},
+"460-2026": {
+"file": "460-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/55efb359-b2b2-4822-b6dc-0527ee035e88.doc",
+"amounts": [
+740000.0
+],
+"limit": null,
+"wards": []
+},
+"473-2026": {
+"file": "473-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/a794d4a0-d872-4577-828c-782115e4a0b6.doc",
+"amounts": [
+20000.0
+],
+"limit": 20000.0,
+"wards": [
+11
+]
+},
+"474-2026": {
+"file": "474-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/8ad4df34-b5dd-41e1-a60f-5b2967b69957.doc",
+"amounts": [
+22500.0
+],
+"limit": 22500.0,
+"wards": [
+13
+]
+},
+"475-2026": {
+"file": "475-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/96617fc9-fb9b-46b6-a4c0-5b36d4862413.doc",
+"amounts": [
+5000.0
+],
+"limit": 5000.0,
+"wards": [
+13
+]
+},
+"476-2026": {
+"file": "476-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/84ce8ace-71c0-4eaa-be7d-3f7eddb2b4ab.doc",
+"amounts": [
+6000.0
+],
+"limit": 6000.0,
+"wards": [
+13
+]
+},
+"477-2026": {
+"file": "477-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/c3b89bb5-e140-420c-ac52-fdb86ffb7fe5.doc",
+"amounts": [
+12000.0
+],
+"limit": 12000.0,
+"wards": [
+3
+]
+},
+"478-2026": {
+"file": "478-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/18b59252-ad3f-4171-acc6-d1c2e237a22c.doc",
+"amounts": [
+22950.0
+],
+"limit": 22950.0,
+"wards": [
+14
+]
+},
+"517-2026": {
+"file": "517-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/8384e35b-1fd0-4b4a-882c-6bae5367775b.doc",
+"amounts": [
+15000.0
+],
+"limit": null,
+"wards": [
+8
+]
+},
+"595-2026": {
+"file": "595-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/7b402f7f-8752-4184-a538-1ec83a306d63.doc",
+"amounts": [
+15590.0
+],
+"limit": 15590.0,
+"wards": [
+3
+]
+},
+"660-2026": {
+"file": "660-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/368ff867-90af-4c7a-9bc1-835cf4f81ca7.doc",
+"amounts": [
+50000.0
+],
+"limit": 50000.0,
+"wards": []
+},
+"700-2026": {
+"file": "700-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/db3f2fa9-8c7e-4d1e-815c-85e0a339d47e.doc",
+"amounts": [
+10000.0
+],
+"limit": 10000.0,
+"wards": [
+6
+]
+},
+"704-2026": {
+"file": "704-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/b38d4dde-cc80-4cf3-8866-7144a26f71d3.doc",
+"amounts": [
+35000.0
+],
+"limit": 35000.0,
+"wards": [
+6,
+9
+]
+},
+"705-2026": {
+"file": "705-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/7699429f-2007-4dd9-b02b-b4b22946b2f7.doc",
+"amounts": [
+20000.0
+],
+"limit": 20000.0,
+"wards": [
+3
+]
+},
+"707-2026": {
+"file": "707-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/ae4ae9de-e2a0-40ef-a707-a9ed497d26ba.docx",
+"amounts": [
+65975.0
+],
+"limit": null,
+"wards": [
+5
+]
+},
+"743-2026": {
+"file": "743-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/3da128f3-6384-4224-b486-a83bb4f04588.doc",
+"amounts": [
+99200.0
+],
+"limit": 99200.0,
+"wards": [
+1
+]
+},
+"776-2026": {
+"file": "776-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/3963a155-ae33-4225-80ac-a89447243f5d.doc",
+"amounts": [
+3000.0
+],
+"limit": 3000.0,
+"wards": [
+10
+]
+},
+"777-2026": {
+"file": "777-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/3f7faeea-4542-4a35-bfdd-7036c5e06b40.doc",
+"amounts": [
+50000.0
+],
+"limit": 50000.0,
+"wards": [
+13
+]
+},
+"778-2026": {
+"file": "778-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/1c35467a-f2ca-45f3-ac79-cff4383a4510.doc",
+"amounts": [
+21000.0
+],
+"limit": 21000.0,
+"wards": [
+1
+]
+},
+"779-2026": {
+"file": "779-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/708514f9-927c-4049-ba04-9ad22d27bb28.doc",
+"amounts": [
+3000.0
+],
+"limit": 3000.0,
+"wards": [
+10
+]
+},
+"882-2026": {
+"file": "882-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/09a3068b-e081-44a5-a9b0-5de4066865d6.doc",
+"amounts": [
+105000.0
+],
+"limit": 105000.0,
+"wards": [
+12
+]
+},
+"897-2026": {
+"file": "897-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/4244c92c-47a0-47ab-b822-6408da0e7479.doc",
+"amounts": [
+105000.0
+],
+"limit": 105000.0,
+"wards": [
+12
+]
+},
+"898-2026": {
+"file": "898-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/d048514f-f41f-4ead-88f6-e1589c6264c5.docx",
+"amounts": [
+150000.0
+],
+"limit": 150000.0,
+"wards": [
+5
+]
+},
+"899-2026": {
+"file": "899-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/4da47320-a369-4957-86af-a7429405327f.doc",
+"amounts": [
+800000.0
+],
+"limit": 800000.0,
+"wards": [
+2
+]
+},
+"900-2026": {
+"file": "900-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/00b595a6-860a-4328-8776-53884fb4a434.doc",
+"amounts": [
+10000.0
+],
+"limit": 10000.0,
+"wards": [
+7
+]
+},
+"908-2026": {
+"file": "908-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/1f175e55-a00c-46bf-bb2d-7af5e017e11c.doc",
+"amounts": [
+100000.0
+],
+"limit": 100000.0,
+"wards": [
+9
+]
+},
+"925-2026": {
+"file": "925-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/ab820f96-f93d-4049-ac0a-9794712f44e7.doc",
+"amounts": [
+5000.0
+],
+"limit": 5000.0,
+"wards": [
+10
+]
+},
+"948-2026": {
+"file": "948-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/e07d5e24-8fce-43d3-acbe-2d18c94ea067.docx",
+"amounts": [
+5000.0
+],
+"limit": null,
+"wards": [
+8
+]
+},
+"950-2026": {
+"file": "950-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/cd2a7cfd-e1a6-48c6-bbf1-e709c7e218e4.doc",
+"amounts": [],
+"limit": null,
+"wards": []
+},
+"1153-2026": {
+"file": "1153-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/683b3aa9-f2c6-4e45-bcea-95bcaf057d1d.doc",
+"amounts": [
+20000.0
+],
+"limit": 20000.0,
+"wards": [
+7
+]
+},
+"1154-2026": {
+"file": "1154-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/efc20fd0-f2d9-4971-8d31-4570f898d394.doc",
+"amounts": [
+10000.0
+],
+"limit": 10000.0,
+"wards": [
+7
+]
+},
+"1155-2026": {
+"file": "1155-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/8647a577-8c34-4bc1-b14c-789e929bdd7b.doc",
+"amounts": [
+5000.0
+],
+"limit": 5000.0,
+"wards": [
+2
+]
+},
+"1182-2026": {
+"file": "1182-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/715630be-4710-49bb-8b82-30c2b53e35ea.doc",
+"amounts": [
+45000.0
+],
+"limit": 45000.0,
+"wards": [
+5,
+6,
+7,
+9,
+11,
+12
+]
+},
+"1183-2026": {
+"file": "1183-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/92d5e234-df25-4c94-ae89-dbb023ad3a23.doc",
+"amounts": [
+20000.0
+],
+"limit": 20000.0,
+"wards": [
+3
+]
+}
+}
+}

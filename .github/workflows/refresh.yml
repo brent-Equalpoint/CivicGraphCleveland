@@ -1,0 +1,70 @@
+# Nightly refresh of the official records (Cleveland City Council's public Legistar record, the city's
+# ward maps, and ordinance texts), then a rebuild. Vercel redeploys when the commit lands.
+# Official records only: news items need a person's approval and never enter through this job.
+# If the new data looks broken, scripts/refresh.py keeps the old files and the job fails, so nothing
+# is published and GitHub emails the repository owner.
+name: Nightly records refresh
+
+on:
+  schedule:
+    - cron: "17 10 * * *"   # 6:17 a.m. Eastern in daylight time, 5:17 a.m. in standard time
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+concurrency:
+  group: records-refresh
+  cancel-in-progress: false
+
+jobs:
+  refresh:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Tools that read ordinance documents (PDF and .doc)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends poppler-utils libreoffice-writer-nogui
+
+      - name: Python and Node packages
+        run: |
+          pip install "shapely>=2,<3"
+          npm ci
+
+      - name: Pull the official records and log what changed
+        run: python scripts/refresh.py
+
+      - name: Build the app
+        run: python build.py
+
+      - name: Flag summaries whose source changed
+        if: hashFiles('dist/review-needed.json') != ''
+        run: |
+          echo "### Summaries to re-check" >> "$GITHUB_STEP_SUMMARY"
+          echo '```json' >> "$GITHUB_STEP_SUMMARY"
+          cat dist/review-needed.json >> "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Publish (commit data and site; Vercel deploys the commit)
+        run: |
+          git config user.name "civic-graph-refresh"
+          git config user.email "civic-graph-refresh@users.noreply.github.com"
+          git add data site
+          if git diff --cached --quiet; then
+            echo "Nothing changed."
+            exit 0
+          fi
+          git commit -m "Nightly records refresh $(date -u +%Y-%m-%d)"
+          git push
