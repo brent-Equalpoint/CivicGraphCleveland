@@ -181,8 +181,10 @@ function CX_DomainGrid({ onRoom, onPanel }) {
 }
 
 function CX_TextConnections({ room, visibleIds, onSelect }) {
+  const bc = cxBroadcast(room);
   const edges = room.edges.filter((e) => visibleIds.has(e.source) && visibleIds.has(e.target));
   const byId = new Map(room.nodes.map((n) => [n.id, n]));
+  const seenGroup = new Set();
   return (
     <section className="atlas-text-connections" aria-label="Relationships in words">
       <h3>Connections, in words</h3>
@@ -192,10 +194,22 @@ function CX_TextConnections({ room, visibleIds, onSelect }) {
           const s = byId.get(e.source);
           const t = byId.get(e.target);
           if (!s || !t) return null;
+          if (bc.ids.has(e.id)) {
+            const key = `${e.source}|${e.relation}`;
+            if (seenGroup.has(key)) return null;
+            seenGroup.add(key);
+            const group = edges.filter((x) => x.source === e.source && x.relation === e.relation && bc.ids.has(x.id));
+            return (
+              <article key={key}>
+                <button type="button" onClick={() => onSelect(s.id)}>{cxSentence(s.name, e.relation, `each of these ${group.length}`, cxPluralNode(s)).replace(/\.$/, ``)}: {group.map((x) => byId.get(x.target)?.name).filter(Boolean).join(`, `)}.</button>
+                {e.note && <p>{e.note}</p>}
+              </article>
+            );
+          }
           return (
             <article key={e.id}>
               <button type="button" onClick={() => onSelect(t.id === `people` ? s.id : t.id)}>
-                {s.name} <em>{e.relation}</em> {t.name}
+                {cxSentence(s.name, e.relation, t.name, cxPluralNode(s))}
               </button>
               {e.note && <p>{e.note}</p>}
               {e.url

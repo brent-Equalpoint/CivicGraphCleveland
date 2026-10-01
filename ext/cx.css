@@ -580,7 +580,7 @@
 .cx-oops-row button:first-child { background: #2f66f3; border-color: #2f66f3; color: #fff; }
 
 /* map hover card and lit connections */
-.cx-hovercard { position: fixed; z-index: 80; width: 300px; max-width: calc(100vw - 16px); padding: 12px 14px; border-radius: 14px; background: #17171ae8; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #ffffff24; box-shadow: 0 18px 40px #00000073; color: #f4f2ee; pointer-events: none; animation: cx-pop .18s cubic-bezier(.2,.8,.2,1) both; font-family: Inter, system-ui, sans-serif; }
+.cx-hovercard { position: fixed; z-index: 80; width: 300px; max-width: calc(100vw - 16px); padding: 12px 14px; border-radius: 14px; background: #17171ae8; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid #ffffff24; box-shadow: 0 18px 40px #00000073; color: #f4f2ee; pointer-events: none; animation: cx-pop .26s ease-out both; font-family: Inter, system-ui, sans-serif; }
 .cx-hc-head { display: flex; align-items: center; gap: 10px; }
 .cx-hc-head img, .cx-hc-head i { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; flex: none; display: block; }
 .cx-hc-head span { display: flex; flex-direction: column; min-width: 0; }

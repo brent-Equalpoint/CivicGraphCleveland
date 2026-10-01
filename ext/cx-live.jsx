@@ -355,14 +355,70 @@ function cxLight(svg, id) {
     svg.querySelector(`[data-node="${cxEsc(o)}"]`)?.classList.add(`cx-near`);
   });
 }
+/* ---------- connections in plain sentences (v5.16, Phase 1e) ----------
+   A connection is written as one sentence with real names: "Kevin Conwell serves on City Council."
+   No arrows and never the word "this". The verb agrees with the subject ("Residents elect ...").
+   A connection that one source draws to five or more nodes with the same wording (for example, Residents
+   elect each of the 15 council members) is "broadcast": it is shown once as a sentence about the whole
+   group, and left off each individual's card so it cannot read as that person's own fact. */
+const CX_BE_HAVE = { is: `are`, has: `have`, was: `were` };
+/* A subject is plural when it names a group of people ("Residents", "People of Cleveland") or ends in a plural noun
+   ("Courts"). A person or a single office is never plural, even when the surname ends in s (Howse-Jones). */
+function cxPluralNode(node) {
+  if (!node || node.kind === `official` || node.kind === `person`) return !1;
+  const name = String(node.name || ``).trim();
+  if (/^(people|residents|voters|citizens|members|candidates|neighbors)\b/i.test(name)) return !0;
+  const w = name.split(/\s+/).pop() || ``;
+  return /[a-z]s$/i.test(w) && !/(ss|us|is)$/i.test(w);
+}
+function cxSentence(subject, relation, object, plural) {
+  const words = String(relation).trim().split(/\s+/);
+  if (plural) {
+    const w = words[0].toLowerCase();
+    if (CX_BE_HAVE[w]) words[0] = CX_BE_HAVE[w];
+    else if (/[^s]s$/.test(w)) words[0] = words[0].slice(0, -1);
+  }
+  return `${subject} ${words.join(` `)} ${object}.`;
+}
+const CX_BROADCAST_MIN = 5;
+const CX_BROADCAST_CACHE = new WeakMap();
+function cxBroadcast(room) {
+  if (CX_BROADCAST_CACHE.has(room)) return CX_BROADCAST_CACHE.get(room);
+  const groups = new Map();
+  room.edges.forEach((e) => { const k = `${e.source}|${e.relation}`; (groups.get(k) || groups.set(k, []).get(k)).push(e); });
+  const out = { ids: new Set(), groups: [] };
+  groups.forEach((list) => { if (list.length >= CX_BROADCAST_MIN) { list.forEach((e) => out.ids.add(e.id)); out.groups.push(list); } });
+  CX_BROADCAST_CACHE.set(room, out);
+  return out;
+}
+/* what to list for one node: its own outgoing connections, and incoming ones unless a person's card would only repeat a group fact */
+function cxNodeLines(room, node) {
+  const nd = (id) => room.nodes.find((n) => n.id === id);
+  const nm = (id) => nd(id)?.name ?? id;
+  const has = (id) => room.nodes.some((n) => n.id === id);
+  const bc = cxBroadcast(room);
+  const out = room.edges.filter((e) => e.source === node.id && has(e.target));
+  const inc = room.edges.filter((e) => e.target === node.id && has(e.source) && !(node.kind === `official` && bc.ids.has(e.id)));
+  return [
+    ...out.map((e) => ({ id: e.id, to: e.target, text: cxSentence(node.name, e.relation, nm(e.target), cxPluralNode(node)) })),
+    ...inc.map((e) => ({ id: e.id, to: e.source, text: cxSentence(nm(e.source), e.relation, node.name, cxPluralNode(nd(e.source))) })),
+  ];
+}
+/* hover card timing: a pause before the card appears, so sweeping across the map does not flash cards */
+const CX_HOVER_WAIT = 320;
+const CX_HOVER_SWAP = 90;
 function cxHoverNode(room, node, ev) {
   const g = ev.currentTarget;
   const svg = g && g.ownerSVGElement;
   cxLight(svg, node.id);
   const r = g.getBoundingClientRect();
-  cxHoverSet({ room, node, x: r.left + r.width / 2, top: r.top, bottom: r.bottom, kb: ev.type === `focus` });
+  const kb = ev.type === `focus`;
+  clearTimeout(CX_HOVER.t);
+  // the lit lines respond at once; the card waits a moment, and swaps quickly when one is already open
+  CX_HOVER.t = setTimeout(() => cxHoverSet({ room, node, x: r.left + r.width / 2, top: r.top, bottom: r.bottom, kb }), CX_HOVER.v ? CX_HOVER_SWAP : CX_HOVER_WAIT);
 }
 function cxHoverEnd(ev) {
+  clearTimeout(CX_HOVER.t);
   cxLight(ev && ev.currentTarget && ev.currentTarget.ownerSVGElement, null);
   cxHoverSet(null);
 }
@@ -388,9 +444,7 @@ function CX_HoverCard() {
   if (!h) return null;
   const { room, node } = h;
   const layer = room.layers.find((l) => l.id === node.layer);
-  const name = (id) => room.nodes.find((n) => n.id === id)?.label ?? id;
-  const out = room.edges.filter((e) => e.source === node.id && room.nodes.some((n) => n.id === e.target));
-  const inc = room.edges.filter((e) => e.target === node.id && room.nodes.some((n) => n.id === e.source));
+  const lines = cxNodeLines(room, node);
   const photo = pm[node.id];
   return (
     <div ref={ref} className="cx-hovercard" role="tooltip" style={pos ? { left: pos.left, top: pos.top } : { left: -9999, top: 0 }}>
@@ -400,11 +454,10 @@ function CX_HoverCard() {
       </div>
       <p className="cx-hc-place">{node.region}</p>
       <p className={`cx-hc-ev ev-${node.evidence}`}>{Kh[node.evidence] ?? node.evidence}</p>
-      {(out.length > 0 || inc.length > 0) && (
+      {lines.length > 0 && (
         <ul className="cx-hc-links">
-          {out.slice(0, 4).map((e) => <li key={e.id}><span className="cx-hc-rel">{e.relation}</span> <b>→ {name(e.target)}</b></li>)}
-          {inc.slice(0, 3).map((e) => <li key={e.id}><b>{name(e.source)}</b> <span className="cx-hc-rel">{e.relation}</span> <b>→ this</b></li>)}
-          {out.length + inc.length > 7 && <li className="cx-hc-more">+{out.length + inc.length - 7} more connections</li>}
+          {lines.slice(0, 5).map((l) => <li key={l.id}>{l.text}</li>)}
+          {lines.length > 5 && <li className="cx-hc-more">{lines.length - 5} more connections are in the record.</li>}
         </ul>
       )}
       <small className="cx-hc-foot">{h.kb ? `Press Enter to open` : `Click to open`} · lines show recorded relationships, not control</small>

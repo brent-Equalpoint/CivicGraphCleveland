@@ -171,8 +171,7 @@ function CxmRoomMap({ room, onPick, proof }) {
     const ra = rad(s0) + 2, rb = rad(t0) + 4;
     return [a[0] + (dx / d) * ra, a[1] + (dy / d) * ra, b[0] - (dx / d) * rb, b[1] - (dy / d) * rb];
   };
-  const out = node ? room.edges.filter((e) => e.source === node.id && pos[e.target]) : [];
-  const inc = node ? room.edges.filter((e) => e.target === node.id && pos[e.source]) : [];
+  const lines = node ? cxNodeLines(room, node).filter((l) => pos[l.to]) : [];
   const name = (id) => nodes.find((n) => n.id === id)?.label ?? id;
   const mid = `cxm-arrow-${room.id}`;
   return (
@@ -220,11 +219,10 @@ function CxmRoomMap({ room, onPick, proof }) {
             <button type="button" aria-label="Close preview" onClick={() => setSel(null)}><CXI.X size={16} /></button>
           </div>
           <p className="cxm-mut">{node.region} · <CxmEvidence state={node.evidence} /></p>
-          {(out.length > 0 || inc.length > 0) && (
+          {lines.length > 0 && (
             <div className="cxm-mapcard-links">
-              {out.slice(0, 4).map((e) => <button key={e.id} type="button" onClick={() => setSel(e.target)}><span>{e.relation}</span> <b>→ {name(e.target)}</b></button>)}
-              {inc.slice(0, 3).map((e) => <button key={e.id} type="button" onClick={() => setSel(e.source)}><b>{name(e.source)}</b> <span>{e.relation}</span> <b>→ here</b></button>)}
-              {out.length + inc.length > 7 && <small className="cxm-fine">+{out.length + inc.length - 7} more in the record</small>}
+              {lines.slice(0, 5).map((l) => <button key={l.id} type="button" onClick={() => setSel(l.to)}>{l.text}</button>)}
+              {lines.length > 5 && <small className="cxm-fine">{lines.length - 5} more connections are in the record.</small>}
             </div>
           )}
           <button type="button" className="cxm-btn cxm-wide" onClick={() => onPick(node.id)}>Open record</button>
