@@ -9,11 +9,13 @@ function CxmFresh() {
   const { openSheet } = useCxm();
   const f = cxFresh();
   const n = u.useMemo(() => cxNewsRows(7).rows.filter((r) => r.kind !== `routine` && r.kind !== `gone`).length, []);
+  const said = f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`;
+  const more = f.stale ? `Newer records may exist` : n ? `${cxmPl(n, `change`, `changes`)} this week` : `What's new`;
   return (
-    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)} aria-label={`Records updated ${f.when}, ${f.ago}. ${n} changes this week. Open What's new.`}>
+    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)} aria-label={`${said} ${more}. Opens What's new.`}>
       <i aria-hidden="true" />
-      <span>{f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`}</span>
-      <b>{f.stale ? `Newer records may exist` : n ? `${cxmPl(n, `change`, `changes`)} this week` : `What's new`} <CXI.Arrow size={12} /></b>
+      <span>{said}</span>{` `}
+      <b>{more} <CXI.Arrow size={12} /></b>
     </button>
   );
 }

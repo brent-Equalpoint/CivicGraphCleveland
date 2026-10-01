@@ -85,7 +85,7 @@ function CX_SimpleGuide({ room, onSelect, onTerm, onRegistry }) {
       <div className="simple-guide-panel" role="tabpanel">
         {step === 0 && (
           <>
-            <h3>{room.question}</h3>
+            <h3 aria-level="2">{room.question}</h3>
             <p><CX_Definable text={room.answer} onTerm={onTerm} limit={2} /></p>
             <p className="simple-guide-note">You do not need to understand the whole map first. Choose one doorway, and we will keep the relevant path in view.</p>
             <div className="simple-guide-actions">
@@ -455,9 +455,9 @@ function CX_Ledger({ onGo }) {
         </div>
       </div>
       <div className="ledger-layout">
-        <div className="ledger-list" role="list">
+        <div className="ledger-list" role="group" aria-label="Ledger records">
           {list.map((e) => (
-            <button type="button" role="listitem" key={e.id} className={cur?.id === e.id ? `selected` : ``} aria-pressed={cur?.id === e.id} onClick={() => setSel(e.id)}>
+            <button type="button" key={e.id} className={cur?.id === e.id ? `selected` : ``} aria-pressed={cur?.id === e.id} onClick={() => setSel(e.id)}>
               <span className={`ledger-domain ledger-domain-${e.domain}`}>{CX_DOMAIN_LABEL[e.domain] ?? e.domain}</span>
               <strong>{e.short}</strong>
               <small>{e.title}</small>
@@ -472,17 +472,17 @@ function CX_Ledger({ onGo }) {
               <span className={`ledger-domain ledger-domain-${cur.domain}`}>{CX_DOMAIN_LABEL[cur.domain] ?? cur.domain}</span>
               <span className={`ledger-evidence ledger-evidence-${cur.evidence}`}>{CX_EVIDENCE_LABEL[cur.evidence]}</span>
             </div>
-            <h3>{cur.title}</h3>
+            <h3 aria-level="2">{cur.title}</h3>
             <p className="ledger-summary-copy">{cur.summary}</p>
             <dl>
               {cur.fields.map(([k, val]) => <div key={k}><dt>{k}</dt><dd>{val}</dd></div>)}
             </dl>
             <div className="ledger-detail-section">
-              <h4><CXI.Help size={13} /> Still missing</h4>
+              <h4 aria-level="3"><CXI.Help size={13} /> Still missing</h4>
               <ul>{cur.missing.map((m) => <li key={m}>{m}</li>)}</ul>
             </div>
             <div className="ledger-detail-section">
-              <h4><CXI.Shield size={13} /> Source</h4>
+              <h4 aria-level="3"><CXI.Shield size={13} /> Source</h4>
               <a href={cur.source[1]} target="_blank" rel="noreferrer">{cur.source[0]} <CXI.Ext size={13} /></a>
               <small>Review recorded {cur.checked}. A source link is not an independent audit of every claim.</small>
             </div>
@@ -520,7 +520,7 @@ function CX_Bench() {
       <p className="civic-lede">A resident asks "Who decided this?" The system should return a short answer with jurisdiction, date, source, and uncertainty. The map, text view, Simple view, and Audit view all read the same approved records. No agent publishes. A named person approves each public change.</p>
       <div className="atlas-release-card cx-status-card">
         <span className="atlas-eyebrow">HONEST STATUS · SEPTEMBER 24, 2026</span>
-        <h3>The architecture is designed. The machinery is not running.</h3>
+        <h3 aria-level="2">The architecture is designed. The machinery is not running.</h3>
         <p>Research agents, source polling, the evidence store, the review console, and the publishing service are specified here, not live. The records in this atlas were gathered and reviewed by hand, with sources and gaps labeled.</p>
       </div>
       <div className="cx-tabs" role="tablist" aria-label="Architecture sections">
@@ -531,7 +531,7 @@ function CX_Bench() {
 
       {tab === `pipeline` && (
         <div className="cx-pipeline">
-          <svg viewBox={`0 0 ${W0} 372`} role="img" aria-label="Eleven-step pipeline from intake to follow-through, with a correction loop back to the evidence registry">
+          <svg viewBox={`0 0 ${W0} 372`} role="group" aria-label="Eleven-step pipeline from intake to follow-through, with a correction loop back to the evidence registry. Choose a step to read it.">
             <defs>
               <marker id="cx-arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10" fill="currentColor" /></marker>
             </defs>

@@ -300,9 +300,9 @@ function CxmBench() {
       <CxmSeg label="Architecture sections" items={[[`pipeline`, `Pipeline`], [`seats`, `Seats`], [`states`, `States & gates`], [`plan`, `Delivery plan`], [`contracts`, `Evidence rules`]]} value={tab} onChange={setTab} />
       {tab === `pipeline` && (
         <>
-          <div className="cxm-steps" role="list">
+          <div className="cxm-steps" role="group" aria-label="Steps">
             {CX_PIPELINE.map(([name], i) => (
-              <button key={name} type="button" role="listitem" className={`cxm-step ${step === i ? `on` : ``} ${i === 9 ? `human` : ``}`} aria-pressed={step === i} onClick={() => setStep(i)}>
+              <button key={name} type="button" className={`cxm-step ${step === i ? `on` : ``} ${i === 9 ? `human` : ``}`} aria-pressed={step === i} onClick={() => setStep(i)}>
                 <span>{String(i + 1).padStart(2, `0`)}</span>{name}
               </button>
             ))}

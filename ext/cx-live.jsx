@@ -325,7 +325,7 @@ function CX_Latest({ seat }) {
   const list = (seat.ward ? cxNewsFor(rows, { ward: seat.ward }) : cxNewsFor(rows, { admin: !0 })).filter((r) => r.kind !== `routine`).slice(0, 4);
   return (
     <div className="cx-latest">
-      <h4>Latest <small>since {since ? cxShortDate(since) : `the last check`}</small></h4>
+      <h4 aria-level="3">Latest <small>since {since ? cxShortDate(since) : `the last check`}</small></h4>
       {list.length ? <ul>{list.map((r) => <li key={r.f}><b>{r.f}</b> {cxWords(r.title, 14)} <span>{r.what}</span></li>)}</ul> : <p>Nothing new on {seat.ward ? `${seat.name}'s` : `the administration's`} proposals since {since ? cxShortDate(since) : `the last check`}. No record is not a no.</p>}
       <button type="button" className="cx-link-button" onClick={() => CX_NAV.panel(`news`)}>Everything new <CXI.Arrow size={13} /></button>
     </div>

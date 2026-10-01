@@ -83,14 +83,14 @@ function CxmPlace() {
       )}
       <div className="cxm-drops">
         <CxmPlaceSec id="rep" open={open} setOpen={setOpen} title={`Who represents ${hood}`} sum={now0 ? `${cxPlMember(`wards2026`, now0.ward)}, Ward ${now0.ward}${D.now.length > 1 ? ` and ${D.now.length - 1} more` : ``}` : `No ward data`}>
-          <h4 className="cxm-h4">Now</h4>
+          <h4 className="cxm-h4" aria-level="2">Now</h4>
           {D.now.map((r) => (
             <div key={r.ward} className="cxm-row cxm-row-static">
               <span><strong>Ward {r.ward} · {Math.round(r.share * 100)}%</strong><small>{cxPlMember(`wards2026`, r.ward)}</small></span>
               <button type="button" className="cxm-link" onClick={() => openSeat(`ward-${r.ward}`)}>Profile</button>
             </div>
           ))}
-          <h4 className="cxm-h4">Before (2014 to 2025)</h4>
+          <h4 className="cxm-h4" aria-level="2">Before (2014 to 2025)</h4>
           {D.before.map((r) => <div key={r.ward} className="cxm-row cxm-row-static"><span><strong>Ward {r.ward} · {Math.round(r.share * 100)}%</strong><small>{cxPlMember(`wards2014`, r.ward) ? `Listed in the city's map file: ${cxPlMember(`wards2014`, r.ward)}` : ``}</small></span></div>)}
           <p className="cxm-fine">Shares are by land area, not by how many people live there. {D.now.length > 1 ? `With ${D.now.length} council members covering parts of ${hood}, check which side of the line your address is on before you call.` : ``}</p>
           <div className="cxm-row-links"><CxmSrc href={CX_GEO.src.wards2014}>2014 ward map</CxmSrc><CxmSrc href={CX_GEO.src.wards2026}>2026 ward map (Ord. No. 1-2025)</CxmSrc><CxmSrc href={CX_GEO.src.spa}>Neighborhood boundaries</CxmSrc></div>
@@ -167,7 +167,7 @@ function CxmPlace() {
             <div><b>{D.items.filter((x) => x.path.fin && /amended/.test(x.path.fin[1])).length}</b><span>changed before passing ("as amended")</span></div>
             <div><b>0</b><span>member-by-member roll calls published</span></div>
           </div>
-          {D.unusual.length > 0 && <h4 className="cxm-h4">Citywide: decisions that did not simply pass</h4>}
+          {D.unusual.length > 0 && <h4 className="cxm-h4" aria-level="2">Citywide: decisions that did not simply pass</h4>}
           {D.unusual.map(({ m, p }) => <button key={m.file} type="button" className="cxm-item" onClick={() => openSheet(`leg`, { file: m.file })}><strong>{cxShortTitle(m.title)}</strong><small>{p.flags.map((f) => `${cxmDate(f[0])}: ${f[1]} (${f[2]})`).join(` · `)} · {m.file}</small></button>)}
         </CxmPlaceSec>
         <CxmPlaceSec id="how" open={open} setOpen={setOpen} title="How this page works" sum="Sources and limits">
@@ -178,7 +178,7 @@ function CxmPlace() {
             <li>Ward money amounts are read from the ordinance text and may not match final spending.</li>
             <li>Not in any of these records: attendance, meetings held, calls returned, or how each member voted.</li>
           </ul>
-          <h4 className="cxm-h4">What this page does not do</h4>
+          <h4 className="cxm-h4" aria-level="2">What this page does not do</h4>
           <ul className="cxm-list">
             <li>It does not look up or store an address. Official lookups stay on official websites.</li>
             <li>It does not match precincts or districts. Your full ballot can differ from your neighbor's.</li>

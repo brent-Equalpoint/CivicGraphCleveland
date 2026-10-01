@@ -1,7 +1,7 @@
 # Cleveland Civic Graph: State of the Build
 
 **Saved:** October 1, 2026 (updated for v5.16: stories on desktop, quieter text, 404 page)
-**Version:** v5.16 (v5.15 plus: shared story engine and a desktop Stories page, sentence-case labels and readable fine print, a page-not-found page, a start-up timeout message, a notice for bad links on the phone, a tab icon, print styles, an offline notice on the hosted site, plainer, slower map cards, Easy mode on the phone, clearer empty, blocked-storage, and bad-link screens, and formal profiles for all 15 council members and the Mayor)
+**Version:** v5.16 (v5.15 plus: shared story engine and a desktop Stories page, sentence-case labels and readable fine print, a page-not-found page, a start-up timeout message, a notice for bad links on the phone, a tab icon, print styles, an offline notice on the hosted site, plainer, slower map cards, Easy mode on the phone, clearer empty, blocked-storage, and bad-link screens, formal profiles for all 15 council members and the Mayor, and an accessibility pass)
 **Project:** Project Gotham / Civic Intelligence (an Equalpoint product)
 **Owner:** Future (Alysha Ellis Montgomery)
 
@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  a1f07e1e88478a5d115ba6676a7b151a121e1ef87882a21a0ca3fa7b26516090
-Size     2,808,569 bytes
+SHA-256  61409d5ac416deb90664811c79167b9bc03cc06bd2d7a901a60729547eb9033c
+Size     2,821,607 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `c747674fcd93de3b95477663fa3ccbd2d7ade2eb6d56094d4a32c533abe052fb`, 2,170,846 bytes, plus `404.html` SHA-256 `cbbc5e79034aecdf4cb8e54e6a502010cf4e7eb1c003f9f410a4c43dc5a1c6bd`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `fc963e807b69d3b3f8a00f1cdd141ff9631060595744884925cc44dfd2188a05`, 2,183,884 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 

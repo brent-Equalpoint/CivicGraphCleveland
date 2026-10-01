@@ -636,7 +636,7 @@
 .cx-stories .cx-story-src a, .cx-stories .cx-story-link { color: #ffd1a9; text-underline-offset: 3px; }
 .cx-story-nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 14px; }
 .cx-stories .cx-story-count { font-size: 16px; color: #e7ded6; }
-.cx-story-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 12px; border: 0; background: #d9541f; color: #fff; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
+.cx-story-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 22px; border-radius: 12px; border: 0; background: #c2410c; color: #fff; font: inherit; font-size: 17px; font-weight: 600; cursor: pointer; }
 .cx-story-btn.alt { background: transparent; color: #f4eee8; border: 1px solid #ffffff3d; }
 .cx-story-btn:disabled { opacity: .45; cursor: default; }
 .cx-story-btn:focus-visible, .cx-stories-pick button:focus-visible, .cx-story-reader .cx-link-button:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }

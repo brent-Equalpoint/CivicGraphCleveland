@@ -74,7 +74,7 @@ function CxmEasy() {
   };
 
   return (
-    <div className="cxm cxe" role="region" aria-label="Civic Graph, Easy mode">
+    <div className="cxm cxe">
       <header className="cxe-bar">
         <span className="cxe-brand">Civic Graph</span>
         <span className="cxe-bar-actions">

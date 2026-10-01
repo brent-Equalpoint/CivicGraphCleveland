@@ -16,7 +16,7 @@ html.cxm-on, html.cxm-on body { height: 100%; overflow: hidden; background: #0c0
 }
 html[data-cx-theme="original"] .cxm {
   --bg: #141210; --tile: #1e1a17; --tile2: #27221e; --line: #3a322b; --ink: #f4eee8; --mut: #c9bdb2; --faint: #a89c91;
-  --acc: #d9541f; --acc2: #ff7a38; --soft: #ffb48a; --soft2: #ffe2d2; --navy: #33211a; --navy2: #452c20;
+  --acc: #c2410c; --acc2: #ff7a38; --soft: #ffb48a; --soft2: #ffe2d2; --navy: #33211a; --navy2: #452c20;
 }
 @media (min-width: 761px) { .cxm { border-left: 1px solid #1c1c20; border-right: 1px solid #1c1c20; } }
 .cxm.cxm-large { font-size: 17px; }
@@ -755,3 +755,43 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 /* desktop themes grey every paragraph inside the app shell; keep profile text at full strength in both styles */
 html[data-cx-theme] .atlas-shell .sp p, html[data-cx-theme] .atlas-shell .sp-page p { color: #f4f2ee; }
 html[data-cx-theme] .atlas-shell .sp p.sp-note, html[data-cx-theme] .atlas-shell .sp p.sp-src, html[data-cx-theme] .atlas-shell .sp-page p.sp-lede { color: #e7e4de; }
+
+/* ---- v5.16 accessibility pass ---- */
+/* links inside running text are told apart by more than color (the desktop theme removes underlines, so these are specific) */
+.sp a, .cx-stories .cx-story-src a, .cxm-story-src a, .cx-empty a, .cxm-empty a { text-decoration: underline; text-underline-offset: 3px; }
+html[data-cx-theme] .atlas-shell .sp a, html[data-cx-theme] .atlas-shell .cx-stories .cx-story-src a, html[data-cx-theme] .atlas-shell .cx-empty a { text-decoration: underline; text-underline-offset: 3px; }
+/* small grey figures on the ledger summary were 4.1:1; text needs 4.5:1 */
+html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary small, .ledger-summary span { color: #b3b8c4; }
+/* people who ask their device for more contrast get it: solid borders, full-strength text, no translucent fills */
+@media (prefers-contrast: more) {
+  .sp, .sp-page, .cx-stories, .cxm, .cxe, .cx-notice, .cx-empty { --mut: var(--ink); --faint: var(--ink); --soft: var(--ink); }
+  .sp p, .sp li, .sp dd, .sp-note, .sp-src, .sp-asof, .sp-lede, .cx-story-small, .cx-story-src, .cx-story-count, .cxm-fine, .cxm-mut, .cxm-kicker, .cx-empty p, .cxm-empty p { color: #fff !important; }
+  .sp-pick button, .cx-stories-pick button, .cxm-row, .cxm-btn2, .cxm-empty, .cx-empty, .cx-story-reader { border: 2px solid currentColor !important; background: #000 !important; }
+  .sp a, .cx-stories a, .cxm a { color: #ffe08a !important; }
+  .sp-ward { stroke: #fff; fill: #000; } .sp-ward.on { fill: #ffe08a; stroke: #fff; } .sp-ward-t { fill: #fff; } .sp-ward-t.on { fill: #000; }
+}
+/* Windows high contrast and other forced-color modes: keep every control and focus ring visible with system colors */
+@media (forced-colors: active) {
+  .sp-pick button, .cx-stories-pick button, .cxe-btn, .cxe-choice, .cx-story-btn, .cxm-btn, .cxm-btn2, .cxm-row, .cx-notice, .cxm-notice, .cxm-empty, .cx-empty { border: 2px solid ButtonText; forced-color-adjust: auto; }
+  .sp-pick button.on, .cx-stories-pick button.on { outline: 3px solid Highlight; }
+  .sp-ward { fill: Canvas; stroke: CanvasText; } .sp-ward.on { fill: Highlight; stroke: HighlightText; } .sp-ward-t { fill: CanvasText; } .sp-ward-t.on { fill: HighlightText; }
+  .sp a, .cx-stories a { color: LinkText; }
+}
+/* motion: the phone app's own animations stop when the device asks for less motion */
+@media (prefers-reduced-motion: reduce) {
+  .cxm *, .cxm-stage *, .cx-stories *, .sp * { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+/* ledger: the original stylesheet sets several small labels in greys that fall just under 4.5:1 */
+.cx-ledger .ledger-toolbar > span, .cx-ledger .ledger-list button small, .cx-ledger dt, .cx-ledger .ledger-summary span, .cx-ledger small { color: #c9ccd4 !important; }
+
+/* skip link and touch target sizes (v5.16 accessibility pass) */
+.cxm-skip { position: absolute; left: 8px; top: -80px; z-index: 100000; padding: 12px 16px; border-radius: 10px; background: #ffd36b; color: #141210; font: 700 16px system-ui, sans-serif; text-decoration: none; }
+.cxm-skip:focus { top: 8px; outline: 3px solid #141210; outline-offset: 2px; }
+.cxm-main:focus, .cxm-main:focus-visible { outline: none; }
+.cxm .cxm-you { min-width: 44px !important; min-height: 44px !important; }
+.cxm .cxm-fresh { min-height: 44px; }
+.cxm .cxm-link { min-height: 44px; }
+/* a tablet or touch laptop using the desktop layout: every real control is at least 44 px tall */
+@media (pointer: coarse) {
+  html:not(.cxm-on) .atlas-shell :is(button, summary, select, input[type="search"], input[type="text"]):not(.inline-definition) { min-height: 44px; }
+}

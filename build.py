@@ -126,7 +126,7 @@ def geo_svg(geo):
 # v5.16: a small network mark as the tab icon (SVG; the single file carries it inline, the site serves it as a file)
 FAVICON_SVG = ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#141210"/>'
                '<path d="M18 42 L32 20 L46 42 Z" fill="none" stroke="#ffd36b" stroke-width="4" stroke-linejoin="round"/>'
-               '<g fill="#d9541f"><circle cx="32" cy="20" r="8"/><circle cx="18" cy="42" r="8"/><circle cx="46" cy="42" r="8"/></g></svg>')
+               '<g fill="#c2410c"><circle cx="32" cy="20" r="8"/><circle cx="18" cy="42" r="8"/><circle cx="46" cy="42" r="8"/></g></svg>')
 
 # v5.16: hosted site only. The single file is built to work offline, so it never shows this.
 OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be offline. You can keep reading what is already open. '
@@ -142,7 +142,7 @@ BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');
                 "b.innerHTML='This is taking longer than usual.<small>Your connection may be slow, or your browser may be out of date. "
                 "Try again, or open this page in a newer browser.</small>"
                 "<button type=\"button\" onclick=\"location.reload()\" style=\"margin-top:10px;min-height:48px;padding:0 22px;border:0;border-radius:12px;"
-                "background:#d9541f;color:#fff;font:600 17px system-ui,sans-serif;cursor:pointer\">Try again</button>';},12000);")
+                "background:#c2410c;color:#fff;font:600 17px system-ui,sans-serif;cursor:pointer\">Try again</button>';},12000);")
 
 # v5.16: the page shown for an address that does not exist (Vercel serves site/404.html automatically)
 NOT_FOUND = """<!doctype html>
@@ -163,7 +163,7 @@ ul{list-style:none;margin:20px 0 0;padding:0;display:grid;gap:10px}
 a{color:#ffd1a9}
 a.go{display:flex;align-items:center;min-height:56px;padding:0 18px;border-radius:14px;background:#1e1a17;border:1px solid #ffffff2e;color:#f4eee8;font-weight:600;text-decoration:none}
 a.go:focus-visible,a:focus-visible{outline:3px solid #f1b083;outline-offset:2px}
-a.main{background:#d9541f;border-color:#d9541f;color:#fff}
+a.main{background:#c2410c;border-color:#c2410c;color:#fff}
 </style>
 </head>
 <body>
@@ -461,6 +461,14 @@ def main():
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n"
                 "                                (0, W.jsx)(CX_DrawerProfile, { node: U }),\n",
                 label="drawer: formal profile button")
+    # v5.16 accessibility: an accessible name must contain the words a person can see, so voice control can say them
+    src = patch(src,
+                "                      \"aria-label\": `${i.name}, ${i.region}. ${i.evidence === `missing` ? `Record needed.` : ``}`,\n",
+                "                      \"aria-label\": `${i.name.toLowerCase().includes(String(i.label).toLowerCase()) ? `` : `${i.label}, `}${i.name}, ${i.region}. ${i.evidence === `missing` ? `Record needed.` : ``}`,\n",
+                label="a11y: map node names include the visible label")
+    src = patch(src, "\"aria-label\": `Read evidence for ${e.name}`,", "\"aria-label\": `Record & role, read evidence for ${e.name}`,", label="a11y: evidence button name")
+    src = patch(src, "            \"aria-label\": `Cleveland Civic Graph home`,\n", "", label="a11y: brand takes its name from the words on it")
+    src = patch(src, "\"aria-label\": ge ? `Expand navigation` : `Collapse navigation`,", "\"aria-label\": ge ? `Explore your city, expand navigation` : `Explore your city, collapse navigation`,", label="a11y: rail toggle name")
 
     src = patch(src,
                 "            className: `atlas-header-actions`,\n            children: [\n",

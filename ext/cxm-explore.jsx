@@ -195,7 +195,7 @@ function CxmRoomMap({ room, onPick, proof }) {
           const [x, y] = pos[n.id], ph = photo(n), r = rad(n), isSel = sel === n.id;
           const showLabel = isSel || (sel ? linked.has(n.id) : nodes.length <= 18 || big(n));
           return (
-            <g key={n.id} role="button" tabIndex={0} aria-pressed={isSel} aria-label={`${n.name}. ${isSel ? `Selected. Tap again to open its record.` : `Tap to preview.`}`}
+            <g key={n.id} role="button" tabIndex={0} aria-pressed={isSel} aria-label={`${String(n.name).toLowerCase().includes(String(n.label).toLowerCase()) ? `` : `${n.label}, `}${n.name}. ${isSel ? `Selected. Tap again to open its record.` : `Tap to preview.`}`}
               className={`cxm-map-node ${isSel ? `sel` : ``} ${sel && !linked.has(n.id) ? `dim` : ``} ${sel && linked.has(n.id) && !isSel ? `near` : ``}`}
               onClick={() => tap(n.id)} onKeyDown={(ev) => { if (ev.key === `Enter` || ev.key === ` `) { ev.preventDefault(); tap(n.id); } }}>
               <circle cx={x} cy={y} r={r + 9} className="cxm-hit" />
@@ -287,7 +287,7 @@ function CxmRoom({ roomId }) {
       )}
       <div className="cxm-tile cxm-guide-card">
         <CxmSeg label="Guided view" items={[[0, `Start`], [1, `Meaning`], [2, `Power`], [3, `Proof`]]} value={step} onChange={setStep} />
-        {step === 0 && <div className="cxm-fade"><h3>{room.question}</h3><p><CX_Definable text={room.answer} onTerm={term} limit={2} /></p>
+        {step === 0 && <div className="cxm-fade"><h3 aria-level="2">{room.question}</h3><p><CX_Definable text={room.answer} onTerm={term} limit={2} /></p>
           {room.prompts?.length > 0 && <div className="cxm-chips">{room.prompts.map((p) => <button key={p.label} type="button" onClick={() => open(p.node)}>{p.label}</button>)}</div>}</div>}
         {step === 1 && <div className="cxm-fade"><span className="cxm-kicker">In plain words</span>{termEntries.map((t) => <div key={t.term} className="cxm-term"><button type="button" className="cxm-link" onClick={() => term(t.term)}>{t.term}</button><p>{t.meaning}</p></div>)}</div>}
         {step === 2 && <div className="cxm-fade"><span className="cxm-kicker">Who can act</span><p className="cxm-mut">Suggested stops, not a chain of command.</p>{pathNodes.map((n, i) => <button key={n.id} type="button" className="cxm-row" onClick={() => open(n.id)}><span><strong>{i + 1}. {n.name}</strong><small>{n.region}</small></span><CXI.Arrow size={15} /></button>)}</div>}
@@ -345,7 +345,7 @@ function CxmRecord({ roomId, nodeId }) {
           <dl className="cxm-dl"><div><dt>Where it applies</dt><dd>{node.region}</dd></div><div><dt>Role in the system</dt><dd>{cxmLayerLabel(room, node.layer)}</dd></div>{node.issues?.length > 0 && <div><dt>Issues</dt><dd>{node.issues.join(`, `)}</dd></div>}</dl>
           <CxmSrc href={node.url}>{node.source}</CxmSrc>
           <p className="cxm-fine">Source review recorded {node.checked}. Check the source for updates.</p>
-          <h3 className="cxm-h3">Connected records <span>{edges.length}</span></h3>
+          <h3 className="cxm-h3" aria-level="2">Connected records <span>{edges.length}</span></h3>
           {edges.length ? edges.map((e) => {
             const otherId = e.source === node.id ? e.target : e.source;
             const other = room.nodes.find((n) => n.id === otherId);
@@ -356,9 +356,9 @@ function CxmRecord({ roomId, nodeId }) {
       )}
       {tab === `actions` && (
         <div className="cxm-fade">
-          {node.activity?.length ? <><h3 className="cxm-h3">Recorded activity</h3>{node.activity.map((a) => <p key={a}>{a}</p>)}<p className="cxm-fine">Sponsorship does not establish a roll-call vote or a complete policy position.</p></> : null}
+          {node.activity?.length ? <><h3 className="cxm-h3" aria-level="2">Recorded activity</h3>{node.activity.map((a) => <p key={a}>{a}</p>)}<p className="cxm-fine">Sponsorship does not establish a roll-call vote or a complete policy position.</p></> : null}
           {m && <CxmLegHistory m={m} />}
-          {node.kind === `contract` && <><h3 className="cxm-h3">Contract record</h3><p>Supplier, price, MW/MWh, start date, expiration, approval vote, amendments, and exit terms: not yet verified.</p><p className="cxm-fine">Do not infer a contractual obligation from membership or proximity on the map.</p></>}
+          {node.kind === `contract` && <><h3 className="cxm-h3" aria-level="2">Contract record</h3><p>Supplier, price, MW/MWh, start date, expiration, approval vote, amendments, and exit terms: not yet verified.</p><p className="cxm-fine">Do not infer a contractual obligation from membership or proximity on the map.</p></>}
           {!node.activity?.length && !m && node.kind !== `contract` && <p className="cxm-mut">Individual vote records have not been loaded for this item. An institution's decision does not establish each member's vote.</p>}
         </div>
       )}
@@ -370,7 +370,7 @@ function CxmRecord({ roomId, nodeId }) {
       )}
       {tab === `sources` && (
         <div className="cxm-fade">
-          <h3 className="cxm-h3">Evidence coverage</h3>
+          <h3 className="cxm-h3" aria-level="2">Evidence coverage</h3>
           <p>{room.gap}</p>
           <CxmSrc href={node.url}>{node.source}</CxmSrc>
           {photo && <p className="cxm-fine">Portrait: {photo.credit}, retrieved {photo.retrievedAt}. <CxmSrc href={photo.sourceUrl}>Portrait source</CxmSrc></p>}
@@ -407,7 +407,7 @@ function CxmCheck({ roomId, nodeId }) {
           <button type="button" className="cxm-btn2" aria-pressed={!!done[id]} onClick={() => setDone((d) => ({ ...d, [id]: !d[id] }))}>{done[id] ? `I can answer this` : `Mark as understood`}</button>
         </div>
       ))}
-      {nearby.length > 0 && <><h3 className="cxm-h3">Still unsure? Look at a connected record</h3>{nearby.map(({ e, other }) => <button key={e.id} type="button" className="cxm-row" onClick={() => openSheet(`record`, { room: room.id, node: other.id })}><span><strong>{other.name}</strong><small>{e.relation} · {Kh[e.evidence] ?? ``}</small></span><CXI.Arrow size={15} /></button>)}</>}
+      {nearby.length > 0 && <><h3 className="cxm-h3" aria-level="2">Still unsure? Look at a connected record</h3>{nearby.map(({ e, other }) => <button key={e.id} type="button" className="cxm-row" onClick={() => openSheet(`record`, { room: room.id, node: other.id })}><span><strong>{other.name}</strong><small>{e.relation} · {Kh[e.evidence] ?? ``}</small></span><CXI.Arrow size={15} /></button>)}</>}
       <CxmSrc href={node.url}>Open the official source</CxmSrc>
     </div>
   );

@@ -278,6 +278,7 @@ function CxmApp() {
     <CXM.Provider value={ctx}>
       <div className={`cxm-stage`}>
         {easy ? <CxmEasy /> : <div className={`cxm ${large ? `cxm-large` : ``}`}>
+          <a className="cxm-skip" href="#cxm-main" onClick={(e) => { e.preventDefault(); if (mainRef.current) mainRef.current.focus(); }}>Skip to content</a>
           <header className="cxm-top">
             <button type="button" className="cxm-brand" onClick={() => go(`today`)}><b>Civic Graph</b> <span>· Cleveland</span></button>
             <div className="cxm-top-actions">
@@ -287,7 +288,7 @@ function CxmApp() {
             </div>
           </header>
           <CxmFresh />
-          <main className="cxm-main" ref={mainRef}>
+          <main className="cxm-main" id="cxm-main" tabIndex={-1} ref={mainRef}>
             <CxBoundary phone label={TABS.find((t) => t[0] === tab)?.[1]} resetKey={`${tab}|${room}`} onHome={() => { setRoom(null); go(`today`); }}>
               {tab === `today` && <CxmToday />}
               {tab === `explore` && <CxmExplore />}

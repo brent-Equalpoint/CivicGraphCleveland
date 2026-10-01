@@ -148,10 +148,10 @@ function CxmToday() {
           <strong>Make this yours</strong><span>Pick your neighborhood to see your ward, your council member, and your receipts.</span>
         </button>
       )}
-      <div className="cxm-stories" role="list">
+      <div className="cxm-stories" role="group" aria-label="Stories">
         {stories.map((s, i) => (
-          <button key={s.id} type="button" role="listitem" className={`cxm-story-btn ${seen[s.id] ? `seen` : ``}`} aria-label={`${s.label} story${seen[s.id] ? `, seen` : `, new`}`} onClick={() => setOverlay({ type: `story`, list: stories, i, f: 0 })}>
-            <span className="cxm-ring">{s.portrait ? <img src={cxmAsset(s.portrait)} alt="" /> : <span>{s.ini}</span>}</span>
+          <button key={s.id} type="button" className={`cxm-story-btn ${seen[s.id] ? `seen` : ``}`} aria-label={`${s.label} story${seen[s.id] ? `, seen` : `, new`}`} onClick={() => setOverlay({ type: `story`, list: stories, i, f: 0 })}>
+            <span className="cxm-ring" aria-hidden="true">{s.portrait ? <img src={cxmAsset(s.portrait)} alt="" /> : <span>{s.ini}</span>}</span>
             <small>{s.label}</small>
           </button>
         ))}

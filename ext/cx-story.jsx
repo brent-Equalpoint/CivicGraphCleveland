@@ -150,9 +150,9 @@ function CX_Stories() {
     <section className="cx-stories" aria-labelledby="cx-stories-h">
       <h1 id="cx-stories-h">Stories</h1>
       <p className="cx-stories-lede">Short, plain stories made from official records. Pick one, then use the Next button or the arrow keys.{!cxStoryHome() ? ` Choose your ward in Who decides here? to add a story about your own council member.` : ``}</p>
-      <div className="cx-stories-pick" role="list">
+      <div className="cx-stories-pick" role="group" aria-label="Choose a story">
         {stories.map((x, n) => (
-          <button key={x.id} type="button" role="listitem" className={n === i ? `on` : ``} aria-current={n === i ? `true` : undefined} onClick={() => pick(n)}>
+          <button key={x.id} type="button" className={n === i ? `on` : ``} aria-current={n === i ? `true` : undefined} onClick={() => pick(n)}>
             <span className="cx-stories-ring">{x.portrait ? <img src={cxmAsset(x.portrait)} alt="" /> : <span>{x.ini}</span>}</span>
             <span>{x.label}</span>
           </button>
