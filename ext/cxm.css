@@ -739,3 +739,19 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .sp a:focus-visible, .sp button:focus-visible, .sp summary:focus-visible, .sp-pick button:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
 @media (max-width: 760px) { .sp-dl { grid-template-columns: 1fr; gap: 2px 0; } .sp-dl dt { margin-top: 10px; } .sp h1 { font-size: 26px; } .sp-head img { width: 72px; height: 72px; } }
 @media print { .sp-pick, .sp-actions { display: none !important; } .sp-ext { display: none !important; } .sp-dl { grid-template-columns: 9.5em 1fr; } }
+
+/* ---- v5.16 profile ward map and the drawer button ---- */
+.sp-map { margin: 4px 0 14px; max-width: 420px; }
+.sp-map svg { display: block; width: 100%; height: auto; }
+.sp-ward { fill: #ffffff14; stroke: #ffffff59; stroke-width: 1; }
+.sp-ward.on { fill: #d9541f; stroke: #ffd1a9; stroke-width: 2; }
+.sp-ward-t { fill: #d9d6d0; font-size: 22px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; pointer-events: none; }
+.sp-ward-t.on { fill: #fff; font-weight: 800; }
+.sp-map figcaption { margin-top: 6px; font-size: 15px; color: #e1ded8; }
+.cx-drawer-profile { margin: 4px 0 12px; }
+.cx-drawer-profile .cx-link-button { font-size: 15px; color: #ffd1a9; min-height: 36px; }
+@media print { .sp-ward { fill: none; stroke: #444; } .sp-ward.on { fill: #bbb; stroke: #000; } .sp-ward-t, .sp-ward-t.on { fill: #000; } .cx-drawer-profile { display: none !important; } }
+
+/* desktop themes grey every paragraph inside the app shell; keep profile text at full strength in both styles */
+html[data-cx-theme] .atlas-shell .sp p, html[data-cx-theme] .atlas-shell .sp-page p { color: #f4f2ee; }
+html[data-cx-theme] .atlas-shell .sp p.sp-note, html[data-cx-theme] .atlas-shell .sp p.sp-src, html[data-cx-theme] .atlas-shell .sp-page p.sp-lede { color: #e7e4de; }

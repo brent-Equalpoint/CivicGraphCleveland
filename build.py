@@ -455,6 +455,12 @@ def main():
                 "          F === `stories` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Stories`, resetKey: F, children: (0, W.jsx)(CX_Stories, {}) }) }),\n"
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
                 label="aux page: profiles")
+    # v5.16 drawer: a way from a council member's or the Mayor's map record to their formal profile
+    src = patch(src,
+                "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n",
+                "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n"
+                "                                (0, W.jsx)(CX_DrawerProfile, { node: U }),\n",
+                label="drawer: formal profile button")
 
     src = patch(src,
                 "            className: `atlas-header-actions`,\n            children: [\n",

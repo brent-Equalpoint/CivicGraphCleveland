@@ -151,6 +151,7 @@ function CX_SeatProfile({ seatId }) {
       {!isMayor && (
         <section aria-labelledby={sec(`ward`)}>
           <h2 id={sec(`ward`)}>Ward {seat.ward} and its neighborhoods</h2>
+          <SpWardMap ward={seat.ward} hoods={hoods} />
           {hoods.length > 0 ? (
             <>
               <p>These neighborhoods touch Ward {seat.ward} on the 2026 map. The share is how much of that neighborhood's land is in this ward, not how many people live there.</p>
@@ -197,4 +198,24 @@ function CX_Profiles() {
       <CX_SeatProfile seatId={sel} />
     </section>
   );
+}
+
+/* ---------- ward map for a profile (the same 2026 map the phone uses; the text equivalent is the neighborhood list beside it) ---------- */
+function SpWardMap({ ward, hoods }) {
+  const names = hoods.slice(0, 6).map((x) => x.h).join(`, `);
+  return (
+    <figure className="sp-map">
+      <svg viewBox={CX_GEO.viewBox} role="img" aria-label={`Map of Cleveland's ${CX_GEO.wards2026.length} wards on the 2026 map with Ward ${ward} highlighted.${names ? ` Its largest neighborhoods include ${names}.` : ``} The full list is below.`}>
+        {CX_GEO.wards2026.map((w) => <path key={w.id} d={w.d} className={`sp-ward ${w.id === ward ? `on` : ``}`} />)}
+        {CX_GEO.wards2026.map((w) => <text key={`t${w.id}`} x={w.cx} y={w.cy} className={`sp-ward-t ${w.id === ward ? `on` : ``}`}>{w.id}</text>)}
+      </svg>
+      <figcaption>Ward {ward} on the 2026 map of Cleveland's 15 wards. The neighborhoods are listed below in words.</figcaption>
+    </figure>
+  );
+}
+
+/* A button inside the map's record drawer for a council member or the Mayor. Other records show nothing. */
+function CX_DrawerProfile({ node }) {
+  if (!node || !(node.id === `mayor` || /^ward-\d+$/.test(node.id))) return null;
+  return <p className="cx-drawer-profile"><button type="button" className="cx-link-button" onClick={() => cxOpenProfile(node.id)}>Read the formal profile of {node.name}<CXI.Arrow size={13} /></button></p>;
 }
