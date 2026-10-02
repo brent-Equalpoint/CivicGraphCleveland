@@ -15,6 +15,25 @@ function cxmRecordFor(cand, qid) {
   return Gm.find((g) => g.candidate === cand && g.question === qid && g.answer === `yes`);
 }
 
+/* Typography for story text, shared by the phone and desktop readers. A date such as "Nov. 3" stays together, and with glue the
+   last two words stay together, so a headline never wraps to a lone word or number ("Tuesday, Nov. / 3."). */
+const CX_NB = String.fromCharCode(160);
+function cxTight(s, glue) {
+  let t = String(s == null ? `` : s).replace(/\b((?:Jan|Feb|Mar|Apr|Aug|Sept?|Oct|Nov|Dec)\.?|May|June|July) (\d)/g, (m, a, d) => a + CX_NB + d);
+  if (glue) t = t.replace(/ (\S+)$/, (m, w) => CX_NB + w);
+  return t;
+}
+/* The source of a story: the linked name and nothing else on screen. A screen reader still hears where it comes from. */
+function CxSource({ source, cls }) {
+  if (!source) return null;
+  return (
+    <p className={cls}>
+      <span className="cxm-sr">Where this comes from: </span>
+      {source.url ? <a href={source.url} target="_blank" rel="noreferrer">{source.label}<span className="sp-ext"> (opens in a new tab)</span></a> : source.label}
+    </p>
+  );
+}
+
 /* ---------- stories ---------- */
 function cxmWardStory(w, answers) {
   const seat = cxLegIndex().seats[w - 1];
@@ -124,8 +143,8 @@ function CX_StoryFrame({ fr, s }) {
   return (
     <>
       {fr.k ? <p className="cx-story-k">{fr.k}</p> : null}
-      <p className="cx-story-big">{fr.big}</p>
-      <p className="cx-story-small">{fr.small}</p>
+      <p className="cx-story-big">{cxTight(fr.big, !0)}</p>
+      <p className="cx-story-small">{cxTight(fr.small)}</p>
       {fr.type === `react` && (
         <div className="cx-story-act">
           <p><strong>{fr.small}</strong></p>
@@ -134,7 +153,7 @@ function CX_StoryFrame({ fr, s }) {
         </div>
       )}
       {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(fr.go === `place` ? `place` : `ballot`)}>{fr.go === `place` ? `Open Who decides here?` : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
-      {s.source && <p className="cx-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}. Official records only.</p>}
+      <CxSource source={s.source} cls="cx-story-src" />
     </>
   );
 }
@@ -189,7 +208,7 @@ function CX_Stories() {
         {text && (
           <ol className="cx-story-all">{s.frames.map((x, n) => <li key={n}><CX_StoryFrame fr={x} s={{ ...s, source: null }} /></li>)}</ol>
         )}
-        {text && s.source && <p className="cx-story-src">Where this comes from: {s.source.url ? <a href={s.source.url} target="_blank" rel="noreferrer">{s.source.label}</a> : s.source.label}. Official records only.</p>}
+        {text && <CxSource source={s.source} cls="cx-story-src" />}
         <button type="button" className="cx-link-button" aria-pressed={text} onClick={() => setText(!text)}>{text ? `Show one step at a time` : `Read this story as text`}</button>
       </div>
     </section>

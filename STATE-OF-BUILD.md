@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  6a1b5b01b153f21ba33c2114416d1b2b76cd104d65aae8be3ffd454db87c0c23
-Size     2,921,887 bytes
+SHA-256  0bb99701a9940b3e376cee04993397ec54638d8ffa1b6432bd373d42a31f04f6
+Size     2,922,987 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `0766321499194935bbef05ae3bc07d6fc2e2e0fda4474060825df5734e960fc8`, 2,284,380 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `8911aaaf3f43cdc9f89e0d29c1768732a54cccd4db1b9f0e4c1bcc4b5ae205e9`, 2,285,480 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -31,7 +31,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ```
 
-**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `aa388752765ff638e1a02e141715a2fe7eaa7e9271a7783f6f86c615fd7ffde5`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
+**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `1c7de11b0c22a35a65bc37c056e28c5b26d8604d15889a2eb7f5e2e29c786e6f`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
 
 ---
 
@@ -74,6 +74,12 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Still needs a person.** The City Record page states no terms of reuse and no one has read them (see `docs/civic-agent/votes-source-research.md`). Whether to show absence counts publicly. 17 votes on 2023 to 2025 files are stored but have no title in the app.
 
 20. **Oct 1: the phone You sheet became Settings.** The sheet had settings at the bottom of a long list of civic content. It is now settings only (display, Easy mode, your guide, How this is built, Share this screen, Desktop view). My priorities moved to its own sheet opened from the People tab, with the real decisions, Remember, Export, Clear, and Letters. Resident check moved to Explore. My place was dropped from the sheet (it has its tab). `?panel=priorities` opens My priorities; `?panel=settings` opens Settings. The `settings-sheet` check fails if a civic item returns to Settings. The accessibility check covers both sheets.
+
+21. **Oct 2: text is never cut, and the story screens are calm.** Three problems seen on a real phone.
+    - **Titles are shown whole.** `cxShortTitle` used to stop at 170 characters and `cxWords` at a word count, so a record title could end "for the p…" with no way to finish it, and the cut text was lost to screen readers too. Neither cuts any more, the line clamps on receipt cards and room tiles are gone, and a very long sheet title is set a little smaller instead. Still shortened on purpose: labels on the map diagrams, the small neighborhood name under a story ring, and the one-line header and Updated strip. List caps such as "And 8 more" are unchanged.
+    - **Story header.** "Read as text" is its own row and never wraps. The badge is a round mark you can see on the blue stories. A date such as "Nov. 3" stays together and a headline never ends on a lone word. The text view lines up with the header and has dividers between steps.
+    - **Source line.** Every story (phone and desktop) and Easy mode shows only the linked source name, 10px higher; a screen reader still hears "Where this comes from". The desktop line no longer adds "Official records only."
+    - **Checks.** `story-layout` and `titles-never-cut` fail on the old build. While fixing this I found the Congress graph check that no ideology word or score appears had backspace characters where `\b` belonged, so it never matched anything. It is repaired and passes. 20 of 20 browser checks pass; two clean builds, identical hashes.
 
 ---
 

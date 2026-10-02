@@ -218,6 +218,54 @@ const CHECKS = {
     expect(await has(m, '.cxm-sheet .sp'), 'the full profile button did not open the phone sheet');
     expect(/voted yea/.test((await txt(m, '.cxm-sheet .sp')) || ''), 'the phone profile sheet has no recorded votes'); await done(m);
   },
+  async 'story-layout'() {
+    // the story header is calm at phone width: one row for who and close, one row for Read as text, nothing wraps to a lone word
+    const m = await open('/#phone', { mobile: true, easy: false });
+    await m.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /ballot/i.test(x.getAttribute('aria-label') || '')); b && b.click(); }); await wait(600);
+    expect(await has(m, '.cxm-story'), 'the ballot story did not open');
+    const g = await m.evaluate(() => {
+      const r = (s) => { const e = document.querySelector(s); if (!e) return null; const b = e.getBoundingClientRect(); return { x: b.x, y: b.y, w: b.width, h: b.height, r: b.right, b: b.bottom }; };
+      const src = document.querySelector('.cxm-story-src');
+      return { who: r('.cxm-story-who'), badge: r('.cxm-story-who > span:first-child'), name: r('.cxm-story-who > span:last-child'), close: r('.cxm-story-head > button'), text: r('.cxm-story-text'), src: r('.cxm-story-src'), link: r('.cxm-story-src a'), hint: r('.cxm-story-hint'),
+        when: document.querySelector('.cxm-story-who small').innerText, big: document.querySelector('.cxm-story-big').innerText, srcVisible: src ? [...src.childNodes].filter((n) => !(n.classList && n.classList.contains('cxm-sr'))).map((n) => n.textContent).join('').replace(/\(opens in a new tab\)/, '').trim() : null,
+        textOneLine: (() => { const b = document.querySelector('.cxm-story-text'); return b.getClientRects().length === 1 && b.getBoundingClientRect().height < 56; })() };
+    });
+    expect(g.textOneLine && g.text.h >= 44, `Read as text is not one clean line (height ${g.text && g.text.h})`);
+    expect(g.badge && Math.abs(g.badge.w - g.badge.h) < 1 && g.badge.w >= 40, 'the story badge is not a round 40px mark');
+    expect(g.name.h <= 44, `the story name and date wrap onto ${Math.round(g.name.h)}px of height`);
+    expect(g.close.x >= g.who.r - 1 && g.text.y >= g.who.b - 1, 'the header pieces overlap');
+    expect(!/ \d/.test(g.when.replace(/ /g, '_')) || /Nov\._\d/.test(g.when.replace(/ /g, '_')), `a date in "${g.when}" can break across lines`);
+    expect(/ \S+\.?$/.test(g.big), `the headline can end on a lone word: "${g.big}"`);
+    expect(g.src && g.link && /^[A-Z]/.test(g.srcVisible) && !/Where this comes from/.test(g.srcVisible), `the source is not just the link: "${g.srcVisible}"`);
+    expect(g.hint.y - g.src.b >= 9, `the source line is only ${Math.round(g.hint.y - g.src.b)}px above the hint`);
+    expect(g.link.h >= 40, 'the source link is a hard target to tap');
+    await m.evaluate(() => document.querySelector('.cxm-story-text').click()); await wait(400);
+    const al = await m.evaluate(() => { const x = (q) => { const e = document.querySelector(q); return e ? Math.round(e.getBoundingClientRect().left) : null; }; return { head: x('.cxm-story-who'), pill: x('.cxm-story-text'), item: x('.cxm-story-all li .cxm-story-big'), kicker: x('.cxm-story-all li .cxm-kicker') }; });
+    expect(al.item === al.head && al.pill === al.head, `the text view does not line up with the header: ${JSON.stringify(al)}`);
+    await done(m);
+  },
+  async 'titles-never-cut'() {
+    // an item's whole title is shown wherever it is read. Use the longest real title in Council's record.
+    const leg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'legistar-2026.json'), 'utf8')).matters;
+    const tidy = (t) => { const s = t.replace(/^AN? (EMERGENCY )?(ORDINANCE|RESOLUTION)\s*/i, '').replace(/\s+/g, ' ').trim(); return s.charAt(0).toUpperCase() + s.slice(1); };
+    const long = leg.filter((x) => /^(Ordinance|Resolution|Emergency)/i.test(x.type) || /ordinance|resolution/i.test(x.type)).sort((a, b) => tidy(b.title).length - tidy(a.title).length)[0];
+    const want = tidy(long.title);
+    expect(want.length > 170, `no title is longer than the old 170 character limit (${want.length})`);
+    const m = await open('/#phone', { mobile: true, easy: false });
+    await clickText(m, 'Search'); await wait(300);
+    await m.type('input[type=search]', long.file); await wait(500);
+    await m.evaluate((f) => { const r = [...document.querySelectorAll('.cxm-row')].find((x) => (x.innerText || '').trim().startsWith(f)); r && r.click(); }, long.file); await wait(600);
+    const h = (await txt(m, '.cxm-sheet .cxm-h2')) || '';
+    expect(h.replace(/\s+/g, ' ') === want, `the sheet title is cut: ${h.slice(-60)}`);
+    expect(!/…|\.\.\./.test(h), 'the sheet title ends in an ellipsis');
+    expect(await m.evaluate(() => { const e = document.querySelector('.cxm-sheet .cxm-h2'); return e.scrollHeight <= e.clientHeight + 1 && getComputedStyle(e).webkitLineClamp === 'none'; }), 'the sheet title is clamped');
+    await done(m);
+    // the same title in the desktop place list and a profile list
+    const p = await open('/?panel=profiles&seat=ward-13#desktop', { settle: 1400 });
+    const list = await p.evaluate(() => [...document.querySelectorAll('.sp-list li')].map((e) => e.innerText).join(' '));
+    expect(!/…|\w\.\.\.(\s|$)/.test(list), 'a profile list still ends a title in an ellipsis');
+    await done(p);
+  },
   async 'settings-sheet'() {
     // Settings holds settings only; the civic pieces that used to share it live where they are used
     const m = await open('/?room=voting#phone', { mobile: true, easy: false });
@@ -409,7 +457,7 @@ const CHECKS = {
     await clickText(p, 'Linked', '.us-tabs button');
     const facts = (await txt(p, '.us-linked')) || '';
     expect(/serves on|is the (chair|ranking)/.test(facts) && /Connected to \d+/.test(facts), 'the Linked view lacks committee sentences or the connection count');
-    expect(!/(conservative|liberal|moderate|score|rank(ed|ing) \d)/i.test(facts), 'an ideology word or a score appeared');
+    expect(!/\b(conservative|liberal|moderate|score|rank(ed|ing) \d)\b/i.test(facts), 'an ideology word or a score appeared');
     await clickText(p, 'Sky', '.us-tabs button');
     const before = await txt(p, '.us-side h2');
     await p.focus('.us-canvas'); await p.keyboard.press(']'); await wait(250);

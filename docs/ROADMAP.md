@@ -103,7 +103,7 @@ Nothing here has a date. Items that only a person can do are in the sections bel
 | C4 | A cached app shell so the hosted site opens with no signal, built so no visitor gets an old version after a deploy | M | A2 |
 | C5 | Mayor profile depth: the departments the Mayor leads and a sourced list of executive orders | M | nothing |
 | C6 | Contact details on profiles, if you decide to show them | S | a decision |
-| C7 | Spanish: reviewed copy, a language choice that persists, and screen readers that switch voice | L | a reviewer |
+| C7 | Spanish: reviewed copy, a language choice that persists, and screen readers that switch voice. Scoped Oct 2, 2026 (about 1,700 words plus 100 data sentences; text must first move into a lookup): see `docs/plan-guided-stories.md`, "Phase 7 in detail" | L | a reviewer |
 
 **D. Federal graph** (details in `plan-us-graph.md`)
 

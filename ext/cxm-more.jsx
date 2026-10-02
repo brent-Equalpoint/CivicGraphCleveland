@@ -32,7 +32,7 @@ function CxmLeg({ file }) {
   return (
     <div className="cxm-pad">
       <CxmKicker>{m.file} · {m.type}</CxmKicker>
-      <h2 className="cxm-h2">{cxShortTitle(m.title)}</h2>
+      <h2 className={`cxm-h2 ${cxShortTitle(m.title).length > 110 ? `cxm-h2-long` : ``}`}>{cxShortTitle(m.title)}</h2>
       <p className="cxm-status-line"><CxmStatusDot k={st.k} /><span><strong>Relationship status: {st.label}.</strong> {st.note}</span></p>
       {st.flip && <p className="cxm-flip">{st.flip}</p>}
       {latest && <p className="cxm-latest-line"><span className="cxm-kicker">Latest</span> {latest.what} <small>Found in the {cxShortDate(cxDayET(Date.parse(latest.at)))} check of the record.</small></p>}

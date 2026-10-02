@@ -44,7 +44,7 @@ function CxeProfile({ seat, onFull }) {
       <p className="cxe-text">{person && cxCouncilVotesOf(person.name).length
         ? (() => { const c = cxVoteCounts(cxCouncilVotesOf(person.name)); return `The City Record prints how each member voted. So far this year, ${name.split(` `)[0]} voted yea ${cxmPl(c.yea, `time`, `times`)}, nay ${cxmPl(c.nay, `time`, `times`)}, and was listed as absent ${cxmPl(c.absent, `time`, `times`)}. That is ${c.total} votes. These are counts, not grades. Absent is not a no. The full profile lists each vote.`; })()
         : `The City Record has no named vote for this seat. A missing record is not a no.`}</p>
-      <p className="cxe-text">Where this comes from: <a href={CX_COUNCIL_SITE} target="_blank" rel="noreferrer">Cleveland City Council</a> and <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">its legislative record</a>.</p>
+      <p className="cxe-text"><span className="cxm-sr">Where this comes from: </span><a href={CX_COUNCIL_SITE} target="_blank" rel="noreferrer">Cleveland City Council</a> and <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">its legislative record</a></p>
       <button type="button" className="cxe-btn alt" onClick={onFull}>Read the full profile</button>
     </>
   );
@@ -162,7 +162,7 @@ function CxmEasy() {
             {fr.k ? <p className="cxe-kicker">{fr.k}</p> : null}
             <h1 className="cxe-big">{fr.big}</h1>
             <p className="cxe-text">{fr.small}</p>
-            {story.source && <p className="cxe-text">Where this comes from: {story.source.url ? <a href={story.source.url} target="_blank" rel="noreferrer">{story.source.label}</a> : story.source.label}.</p>}
+            <CxSource source={story.source} cls="cxe-text" />
             {last && (
               <div className="cxe-end">
                 <p className="cxe-big2">That is the end of this one.</p>

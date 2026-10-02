@@ -213,7 +213,7 @@ function CX_Place({ onGo }) {
       </div>
       <ul className="cx-pl-speed">
         {passed.sort((a, b) => a.path.days - b.path.days).map(({ m, path }) => (
-          <li key={m.file}><span className="cx-pl-bar" style={{ width: `${Math.min(100, 6 + path.days / 1.5)}%` }} /><span className="cx-pl-speedtxt"><b>{path.days} days</b> · {cxShortTitle(m.title).slice(0, 90)}{cxShortTitle(m.title).length > 90 ? `…` : ``} · {path.committees.length ? path.committees.join(`, `) : `no committee step recorded`} · {src(m)}</span></li>
+          <li key={m.file}><span className="cx-pl-bar" style={{ width: `${Math.min(100, 6 + path.days / 1.5)}%` }} /><span className="cx-pl-speedtxt"><b>{path.days} days</b> · {cxShortTitle(m.title)} · {path.committees.length ? path.committees.join(`, `) : `no committee step recorded`} · {src(m)}</span></li>
         ))}
       </ul>
 
@@ -223,10 +223,10 @@ function CX_Place({ onGo }) {
       {now.map((r) => { const rs = funds.filter((x) => x.ward === r.ward); if (!rs.length) return null; const total = rs.filter((x) => x.counted).reduce((s, x) => s + (x.amount || 0), 0); return (
         <div key={r.ward} className="cx-pl-fund">
           <h3>Ward {r.ward}, {member(`wards2026`, r.ward)} <small>{rs.length} items · {cxPlMoney(total)} in listed amounts for this ward</small></h3>
-          <ul>{rs.map((x) => <li key={x.m.file}><b>{x.amount ? cxPlMoney(x.amount) : `Amount not stated`}</b> {x.who ? `to ${x.who}` : ``}{!x.counted && <em className="cx-pl-flag">{x.named.length > 1 ? ` Shared by Wards ${x.named.join(`, `)}; not counted in the total.` : ` Fund named in the text: Ward ${x.named.join(`, `)}, which may use the ward numbers from before 2026; not counted in the total.`}</em>} <small>{cxShortTitle(x.m.title).slice(0, 120)}… · Sponsors: {x.m.sponsors.filter((y) => !CX_PL_ADMIN.has(y)).join(`, `)} · {x.f.text_url ? <a href={x.f.text_url} target="_blank" rel="noreferrer">ordinance text <CXI.Ext size={11} /></a> : null} · {src(x.m)}</small></li>)}</ul>
+          <ul>{rs.map((x) => <li key={x.m.file}><b>{x.amount ? cxPlMoney(x.amount) : `Amount not stated`}</b> {x.who ? `to ${x.who}` : ``}{!x.counted && <em className="cx-pl-flag">{x.named.length > 1 ? ` Shared by Wards ${x.named.join(`, `)}; not counted in the total.` : ` Fund named in the text: Ward ${x.named.join(`, `)}, which may use the ward numbers from before 2026; not counted in the total.`}</em>} <small>{cxShortTitle(x.m.title)} · Sponsors: {x.m.sponsors.filter((y) => !CX_PL_ADMIN.has(y)).join(`, `)} · {x.f.text_url ? <a href={x.f.text_url} target="_blank" rel="noreferrer">ordinance text <CXI.Ext size={11} /></a> : null} · {src(x.m)}</small></li>)}</ul>
         </div>); })}
       {councilWideFunds.length > 0 && <div className="cx-pl-fund"><h3>Council-wide fund rules <small>not tied to one ward</small></h3>
-        <ul>{councilWideFunds.map((x) => <li key={x.m.file}>{cxShortTitle(x.m.title).slice(0, 160)}… <small>Sponsors: {x.m.sponsors.filter((y) => !CX_PL_ADMIN.has(y)).join(`, `)} · {src(x.m)}</small></li>)}</ul></div>}
+        <ul>{councilWideFunds.map((x) => <li key={x.m.file}>{cxShortTitle(x.m.title)} <small>Sponsors: {x.m.sponsors.filter((y) => !CX_PL_ADMIN.has(y)).join(`, `)} · {src(x.m)}</small></li>)}</ul></div>}
 
       <h2><span className="cx-pl-n">6</span> What the record shows about votes</h2>
       <p className="cx-pl-intro">Council's database records the outcome of each vote (approved, adopted, amended) and each committee's recommendation. For a vote to pass an ordinance or adopt a resolution, the City Record also prints how each member voted. Where it does, that is counted here. A file with no printed vote has no record, which is not a no.</p>

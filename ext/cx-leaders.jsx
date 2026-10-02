@@ -167,10 +167,11 @@ const CX_SPONSOR_WARD = {
 const CX_ADMIN_SPONSORS = new Set([`By Departmental Request`, `Mayor's Administration`, `Justin M. Bibb`]);
 const CX_SUBSTANTIVE = new Set([`Emergency Ordinance`, `Ordinance`, `Emergency Resolution`, `Resolution`]);
 
+/* Tidy a record's title for reading: drop the "AN EMERGENCY ORDINANCE" opening and capitalize. It is never cut short. Someone
+   learning what an item is has to be able to read all of it, and a cut title is also lost to a screen reader. */
 function cxShortTitle(t) {
-  let s = String(t).replace(/^AN? (EMERGENCY )?(ORDINANCE|RESOLUTION)\s*/i, ``).trim();
-  s = s.charAt(0).toUpperCase() + s.slice(1);
-  return s.length > 170 ? `${s.slice(0, 167).trim()}…` : s;
+  const s = String(t).replace(/^AN? (EMERGENCY )?(ORDINANCE|RESOLUTION)\s*/i, ``).trim();
+  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 /* ---------- What kind of action a measure is, in plain words ---------- */
@@ -249,9 +250,10 @@ function CX_PriorityGuide({ id, level }) {
 }
 
 /* ---------- Letter drafted from the reader's own choices ---------- */
-function cxWords(t, n) {
-  const w = String(t).replace(/[…]+$/, ``).split(/\s+/);
-  return w.length > n ? `${w.slice(0, n).join(` `).replace(/[,;:]$/, ``)}...` : w.join(` `);
+/* Kept so the many callers keep working. It no longer cuts text; n is ignored. A small card may clamp what it shows with CSS,
+   which leaves the whole text for a screen reader and for the screen the card opens. */
+function cxWords(t) {
+  return String(t).replace(/\s+/g, ` `).trim();
 }
 const CX_SHORT = { cost: `Costs`, housing: `Housing`, safety: `Safety`, education: `Schools`, freedom: `Equal treatment`, growth: `Jobs & business`, environment: `Air, water, health`, trust: `Public money` };
 function cxLetter(seat, chosenIds, levels, items, likedIds = []) {
