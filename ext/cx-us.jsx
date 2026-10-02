@@ -195,6 +195,71 @@ function CX_UsVotes({ vd, people }) {
     </section>
   );
 }
+/* Topics: pick a policy area, see the bills and recorded votes in it, newest first. If a place is chosen in Your members, each vote also shows how that place's members voted. */
+function cxTopicItems(vd, area, finalOnly) {
+  const items = new Map();
+  vd.votes.forEach((v) => {
+    if (finalOnly && !v.final) return;
+    const b = v.bill ? vd.bills[v.bill] : null;
+    const a = b && b.policy_area ? b.policy_area : v.kind === `nomination` ? `Nominations` : CX_NO_AREA;
+    if (a !== area) return;
+    const key = v.bill || v.id;
+    if (!items.has(key)) items.set(key, { key, label: b ? b.label : v.desc || v.legis || v.question, title: b ? b.title : null, url: b ? b.url : null, votes: [] });
+    items.get(key).votes.push(v);
+  });
+  return [...items.values()].sort((x, y) => (y.votes[0].date > x.votes[0].date ? 1 : -1));
+}
+function CX_UsTopics({ data }) {
+  const [vd, setVd] = u.useState(CX_USV.v);
+  const [load, setLoad] = u.useState(CX_USV.p ? `ready` : `loading`);
+  u.useEffect(() => { let live = !0; cxUsVotesLoad().then((d) => { if (live) { setVd(d); setLoad(d ? `ready` : `none`); } }); return () => { live = !1; }; }, []);
+  const [area, setArea] = u.useState(``);
+  const [fin, setFin] = u.useState(!0);
+  const [more, setMore] = u.useState(15);
+  if (!vd) return <div className="us-topics"><h2>Votes by topic</h2><p role="status">{load === `none` ? `The votes need the hosted site, because they load a data file. Try again online.` : `Loading the votes...`}</p></div>;
+  const counts = new Map();
+  vd.votes.forEach((v) => { if (fin && !v.final) return; const b = v.bill ? vd.bills[v.bill] : null; const a = b && b.policy_area ? b.policy_area : v.kind === `nomination` ? `Nominations` : CX_NO_AREA; counts.set(a, (counts.get(a) || 0) + 1); });
+  const areas = [...counts].sort((a, b) => (a[0] === CX_NO_AREA) - (b[0] === CX_NO_AREA) || a[0].localeCompare(b[0]));
+  const items = area ? cxTopicItems(vd, area, fin) : [];
+  const mine = CX_US_PLACE.state ? cxUsMine(data, CX_US_PLACE.state, CX_US_PLACE.district) : null;
+  const yours = (v) => {
+    if (!mine) return null;
+    const ppl = v.chamber === `senate` ? mine.senators : mine.rep ? [mine.rep] : [];
+    const i0 = (m) => vd.members.indexOf(m.id);
+    const bits = ppl.map((m) => { const c = i0(m) < 0 ? `-` : v.codes[i0(m)]; return c && c !== `-` ? `${m.name} ${CX_CAST[c].toLowerCase()}` : null; }).filter(Boolean);
+    return bits.length ? bits.join(`, `) : null;
+  };
+  return (
+    <div className="us-topics">
+      <h2>Votes by topic</h2>
+      <p>Each bill carries one policy area, chosen by the Congressional Research Service and shown on Congress.gov. Pick one to see the recorded votes in it, newest first. This lists votes. It does not say which agencies handle a topic, because that map needs a person's review first.</p>
+      <div className="us-tools">
+        <label>Topic <select value={area} onChange={(e) => { setArea(e.target.value); setMore(15); }}><option value="">Choose a topic</option>{areas.map(([a, n]) => <option key={a} value={a}>{a} ({n} {n === 1 ? `vote` : `votes`})</option>)}</select></label>
+        <label className="us-check"><input type="checkbox" checked={fin} onChange={(e) => { setFin(e.target.checked); setMore(15); }} /> Only votes that decided a bill or a nominee</label>
+      </div>
+      {!area && <p className="us-hint">Choose a topic to see its votes.</p>}
+      {area && <p className="us-count" role="status">{items.length} {items.length === 1 ? `item` : `items`} in {area}.{mine ? ` Under each vote, how ${CX_US_PLACE.state ? cxStateName(CX_US_PLACE.state) : ``}'s members voted, from the place you chose in Your members.` : ` Choose your state in Your members to see how your own members voted on each.`}</p>}
+      <ul className="us-vote-list">
+        {items.slice(0, more).map((it) => (
+          <li key={it.key} className="us-vote">
+            <p className="us-vote-what"><strong>{it.label}{it.title ? `, ${it.title}` : ``}</strong></p>
+            <ul className="us-sub">
+              {it.votes.map((v) => (
+                <li key={v.id}>
+                  <p className="us-vote-meta">{cxVoteDate(v.date)}, {v.chamber === `senate` ? `Senate` : `House`}. The question: {v.question || `not recorded`}. Result: {v.result || `not recorded`}{v.yea || v.nay ? ` (${v.yea} to ${v.nay})` : ``}. <a href={v.url} target="_blank" rel="noreferrer">The official record<span className="sp-ext"> (opens in a new tab)</span></a></p>
+                  {mine && <p className="us-yours">{yours(v) ? `Your members: ${yours(v)}.` : `Your members: not in the roll for this vote.`}</p>}
+                </li>
+              ))}
+            </ul>
+            {it.url && <p><a href={it.url} target="_blank" rel="noreferrer">The bill on Congress.gov<span className="sp-ext"> (opens in a new tab)</span></a></p>}
+          </li>
+        ))}
+      </ul>
+      {items.length > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 15)}>Show 15 more of {items.length - more}</button></p>}
+      <p className="us-hint">Not voting is not a no, and a vote is on one question: a yea on a rule or a motion is not a yea on the bill. These sources have not been read by a person for terms of use.</p>
+    </div>
+  );
+}
 function CX_UsMine({ data, g, onSee }) {
   const [st, setSt] = u.useState(CX_US_PLACE.state);
   const [di, setDi] = u.useState(CX_US_PLACE.district);
@@ -338,7 +403,7 @@ function CX_UsGraph() {
   const rows = g.nodes.filter((n) => n.kind !== `hub` && visible(n) && !dim(n));
   const connected = cur ? g.adj[cur.i].map((ei) => { const e = g.edges[ei]; return { e, other: g.nodes[e.a === cur.i ? e.b : e.a], out: e.a === cur.i }; }) : [];
   const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, hub: `Group` };
-  const tabs = [[`mine`, `Your members`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
+  const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
     <section className="us" ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
@@ -358,6 +423,7 @@ function CX_UsGraph() {
       {results.length > 0 && <ul className="us-results" aria-label="Search results">{results.map((n) => <li key={n.id}>{pickBtn(n)}</li>)}</ul>}
       <div className="us-body">
         <div className="us-main">
+          {view === `topics` && <CX_UsTopics data={data} />}
           {view === `mine` && <CX_UsMine data={data} g={g} onSee={(n) => { focus(n); setView(`sky`); }} />}
           {view === `sky` && (
             <div className="us-stage">

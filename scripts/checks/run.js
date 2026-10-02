@@ -329,6 +329,15 @@ const CHECKS = {
     await p.select('.us-votes label:nth-of-type(1) select', await p.$eval('.us-votes label:nth-of-type(1) select option:nth-of-type(2)', (o) => o.value)); await wait(300);
     expect(/recorded vote|No recorded votes/.test((await txt(p, '.us-count')) || ''), 'choosing a senator did not update the votes');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on Your members with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    // votes by topic: pick a topic, see its votes, and how the chosen place's members voted
+    await clickText(p, 'Votes by topic', '.us-tabs button'); await wait(500);
+    const tops = await p.$$eval('.us-topics select option', (os) => os.map((o) => o.value).filter(Boolean)); expect(tops.length > 15, `the topic list has only ${tops.length} topics`);
+    await p.select('.us-topics select', tops.includes('Health') ? 'Health' : tops[0]); await wait(400);
+    expect((await count(p, '.us-topics .us-vote')) >= 1, 'a topic with votes lists none');
+    const tt = (await txt(p, '.us-topics')) || '';
+    expect(/Your members: /.test(tt) && /The official record/.test(tt) && /does not say which agencies handle a topic/.test(tt), 'the topic view lacks your members, the official record, or the honest limit');
+    expect(!/%|percent|score|rank|agrees? with/i.test(tt.replace(/Congressional Research Service/g, '')), 'a percentage or score appeared in the topic view');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on Votes by topic: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await clickText(p, 'Sky', '.us-tabs button');
     await p.type('.us-search input', 'Husted'); await wait(300);
     expect((await count(p, '.us-results .us-pick')) >= 1, 'searching for a senator found nothing');

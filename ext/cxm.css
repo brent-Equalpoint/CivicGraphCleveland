@@ -835,7 +835,7 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .us h3 { margin: 16px 0 6px; font-size: 18px; }
 .us-head { display: flex; flex-wrap: wrap; gap: 10px 24px; align-items: flex-start; justify-content: space-between; }
 .us-lede { margin: 0 0 8px; max-width: 62ch; font-size: 17px; line-height: 1.5; color: #e7e4de; }
-.us-tabs { display: inline-flex; gap: 6px; }
+.us-tabs { display: inline-flex; flex-wrap: wrap; gap: 6px; }
 .us-tabs button { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 1px solid #ffffff2e; background: #ffffff0d; color: #f4f2ee; font: inherit; font-weight: 600; cursor: pointer; }
 .us-tabs button.on { background: #ffffff26; border-color: #ffd1a9; }
 .us-preview { margin: 0 0 12px; padding: 10px 14px; border-radius: 12px; background: #ffd36b1f; color: #ffe7a8; font-size: 15.5px; line-height: 1.45; }
@@ -906,3 +906,5 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .us-cast-X .us-dot { background: transparent; border: 2px solid #e1ded8; box-sizing: border-box; }
 .us-cast-P .us-dot { border-radius: 2px; }
 @media (forced-colors: active) { .us-cast { border: 1px solid CanvasText; } .us-dot { background: CanvasText !important; } }
+.us-sub { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
+.us-yours { margin: 2px 0 6px; font-size: 15px; font-weight: 600; }
