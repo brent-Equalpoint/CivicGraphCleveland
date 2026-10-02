@@ -259,7 +259,8 @@
   "providing and maintaining street lighting": "proveer y mantener el alumbrado público",
   "paying the current operating expenses of the district": "pagar los gastos operativos corrientes del distrito",
   "Pays for the county board that supports people with developmental disabilities, from birth through adulthood.": "Financia a la junta del condado que apoya a las personas con discapacidades del desarrollo, desde el nacimiento hasta la edad adulta.",
-  "Pays for county services such as child protection, senior services, homeless programs, addiction treatment, and support for MetroHealth.": "Financia servicios del condado como la protección infantil, los servicios para personas mayores, los programas para personas sin hogar, el tratamiento de adicciones y el apoyo a MetroHealth."
+  "Pays for county services such as child protection, senior services, homeless programs, addiction treatment, and support for MetroHealth.": "Financia servicios del condado como la protección infantil, los servicios para personas mayores, los programas para personas sin hogar, el tratamiento de adicciones y el apoyo a MetroHealth.",
+  "a year, up from $144.1 million.": "al año. Hoy son $144.1 millones."
  },
  "masked": {
   "{n} days": "{n} días",
@@ -379,7 +380,10 @@
   "Design style: {*}. Switch to {*}.": "Estilo: {*}. Cambiar a {*}.",
   "· Wards {*}": "· Distritos {*}",
   "· Ward {n}": "· Distrito {n}",
-  "{$} per {$}": "{$} por cada {$}"
+  "{$} per {$}": "{$} por cada {$}",
+  "{$} million": "{$} millones",
+  "Step {*} of {*}. {*}{*}{*} {*}": "Paso {*} de {*}. {*}{*}{*} {*}",
+  "Issue {*}: about {*} a year. Issue {*}: about {*} a year.": "Asunto {*}: unos {*} al año. Asunto {*}: unos {*} al año."
  },
  "keep": [
   "Brooklyn Centre",

@@ -105,11 +105,7 @@ function cxmBallotStory() {
   if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `Today` : `Next deadline`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Times are Eastern. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Times are Eastern.` });
   if (i3) frames.push({ k: `State Issue 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
   const lv = cxmLevies();
-  lv.forEach((l) => {
-    const T = CX_LEVY_TEXT.issues[l.issue.number];
-    if (T) frames.push({ k: `Issue ${l.issue.number}`, big: `${T.name}: about $${l.per} a year for each $100,000 of home value.`, small: T.line });
-  });
-  if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. Is it right for you?`, small: `See what each pays for, what changes, and what people have said. We do not tell you how to vote.`, type: `cta`, cta: `See the levies`, go: `levies` });
+  if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Short stories with the cost, what each pays for, and what people say. We do not tell you how to vote.`, type: `cta`, cta: `See the levy stories`, go: `levystories` });
   return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, deeper: { label: `Open my ballot`, kind: `tab`, tab: `ballot`, panel: `ballot` }, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
 }
 function cxmSamePerson(a, b) {
@@ -134,7 +130,7 @@ function cxmHoodStory(hood) {
   return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
-  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
 }
 
 /* ---------- desktop Stories page (sidebar: Stories) ---------- */
@@ -142,13 +138,19 @@ function cxStoryHome() {
   const w = /^ward-(\d+)$/.exec(CX_PLACE.v || ``);
   return w ? { hood: ``, ward: Number(w[1]) } : null;
 }
-function CX_StoryFrame({ fr, s }) {
+function CX_StoryFrame({ fr: fr0, s, onGo, plain }) {
+  const hv = useCxLevyHome();
+  const fr = cxLevyView(fr0, hv);
   const m = fr.match ? cxmMatter(fr.match.file) : null;
   return (
     <>
       {fr.k ? <p className="cx-story-k">{fr.k}</p> : null}
-      <p className="cx-story-big">{cxTight(fr.big, !0)}</p>
+      {fr.fig ? <p className="cx-story-fig">{fr.fig}</p> : null}
+      <p className={`cx-story-big ${fr.q ? `q` : ``}`}>{cxTight(fr.big, !0)}</p>
       <p className="cx-story-small">{cxTight(fr.small)}</p>
+      {fr.src ? <CxSource source={fr.src} cls="cx-story-src2" /> : null}
+      {fr.type === `home` && !plain && <CxLevyPad />}
+      {fr.type === `more` && <CxLevyMore n={Number(String(s.id).replace(`levy-`, ``))} />}
       {fr.type === `react` && (
         <div className="cx-story-act">
           <p><strong>{fr.small}</strong></p>
@@ -156,7 +158,7 @@ function CX_StoryFrame({ fr, s }) {
           {m && <a className="cx-story-link" href={m.url} target="_blank" rel="noreferrer">Read the record, file {m.file} (opens in a new tab)</a>}
         </div>
       )}
-      {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(fr.go === `place` ? `place` : fr.go === `levies` ? `levies` : `ballot`)}>{fr.go === `place` ? `Open Who decides here?` : fr.go === `levies` ? `See the levies` : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
+      {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => (fr.go === `levystories` && onGo ? onGo(`levy-10`) : CX_NAV.panel(fr.go === `place` ? `place` : fr.go === `levies` ? `levies` : `ballot`))}>{fr.go === `place` ? `Open Who decides here?` : fr.go === `levies` ? `See the levies` : fr.go === `levystories` ? fr.cta : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
       <CxSource source={s.source} cls="cx-story-src" />
     </>
   );
@@ -200,7 +202,7 @@ function CX_Stories() {
         <div className="cx-story-head"><strong>{s.name}</strong><span>{s.when}</span></div>
         {!text && (
           <>
-            <div className="cx-story-body" aria-live="polite" aria-atomic="true"><CX_StoryFrame key={`${i}-${f}`} fr={fr} s={s} /></div>
+            <div className="cx-story-body" aria-live="polite" aria-atomic="true"><CX_StoryFrame key={`${i}-${f}`} fr={fr} s={s} onGo={(id) => { const n = stories.findIndex((x) => x.id === id); if (n >= 0) pick(n); }} /></div>
             {lastFrame && s.deeper && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => cxGoDeeper(s.deeper)}>{s.deeper.label} <CXI.Arrow size={14} /></button></div>}
             <div className="cx-story-nav">
               <button type="button" className="cx-story-btn alt" onClick={prev} disabled={i === 0 && f === 0}>Back</button>
@@ -210,7 +212,7 @@ function CX_Stories() {
           </>
         )}
         {text && (
-          <ol className="cx-story-all">{s.frames.map((x, n) => <li key={n}><CX_StoryFrame fr={x} s={{ ...s, source: null }} /></li>)}</ol>
+          <ol className="cx-story-all">{s.frames.map((x, n) => <li key={n}><CX_StoryFrame fr={x} s={{ ...s, source: null }} plain /></li>)}</ol>
         )}
         {text && <CxSource source={s.source} cls="cx-story-src" />}
         <button type="button" className="cx-link-button" aria-pressed={text} onClick={() => setText(!text)}>{text ? `Show one step at a time` : `Read this story as text`}</button>

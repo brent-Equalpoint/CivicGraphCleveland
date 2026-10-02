@@ -1008,3 +1008,45 @@ html[data-cx-theme] .atlas-shell .lv p, html[data-cx-theme] .atlas-shell .lv li 
 html[data-cx-theme] .atlas-shell .lv p.lv-note, html[data-cx-theme] .atlas-shell .lv p.lv-sub, html[data-cx-theme] .atlas-shell .lv p.lv-kick, html[data-cx-theme] .atlas-shell .lv p.lv-wtext, html[data-cx-theme] .atlas-shell .lv p.sp-note { color: #e1ded8; }
 @media (max-width: 480px) { .lv-card { padding: 14px; } .lv-big b { font-size: 32px; } }
 @media print { .lv-more:not([open]) .lv-body { display: block; } .lv-pad { display: none; } }
+
+/* ---- v5.17 levy stories and the levies guide: big numbers, one idea a screen, a number pad, like a payment app ---- */
+.cxm-story-levy-10, .cxm-story-levy-11 { background: var(--acc) !important; }   /* the same blue as the ballot story and the number pad */
+.cxm-story-fig, .cx-story-fig { margin: 4px 0 0; font-size: clamp(44px, 16vw, 64px); line-height: 1; font-weight: 800; letter-spacing: -.045em; color: #fff; overflow-wrap: normal; }
+.cxm-story-big.q, .cx-stories .cx-story-big.q { font-size: 25px; line-height: 1.22; font-weight: 600; letter-spacing: -.01em; }
+.cxm-story-src2, .cx-story-src2 { margin: 6px 0 0; font-size: 14px; line-height: 1.4; color: #dfe7ff; }
+.cxm-story-src2 a, .cx-story-src2 a { color: #fff; text-underline-offset: 3px; }
+.cx-stories .cx-story-fig, html[data-cx-theme] .atlas-shell .cx-stories p.cx-story-fig { font-size: 64px; color: #fff; }
+.cxm-keys.lv-keys { width: 100%; max-width: 340px; margin: 6px 0; }
+.cx-stories .cxm-keys button { color: #fff; }
+.cx-stories .cxm-keys button:hover { background: #ffffff1f; }
+.lv-more-story { width: 100%; }
+.lv-more-story > summary { display: flex; align-items: center; justify-content: space-between; min-height: 52px; padding: 0 18px; border-radius: 14px; background: #fff; color: #0c1a45; font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; }
+.lv-more-story > summary::after { content: "+"; font-size: 24px; font-weight: 500; }
+.lv-more-story[open] > summary::after { content: "\2212"; }
+.lv-more-story > summary::-webkit-details-marker { display: none; }
+.lv-more-story .lv-body { max-height: 44vh; overflow-y: auto; margin-top: 8px; padding: 6px 14px 12px; border-radius: 14px; background: #0000004d; color: #f4f2ee; }
+.cx-stories .lv-more-story .lv-body { max-height: none; }
+.lv-more-story .lv-list li, .lv-more-story .lv-said li { color: #f4f2ee; }
+.lv-tiles { display: grid; gap: 12px; margin: 8px 0 14px; }
+.lv-tile { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 18px 20px; border: 0; border-radius: 22px; background: var(--acc, #2f66f3); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
+html[data-cx-theme="original"] .lv-tile { background: var(--acc, #c2410c); }
+.lv-tile-kick { font-size: 14.5px; color: #dfe7ff; }
+.lv-tile-fig { font-size: 56px; line-height: 1; font-weight: 800; letter-spacing: -.04em; }
+.lv-tile-per { font-size: 16px; color: #e3eaff; }
+.lv-tile-mine { font-size: 17px; font-weight: 700; color: #fff; }
+.lv-tile strong { margin-top: 8px; font-size: 19px; line-height: 1.25; }
+.lv-tile em { margin-top: 6px; font-style: normal; font-weight: 700; font-size: 15px; display: inline-flex; align-items: center; gap: 6px; }
+.lv-tile:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
+@media (min-width: 761px) { .lv-tiles { grid-template-columns: 1fr 1fr; } }
+/* text on the blue stories and cards is white, not the paler tints, so it passes 4.5:1 on the blue */
+.cxm-story-ballot .cxm-kicker, .cxm-story-levy-10 .cxm-kicker, .cxm-story-levy-11 .cxm-kicker,
+.cxm-story-ballot .cxm-story-who small, .cxm-story-levy-10 .cxm-story-who small, .cxm-story-levy-11 .cxm-story-who small,
+.cxm-story-ballot .cxm-story-small, .cxm-story-levy-10 .cxm-story-small, .cxm-story-levy-11 .cxm-story-small,
+.cxm-story-ballot .cxm-story-hint, .cxm-story-levy-10 .cxm-story-hint, .cxm-story-levy-11 .cxm-story-hint,
+.cxm-story-ballot .cxm-story-src, .cxm-story-levy-10 .cxm-story-src, .cxm-story-levy-11 .cxm-story-src,
+.cxm-story-levy-10 .cxm-story-src2, .cxm-story-levy-11 .cxm-story-src2 { color: #fff; }
+.cxm-story-ballot .cxm-story-who > span:first-child, .cxm-story-levy-10 .cxm-story-who > span:first-child, .cxm-story-levy-11 .cxm-story-who > span:first-child { background: #1b3f9c; }
+.cxm-story-ballot .cxm-story-text, .cxm-story-levy-10 .cxm-story-text, .cxm-story-levy-11 .cxm-story-text { background: #0000003d; border-color: #ffffff8c; color: #fff; }
+.lv-tile-kick, .lv-tile-per, .lv-tile-kick span { color: #fff; }
+.lv-more-story a { color: #fff; text-underline-offset: 3px; }
+.lv-more-story .lv-wtext, .lv-more-story .lv-note { color: #f1f4ff; }

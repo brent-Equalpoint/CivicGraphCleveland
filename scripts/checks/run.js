@@ -350,46 +350,86 @@ const CHECKS = {
     await done(p);
   },
   async levies() {
-    // the levies guide: dollar figures match the official ballot wording, a typed home value scales them, Read more holds the reasons and both sides,
-    // sources are linked, a person's review status is honest, and nothing tells a resident how to vote
+    // the levies guide and the two levy stories: figures match the official ballot wording, a typed home value scales them, the stories carry the reasons
+    // and both sides with linked sources, a person's review status is honest, and nothing tells a resident how to vote
+    const ADVICE = /\b(vote yes|vote no|you should vote|we recommend|we urge|best choice|good deal|bad deal)\b/i;
     for (const [url, opt] of [['/?panel=levies#phone', { mobile: true, easy: false }], ['/?panel=levies#desktop', {}]]) {
       const p = await open(url, opt);
       const page = () => p.evaluate(() => document.querySelector('.lv').innerText.replace(/\s+/g, ' '));
       let t = await page();
       expect(/Issue 10/.test(t) && /Issue 11/.test(t), `the guide does not list Issues 10 and 11 (${url})`);
       expect(/\$79 a year for each \$100,000/.test(t) && /\$196 a year for each \$100,000/.test(t), `the county figures are missing (${url})`);
-      expect(/\$99,684,616/.test(t) && /\$261,527,652/.test(t), `the official collection estimates are missing (${url})`);
-      expect(/Now about \$108\.50 a year\. The increase is \$87\.50 a year/.test(t), `the Issue 11 before and after is missing (${url})`);
       expect(/Only in some places/.test(t) && (await count(p, '.lv-other')) >= 10, `the other tax issues are not listed (${url})`);
       expect(/A person has not yet read them against those sources|Read against its sources by/.test(t), `the review status is not stated (${url})`);
-      expect(!/\b(vote yes|vote no|you should vote|we recommend|we urge|best choice|good deal|bad deal)\b/i.test(t), `the guide tells people how to vote (${url})`);
+      expect(!ADVICE.test(t), `the guide tells people how to vote (${url})`);
       await p.type('#lv-home', '250000'); await wait(200);
       t = await page();
-      expect(/For a home worth \$250,000: about \$198 a year/.test(t) && /For a home worth \$250,000: about \$490 a year/.test(t), `a typed home value did not scale the figures (${url})`);
-      await p.evaluate(() => document.querySelectorAll('.lv-more > summary').forEach((x) => x.click())); await wait(250);
-      t = await page();
-      for (const h of ['What it pays for', 'What changes if it passes', 'What happens if it fails', 'What people have said', 'Questions to ask yourself', 'The official ballot wording'])
-        expect(t.includes(h), `Read more lacks "${h}" (${url})`);
-      expect(/Supports it/.test(t) && /Raised a concern/.test(t), `the page shows only one side for Issue 11 (${url})`);
-      const bad = await p.evaluate(() => [...document.querySelectorAll('.lv-src a')].filter((a) => !/^https:\/\//.test(a.href) || a.target !== '_blank').length);
-      expect(bad === 0, `${bad} source links are not secure or do not open in a new tab (${url})`);
-      expect((await count(p, '.lv-src a')) >= 12, `the sources are not linked (${url})`);
+      expect(/For your home: about \$198 a year/.test(t) && /For your home: about \$490 a year/.test(t), `a typed home value did not scale the figures (${url})`);
       await done(p);
     }
-    // the ballot story points to the guide, and the Ballot tab has a card for it
+    // the Issue 11 story on the phone, frame by frame
     const m = await open('/#phone', { mobile: true, easy: false });
-    const sb = await m.$$('.cxm-story-btn'); let ballot = null;
-    for (const x of sb) { if (/ballot/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) ballot = x; }
-    expect(!!ballot, 'no ballot story on the phone Today screen');
-    if (ballot) await ballot.click(); await wait(500);
-    let seen = false;
-    for (let i = 0; i < 10 && !seen; i++) { seen = await m.evaluate(() => /See the levies/.test(document.body.innerText)); if (!seen) { const r = await m.$('.cxm-tap-r'); if (!r) break; await r.click(); await wait(250); } }
-    expect(seen, 'the ballot story does not reach "See the levies"');
+    const ring = await m.$$('.cxm-story-btn'); let r11 = null;
+    for (const x of ring) { if (/Issue 11/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) r11 = x; }
+    expect(!!r11, 'no Issue 11 story on the phone Today screen');
+    if (r11) await r11.click(); await wait(500);
+    const frame = () => m.evaluate(() => document.querySelector('.cxm-story').innerText.replace(/\s+/g, ' '));
+    const tap = async () => { const x = await m.$('.cxm-tap-r'); if (x) await x.click(); await wait(220); };
+    const all = [await frame()];
+    await tap(); all.push(await frame());
+    expect(/\$196/.test(all[1]) && /Now about \$108\.50\. The increase is \$87\.50/.test(all[1]), `the cost frame is wrong: ${all[1].slice(0, 160)}`);
+    await tap();
+    for (const k of ['2', '5', '0', '0', '0', '0']) await m.evaluate((k) => [...document.querySelectorAll('.lv-keys button')].find((b) => b.getAttribute('aria-label') === k).click(), k);
+    all.push(await frame());
+    expect(/\$250,000/.test(all[2]) && /Issue 10: about \$198 a year\. Issue 11: about \$490 a year/.test(all[2]), `the number pad did not scale the figures: ${all[2].slice(0, 200)}`);
+    await m.evaluate(() => [...document.querySelectorAll('.cxm-story button')].find((b) => /^Next/.test(b.innerText.trim())).click()); await wait(250);
+    for (let i = 0; i < 6; i++) { all.push(await frame()); await tap(); }
+    const text = all.join(' | ');
+    for (const w of ['What it pays for', 'If it passes', '$261.5 million', 'If it fails', 'Someone who supports it', 'A concern raised', 'Dale Miller', "Mike O'Malley"])
+      expect(text.includes(w), `the Issue 11 story lacks "${w}"`);
+    expect(await has(m, '.lv-more-story'), 'the last frame has no Read more');
+    await m.evaluate(() => { document.querySelector('.lv-more-story').open = true; document.querySelector('.lv-wording').open = true; });
+    const more = await m.evaluate(() => document.querySelector('.lv-more-story').innerText.replace(/\s+/g, ' '));
+    for (const h of ['What it pays for', 'What changes if it passes', 'What happens if it fails', 'What people have said', 'Questions to ask yourself', 'The official ballot wording', '$261,527,652'])
+      expect(more.includes(h), `Read more lacks "${h}"`);
+    expect(/Supports it/.test(more) && /Raised a concern/.test(more), 'Read more shows only one side for Issue 11');
+    expect(!ADVICE.test(text + more), 'a levy story tells people how to vote');
+    const bad = await m.evaluate(() => [...document.querySelectorAll('.lv-src a, .cxm-story-src2 a')].filter((a) => !/^https:\/\//.test(a.href) || a.target !== '_blank').length);
+    expect(bad === 0, `${bad} source links are not secure or do not open in a new tab`);
+    expect((await count(m, '.lv-src a')) >= 8, 'the sources are not linked inside Read more');
     await done(m);
+    // the ballot story hands over to the levy stories, and Issue 10 shows the official collection estimate
     const b = await open('/#phone', { mobile: true, easy: false });
-    await clickText(b, 'Ballot'); await wait(400);
-    expect(/Levies and taxes on your ballot/.test(await b.evaluate(() => document.body.innerText)), 'the Ballot tab has no levies card');
+    const rings = await b.$$('.cxm-story-btn'); let bal = null;
+    for (const x of rings) { if (/ballot/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) bal = x; }
+    if (bal) await bal.click(); await wait(500);
+    let seen = false;
+    for (let i = 0; i < 10 && !seen; i++) { seen = await b.evaluate(() => /See the levy stories/.test(document.body.innerText)); if (!seen) { const x = await b.$('.cxm-tap-r'); if (!x) break; await x.click(); await wait(250); } }
+    expect(seen, 'the ballot story does not reach "See the levy stories"');
+    if (seen) {
+      await b.evaluate(() => [...document.querySelectorAll('.cxm-story button')].find((x) => /See the levy stories/.test(x.innerText)).click()); await wait(500);
+      expect(/Issue 10/.test(await b.evaluate(() => document.querySelector('.cxm-story').innerText)), 'the levy stories did not open at Issue 10');
+      let ten = ``;
+      for (let i = 0; i < 6; i++) {
+        const x = await b.$('.cxm-tap-r');
+        if (x) await x.click(); else await b.evaluate(() => { const n = [...document.querySelectorAll('.cxm-story button')].find((y) => /^Next$/.test(y.innerText.trim())); if (n) n.click(); });
+        await wait(220); ten += await b.evaluate(() => document.querySelector('.cxm-story').innerText.replace(/\s+/g, ' '));
+      }
+      expect(/\$99\.7 million/.test(ten) && /\$99,684,616/.test(ten), 'the Issue 10 story does not show the official $99,684,616');
+    }
     await done(b);
+    const c = await open('/#phone', { mobile: true, easy: false });
+    await clickText(c, 'Ballot'); await wait(400);
+    expect(/What would the county levies cost you\?/.test(await c.evaluate(() => document.body.innerText)), 'the Ballot tab has no levies card');
+    await c.evaluate(() => [...document.querySelectorAll('.cxm-keycard')][0].click()); await wait(500);
+    expect(/Issue 10/.test((await c.evaluate(() => (document.querySelector('.cxm-story') || { innerText: '' }).innerText)) || ''), 'the Ballot tab card does not open the levy story');
+    await done(c);
+    // the desktop Stories page lists both and reads Issue 11 with the same figures
+    const d = await open('/?panel=stories#desktop', {});
+    await d.evaluate(() => [...document.querySelectorAll('.cx-stories-pick button')].find((x) => /Issue 11/.test(x.innerText)).click()); await wait(300);
+    await d.evaluate(() => [...document.querySelectorAll('.cx-story-nav button')].pop().click()); await wait(300);
+    expect(/\$196/.test(await d.evaluate(() => document.querySelector('.cx-story-body').innerText)), 'the desktop story does not show $196');
+    await done(d);
   },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
@@ -672,6 +712,7 @@ const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /aria-label="(Step|Paso) \d+: /, why: 'diagram step: number and name are separate SVG texts' },
   { rule: 'label-content-name-mismatch', target: /(^|\s)\.human$|\.cx-step/, why: 'diagram step 10: number and name are separate SVG texts' },
   { rule: 'label-content-name-mismatch', target: /(story|Historia[^"]*), (new|seen|nueva|vista)"\]/, why: 'initials in the story ring are decorative (aria-hidden); the name holds the visible word' },
+  { rule: 'label-content-name-mismatch', target: /^\.seen$|\.cxm-story-btn/, why: 'a story ring already seen: axe names it by its class; same decorative initials as above' },
 ];
 const AXE_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
@@ -682,9 +723,17 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }],
 ];
-const AXE_AFTER = { openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); } };
+const AXE_AFTER = {
+  openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
+  levyStory: async () => {   // open the Issue 11 story, go to its last frame, and open Read more and the official wording
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    [...document.querySelectorAll('.cxm-story-btn')].find((b) => /(Issue|Asunto) 11/.test(b.getAttribute('aria-label') || '')).click(); await w(400);
+    for (let i = 0; i < 9; i++) { const t = document.querySelector('.cxm-tap-r'); if (t) t.click(); else { const n = [...document.querySelectorAll('.cxm-story button')].find((b) => /^(Next|Siguiente)$/.test(b.innerText.trim())); if (n) n.click(); } await w(200); }
+    document.querySelectorAll('.lv-more-story, .lv-wording').forEach((d) => { d.open = true; });
+  },
+};
 async function axeBad(p) {
   await p.evaluate(axeSource);
   const v = await p.evaluate(() => axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, rules: { 'label-content-name-mismatch': { enabled: true } } })

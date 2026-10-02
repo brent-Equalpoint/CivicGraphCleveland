@@ -188,7 +188,9 @@ function CxmStory() {
     else go(d.tab);
     setStoryBack(back);
   };
-  const fr = s.frames[Math.min(f, s.frames.length - 1)];
+  const hv = useCxLevyHome();
+  const fr = cxLevyView(s.frames[Math.min(f, s.frames.length - 1)], hv);
+  const own = fr.type === `react` || fr.type === `home` || fr.type === `more`;   // frames with their own controls: the tap zones would be in the way
   u.useEffect(() => { if (!seen[s.id]) setSeen((x) => ({ ...x, [s.id]: !0 })); }, [s.id]);
   const next = () => {
     if (f < s.frames.length - 1) setOverlay({ ...overlay, f: f + 1 });
@@ -211,26 +213,40 @@ function CxmStory() {
         <button type="button" aria-label="Close story" onClick={() => setOverlay(null)}><CXI.X size={22} /></button>
       </div>
       <div className="cxm-story-bar2"><button type="button" className="cxm-story-text" aria-pressed={asText} onClick={() => setAsText(!asText)}>{asText ? `Back to the story` : `Read as text`}</button></div>
-      <p className="cxm-sr" aria-live="polite" aria-atomic="true">{asText ? `` : `Step ${Math.min(f, s.frames.length - 1) + 1} of ${s.frames.length}. ${fr.k ? `${fr.k}. ` : ``}${fr.big} ${fr.small}`}</p>
+      <p className="cxm-sr" aria-live="polite" aria-atomic="true">{asText ? `` : `Step ${Math.min(f, s.frames.length - 1) + 1} of ${s.frames.length}. ${fr.k ? `${fr.k}. ` : ``}${fr.fig ? `${fr.fig} ` : ``}${fr.big} ${fr.small}`}</p>
       {asText && (
         <div className="cxm-story-all">
-          <ol>{s.frames.map((x, n) => <li key={n}>{x.k ? <span className="cxm-kicker">{x.k}</span> : null}<p className="cxm-story-big">{cxTight(x.big, !0)}</p><p className="cxm-story-small">{cxTight(x.small)}</p></li>)}</ol>
+          <ol>{s.frames.map((x, n) => <li key={n}>{x.k ? <span className="cxm-kicker">{x.k}</span> : null}{x.fig ? <p className="cxm-story-fig">{x.fig}</p> : null}<p className={`cxm-story-big ${x.q ? `q` : ``}`}>{cxTight(x.big, !0)}</p><p className="cxm-story-small">{cxTight(x.small)}</p></li>)}</ol>
           {s.deeper && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
         </div>
       )}
       {!asText && <div className="cxm-story-body">
         <div key={`${i}-${f}`} className="cxm-rise">
           {fr.k ? <span className="cxm-kicker">{fr.k}</span> : null}
-          <p className="cxm-story-big">{cxTight(fr.big, !0)}</p>
+          {fr.fig ? <p className="cxm-story-fig">{fr.fig}</p> : null}
+          <p className={`cxm-story-big ${fr.q ? `q` : ``}`}>{cxTight(fr.big, !0)}</p>
           <p className="cxm-story-small">{cxTight(fr.small)}</p>
+          {fr.src ? <CxSource source={fr.src} cls="cxm-story-src2" /> : null}
         </div>
-        {fr.type !== `react` && (
+        {!own && (
           <>
             <button type="button" className="cxm-tap cxm-tap-l" aria-label="Previous" onClick={prev} />
             <button type="button" className="cxm-tap cxm-tap-r" aria-label="Next" onClick={next} />
           </>
         )}
       </div>}
+      {fr.type === `home` && (
+        <div className="cxm-story-react cxm-rise">
+          <CxLevyPad />
+          <button type="button" className="cxm-btn" onClick={next}>Next <CXI.Arrow size={15} /></button>
+        </div>
+      )}
+      {fr.type === `more` && (
+        <div className="cxm-story-react cxm-rise">
+          <CxLevyMore n={Number(String(s.id).replace(`levy-`, ``))} />
+          {i < list.length - 1 && <button type="button" className="cxm-btn" onClick={next}>Next story <CXI.Arrow size={15} /></button>}
+        </div>
+      )}
       <CxSource source={s.source} cls="cxm-story-src" />
       {fr.type === `react` && (
         <div className="cxm-story-react cxm-rise">
@@ -242,9 +258,9 @@ function CxmStory() {
         </div>
       )}
       {fr.type === `cta` && (
-        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
+        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
-      {!asText && !fr.type && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
+      {!asText && (!fr.type || fr.type === `more`) && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
       {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}
     </div>
   );

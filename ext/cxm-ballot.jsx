@@ -64,9 +64,12 @@ function CxmBallot() {
         <p className="cxm-mut">Open a race to see what someone has said or voted on, and what their office controls. Missing evidence stays missing. Choosing "Still deciding" is okay.</p>
       </div>
       {lv.length > 0 && (
-        <button type="button" className="cxm-card cxm-card-acc cxm-keycard" onClick={() => openSheet(`levies`)}>
-          <span><strong>Levies and taxes on your ballot</strong><small>What each costs, what it pays for, what changes, and what people say. Type your home's value for a dollar figure.</small></span><b>$</b>
-        </button>
+        <>
+          <button type="button" className="cxm-card cxm-card-acc cxm-keycard" onClick={() => setOverlay({ type: `story`, list: cxmLevyStories(), i: 0, f: 0 })}>
+            <span><strong>What would the county levies cost you?</strong><small>Two short stories: the cost, what each pays for, and what people say.</small></span><b>$</b>
+          </button>
+          <button type="button" className="cxm-link" onClick={() => openSheet(`levies`)}>All the tax issues on your ballot</button>
+        </>
       )}
       {groups.map(([g, list]) => (
         <section key={g} className="cxm-section">
@@ -229,8 +232,9 @@ function CxmLocalIssues() {
 
 /* ---------- the levies guide as a phone sheet; the number pad stays one tap away ---------- */
 function CxmLevies() {
-  const { setOverlay } = useCxm();
-  return <div className="cxm-pad"><CX_Levies onPad={() => setOverlay({ type: `keypad`, mode: `home`, kp: `150000` })} /></div>;
+  const { setOverlay, closeSheet } = useCxm();
+  const open = (n) => { const list = cxmLevyStories(); closeSheet(); setOverlay({ type: `story`, list, i: Math.max(0, list.findIndex((x) => x.id === `levy-${n}`)), f: 0 }); };
+  return <div className="cxm-pad"><CX_Levies onOpen={open} onPad={() => setOverlay({ type: `keypad`, mode: `home`, kp: `150000` })} /></div>;
 }
 
 /* ---------- levy and tax keypad ---------- */
