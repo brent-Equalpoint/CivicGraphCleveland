@@ -325,12 +325,12 @@ cxI18nBoot();
 
 /* ---------- the language buttons and the notice that Spanish is a draft ---------- */
 /* One button that switches the language. It names the language it switches to, in that language. */
-function CX_LangButton({ cls }) {
+function CX_LangButton({ cls, short }) {
   const [lang, setLang] = useCxLang();
   const es = lang === `es`;
   return (
     <button type="button" className={cls || `cx-lang-btn`} data-no-translate lang={es ? `en` : `es`} aria-label={es ? `Switch to English` : `Cambiar a español`} onClick={() => setLang(es ? `en` : `es`)}>
-      {es ? `English` : `Español`}
+      {short ? (es ? `EN` : `ES`) : es ? `English` : `Español`}
     </button>
   );
 }
@@ -351,8 +351,8 @@ function CX_LangNotice() {
   if (lang !== `es` || gone) return null;
   const close = () => { CX_LANG_NOTE.gone = !0; try { sessionStorage.setItem(`cx-es-note`, `1`); } catch {} setGone(!0); };
   return (
-    <div className="cx-notice" role="status" lang="es" data-no-translate>
-      <span>Esta traducción es un borrador. Una persona todavía no la ha revisado. Los títulos y textos oficiales de las leyes y los registros siguen en inglés.</span>
+    <div className="cx-notice cx-notice-lang" role="status" lang="es" data-no-translate>
+      <span>Traducción en borrador. Los textos oficiales siguen en inglés.</span>
       <button type="button" onClick={close}>Entendido</button>
     </div>
   );

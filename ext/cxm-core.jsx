@@ -295,6 +295,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             <button type="button" className="cxm-brand" onClick={() => go(`today`)}><b>Civic Graph</b> <span>· Cleveland</span></button>
             <div className="cxm-top-actions">
               <button type="button" aria-label="Search" onClick={() => openSheet(`search`)}><CXI.Search size={20} /></button>
+              <CX_LangButton cls="cxm-lang" short />
               <button type="button" aria-label="Dictionary" className="cxm-aa" onClick={() => openSheet(`dict`)}>Aa</button>
               <button type="button" aria-label="Settings" className="cxm-you" onClick={() => openSheet(`you`)}><CXI.Sliders size={18} /></button>
             </div>

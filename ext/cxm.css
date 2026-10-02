@@ -34,6 +34,7 @@ html[data-cx-theme="original"] .cxm {
 .cxm-top-actions { display: flex; gap: 2px; }
 .cxm-top-actions button { width: 44px; height: 44px; display: grid; place-items: center; border-radius: 12px; color: var(--mut); }
 .cxm-top-actions .cxm-aa { font-weight: 700; font-size: 16px; }
+.cxm-top-actions .cxm-lang { font-weight: 700; font-size: 13px; letter-spacing: .02em; }
 .cxm-top-actions .cxm-you { width: 34px; height: 34px; margin: 5px; border-radius: 50%; background: var(--acc); color: var(--on-acc); font-size: 12px; font-weight: 700; }
 .cxm-main { flex: 1; min-height: 0; overflow-y: auto; overscroll-behavior: contain; position: relative; padding: 6px 18px 28px; scrollbar-width: none; }
 .cxm-main::-webkit-scrollbar { display: none; }
@@ -532,9 +533,11 @@ html[data-cx-theme="original"] .cxm-sheet { background: #1a1613; }
 .cxm-brand { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; text-align: left; }
 .cxm-brand b { font-weight: inherit; }
 .cxm-top-actions { flex: none; }
-@media (max-width: 359px) {
+@media (max-width: 399px) {
   .cxm-top { padding-left: 14px; }
   .cxm-brand span { display: none; }
+}
+@media (max-width: 359px) {
   .cxm-top-actions button { width: 40px; }
 }
 .cxm-field textarea { font-size: 16px; }
@@ -692,6 +695,8 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .cx-empty-actions { display: flex; flex-wrap: wrap; gap: 8px 18px; }
 .cx-empty .cx-link-button { font-size: 16px; color: #ffd1a9; min-height: 36px; }
 .cx-notice { position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 90; display: flex; align-items: center; gap: 14px; max-width: min(560px, calc(100vw - 24px)); padding: 12px 16px; border-radius: 14px; background: #ffd36b; color: #141210; font: 600 16px/1.4 Inter, system-ui, sans-serif; box-shadow: 0 8px 28px #0007; }
+.cx-notice-lang { top: 64px; box-sizing: border-box; width: min(560px, calc(100vw - 24px)); gap: 12px; padding: 10px 12px 10px 14px; font-size: 14px; line-height: 1.35; }
+.cx-notice-lang > span { flex: 1 1 auto; min-width: 0; }
 .cx-notice button { flex: none; min-height: 40px; padding: 0 14px; border: 2px solid #141210; border-radius: 10px; background: transparent; color: #141210; font: 700 15px Inter, system-ui, sans-serif; cursor: pointer; }
 .cx-notice button:focus-visible { outline: 3px solid #141210; outline-offset: 2px; }
 @media print { .cx-notice, .cxm-empty .cxm-row2, .cx-empty-actions { display: none !important; } }
