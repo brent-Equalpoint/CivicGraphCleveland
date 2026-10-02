@@ -1050,3 +1050,5 @@ html[data-cx-theme="original"] .lv-tile { background: var(--acc, #c2410c); }
 .lv-tile-kick, .lv-tile-per, .lv-tile-kick span { color: #fff; }
 .lv-more-story a { color: #fff; text-underline-offset: 3px; }
 .lv-more-story .lv-wtext, .lv-more-story .lv-note { color: #f1f4ff; }
+/* a long word may never push a story line past the screen */
+.cxm-story-big, .cxm-story-small, .cxm-story-fig, .cx-story-big, .cx-story-small { overflow-wrap: break-word; max-width: 100%; }

@@ -20,7 +20,7 @@ function cxmRecordFor(cand, qid) {
 const CX_NB = String.fromCharCode(160);
 function cxTight(s, glue) {
   let t = String(s == null ? `` : s).replace(/\b((?:Jan|Feb|Mar|Apr|Aug|Sept?|Oct|Nov|Dec)\.?|May|June|July) (\d)/g, (m, a, d) => a + CX_NB + d);
-  if (glue) t = t.replace(/ (\S+)$/, (m, w) => CX_NB + w);
+  if (glue) t = t.replace(/(\S+) (\S+)$/, (m, a, w) => (a.length + w.length <= 16 ? a + CX_NB + w : m));   // only when the pair is short enough to fit on a phone line
   return t;
 }
 /* The source of a story: the linked name and nothing else on screen. A screen reader still hears where it comes from. */

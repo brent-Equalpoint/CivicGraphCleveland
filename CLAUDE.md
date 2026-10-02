@@ -43,6 +43,9 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
 
 ## Rules
 
+- The design system (the look, written down): `design/tokens.json` is the one source, `docs/design-system.md` is generated from it. Do not add a color, text size, radius, or weight that is not a token; `node scripts/design/audit.js` fails if you do. A change to how things look is made in the tokens on purpose, then `DESIGN_UPDATE=1 node scripts/checks/run.js --only design-look` and read the diff of `design/look.json`.
+- Design standards (logic, UX, UI, content, language, and the check that enforces each): `docs/design-standards.md`. Reuse what works before inventing; a bug becomes a check.
+
 - Receipts, not scores. No match percentages, rankings, or ideology labels.
 - Sponsorship is not a vote. A missing record is not a no.
 - Official records update automatically; news and anything interpretive need a person's approval. Never automate news into `data/`.

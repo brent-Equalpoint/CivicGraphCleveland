@@ -43,6 +43,7 @@ jobs:
           python scripts/test_votes.py
           python scripts/test_cityrecord.py
           node scripts/test_headline.js
+          node scripts/test_design.js
           python scripts/test_i18n.py
 
       - name: Data safety check

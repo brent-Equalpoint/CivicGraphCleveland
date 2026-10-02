@@ -431,6 +431,59 @@ const CHECKS = {
     expect(/\$196/.test(await d.evaluate(() => document.querySelector('.cx-story-body').innerText)), 'the desktop story does not show $196');
     await done(d);
   },
+  async 'story-fit'() {
+    // every frame of every story, on the phone and on the desktop: no line of text may run past the screen or out of its reader,
+    // whatever the words are (a long phrase such as "developmental disabilities" is the case that once bled off the edge)
+    const off = (p, sel) => p.evaluate((sel) => {
+      const root = document.querySelector(sel); if (!root) return ['no reader'];
+      const box = root.getBoundingClientRect(), W = document.documentElement.clientWidth, out = [];
+      const w = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+      let n;
+      while ((n = w.nextNode())) {
+        if (!n.textContent.trim()) continue;
+        const el = n.parentElement; if (!el || el.closest('.sp-ext, .cxm-sr, [hidden]')) continue;
+        const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || cs.display === 'none') continue;
+        const rg = document.createRange(); rg.selectNodeContents(n);
+        for (const q of rg.getClientRects()) {
+          if (!q.width || !q.height) continue;
+          if (q.right > Math.min(box.right, W) + 1.5 || q.left < Math.max(box.left, 0) - 1.5) { out.push(`${Math.round(Math.max(q.right - Math.min(box.right, W), Math.max(box.left, 0) - q.left))}px: ${n.textContent.trim().slice(0, 40)}`); break; }
+        }
+      }
+      return out.slice(0, 4);
+    }, sel);
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const n = await count(m, '.cxm-story-btn');
+    expect(n >= 5, `only ${n} stories on the phone Today screen`);
+    for (let k = 0; k < n; k++) {
+      const rings = await m.$$('.cxm-story-btn'); await rings[k].click(); await wait(400);
+      const name = await txt(m, '.cxm-story-who strong');
+      for (let f = 0; f < 14; f++) {
+        const bad = await off(m, '.cxm-story');
+        expect(bad.length === 0, `phone story "${name}", step ${f + 1}: text runs past the screen: ${bad.join('; ')}`);
+        const total = await count(m, '.cxm-bars i'), on = await count(m, '.cxm-bars i.on');
+        if (on >= total) break;
+        const x = await m.$('.cxm-tap-r');
+        if (x) await x.click(); else await m.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story button')].find((y) => /^(Next|Siguiente)$/.test(y.innerText.trim())); if (b) b.click(); });
+        await wait(180);
+      }
+      await m.evaluate(() => { const c = document.querySelector('.cxm-story-head > button'); if (c) c.click(); }); await wait(250);
+    }
+    await done(m);
+    const d = await open('/?panel=stories#desktop', {});
+    const dn = await count(d, '.cx-stories-pick button');
+    for (let k = 0; k < dn; k++) {
+      await d.evaluate((k) => document.querySelectorAll('.cx-stories-pick button')[k].click(), k); await wait(250);
+      const name = await txt(d, '.cx-story-head strong');
+      for (let f = 0; f < 14; f++) {
+        const bad = await off(d, '.cx-story-reader');
+        expect(bad.length === 0, `desktop story "${name}", step ${f + 1}: text runs out of the reader: ${bad.join('; ')}`);
+        const last = await d.evaluate(() => { const b = [...document.querySelectorAll('.cx-story-nav button')].pop(); return !b || b.disabled || /Next story/.test(b.innerText); });
+        if (last) break;
+        await d.evaluate(() => [...document.querySelectorAll('.cx-story-nav button')].pop().click()); await wait(150);
+      }
+    }
+    await done(d);
+  },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
     const m = await open('/#phone', { mobile: true, easy: false });
@@ -740,6 +793,73 @@ async function axeBad(p) {
     .then((r) => r.violations.flatMap((x) => x.nodes.map((n) => ({ id: x.id, impact: x.impact, target: n.target.join(' '), msg: ((n.any[0] || n.all[0] || {}).message || '').slice(0, 100) })))));
   return v.filter((x) => !AXE_ALLOW.some((a) => a.rule === x.id && a.target.test(x.target)));
 }
+/* The look, as built: the computed text, color, and shape of the parts that make up the design, on the real screens, in both styles.
+   design/look.json holds what they should be. A change here is a change to the design: make it on purpose, then run
+       DESIGN_UPDATE=1 node scripts/checks/run.js --only design-look
+   and read the diff of design/look.json before committing. Text, dates, and counts are not compared; only how things look. */
+const LOOK_PROPS = ['color', 'backgroundColor', 'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'borderRadius', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'minHeight', 'borderTopWidth', 'borderTopColor'];
+const LOOK_PAGES = [
+  ['phone today', '/#phone', { mobile: true, easy: false }, null, ['.cxm-top', '.cxm-brand', '.cxm-top-actions .cxm-you', '.cxm-top-actions .cxm-lang', '.cxm-fresh', '.cxm-story-btn small', '.cxm-ring', '.cxm-count', '.cxm-count strong', '.cxm-h2', '.cxm-tabs button']],
+  ['phone ballot', '/?panel=ballot#phone', { mobile: true, easy: false }, null, ['.cxm-keycard', '.cxm-keycard strong', '.cxm-tile', '.cxm-kicker']],
+  ['phone story frame', '/#phone', { mobile: true, easy: false }, 'story', ['.cxm-story', '.cxm-bars i.on', '.cxm-story-who strong', '.cxm-story-big', '.cxm-story-small', '.cxm-story .cxm-kicker', '.cxm-story-text']],
+  ['phone story figure', '/#phone', { mobile: true, easy: false }, 'figure', ['.cxm-story-fig', '.cxm-story-big']],
+  ['phone number pad', '/#phone', { mobile: true, easy: false }, 'pad', ['.cxm-keys button', '.cxm-story .cxm-btn', '.cxm-story-fig']],
+  ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.lv-tile', '.lv-tile-fig', '.lv-tile-per', '.lv-field input', '.lv-h2']],
+  ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
+  ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
+  ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
+];
+async function lookOf(p, selectors) {
+  return p.evaluate((sels, props) => {
+    const out = {};
+    for (const s of sels) {
+      const e = document.querySelector(s);
+      if (!e) { out[s] = null; continue; }
+      const cs = getComputedStyle(e), o = {};
+      for (const k of props) {
+        let v = cs[k];
+        if (k === 'fontFamily') v = v.split(',')[0].replace(/["']/g, '').trim();
+        else if (/px$/.test(v)) v = String(Math.round(parseFloat(v) * 10) / 10) + 'px';
+        o[k] = v;
+      }
+      out[s] = o;
+    }
+    return out;
+  }, selectors, LOOK_PROPS);
+}
+CHECKS['design-look'] = async () => {
+  const file = path.join(__dirname, '..', '..', 'design', 'look.json');
+  const have = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  const now = {};
+  for (const style of ['bento', 'original']) {
+    for (const [name, url, opt, step, sels] of LOOK_PAGES) {
+      const p = await open(url, { ...opt, theme: style === 'original' ? 'original' : undefined });
+      if (step) {
+        const ring = await p.$$('.cxm-story-btn'); let pick = null;
+        for (const x of ring) { if (/Issue 10/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) pick = x; }
+        if (pick) { await pick.click(); await wait(500); }
+        const tap = async () => { const x = await p.$('.cxm-tap-r'); if (x) await x.click(); await wait(250); };
+        if (step === 'figure' || step === 'pad') await tap();
+        if (step === 'pad') await tap();
+      }
+      now[`${style} | ${name}`] = await lookOf(p, sels);
+      await done(p);
+    }
+  }
+  if (process.env.DESIGN_UPDATE) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(now, null, 1) + '\n'); console.log(`    wrote design/look.json (${Object.keys(now).length} screens)`); return; }
+  expect(Object.keys(have).length > 0, 'design/look.json is missing: run DESIGN_UPDATE=1 node scripts/checks/run.js --only design-look');
+  let shown = 0;
+  for (const [screen, parts] of Object.entries(now)) {
+    for (const [sel, props] of Object.entries(parts)) {
+      const was = (have[screen] || {})[sel];
+      if (was === undefined) { expect(false, `${screen}: ${sel} is not in design/look.json yet`); continue; }
+      if (props === null || was === null) { expect(props === was, `${screen}: ${sel} ${props === null ? 'is no longer on the screen' : 'has appeared'}`); continue; }
+      const diff = LOOK_PROPS.filter((k) => props[k] !== was[k]);
+      if (diff.length && shown++ < 12) expect(false, `${screen}: ${sel} looks different (${diff.map((k) => `${k}: ${was[k]} -> ${props[k]}`).join('; ')})`);
+      else if (diff.length) fails.push(`${screen}: ${sel} looks different`);
+    }
+  }
+};
 // AXE_PAGE="desktop home,phone place" limits the run to those pages (a page name is the first word group of each AXE_PAGES row)
 CHECKS['axe'] = async () => {
   for (const [name, url, o] of AXE_PAGES) {
