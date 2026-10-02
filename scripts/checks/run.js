@@ -317,6 +317,18 @@ const CHECKS = {
     const mt = (await txt(p, '.us-mine-list')) || '';
     expect(/United States senator for Ohio/.test(mt) && /Representative for Ohio's 11th district/.test(mt) && /as of 20\d\d-\d\d-\d\d \(a sourced field/.test(mt), 'the member cards are missing office or dated party');
     expect(/state=|district=|OH/.test(await p.evaluate(() => location.href)) === false, 'the place was put in the address');
+    // how they voted: recorded votes by topic, counts only, with the official record linked
+    expect(await has(p, '.us-votes'), 'Your members shows no votes section'); await wait(300);
+    const vrows = await count(p, '.us-vote'); expect(vrows >= 1, 'the votes section lists no votes');
+    const vt = (await txt(p, '.us-votes')) || '';
+    expect(/Not voting is not a no/.test(vt) && /The official record/.test(vt) && /Yea \d+, Nay \d+, Present \d+, Not voting \d+/.test(vt), 'the votes section lacks the not-a-no note, the official record link, or plain counts');
+    expect(!/%|percent|score|rank|agrees? with/i.test(vt.replace(/Congressional Research Service/g, '')), 'a percentage, score, or ranking appeared in the votes');
+    const opts = await p.$$eval('.us-votes label:nth-of-type(2) select option', (os) => os.map((o) => o.value)); expect(opts.length > 2, `the topic list has only ${opts.length} entries`);
+    await p.select('.us-votes label:nth-of-type(2) select', opts[1]); await wait(300);
+    const some = await p.$$eval('.us-vote-meta', (els) => els.length); expect(some >= 1 && /recorded vote/.test((await txt(p, '.us-count')) || ''), 'choosing a topic did not list its votes');
+    await p.select('.us-votes label:nth-of-type(1) select', await p.$eval('.us-votes label:nth-of-type(1) select option:nth-of-type(2)', (o) => o.value)); await wait(300);
+    expect(/recorded vote|No recorded votes/.test((await txt(p, '.us-count')) || ''), 'choosing a senator did not update the votes');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on Your members with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await clickText(p, 'Sky', '.us-tabs button');
     await p.type('.us-search input', 'Husted'); await wait(300);
     expect((await count(p, '.us-results .us-pick')) >= 1, 'searching for a senator found nothing');
@@ -349,7 +361,7 @@ const CHECKS = {
     await clickText(e, 'Show me'); await wait(400);
     expect(/senator/i.test((await txt(e, '.cxe-main')) || '') || /Your senators/.test((await txt(e, '.cxe-main')) || ''), 'the Easy story does not start with the senators');
     const steps = await walkEasy(e); expect(steps >= 2, `the Washington story has only ${steps} steps`);
-    expect(/not shown yet|isn't public/.test((await txt(e, '.cxe-main')) || ''), 'the last step does not say votes are not shown yet');
+    expect(/Not voting is not a no/.test((await txt(e, '.cxe-main')) || ''), 'the last step does not show how they voted, with the not-a-no note');
     await done(e);
   },
   async 'print'() {
@@ -386,13 +398,16 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
 ];
+async function axeBad(p) {
+  await p.evaluate(axeSource);
+  const v = await p.evaluate(() => axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, rules: { 'label-content-name-mismatch': { enabled: true } } })
+    .then((r) => r.violations.flatMap((x) => x.nodes.map((n) => ({ id: x.id, impact: x.impact, target: n.target.join(' '), msg: ((n.any[0] || n.all[0] || {}).message || '').slice(0, 100) })))));
+  return v.filter((x) => !AXE_ALLOW.some((a) => a.rule === x.id && a.target.test(x.target)));
+}
 CHECKS['axe'] = async () => {
   for (const [name, url, o] of AXE_PAGES) {
     const p = await open(url, o);
-    await p.evaluate(axeSource);
-    const v = await p.evaluate(() => axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, rules: { 'label-content-name-mismatch': { enabled: true } } })
-      .then((r) => r.violations.flatMap((x) => x.nodes.map((n) => ({ id: x.id, impact: x.impact, target: n.target.join(' '), msg: ((n.any[0] || n.all[0] || {}).message || '').slice(0, 100) })))));
-    const bad = v.filter((x) => !AXE_ALLOW.some((a) => a.rule === x.id && a.target.test(x.target)));
+    const bad = await axeBad(p);
     expect(bad.length === 0, `axe on ${name}: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));
     await done(p);
   }

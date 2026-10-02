@@ -850,6 +850,11 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     us_body = open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8").read()
     write(os.path.join(SITE, "us", "landscape-2026.json"), us_body)
     log(f"SITE   {sha(us_body.encode())}  site/us/landscape-2026.json")
+    vp = os.path.join(ROOT, "data", "us-votes-2026.json")  # D4: how members voted; fetched by Your members only
+    if os.path.exists(vp):
+        votes_body = open(vp, encoding="utf-8").read()
+        write(os.path.join(SITE, "us", "votes-2026.json"), votes_body)
+        log(f"SITE   {sha(votes_body.encode())}  site/us/votes-2026.json")
     for name, src_rel, empty in (("public-2026.json", "bench/approved/public-2026.json", {"about": "No record has been approved yet.", "count": 0, "records": {}}),
                                  ("status-2026.json", "bench/status-2026.json", None),
                                  ("corrections-2026.json", "bench/approved/corrections-2026.json", {"about": "No correction has been recorded yet.", "count": 0, "corrections": []})):

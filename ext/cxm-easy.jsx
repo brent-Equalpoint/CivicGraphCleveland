@@ -64,15 +64,16 @@ function CxmEasy() {
   // the Washington question loads its data file on demand (hosted site only)
   const [usData, setUsData] = u.useState(CX_US.v);
   const [usLoad, setUsLoad] = u.useState(CX_US.p ? `ready` : `idle`);
-  u.useEffect(() => { if (view.k !== `usplace` || usLoad !== `idle`) return; setUsLoad(`loading`); cxUsLoad().then((d) => { setUsData(d); setUsLoad(d ? `ready` : `none`); }); }, [view.k, usLoad]);
+  const [usVotes, setUsVotes] = u.useState(CX_USV.v);
+  u.useEffect(() => { if (view.k !== `usplace` || usLoad !== `idle`) return; setUsLoad(`loading`); cxUsLoad().then((d) => { setUsData(d); setUsLoad(d ? `ready` : `none`); }); cxUsVotesLoad().then((d) => { if (d) setUsVotes(d); }); }, [view.k, usLoad]);
   const [usSt, setUsSt] = u.useState(CX_US_PLACE.state);
   const [usDi, setUsDi] = u.useState(CX_US_PLACE.district);
   const story = u.useMemo(() => {
     if (view.k !== `story`) return null;
-    if (view.j === `us`) return usData && CX_US.graph && usSt ? cxUsStory(usData, CX_US.graph, usSt, usDi) : null;
+    if (view.j === `us`) return usData && CX_US.graph && usSt ? cxUsStory(usData, CX_US.graph, usSt, usDi, usVotes) : null;
     if (view.j === `rep`) return home?.ward ? cxmWardStory(home.ward, answers) : null;
     return view.j === `council` ? cxmCouncilStory() : cxmBallotStory();
-  }, [view.k, view.j, home?.ward, usData, usSt, usDi]);
+  }, [view.k, view.j, home?.ward, usData, usSt, usDi, usVotes]);
   const frames = story ? cxeFrames(story) : [];
   const f = Math.min(view.f || 0, Math.max(frames.length - 1, 0));
   const fr = frames[f];

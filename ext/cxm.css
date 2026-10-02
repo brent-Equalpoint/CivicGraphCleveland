@@ -887,3 +887,22 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .us-mine-card { padding: 14px 16px; border-radius: 14px; background: #ffffff0d; }
 .us-mine-card h3 { margin: 0 0 2px; font-size: 20px; }
 .us-mine-card p { margin: 6px 0; font-size: 16px; line-height: 1.5; }
+
+/* United States: how they voted */
+.us-votes { margin: 22px 0 8px; }
+.us-votes h2 { margin: 0 0 6px; }
+.us-votes p { line-height: 1.55; font-size: 16px; }
+.us-tools .us-check { display: flex; align-items: center; gap: 8px; min-height: 44px; font-weight: 500; }
+.us-tools .us-check input { width: 22px; height: 22px; }
+.us-count { font-weight: 600; }
+.us-vote-list { list-style: none; margin: 10px 0; padding: 0; display: grid; gap: 10px; }
+.us-vote { padding: 12px 14px; border-radius: 12px; background: #ffffff0d; }
+.us-vote p { margin: 4px 0; }
+.us-vote-meta { color: #e1ded8; font-size: 15px; }
+.us-cast { display: inline-flex; align-items: center; gap: 6px; padding: 2px 10px; border-radius: 999px; background: #ffffff1a; font-weight: 700; font-size: 15px; white-space: nowrap; }
+.us-dot { width: 9px; height: 9px; border-radius: 50%; background: #e1ded8; }
+.us-cast-Y .us-dot { background: #6fd39b; }
+.us-cast-N .us-dot { background: #f2a46b; }
+.us-cast-X .us-dot { background: transparent; border: 2px solid #e1ded8; box-sizing: border-box; }
+.us-cast-P .us-dot { border-radius: 2px; }
+@media (forced-colors: active) { .us-cast { border: 1px solid CanvasText; } .us-dot { background: CanvasText !important; } }

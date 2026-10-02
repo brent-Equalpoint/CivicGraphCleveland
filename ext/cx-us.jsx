@@ -15,6 +15,35 @@ function cxUsLoad() {
   }
   return CX_US.p;
 }
+const CX_USV = { p: null, v: null };
+function cxUsVotesLoad() {
+  if (!CX_USV.p) {
+    const web = typeof fetch === `function` && /^https?:$/.test(String(globalThis.location?.protocol || ``));
+    CX_USV.p = (web ? fetch(`/us/votes-2026.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null)).then((d) => { CX_USV.v = d; return d; });
+  }
+  return CX_USV.p;
+}
+const CX_CAST = { Y: `Yea`, N: `Nay`, P: `Present`, X: `Not voting`, O: `Voted for a named person` };
+const CX_NO_AREA = `No policy area listed`;
+/* One member's recorded votes, newest first. A vote is kept only when the member was in that chamber's roll. Each row carries its category. */
+function cxMemberVotes(vd, m) {
+  const i = vd.members.indexOf(m.id);
+  if (i < 0) return [];
+  const out = [];
+  vd.votes.forEach((v) => {
+    if (v.chamber !== m.chamber) return;
+    const c = v.codes[i];
+    if (!c || c === `-`) return;
+    const b = v.bill ? vd.bills[v.bill] : null;
+    out.push({ v, c, b, area: b && b.policy_area ? b.policy_area : v.kind === `nomination` ? `Nominations` : CX_NO_AREA });
+  });
+  return out;
+}
+/* Plain counts of what the record says, never a share or a score. */
+function cxCastCounts(rows) { const t = { Y: 0, N: 0, P: 0, X: 0, O: 0 }; rows.forEach((r) => { t[r.c] += 1; }); return t; }
+function cxCountLine(t) { return [`Yea ${t.Y}`, `Nay ${t.N}`, `Present ${t.P}`, `Not voting ${t.X}`].concat(t.O ? [`Named a person ${t.O}`] : []).join(`, `); }
+function cxVoteDate(iso) { const d = new Date(`${iso}T12:00:00`); return isNaN(d) ? iso : d.toLocaleDateString(`en-US`, { month: `short`, day: `numeric`, year: `numeric` }); }
+function cxVoteWhat(r) { return r.b ? `${r.b.label}${r.b.title ? `, ${r.b.title}` : ``}` : r.v.desc || r.v.legis || r.v.question; }
 function cxOrd(n) { const s = [`th`, `st`, `nd`, `rd`], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 const CX_US_STATES = { AL: `Alabama`, AK: `Alaska`, AZ: `Arizona`, AR: `Arkansas`, CA: `California`, CO: `Colorado`, CT: `Connecticut`, DE: `Delaware`, FL: `Florida`, GA: `Georgia`, HI: `Hawaii`, ID: `Idaho`, IL: `Illinois`, IN: `Indiana`, IA: `Iowa`, KS: `Kansas`, KY: `Kentucky`, LA: `Louisiana`, ME: `Maine`, MD: `Maryland`, MA: `Massachusetts`, MI: `Michigan`, MN: `Minnesota`, MS: `Mississippi`, MO: `Missouri`, MT: `Montana`, NE: `Nebraska`, NV: `Nevada`, NH: `New Hampshire`, NJ: `New Jersey`, NM: `New Mexico`, NY: `New York`, NC: `North Carolina`, ND: `North Dakota`, OH: `Ohio`, OK: `Oklahoma`, OR: `Oregon`, PA: `Pennsylvania`, RI: `Rhode Island`, SC: `South Carolina`, SD: `South Dakota`, TN: `Tennessee`, TX: `Texas`, UT: `Utah`, VT: `Vermont`, VA: `Virginia`, WA: `Washington`, WV: `West Virginia`, WI: `Wisconsin`, WY: `Wyoming`, DC: `District of Columbia`, PR: `Puerto Rico`, GU: `Guam`, VI: `U.S. Virgin Islands`, AS: `American Samoa`, MP: `Northern Mariana Islands` };
 const cxStateName = (c) => CX_US_STATES[c] || c;
@@ -115,7 +144,7 @@ function cxCommitteeLine(g, m) {
   return parts;
 }
 /* A short story about the three people, in the same shape the story engine uses, for Easy mode. */
-function cxUsStory(data, g, state, district) {
+function cxUsStory(data, g, state, district, vd) {
   const { senators, rep } = cxUsMine(data, state, district);
   const sn = cxStateName(state);
   const frames = [];
@@ -124,13 +153,53 @@ function cxUsStory(data, g, state, district) {
   if (rep) frames.push({ k: `Your representative`, big: `${rep.name}.`, small: `${rep.name} represents ${district === `` || rep.district === 0 || rep.district === null ? `all of ${sn}` : `${sn}'s ${cxOrd(rep.district)} district`} in the United States House. The current term runs to ${rep.term_end}.` });
   const lines = [...senators, ...(rep ? [rep] : [])].map((m) => { const c = cxCommitteeLine(g, m); return c.length ? `${m.name}: ${c.slice(0, 4).join(`, `)}${c.length > 4 ? `, and ${c.length - 4} more` : ``}.` : `${m.name}: no committee seat is listed.`; });
   frames.push({ k: `What they work on`, big: `Committees do much of the work in Congress.`, small: lines.join(` `) });
-  frames.push({ k: `What isn't public here yet`, big: `How they voted isn't shown yet.`, small: `Roll call votes are public records, but this app does not show them yet. A missing record here is not a no.` });
+  const recent = vd ? [...senators, ...(rep ? [rep] : [])].map((m) => { const r = cxMemberVotes(vd, m).filter((x) => x.v.final).slice(0, 2); return r.length ? `${m.name}: ${r.map((x) => `${CX_CAST[x.c]} on ${cxVoteWhat(x)} (${cxVoteDate(x.v.date)}, ${x.v.result ? x.v.result.toLowerCase() : `result not recorded`})`).join(`; `)}.` : `${m.name}: no recent vote that decided a bill or a nominee is on record here.`; }) : null;
+  if (recent) frames.push({ k: `How they voted lately`, big: `Their latest votes that decided something.`, small: `${recent.join(` `)} Not voting is not a no. Each vote is on one question, and the official record is linked in the full map.` });
+  else frames.push({ k: `What isn't public here yet`, big: `How they voted isn't shown here.`, small: `Roll call votes are public records, but this page could not load them. A missing record here is not a no.` });
   return { id: `us`, label: `Washington`, ini: `US`, name: `Who represents me in Washington?`, when: `${sn}${rep && rep.district ? `, district ${rep.district}` : ``}`, frames,
            source: { label: `the congress-legislators record of current members (public domain)`, url: `https://github.com/unitedstates/congress-legislators` } };
+}
+function CX_UsVotes({ vd, people }) {
+  const [who, setWho] = u.useState(people[0]?.id);
+  const [area, setArea] = u.useState(`All`);
+  const [fin, setFin] = u.useState(!0);
+  const [more, setMore] = u.useState(25);
+  const m = people.find((p) => p.id === who) || people[0];
+  if (!m) return null;
+  const all = cxMemberVotes(vd, m);
+  const base = fin ? all.filter((r) => r.v.final) : all;
+  const areas = [...base.reduce((a, r) => a.set(r.area, (a.get(r.area) || 0) + 1), new Map())].sort((a, b) => (a[0] === CX_NO_AREA) - (b[0] === CX_NO_AREA) || b[1] - a[1] || a[0].localeCompare(b[0]));
+  const pick = area === `All` || !areas.some((a) => a[0] === area) ? `All` : area;
+  const rows = pick === `All` ? base : base.filter((r) => r.area === pick);
+  const shown = rows.slice(0, more);
+  return (
+    <section className="us-votes" aria-labelledby="us-votes-h">
+      <h2 id="us-votes-h">How they voted</h2>
+      <p>These are the official recorded votes of the {vd.congress}th Congress, last updated {cxVoteDate((vd.retrieved_at || ``).slice(0, 10))}. A vote is on one question. A yea on a rule, a motion, or a nomination is not a yea on a bill, so each row says what was asked. Not voting is not a no, and a missing record is not a vote.</p>
+      <div className="us-tools">
+        <label>Member <select value={m.id} onChange={(e) => { setWho(e.target.value); setArea(`All`); setMore(25); }}>{people.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}</select></label>
+        <label>Topic <select value={pick} onChange={(e) => { setArea(e.target.value); setMore(25); }}><option value="All">All topics ({base.length})</option>{areas.map(([a, n]) => <option key={a} value={a}>{a} ({n})</option>)}</select></label>
+        <label className="us-check"><input type="checkbox" checked={fin} onChange={(e) => { setFin(e.target.checked); setMore(25); }} /> Only votes that decided a bill or a nominee</label>
+      </div>
+      <p className="us-count" role="status">{rows.length === 0 ? `No recorded votes match.` : `${m.name}, ${pick === `All` ? `all topics` : pick}: ${rows.length} recorded vote${rows.length === 1 ? `` : `s`}. ${cxCountLine(cxCastCounts(rows))}.`}</p>
+      <ul className="us-vote-list">
+        {shown.map((r) => (
+          <li key={r.v.id} className="us-vote">
+            <p className="us-vote-what"><span className={`us-cast us-cast-${r.c}`}><span className="us-dot" aria-hidden="true" />{CX_CAST[r.c]}</span> <strong>{cxVoteWhat(r)}</strong></p>
+            <p className="us-vote-meta">{cxVoteDate(r.v.date)}. The question: {r.v.question || `not recorded`}. Result: {r.v.result || `not recorded`}{r.v.yea || r.v.nay ? ` (${r.v.yea} to ${r.v.nay})` : ``}. {pick === `All` ? `Topic: ${r.area}. ` : ``}<a href={r.v.url} target="_blank" rel="noreferrer">The official record<span className="sp-ext"> (opens in a new tab)</span></a>{r.b && r.b.url ? <>{` `}<a href={r.b.url} target="_blank" rel="noreferrer">The bill on Congress.gov<span className="sp-ext"> (opens in a new tab)</span></a></> : null}</p>
+          </li>
+        ))}
+      </ul>
+      {rows.length > shown.length && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {rows.length - shown.length}</button></p>}
+      <p className="us-hint">Topics are the Congressional Research Service's policy areas, as Congress.gov labels each bill. Votes on a nomination or a matter that is not a bill have no policy area. {vd.counts.house} House and {vd.counts.senate} Senate recorded votes are held{vd.senate_waiting ? `; ${vd.senate_waiting} older Senate votes are still being added` : ``}. A member is only listed for votes held while they were in that chamber. These sources have not been read by a person for terms of use.</p>
+    </section>
+  );
 }
 function CX_UsMine({ data, g, onSee }) {
   const [st, setSt] = u.useState(CX_US_PLACE.state);
   const [di, setDi] = u.useState(CX_US_PLACE.district);
+  const [vd, setVd] = u.useState(CX_USV.v);
+  u.useEffect(() => { let live = !0; if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live && d) setVd(d); }); return () => { live = !1; }; }, []);
   const states = [...new Set(data.members.map((m) => m.state))].sort((a, b) => cxStateName(a).localeCompare(cxStateName(b)));
   const mine = st ? cxUsMine(data, st, di) : null;
   const card = (m, role) => {
@@ -163,7 +232,8 @@ function CX_UsMine({ data, g, onSee }) {
         </ul>
       )}
       {mine && di === `` && mine.dists.length > 0 && <p className="us-hint">Choose a district to see your representative.</p>}
-      <p className="us-hint">How they voted is not shown yet. Roll call votes are public records, and a missing record here is not a no.</p>
+      {mine && vd && (mine.senators.length > 0 || mine.rep) && <CX_UsVotes key={`${st}-${di}`} vd={vd} people={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} />}
+      {!vd && <p className="us-hint">How they voted is not shown here. Roll call votes are public records, and a missing record is not a no.</p>}
     </div>
   );
 }

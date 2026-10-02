@@ -11,10 +11,10 @@ UA = "ClevelandCivicGraph/5.15 (Equalpoint; nightly public-records refresh)"
 TRIES = 6
 
 
-def get(url, timeout=90):
+def get(url, timeout=90, headers=None):
     for i in range(TRIES):
         try:
-            req = urllib.request.Request(url, headers={"User-Agent": UA})
+            req = urllib.request.Request(url, headers={"User-Agent": UA, **(headers or {})})
             return urllib.request.urlopen(req, timeout=timeout).read()
         except urllib.error.HTTPError as e:
             if e.code < 500 and e.code not in (408, 429):

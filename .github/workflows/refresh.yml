@@ -45,6 +45,8 @@ jobs:
           npm ci
 
       - name: Pull the official records and log what changed
+        env:
+          CONGRESS_API_KEY: ${{ secrets.CONGRESS_API_KEY }}
         run: python scripts/refresh.py
 
       - name: Bench, build packets and apply signed approvals
