@@ -173,7 +173,7 @@ function cxmFromUrl() {
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`] };
+    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`] };
   if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: mode || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
@@ -191,7 +191,7 @@ function cxmToUrl(tab, room, top, peopleMode) {
   url.search = ``;
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
-  else if (top && [`ledger`, `bench`, `news`].includes(top.type)) p.set(`panel`, top.type);
+  else if (top && [`ledger`, `bench`, `news`, `priorities`].includes(top.type)) p.set(`panel`, top.type);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : peopleMode === `us` ? `us` : `leaders`);
@@ -295,7 +295,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             <div className="cxm-top-actions">
               <button type="button" aria-label="Search" onClick={() => openSheet(`search`)}><CXI.Search size={20} /></button>
               <button type="button" aria-label="Dictionary" className="cxm-aa" onClick={() => openSheet(`dict`)}>Aa</button>
-              <button type="button" aria-label="You and settings" className="cxm-you" onClick={() => openSheet(`you`)}>You</button>
+              <button type="button" aria-label="Settings" className="cxm-you" onClick={() => openSheet(`you`)}><CXI.Sliders size={18} /></button>
             </div>
           </header>
           <CxmFresh />
@@ -340,6 +340,7 @@ const CXM_SHEETS = {
   dict: () => <CxmDict />,
   search: () => <CxmSearch />,
   you: () => <CxmYou />,
+  priorities: () => <CxmPriorities />,
   contest: (s) => <CxmContest id={s.id} />,
   issue: (s) => <CxmIssue id={s.id} />,
   local: () => <CxmLocalIssues />,

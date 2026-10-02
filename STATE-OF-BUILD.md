@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  0cb97259ece4006a5c50e79320e907ec9bcf10f0f088dc23fac4b06652922a8f
-Size     2,921,545 bytes
+SHA-256  6a1b5b01b153f21ba33c2114416d1b2b76cd104d65aae8be3ffd454db87c0c23
+Size     2,921,887 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `1b1fb6b6a41197dd856bb269ad2370ad397504c6d2ef73a5795b9b1006b24088`, 2,284,038 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `0766321499194935bbef05ae3bc07d6fc2e2e0fda4474060825df5734e960fc8`, 2,284,380 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -31,7 +31,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ```
 
-**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `d56c0a5143d3b9f5403a82a94c5ff4aab4ba404d62ff59ac3711f374596478ec`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
+**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `aa388752765ff638e1a02e141715a2fe7eaa7e9271a7783f6f86c615fd7ffde5`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
 
 ---
 
@@ -73,6 +73,8 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Check.** `council-votes` compares the numbers on screen with `data/votes-2026.json` for three members and fails if one differs (shown by flipping a vote in the built page). One member's totals were also counted straight from the PDF text (15 nays, 46 absences) and matched. Two clean builds, identical hashes. 17 of 17 browser checks pass. Mid-session the accessibility check began failing with a browser-session error, on the unmodified committed code too, and later passed again with no change; each of its 25 pages passed on its own. The cause was not found.
     - **Still needs a person.** The City Record page states no terms of reuse and no one has read them (see `docs/civic-agent/votes-source-research.md`). Whether to show absence counts publicly. 17 votes on 2023 to 2025 files are stored but have no title in the app.
 
+20. **Oct 1: the phone You sheet became Settings.** The sheet had settings at the bottom of a long list of civic content. It is now settings only (display, Easy mode, your guide, How this is built, Share this screen, Desktop view). My priorities moved to its own sheet opened from the People tab, with the real decisions, Remember, Export, Clear, and Letters. Resident check moved to Explore. My place was dropped from the sheet (it has its tab). `?panel=priorities` opens My priorities; `?panel=settings` opens Settings. The `settings-sheet` check fails if a civic item returns to Settings. The accessibility check covers both sheets.
+
 ---
 
 ## 3. What is in the app right now
@@ -89,7 +91,7 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 
 *\* = rebuilt or added in v5 / v5.1. Everything else is the original Sep 23 compiled app, unchanged in behavior.*
 
-**Phone app (v5.14, phones and screens 760px and narrower, or `#phone`):** bottom tabs Today, Explore, My place, People, Ballot; top bar Search, Dictionary (Aa), You; the Updated strip under it opens What's new. Everything opens in bottom sheets. "Desktop view" in the You sheet (or `#desktop`) switches back. Relationship statuses on receipts are plain-English labels for the record's status: Committed = passed, Talking stage = still in review, Left on read = tabled, On pause = held.
+**Phone app (v5.14, phones and screens 760px and narrower, or `#phone`):** bottom tabs Today, Explore, My place, People, Ballot; top bar Search, Dictionary (Aa), Settings (a sliders button); the Updated strip under it opens What's new. Everything opens in bottom sheets. "Desktop view" in Settings (or `#desktop`) switches back. Settings holds only display, Easy mode, your guide, How this is built, Share this screen, and Desktop view. My priorities (with the real decisions, Remember, Export, Clear, and Letters) opens from the People tab (`?panel=priorities`). Resident check sits in Explore. The Decision ledger is the Explore doorway. My place is its own tab. Relationship statuses on receipts are plain-English labels for the record's status: Committed = passed, Talking stage = still in review, Left on read = tabled, On pause = held.
 
 ### Data inside it
 

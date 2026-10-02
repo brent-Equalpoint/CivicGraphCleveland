@@ -77,6 +77,9 @@ function CxmRooms() {
           return <button key={title} type="button" className="cxm-door" onClick={() => (kind === `room` ? setRoom(target) : openSheet(target))}><Icon size={18} /><strong>{title}</strong><small>{sub}</small></button>;
         })}
       </div>
+      <section className="cxm-section" aria-label="Check yourself">
+        <button type="button" className="cxm-row" onClick={() => openSheet(`check`, { room: `overview`, node: (Uh.find((r) => r.id === `overview`)?.path || [])[0] })}><span><strong>Resident check</strong><small>Three questions every resident should be able to answer</small></span><CXI.Arrow size={15} /></button>
+      </section>
       {levels.map((lv, i) => (
         <section key={lv.id} data-level={i} className="cxm-level">
           <div className="cxm-level-h">

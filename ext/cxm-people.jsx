@@ -52,6 +52,7 @@ function CxmProfiles() {
   const role = isAdmin ? `City departments` : seat.ward === 6 ? `Council President` : `Council member`;
   return (
     <div className="cxm-profiles">
+      <button type="button" className="cxm-row" onClick={() => openSheet(`priorities`)}><span><strong>My priorities</strong><small>{chosen.length ? `${chosen.length} of 5 chosen. They shape the common ground shown below.` : `Choose up to five to see where you overlap with each member.`}</small></span><CXI.Arrow size={15} /></button>
       <div className="cxm-controls">
         <CxmSeg label="Order" items={[[`ward`, `Ward order`], [`common`, `Most common ground first`]]} value={order} onChange={setOrder} />
       </div>
@@ -82,7 +83,7 @@ function CxmProfiles() {
               <p><strong className="cxm-big">{common.length}<small>/{chosen.length}</small></strong> of your priorities show up in what {first} {isAdmin ? `sent to Council` : `led or joined`} this year.</p>
               <div className="cxm-chips static">{chosen.map((k) => <span key={k} className={common.includes(k) ? `on` : ``}>{common.includes(k) ? `● ` : `○ `}{CX_SHORT[k]}</span>)}</div>
             </>
-          ) : <p>Pick your priorities to see where you overlap. <button type="button" className="cxm-link" onClick={() => openSheet(`you`)}>Choose priorities</button></p>}
+          ) : <p>Pick your priorities to see where you overlap. <button type="button" className="cxm-link" onClick={() => openSheet(`priorities`)}>Choose priorities</button></p>}
           {shared.length > 0 && <p className="cxm-fine">From your constellation answers: you both backed {shared.map((w) => w.title.toLowerCase()).join(`, `)}.</p>}
         </div>
         <div className="cxm-tile">

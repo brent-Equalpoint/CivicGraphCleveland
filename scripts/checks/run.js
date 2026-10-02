@@ -183,7 +183,7 @@ const CHECKS = {
     const blocked = await open('/#desktop', { pre: () => { Storage.prototype.setItem = () => { throw new DOMException('blocked', 'QuotaExceededError'); }; } });
     expect(/not saving settings/.test((await txt(blocked, '.cx-notice')) || ''), 'blocked storage is not explained on desktop'); await done(blocked);
     p = await open('/?room=voting#phone', { mobile: true, pre: () => { Storage.prototype.setItem = () => { throw new DOMException('blocked', 'QuotaExceededError'); }; } });
-    await clickText(p, 'You and settings'); await wait(300);
+    await clickText(p, 'Settings'); await wait(300);
     expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-fine')].some((e) => /not saving settings/.test(e.innerText))), 'blocked storage is not explained'); await done(p);
   },
   async 'profiles'() {
@@ -217,6 +217,33 @@ const CHECKS = {
     await clickText(m, 'Read the full profile'); await wait(900);
     expect(await has(m, '.cxm-sheet .sp'), 'the full profile button did not open the phone sheet');
     expect(/voted yea/.test((await txt(m, '.cxm-sheet .sp')) || ''), 'the phone profile sheet has no recorded votes'); await done(m);
+  },
+  async 'settings-sheet'() {
+    // Settings holds settings only; the civic pieces that used to share it live where they are used
+    const m = await open('/?room=voting#phone', { mobile: true, easy: false });
+    await clickText(m, 'Settings'); await wait(400);
+    const t = (await txt(m, '.cxm-sheet')) || '';
+    for (const word of ['Display', 'Your guide', 'Larger text', 'Easy mode', 'How this is built', 'Desktop view']) expect(t.includes(word), `Settings is missing "${word}"`);
+    for (const word of ['My priorities', 'Letters', 'Decision ledger', 'Resident check', 'real decision', 'My place', 'Clear my choices']) expect(!t.includes(word), `Settings still holds "${word}"`);
+    expect((await count(m, '.cxm-sheet .cxm-section')) <= 3, 'Settings has grown past three sections');
+    await done(m);
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await clickText(p, 'People'); await wait(500);
+    await clickText(p, 'My priorities'); await wait(400);
+    const pt = (await txt(p, '.cxm-sheet')) || '';
+    expect(/Pick up to five/.test(pt) && /Letters/.test(pt) && /Remember on this device/.test(pt) && /Clear my choices/.test(pt), 'My priorities lacks the priorities, letters, or the remember and clear controls');
+    expect((await count(p, '.cxm-sheet .cxm-tile')) >= 5, 'My priorities lists too few priorities');
+    await done(p);
+    const e = await open('/#phone', { mobile: true, easy: false });
+    await clickText(e, 'Explore'); await wait(500);
+    expect(await has(e, '.cxm-section[aria-label="Check yourself"]'), 'Explore does not offer the Resident check');
+    expect((await count(e, '.cxm-door')) > 0 && await e.evaluate(() => [...document.querySelectorAll('.cxm-door')].some((d) => /ledger/i.test(d.innerText))), 'Explore lost its Decision ledger doorway');
+    await clickText(e, 'Resident check'); await wait(400);
+    expect(/three questions|Resident check/i.test((await txt(e, '.cxm-sheet')) || ''), 'the Resident check did not open from Explore');
+    await done(e);
+    const u = await open('/?panel=priorities#phone', { mobile: true, easy: false });
+    expect(/Pick up to five/.test((await txt(u, '.cxm-sheet')) || ''), '?panel=priorities does not open My priorities');
+    await done(u);
   },
   async 'council-votes'() {
     // what the profile shows must equal the stored City Record votes, member by member
@@ -455,7 +482,7 @@ const AXE_PAGES = [
   ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop profile with votes', '/?panel=profiles&seat=ward-13#desktop', {}], ['desktop profile with votes original', '/?panel=profiles&seat=ward-13#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
   ['desktop ledger original', '/?panel=ledger#desktop', { theme: 'original' }], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop ballot', '/?panel=ballot#desktop', {}],
   ['desktop bench', '/?panel=bench#desktop', {}], ['desktop easy', '/#desktop', { easy: true }],
-  ['phone today', '/#phone', { mobile: true, easy: false }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
+  ['phone today', '/#phone', { mobile: true, easy: false }], ['phone settings', '/?panel=settings#phone', { mobile: true, easy: false }], ['phone my priorities', '/?panel=priorities#phone', { mobile: true, easy: false }], ['phone settings original', '/?panel=settings#phone', { mobile: true, easy: false, theme: 'original' }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
 ];

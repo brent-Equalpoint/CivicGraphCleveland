@@ -145,9 +145,12 @@ function CxmDict({ focus }) {
   );
 }
 
-/* ---------- You ---------- */
+/* ---------- Settings (the sheet behind the top-bar Settings button) ----------
+   Only things about this app on this phone: how it looks, how it reads, who guides you, and what the app is.
+   Anything about government or your choices lives elsewhere: My priorities (People tab), Follow a decision (Explore tab),
+   and My place (its own tab). */
 function CxmYou() {
-  const { prio, home, openSheet, guide, setGuide, theme, setTheme, large, setLarge, liked, room, setEasy, closeSheet } = useCxm();
+  const { openSheet, guide, setGuide, theme, setTheme, large, setLarge, setEasy, closeSheet } = useCxm();
   const canSave = cxStorageOk();
   const [msg, setMsg] = u.useState(``);
   const share = async () => {
@@ -156,11 +159,39 @@ function CxmYou() {
   };
   return (
     <div className="cxm-pad">
-      <h2 className="cxm-h2">You</h2>
-      <p className="cxm-mut">Everything here stays in this browser on this phone. Nothing is sent anywhere.</p>
-      <button type="button" className="cxm-row" onClick={() => openSheet(`home`)}><span><strong>My place</strong><small>{cxmHomeLabel(home)}</small></span><CXI.Arrow size={15} /></button>
+      <h2 className="cxm-h2">Settings</h2>
+      <p className="cxm-mut">These settings stay in this browser on this phone. Nothing is sent anywhere.</p>
       <section className="cxm-section">
-        <CxmKicker>My priorities · pick up to five</CxmKicker>
+        <CxmKicker>Display</CxmKicker>
+        <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
+        <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
+        <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
+        {!canSave && <p className="cxm-fine" role="status">This browser is not saving settings, so Easy mode, style, and your guide start over each time you open the page. Private browsing can cause this.</p>}
+      </section>
+      <section className="cxm-section">
+        <CxmKicker>Your guide</CxmKicker>
+        <div className="cxm-guides">{Object.entries(CXM_GUIDES).map(([k, n]) => <button key={k} type="button" className={guide === k ? `on` : ``} aria-pressed={guide === k} onClick={() => setGuide(k)}><CxmGuide kind={k} size={52} /><span>{n}</span></button>)}</div>
+      </section>
+      <section className="cxm-section">
+        <CxmKicker>About and sharing</CxmKicker>
+        <button type="button" className="cxm-row" onClick={() => openSheet(`bench`)}><span><strong>How this is built</strong><small>Sources, method, and what is not running yet</small></span><CXI.Arrow size={15} /></button>
+        <button type="button" className="cxm-row" onClick={share}><span><strong>Share this screen</strong><small>A plain link to where you are. Your place and choices stay out of it.</small></span><CXI.Arrow size={15} /></button>
+        <button type="button" className="cxm-row" onClick={() => { location.hash = `desktop`; }}><span><strong>Desktop view</strong><small>The full map with Simple, Explore, and Audit modes</small></span><CXI.Arrow size={15} /></button>
+        {msg && <p className="cxm-fine" role="status">{msg}</p>}
+      </section>
+    </div>
+  );
+}
+
+/* ---------- My priorities (opened from the People tab, where they are used) ---------- */
+function CxmPriorities() {
+  const { prio, home, openSheet, liked } = useCxm();
+  return (
+    <div className="cxm-pad">
+      <h2 className="cxm-h2">My priorities</h2>
+      <p className="cxm-mut">Your choices stay in this browser on this phone. Nothing is sent anywhere.</p>
+      <section className="cxm-section">
+        <CxmKicker>Pick up to five</CxmKicker>
         <p className="cxm-mut">Start with what matters. Then look at a real decision. A priority tells the atlas what you want to examine. Your position on a specific policy is a separate choice. Everything is optional. "Still deciding" means you want to learn more.</p>
         <div className="cxm-progress" aria-live="polite"><span>{prio.chosen.length} of 5 priorities selected</span><span aria-hidden="true">{[1, 2, 3, 4, 5].map((k) => <i key={k} className={k <= prio.chosen.length ? `on` : ``} />)}</span></div>
         {wm.map((w) => (
@@ -182,36 +213,16 @@ function CxmYou() {
           </button>
         ))}
       </section>
+      <section className="cxm-section">
+        <CxmKicker>Letters</CxmKicker>
+        <button type="button" className="cxm-row" onClick={() => openSheet(`letter`, { seat: home?.ward ? `ward-${home.ward}` : `mayor` })}><span><strong>{home?.ward ? `Write to ${cxmMember(home.ward)}` : `Write to the mayor`}</strong><small>{liked.length ? `${cxmPl(liked.length, `proposal`, `proposals`)} saved to ask about` : `No proposals saved yet`}</small></span><CXI.Arrow size={15} /></button>
+      </section>
       <p className="cxm-status-line"><CxmStatusDot k="rec" /><span><strong>Private to this browser.</strong> Ordinary shared map links do not include these choices.</span></p>
       <button type="button" className={`cxm-switch ${prio.rem ? `on` : ``}`} aria-pressed={prio.rem} onClick={() => prio.setRemember(!prio.rem)}><span>Remember on this device</span><i><b /></i></button>
       <div className="cxm-row2">
         <button type="button" className="cxm-btn2" onClick={() => cxmExportChoices(prio)}>Export</button>
         <button type="button" className="cxm-btn2" onClick={prio.clear}>Clear my choices</button>
       </div>
-      <section className="cxm-section">
-        <CxmKicker>Letters</CxmKicker>
-        <button type="button" className="cxm-row" onClick={() => openSheet(`letter`, { seat: home?.ward ? `ward-${home.ward}` : `mayor` })}><span><strong>{home?.ward ? `Write to ${cxmMember(home.ward)}` : `Write to the mayor`}</strong><small>{liked.length ? `${cxmPl(liked.length, `proposal`, `proposals`)} saved to ask about` : `No proposals saved yet`}</small></span><CXI.Arrow size={15} /></button>
-      </section>
-      <section className="cxm-section">
-        <CxmKicker>Your guide</CxmKicker>
-        <div className="cxm-guides">{Object.entries(CXM_GUIDES).map(([k, n]) => <button key={k} type="button" className={guide === k ? `on` : ``} aria-pressed={guide === k} onClick={() => setGuide(k)}><CxmGuide kind={k} size={52} /><span>{n}</span></button>)}</div>
-      </section>
-      <section className="cxm-section">
-        <CxmKicker>Display</CxmKicker>
-        <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
-        <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
-        <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
-        {!canSave && <p className="cxm-fine" role="status">This browser is not saving settings, so Easy mode, style, and your guide start over each time you open the page. Private browsing can cause this.</p>}
-      </section>
-      <section className="cxm-section">
-        <CxmKicker>More</CxmKicker>
-        <button type="button" className="cxm-row" onClick={() => openSheet(`check`, { room: room || `overview`, node: (Uh.find((r) => r.id === (room || `overview`))?.path || [])[0] })}><span><strong>Resident check</strong><small>Three questions every resident should be able to answer</small></span><CXI.Arrow size={15} /></button>
-        <button type="button" className="cxm-row" onClick={() => openSheet(`ledger`)}><span><strong>Decision ledger</strong><small>Follow a decision to its record</small></span><CXI.Arrow size={15} /></button>
-        <button type="button" className="cxm-row" onClick={() => openSheet(`bench`)}><span><strong>How this is built</strong><small>Sources, method, and what is not running yet</small></span><CXI.Arrow size={15} /></button>
-        <button type="button" className="cxm-row" onClick={share}><span><strong>Share this screen</strong><small>A plain link to where you are. Your place and choices stay out of it.</small></span><CXI.Arrow size={15} /></button>
-        <button type="button" className="cxm-row" onClick={() => { location.hash = `desktop`; }}><span><strong>Desktop view</strong><small>The full map with Simple, Explore, and Audit modes</small></span><CXI.Arrow size={15} /></button>
-        {msg && <p className="cxm-fine" role="status">{msg}</p>}
-      </section>
     </div>
   );
 }
