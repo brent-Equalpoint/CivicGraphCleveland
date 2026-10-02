@@ -144,6 +144,7 @@ function CX_Place({ onGo }) {
   const [lever, setLever] = u.useState(`all`);
   const D = u.useMemo(() => cxPlaceData(hood), [hood]);
   const { now, before, items, liquor, funds, councilWideFunds, passed, cityDays, unusual, hoods } = D;
+  const pv = cxPlaceVotes(items);
   const member = cxPlMember;
   const shown = lever === `all` ? items : items.filter((x) => x.lever[0] === lever);
   const src = (m) => <a href={m.url} target="_blank" rel="noreferrer">{m.file} <CXI.Ext size={11} /></a>;
@@ -228,12 +229,16 @@ function CX_Place({ onGo }) {
         <ul>{councilWideFunds.map((x) => <li key={x.m.file}>{cxShortTitle(x.m.title).slice(0, 160)}… <small>Sponsors: {x.m.sponsors.filter((y) => !CX_PL_ADMIN.has(y)).join(`, `)} · {src(x.m)}</small></li>)}</ul></div>}
 
       <h2><span className="cx-pl-n">6</span> What the record shows about votes</h2>
-      <p className="cx-pl-intro">Council's database records the outcome of each vote (approved, adopted, amended) and each committee's recommendation. It does not publish how each member voted, and the 2026 City Record lists passed legislation without roll calls. To see individual votes, watch the meeting video or attend.</p>
+      <p className="cx-pl-intro">Council's database records the outcome of each vote (approved, adopted, amended) and each committee's recommendation. For a vote to pass an ordinance or adopt a resolution, the City Record also prints how each member voted. Where it does, that is counted here. A file with no printed vote has no record, which is not a no.</p>
       <div className="cx-pl-stats">
         <div><b>{passed.length}</b><span>decisions here with a recorded final vote</span></div>
         <div><b>{items.filter((x) => x.path.fin && /amended/.test(x.path.fin[1])).length}</b><span>changed before passing ("as amended")</span></div>
-        <div><b>0</b><span>member-by-member roll calls published</span></div>
+        <div><b>{pv.withRoll.length}</b><span>of these have a member-by-member vote in the City Record</span></div>
       </div>
+      {pv.split.length > 0 && <>
+        <h3>Here: votes that were not unanimous</h3>
+        <ul className="cx-pl-items">{pv.split.map((x) => <li key={x.m.file}><p className="cx-pl-title">{cxShortTitle(x.m.title)}</p><p className="cx-pl-meta">{cxVoteSplitText(x)} · {src(x.m)}</p></li>)}</ul>
+      </>}
       {unusual.length > 0 && <>
         <h3>Citywide: decisions that did not simply pass</h3>
         <ul className="cx-pl-items">{unusual.map(({ m, p }) => <li key={m.file}><p className="cx-pl-title">{cxShortTitle(m.title)}</p><p className="cx-pl-meta">{p.flags.map((f) => `${f[0]}: ${f[1]} (${f[2]})`).join(` · `)} · {src(m)}</p></li>)}</ul>
@@ -245,7 +250,8 @@ function CX_Place({ onGo }) {
           <li>Decisions: Council's Legistar database ({CX_LEG.count} items since Jan. 1, 2026), action histories retrieved {CX_PL.retrieved.slice(0, 10)}. Addresses in titles were located with the U.S. Census Bureau geocoder; {Object.values(CX_PL.addresses).filter((r) => r.hood).length} of {Object.keys(CX_PL.addresses).length} addresses fell inside a mapped neighborhood.</li>
           <li>"Signed first" is the first council member listed on the record. For city requests, that is usually the ward member and the committee chair, and it does not by itself show personal support.</li>
           <li>Ward money amounts are read from the ordinance text and may not match final spending.</li>
-          <li>Not in any of these records: attendance, meetings held, calls returned, or how each member voted.</li>
+          <li>How each member voted: the City Record, Council's weekly official publication, pulled {CX_VOTES.retrieved_at.slice(0, 10)}. It prints names only for votes to pass or adopt, so a vote to suspend the rules shows no names.</li>
+          <li>Not in any of these records: meetings held or calls returned. Absences appear only where the City Record prints them on a vote.</li>
         </ul>
       </details>
     </section>

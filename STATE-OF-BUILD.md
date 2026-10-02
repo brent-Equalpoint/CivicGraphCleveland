@@ -1,6 +1,6 @@
 # Cleveland Civic Graph: State of the Build
 
-**Saved:** October 1, 2026 (updated for v5.16: stories on desktop, quieter text, 404 page)
+**Saved:** October 1, 2026 (updated for v5.16 plus Council roll calls from the City Record)
 **Version:** v5.16 (v5.15 plus: shared story engine and a desktop Stories page, sentence-case labels and readable fine print, a page-not-found page, a start-up timeout message, a notice for bad links on the phone, a tab icon, print styles, an offline notice on the hosted site, plainer, slower map cards, Easy mode on the phone, clearer empty, blocked-storage, and bad-link screens, formal profiles for all 15 council members and the Mayor, an accessibility pass, Easy mode on desktop, machine-run release checks, a signed approval gate, and reviewed records on profiles)
 **Project:** Project Gotham / Civic Intelligence (an Equalpoint product)
 **Owner:** Future (Alysha Ellis Montgomery)
@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  65f59319c311983e5fe3fe2c91e08a24f57287e39f4b5c63e3ba53de1619dfbb
-Size     2,885,373 bytes
+SHA-256  0cb97259ece4006a5c50e79320e907ec9bcf10f0f088dc23fac4b06652922a8f
+Size     2,921,545 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `758bfcbb6eb14fbcf43b12e17592db1e23473d1547b7af7e902fa24869ae8fca`, 2,247,866 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `1b1fb6b6a41197dd856bb269ad2370ad397504c6d2ef73a5795b9b1006b24088`, 2,284,038 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -31,7 +31,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ```
 
-**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `cb2d29f41835d68cc27741f1c8f48e07bd1d166f38bfa60fde15631e377a4335`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
+**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `d56c0a5143d3b9f5403a82a94c5ff4aab4ba404d62ff59ac3711f374596478ec`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
 
 ---
 
@@ -64,6 +64,14 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Map hover cards and portraits.** Desktop: hover or focus a node to see its name, category, kind, place, evidence label, portrait, and what it points to; its lines light up and draw out as arrows, and unrelated nodes dim. Phone room maps show leader portraits; the first tap previews a node (lit arrows plus a card with its connections), the second tap opens the record. Council and mayor portraits replace dots in the constellation on both layouts; candidates keep initials (no official portraits loaded).
     - **Motion.** Arrows draw from the acting node to what it acts on, cards and pages rise in, constellation faces settle in place, buttons give a small press response, and the Updated dot pings once. Everything turns off with the device's reduced-motion setting.
     - Check: two clean builds, identical hashes; phone regressions (m4, m5, m6, m10, m11: 66 screens plus export and worksheet, 0 errors); desktop text compared with v5.14 on 30 views, differing only where intended (Updated chip, footer, What's new, refreshed data, Latest); stress run 45 s, 0 errors, 13 MB heap; time-travel runs for Oct 4, Oct 5, Oct 6, Nov 2, Nov 3, Nov 4, Nov 5, and Jan 15; storage blocked; 7 malformed links on both layouts; links: 183 of 197 sampled return 200, and the other 14 are the data API address (not a link), sites that block automated checks, and the Ohio Legislature site, which returned errors during the check.
+
+19. **Oct 1: Council roll calls, from the City Record.** The City Record, Council's weekly official publication, prints "Voting Yea / Voting Nay / Absent" lists for every vote to pass an ordinance, adopt a resolution, or lay a file on the table. (Earlier notes here and in the app said Legistar and the City Record had no roll calls. Legistar has none. The City Record does.)
+    - **Data.** `scripts/fetch_cityrecord.py` (a step of `refresh.py`) reads the issues listed at clevelandcitycouncil.gov/legislation-laws/city-record into `data/votes-2026.json`: 39 issues (Jan. 2 to Sept. 25), 20 meetings, 434 files with a roll call on passage or adoption, 11 votes to lay a file on the table. It fetches only issues that are new or changed (size and modified date). It is best effort: if it fails, the old file stays, a warning prints, and every other record still publishes. It is the Bench's roll call source (`council_roll_call`, `review_required`), so the Bench now verifies roll call claims from it.
+    - **What it refuses.** A vote is stored only if the names equal the printed tally, every name is a sitting member, nobody is on two lists, all 15 members are accounted for, the entry's own heading ties it to a file, and the passage date matches Council's record. Otherwise it is listed under `skipped` and the whole snapshot is refused. One misprint is corrected, narrowly (three headings print a 2025 number for a 2026 file), and only when the page headers and Council's record both agree. `scripts/test_cityrecord.py` (30 tests; four deliberate breaks of the parser were each caught) is part of CI and `release.py`.
+    - **In the app.** Each council profile's "How they voted" shows counts of yea, nay, and absent, every nay, and every vote, each linked to its City Record issue. Easy mode and the stories give the same counts. A file's record on the phone shows names by how they voted. Place pages count the roll calls among their decisions and list those that were not unanimous. The decision ledger shows the tally. The data is embedded (`CX_VOTES`; with the new screens the file grew about 36 KB), so it works in the offline file.
+    - **Rules kept.** Counts only, no percentage, rank, or "agrees with". Absent is not a no and not an abstention. A vote on laying a file on the table is listed but not counted with passage votes. Sponsorship stays separate.
+    - **Check.** `council-votes` compares the numbers on screen with `data/votes-2026.json` for three members and fails if one differs (shown by flipping a vote in the built page). One member's totals were also counted straight from the PDF text (15 nays, 46 absences) and matched. Two clean builds, identical hashes. 17 of 17 browser checks pass. Mid-session the accessibility check began failing with a browser-session error, on the unmodified committed code too, and later passed again with no change; each of its 25 pages passed on its own. The cause was not found.
+    - **Still needs a person.** The City Record page states no terms of reuse and no one has read them (see `docs/civic-agent/votes-source-research.md`). Whether to show absence counts publicly. 17 votes on 2023 to 2025 files are stored but have no title in the app.
 
 ---
 
@@ -101,14 +109,14 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ## 4. Rules this build keeps (do not break these)
 
 - **Receipts, not scores.** No ideology scores, no match percentages, no rankings of officials. Members are listed by ward.
-- **Sponsorship is not a vote.** Cleveland's Legistar database records that Council approved a measure, not each member's vote. Votes are not shown until they are pulled from the City Record minutes.
+- **Sponsorship is not a vote.** Cleveland's Legistar database records that Council approved a measure, not each member's vote. Member votes are shown only where the City Record prints them (`data/votes-2026.json`), and always apart from sponsorship. A file with no printed vote has no record, which is not a no.
 - **Labels stay honest.** Official source, Recorded action, Organization source, Interpretation, and Record needed mean different things. Private and nonprofit groups are never labeled "Official."
 - **Missing stays missing.** Gaps are shown, never filled with plausible text.
 - **Nothing personal leaves the browser.** Priorities, ballot choices, and local context stay on the device. Letters are drafted for the resident to send themselves.
 - **The architecture page says what is true:** agents, source polling, the review console, and publishing are designed but not running.
 - **Writing style:** plain English, no em dashes, no left accent stripes on cards or alerts (use dots and tinted backgrounds).
 - **Both styles stay working.** Bento rules are scoped to `html[data-cx-theme="bento"]`; nothing edits the Original look. Semantic colors (teal official, purple recorded, yellow interpretation, red/coral council and errors) are never remapped.
-- **Council backing is sponsorship.** In the constellation, a council member's record means they sponsored the proposal. Not sponsoring is missing, never a no. Replace with roll-call votes once the City Record minutes are loaded. The mayor's record means his administration sent the proposal; his public statements are not loaded.
+- **Council backing is sponsorship.** In the constellation, a council member's record means they sponsored the proposal. Not sponsoring is missing, never a no. Roll-call votes are shown on profiles and file records, apart from this. The mayor's record means his administration sent the proposal; his public statements are not loaded.
 - **Reasons are the sponsors' case.** "Why supporters backed it" restates the official record in plain English and says so on screen. Every line must trace to `data/reasons-2026.json`; if the record gives no reasons, say that.
 - **Place pages show records, not verdicts.** "Who decides here?" ties decisions to a neighborhood only by a geocoded title address or a place named in the title, labels shares as land area, counts ward money only when the text ties it to that ward, and states that member-by-member votes are not published.
 - **Common ground, not match.** Profiles default to ward order. The optional "Most common ground first" sort is labeled as a sort, never as a recommendation.
@@ -285,8 +293,8 @@ The output hash changes because the data changed. If the build log says `REVIEW 
 2. **Phone testing on real devices.** Checked in phone-size Chromium only. Try an iPhone and an Android phone (Safari and Chrome), including turning sideways, the keypad, swipes, sheets, and the map previews.
 3. **Pending choices:** which guide leads (Erie is the default), and whether to ever show anonymous neighbor counts (off).
 4. **News lane.** The review queue for news (fixed outlet list, human approval) is designed in the "Anonymous Insights" and live-updates notes; it is not built. Nothing in v5.15 publishes news.
-5. **Legal review before public launch:** the Governor and U.S. House candidate views and the data policy, under Equalpoint. 501(c)(3) rules come into play only if Futureland takes part (funds, hosts, or promotes it).
-6. **Council roll-call votes** from the City Record minutes for key decisions, shown separately from sponsorships.
+5. **Legal review before public launch:** the Governor and U.S. House candidate views and the data policy, under Equalpoint. 501(c)(3) rules come into play only if Futureland takes part (funds, hosts, or promotes it). Also the City Record's terms of reuse for the Council votes (the page states none).
+6. **Council roll-call votes** are built (item 19 above). Left to do: a person reads the City Record's terms of reuse, decides on showing absence counts, and checks the first public week of votes against the printed issues.
 7. **Local review of new facts**, **tighter topic matching**, an optional **leader questionnaire**, **Spanish**, and **screen-reader testing** (NVDA, VoiceOver, TalkBack) remain as before.
 8. **The agentic system itself** (source registry, evidence store, review console, publisher) remains a design, except for the nightly official-records refresh, which now runs.
 

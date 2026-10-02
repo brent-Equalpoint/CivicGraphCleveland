@@ -206,7 +206,9 @@ function CX_SeatProfile({ seatId }) {
 
       <section aria-labelledby={sec(`votes`)}>
         <h2 id={sec(`votes`)}>How they voted</h2>
-        <p>Council's database records what passed and who sponsored it. It does not publish each member's vote. The roll calls are in the City Record, and they are not part of this page yet. A missing record is not a no, and an absence here is not an abstention.</p>
+        {isMayor
+          ? <p>The Mayor is not a member of Council, so the City Record prints no roll call for the Mayor. Council votes on what the Mayor's administration sends it; those votes are under each council member's profile. A missing record is not a no.</p>
+          : <CX_VotesSection person={person} first={name.split(` `)[0]} />}
       </section>
 
       {!isMayor && (
@@ -228,6 +230,7 @@ function CX_SeatProfile({ seatId }) {
         <ul className="sp-list">
           <li>Legislation, sponsors, and passed dates: <SpLink href="https://cityofcleveland.legistar.com/Legislation.aspx">Council's legislative record (Legistar)</SpLink>, pulled {cxShortDate(cxDayET(Date.parse(CX_LEG.retrieved_at)))}.</li>
           <li>Committee and Council actions: the same record, pulled {cxShortDate(cxDayET(Date.parse(CX_PL.retrieved)))}.</li>
+          {!isMayor && <li>How each member voted: <SpLink href={CX_CITY_RECORD}>the City Record</SpLink>, Council's weekly official publication, pulled {cxShortDate(cxDayET(Date.parse(CX_VOTES.retrieved_at)))}.</li>}
           <li>Who holds the seat and the term: Legistar's office records, pulled {cxShortDate(cxDayET(Date.parse(CX_PEOPLE.retrieved_at)))}. <SpLink href={CX_LEGISTAR_PEOPLE}>People in Legistar</SpLink>.</li>
           {!isMayor && <li>Ward map and neighborhoods: the City of Cleveland's open data ward and neighborhood maps.</li>}
           {node && node.url && <li>Portrait and role: <SpLink href={node.url}>{node.source || `official directory`}</SpLink>.</li>}

@@ -57,8 +57,8 @@ Steps 1 and 2 can run beside any build work, since they are people and calendar 
 **Status, Oct 1, 2026, after path C work:** built are C1 (phone story text, announcements, Go deeper, Back to the story), C2 (Easy mode short profile), C3 (desktop blocked-storage notice; the compiled search already says what to do), and C5 (the Mayor's departments and executive order). C4 (offline app shell, with a test that a deploy replaces the saved copy) is built too. Open in path C: C6 (contact details, needs a decision) and C7 (Spanish, needs a reviewer).
 
 **Status, Oct 1, 2026 (paths A and B):** built and tested are A1 to A5, B1 to B4, B6, B8, and B9. Built in part:
-B5 (the plumbing for member votes exists and is tested, but no roll call source has been chosen, so every
-roll call is still `missing`; see `docs/civic-agent/votes-source-research.md`), B7 (the exact approved source
+B5 (done on Oct 1, 2026: the City Record is the roll call source, `scripts/fetch_cityrecord.py` reads it nightly, and 434 files have a
+roll call; a person still has to read the City Record's terms, see `docs/civic-agent/votes-source-research.md`), B7 (the exact approved source
 records are kept; raw HTTP bytes are not), and B10 (a rule-based Skeptic is built; agents that read documents
 are not). Things that only start working once the workflows are on GitHub: the Checks workflow, the nightly
 packets and checks, the failure issue, and the approval and correction workflows. Things that need a person: add
@@ -86,7 +86,7 @@ Nothing here has a date. Items that only a person can do are in the sections bel
 | B2 | Run packets in the nightly job, keep approvals, and surface what awaits a decision | S | nothing |
 | B3 | A real approval gate: reviewer identity proven by signed commits or an approved pull request, replacing a typed name | M | named reviewers |
 | B4 | A small review console for approving, rejecting, and recording dissent | M | B3 |
-| B5 | Register the City Record minutes and parse member-by-member votes into packets, so "how they voted" can show real data | L | B1 |
+| B5 | Register the City Record and parse member-by-member votes into packets, so "how they voted" can show real data. Built Oct 1, 2026; terms of reuse still to be read by a person | L | B1 |
 | B6 | Keep Legistar's stable person IDs in the snapshot, and use them to resolve people | S | nothing |
 | B7 | Store raw source snapshots with hashes where the source allows it | M | nothing |
 | B8 | The mistake-report feature ("Tell us"), the intake behind it, and a public correction history | M | B3 |

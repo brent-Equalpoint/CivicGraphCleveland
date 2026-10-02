@@ -23,7 +23,7 @@ Open `Cleveland-Civic-Graph-v5.html` in any modern browser. It is one file and r
 - **Plain-English priority guides.** Each of the 8 choices in My priorities now opens "What choosing this means in Cleveland": what it means, a short comparison to everyday life, 3 to 4 sourced Cleveland facts, who decides, what people weigh, and questions to ask. A guide opens automatically when you pick that priority. Facts were checked against the linked sources on 2026-09-24.
 - **My leaders.** Compares your chosen priorities with each council member's 2026 sponsorship record and the administration's departmental requests, from Cleveland's official Legistar database (`data/legistar-2026.json`, 1,319 items retrieved 2026-09-25 by `scripts/fetch_legistar.py`). Items are matched to priorities by visible title keywords. There is no score, no match percentage, and no ranking.
 - **Letter drafts.** For any member, the page drafts a letter from your priorities and their record for you to edit, copy, and send yourself.
-- **Not included yet:** individual roll-call votes. Legistar records that Council approved a measure, not each member's vote; those votes are in the City Record minutes.
+- **Not included in v5.1:** individual roll-call votes. Legistar records that Council approved a measure, not each member's vote. They are in the City Record, and the Council roll calls section below adds them.
 
 ## v5.2 changes
 
@@ -70,7 +70,7 @@ Open `Cleveland-Civic-Graph-v5.html` in any modern browser. It is one file and r
 - **Reviewed records in the app.** Profiles show a Reviewed mark beside any item a named publisher approved, with who checked it, the claims and their limits, the Skeptic's notes, any override, and the sources, and say plainly when nothing on the page has been reviewed. "How this is built" shows live review counts and a Corrections list. Nothing is marked Reviewed yet: no packet has been approved.
 - **Mistake reports.** Each profile links to a GitHub form (a free GitHub account is needed, and reports are public). A reviewer records the decision with the "Record a correction" workflow; it is signed, listed publicly without naming the reporter, and refuses notes that look like they hold an email address or phone number.
 - **Profile text review.** The office descriptions and leadership roles now sit in one block that `build.py` fingerprints. Profiles say a person has not reviewed them until someone reads them against their sources and runs `python build.py --mark-office-reviewed "Name"`; changing the text clears the mark.
-- **Member votes.** The Bench can show a member-by-member roll call when a source is registered in `data/votes-2026.json` (format in `bench/README.md`). Legistar has none, so every roll call is still missing; see `docs/civic-agent/votes-source-research.md`.
+- **Member votes.** Legistar has none, but the City Record prints them. `scripts/fetch_cityrecord.py` (part of the nightly refresh) reads each weekly issue into `data/votes-2026.json` (format in `bench/README.md`), and the Bench uses it as its roll call source. A file with no printed vote still has a `missing` roll call; see `docs/civic-agent/votes-source-research.md`.
 - **Stories you can follow by ear and by text, and a way deeper.** A phone story has a Read as text view (every step in order), announces each step to a screen reader, and ends with a Go deeper button (a council member's or the Mayor's profile, What's new, the ballot, or My place). After going deeper a Back to the story chip returns to the same step; on desktop the reader remembers where you were.
 - **Easy mode profile.** The end of the Easy mode ward story offers a short profile in five parts (the job, this year's counts, the ward, how they voted, sources) with the full profile one tap away.
 - **Desktop blocked-storage notice** and a **Mayor profile with depth**: the city bodies in the app's data, each linked to the source the app holds (several are the general contact page, and the page says so), and the executive order in the record, with a link to the Mayor's own complete list. Also fixed: the profile's "Portrait and role" source line had never shown because it read the wrong field name.
@@ -134,7 +134,7 @@ Think of v5.15 as giving the app a morning newspaper route. Every night it walks
 
 - New records carry a public source and a conservative label. Aggregates that are not fully loaded (other Cuyahoga County communities, the arts network, neighborhood networks) are labeled `Record needed` or `Interpretation`.
 - Private and nonprofit institutions in the ecosystem room are labeled `Organization source`, not `Official source`.
-- The ledger reuses only records already in the app. Individual roll calls stay "Not published on the reviewed page." No money is totaled and no one is scored.
+- The ledger reuses only records already in the app. (Each ledger entry now shows the City Record's tally for its vote.) No money is totaled and no one is scored.
 - The architecture page states plainly that agents, polling, the review console, and publishing are designed but not running.
 - Record PDFs are verified against `records/manifest.json` SHA-256 values on every build.
 
@@ -156,6 +156,15 @@ Note for future patches: inside the main component, single-letter names such as 
 
 ## Known limits
 
-- Precinct matching, full roll calls, contract terms, and most candidates' records remain unloaded, as in the Sep 23 release. The UI says so where it matters.
+- Precinct matching, contract terms, and most candidates' records remain unloaded, as in the Sep 23 release. (Council roll calls have since been loaded.) The UI says so where it matters.
 - The Sep 24 feature set was rebuilt from its saved markup and styles; behavior was reconstructed, not recovered line for line.
 - Accessibility follows the original foundation (keyboard, text view, reduced motion, larger text). No WCAG conformance is claimed; screen-reader and device testing remain open.
+
+## Council roll calls (Oct 1, 2026): how each council member voted
+
+- **Council roll calls, from the City Record.** The City Record, Council's weekly official publication, prints "Voting Yea", "Voting Nay", and "Absent" lists for every vote to pass an ordinance, adopt a resolution, or lay a file on the table. `scripts/fetch_cityrecord.py` reads the 39 issues of 2026 so far into `data/votes-2026.json`: 434 files with a roll call and 11 votes to lay a file on the table, each linked to its issue. The nightly refresh fetches only issues that are new or changed, and keeps the old file if anything it reads does not add up.
+- **What it refuses.** A vote is stored only when its names equal the printed tally, every name is a sitting member, nobody is on two lists, the lists cover all 15 members, the file is tied to its entry by the entry's own heading, and (for 2026 files) the passage date matches Council's record. Anything else is held back and listed, never guessed. One misprint is corrected, narrowly: three headings print a 2025 number for a 2026 file, and are kept under the 2026 number only because the page headers and Council's record both say so. `scripts/test_cityrecord.py` covers each refusal.
+- **Where it shows.** Each council profile has a "How they voted" section (counts of yea, nay, and absent, every nay, and every vote, with links). Easy mode and the stories give the same counts in short form. A file's record on the phone shows the names by how they voted. The place pages count the roll calls among their decisions and list the ones that were not unanimous, with the nays by name. The decision ledger shows each tally.
+- **Rules kept.** Counts, never a percentage, rank, or "agrees with". Sponsorship is not a vote, and sponsorship and votes are shown apart. Absent is not a no and not an abstention. A vote to suspend the rules prints only a tally with no names, so it is not stored. A file with no printed vote has no record, which is not a no.
+- **Not decided yet.** The City Record page states no terms of reuse, and a person has not read them (the Bench registry says `review_required`, and each profile says so). Votes on files numbered 2023 to 2025, carried into this term (17 passage or adoption votes), are stored but shown only on a member's own list, with no title.
+

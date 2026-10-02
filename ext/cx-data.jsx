@@ -192,7 +192,7 @@ function cxExtraRooms(which) {
       path: [`people`, `council`, `leg-561-2026`, `law-code`],
       ids: [`council`, `mayor`, `legislative`, `board-control`, `law-code`, `law-charter`],
       match: (e) => e.kind === `legislation` || e.kind === `committee`,
-      gap: `Selected Cleveland legislation is loaded with its official record. Member-by-member roll calls, committee votes, contracts, and implementation records are not imported yet.`,
+      gap: `Selected Cleveland legislation is loaded with its official record. How each member voted comes from the City Record where it prints names. Committee votes, contracts, and implementation records are not imported yet.`,
       prompts: [
         { label: `Follow a housing ordinance`, node: `leg-561-2026` },
         { label: `See a proposal still on an agenda`, node: `leg-620-2026` },
@@ -313,6 +313,7 @@ function cxLedgerEntries() {
     const agenda = n.id === `leg-620-2026`;
     const room = { housing: `housing`, energy: `local-decisions`, transportation: `transport`, budget: `money`, "public-safety": `safety` }[CX_LEDGER_DOMAIN[n.id]] ?? `local-decisions`;
     const lhNode = Lh.find((e) => e.id === n.id);
+    const rc = cxVoteRecord(n.id.replace(/^leg-/, ``));
     return {
       id: n.id, domain: CX_LEDGER_DOMAIN[n.id] ?? `budget`, title: n.name, short: n.shortName,
       summary: lhNode?.summary ?? n.summary,
@@ -322,13 +323,13 @@ function cxLedgerEntries() {
         [`Status`, agenda ? `Listed for consideration; final disposition not loaded` : passed ? `Passed` : `Status not confirmed in this release`],
         [`Dates`, (n.activity ?? []).filter((a) => !/^Status/.test(a)).join(` · `) || `Not loaded`],
         [`Acted on by`, `Cleveland City Council`],
-        [`Individual votes`, `Not published on the reviewed page`],
+        [`Individual votes`, rc ? `Printed in the City Record for ${cxLongDate(rc.date)}: ${rc.yea} yea, ${rc.nay} nay${rc.absent ? `, ${rc.absent} absent` : ``}. Each member's vote is on their profile.` : `No member-by-member vote in the City Record snapshot`],
         [`Money involved`, /117|620/.test(n.id) ? `Amounts not totaled in this release` : `Not applicable or not loaded`],
         [`Scope`, n.region],
       ],
       missing: agenda
         ? [`Final action`, `Executed contracts`, `Member votes`, `Funding amounts`]
-        : [`Member-by-member roll call`, `Implementation records`, `Measured outcomes`],
+        : [...(rc ? [] : [`Member-by-member roll call`]), `Implementation records`, `Measured outcomes`],
       source: [n.sourceLabel, n.sourceUrl], checked: n.verifiedAt, room, node: n.id,
       related: n.issues ?? [],
     };

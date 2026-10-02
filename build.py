@@ -350,8 +350,29 @@ def main():
     pe = json.load(open(pe_path, encoding="utf-8"))
     log(f"data   {sha(pe_path)}  people-2026.json  ({pe['count']} people, retrieved {pe['retrieved_at']})")
     ext_js += "/* ---- data/people-2026.json ---- */\nconst CX_PEOPLE = " + json.dumps(pe, ensure_ascii=False, separators=(",", ":")) + ";\n"
+    # Council roll calls: how each member voted where the City Record prints names (scripts/fetch_cityrecord.py), embedded compactly
+    vt_path = os.path.join(ROOT, "data", "votes-2026.json")
+    vt = json.load(open(vt_path, encoding="utf-8"))
+    log(f"data   {sha(vt_path)}  votes-2026.json  ({vt['counts']['files']} files with a roll call, {vt['counts']['other']} other votes, {vt['counts']['issues']} City Record issues, retrieved {vt['retrieved_at']})")
+    if vt["skipped"]:
+        raise SystemExit(f"data/votes-2026.json has {len(vt['skipped'])} vote(s) that were not stored; fix the cause before building: {vt['skipped'][:3]}")
+    vt_members = sorted(p["name"] for p in pe["people"] if p["title"] == "Council Member")
+    vt_issues = sorted((i["url"], i["label"]) for i in vt["issues"])
+    vt_issue_ix = {u: n for n, (u, _) in enumerate(vt_issues)}
+    vt_q = {"Passage": 0, "Adoption": 1, "Laid on the table": 2}
+    def vt_codes(v):
+        if set(v["members"]) != set(vt_members):
+            raise SystemExit("a stored vote does not name every sitting council member")
+        return "".join({"yea": "y", "nay": "n", "absent": "a"}[v["members"][m]] for m in vt_members)
+    def vt_row(v):
+        r = [v["date"], vt_q[v["question"]], vt_issue_ix[v["anchor"]["url"]], vt_codes(v)]
+        return r + [v["misprint"]] if v.get("misprint") else r
+    ext_js += "/* ---- data/votes-2026.json (Council roll calls from the City Record) ---- */\nconst CX_VOTES = " + json.dumps(
+        {"source": vt["source"], "retrieved_at": vt["retrieved_at"], "members": vt_members, "issues": [[l, u] for u, l in vt_issues],
+         "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
+        ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])

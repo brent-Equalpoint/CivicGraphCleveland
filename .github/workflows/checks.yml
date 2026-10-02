@@ -41,6 +41,7 @@ jobs:
           python scripts/test_links.py
           python scripts/test_us.py
           python scripts/test_votes.py
+          python scripts/test_cityrecord.py
 
       - name: Data safety check
         run: python scripts/refresh.py --check

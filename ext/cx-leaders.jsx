@@ -531,7 +531,7 @@ function CX_Leaders({ onGo, onPanel }) {
           <div><dt><i className="cx-dot cx-dot-joined" aria-hidden="true" /> Joined</dt><dd>A colleague's proposal they signed on to support.</dd></div>
           <div><dt><i className="cx-dot cx-dot-dept" aria-hidden="true" /> Signed for a city department</dt><dd>Routine requests from the mayor's departments. The Council President and committee chairs sign many of these as part of their role.</dd></div>
         </dl>
-        <p className="atlas-muted">This is not a vote record and not a score. Cleveland's database shows that Council approved a measure, not how each member voted.</p>
+        <p className="atlas-muted">This is not a vote record and not a score. Sponsoring a proposal is not voting for it. How each member voted, where the City Record prints it, is under Profiles.</p>
       </div>
 
       <div className="civic-card cx-prio-picker">

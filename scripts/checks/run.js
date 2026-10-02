@@ -202,7 +202,7 @@ const CHECKS = {
     await (await p.$$('.sp-pick button'))[9].click(); await wait(300);
     expect((await count(p, '.sp-map path')) === 15 && (await count(p, '.sp-map path.on')) === 1, 'ward map is not 15 wards with one highlighted');
     expect(/Legistar does not list committee seats|does not list committee seats/.test((await txt(p, '.sp-dl')) || ''), 'committee statement missing');
-    expect(/does not publish each member/.test((await txt(p, '.sp')) || ''), 'the votes honesty statement is missing');
+    expect(/Absent is not a no and not an abstention/.test((await txt(p, '.sp')) || ''), 'the votes honesty statement is missing');
     await done(p);
     const q = await open('/?room=voting#desktop', { settle: 1500 });
     const c = await q.evaluate(() => { const r = document.querySelector('[data-node="ward-8"]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }); await q.mouse.click(c[0], c[1]); await wait(700);
@@ -213,9 +213,44 @@ const CHECKS = {
     await m.select('.cxe select', await m.evaluate(() => [...document.querySelector('.cxe select').options].find((o) => /Hough/.test(o.text)).value)); await wait(500); await walkEasy(m);
     await clickText(m, 'Read the short profile of'); await wait(500);
     expect(/Howse-Jones/.test((await txt(m, '.cxe h1')) || '') && /led \d+ proposal/.test((await txt(m, '.cxe-main')) || ''), 'the Easy mode short profile is missing its name or its counts');
-    expect(/not public yet/.test((await txt(m, '.cxe-main')) || ''), 'the short profile does not say the votes are not public');
+    expect(/The City Record prints how each member voted/.test((await txt(m, '.cxe-main')) || '') && /Absent is not a no/.test((await txt(m, '.cxe-main')) || ''), 'the short profile does not give the recorded votes with the not-a-no note');
     await clickText(m, 'Read the full profile'); await wait(900);
-    expect(await has(m, '.cxm-sheet .sp'), 'the full profile button did not open the phone sheet'); await done(m);
+    expect(await has(m, '.cxm-sheet .sp'), 'the full profile button did not open the phone sheet');
+    expect(/voted yea/.test((await txt(m, '.cxm-sheet .sp')) || ''), 'the phone profile sheet has no recorded votes'); await done(m);
+  },
+  async 'council-votes'() {
+    // what the profile shows must equal the stored City Record votes, member by member
+    const data = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'votes-2026.json'), 'utf8'));
+    const tally = (name) => { const c = { yea: 0, nay: 0, absent: 0 }; for (const v of Object.values(data.votes)) c[v.members[name]]++; return c; };
+    const p = await open('/?panel=profiles#desktop', { settle: 1400 });
+    for (const [i, name] of [[13, 'Brian Kazy'], [9, 'Kevin Conwell'], [15, 'Charles Slife']]) {
+      await (await p.$$('.sp-pick button'))[i].click(); await wait(500);
+      const got = await p.evaluate(() => { const h = [...document.querySelectorAll('.sp h2')].find((x) => x.innerText === 'How they voted'); const s = h.parentElement; return { n: [...s.querySelectorAll('.sp-counts strong')].map((e) => +e.innerText), d: [...s.querySelectorAll('details')].map((d) => d.querySelector('summary').innerText), all: s.innerText }; });
+      const want = tally(name);
+      expect(got.n.join() === [want.yea, want.nay, want.absent].join(), `${name}: the profile counts ${got.n} but the stored votes say ${want.yea},${want.nay},${want.absent}`);
+      expect(want.nay === 0 ? /did not vote nay/.test(got.all) : got.d[0].includes(`(${want.nay})`), `${name}: the nay list does not match ${want.nay}`);
+      expect(/Absent is not a no and not an abstention/.test(got.all) && /not grades/.test(got.all), `${name}: the not-a-no or not-a-grade note is missing`);
+      expect(!/\d\s?%|percent|most often|agree/i.test(got.all), `${name}: the votes section shows a percentage or a comparison`);
+    }
+    expect((await count(p, '.sp a[href*="clevelandcitycouncil.gov/sites/default/files"]')) >= 15, 'the votes are not linked to City Record issues');
+    expect(await has(p, '.sp a[href="https://www.clevelandcitycouncil.gov/legislation-laws/city-record"]'), 'no link to the City Record');
+    await (await p.$$('.sp-pick button'))[0].click(); await wait(400);  // the Mayor
+    expect(/not a member of Council/.test((await txt(p, '.sp')) || ''), 'the Mayor profile does not explain why it has no roll call');
+    const page = await p.evaluate(() => document.body.innerText);
+    expect(!/isn't public yet|without roll calls|does not publish each member|not published in Council/.test(page), 'the page still says roll calls are not public');
+    await done(p);
+    // a profile on the phone, and a file's record on the phone
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const claims = await m.evaluate(() => document.body.innerText);
+    expect(!/isn't public yet|without roll calls/.test(claims), 'the phone Today tab still says roll calls are not public');
+    await done(m);
+    const h = await open('/?panel=place#desktop', { settle: 1500 });
+    await h.select('select', 'Downtown'); await wait(900);
+    const pg = await h.evaluate(() => document.querySelector('.cx-pl-stats:last-of-type') ? [...document.querySelectorAll('.cx-pl-stats')].map((e) => e.innerText).join(' ') : '');
+    const n = (pg.match(/(\d+)\s*of these have a member-by-member vote in the City Record/) || [])[1];
+    expect(n && +n > 0, `the Downtown place page does not count its roll calls (${pg.slice(-120)})`);
+    expect(await h.evaluate(() => [...document.querySelectorAll('h3')].some((e) => /votes that were not unanimous/.test(e.innerText))), 'the Downtown place page lists no vote that was not unanimous');
+    await done(h);
   },
   async 'bench-records'() {
     // with nothing approved, the profile says so plainly
@@ -417,7 +452,7 @@ const AXE_ALLOW = [
 ];
 const AXE_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
-  ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
+  ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop profile with votes', '/?panel=profiles&seat=ward-13#desktop', {}], ['desktop profile with votes original', '/?panel=profiles&seat=ward-13#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
   ['desktop ledger original', '/?panel=ledger#desktop', { theme: 'original' }], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop ballot', '/?panel=ballot#desktop', {}],
   ['desktop bench', '/?panel=bench#desktop', {}], ['desktop easy', '/#desktop', { easy: true }],
   ['phone today', '/#phone', { mobile: true, easy: false }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
@@ -430,8 +465,10 @@ async function axeBad(p) {
     .then((r) => r.violations.flatMap((x) => x.nodes.map((n) => ({ id: x.id, impact: x.impact, target: n.target.join(' '), msg: ((n.any[0] || n.all[0] || {}).message || '').slice(0, 100) })))));
   return v.filter((x) => !AXE_ALLOW.some((a) => a.rule === x.id && a.target.test(x.target)));
 }
+// AXE_PAGE="desktop home,phone place" limits the run to those pages (a page name is the first word group of each AXE_PAGES row)
 CHECKS['axe'] = async () => {
   for (const [name, url, o] of AXE_PAGES) {
+    if (process.env.AXE_PAGE && !process.env.AXE_PAGE.split(',').includes(name)) continue;
     const p = await open(url, o);
     const bad = await axeBad(p);
     expect(bad.length === 0, `axe on ${name}: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));

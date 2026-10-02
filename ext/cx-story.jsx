@@ -35,6 +35,13 @@ function cxmWardStory(w, answers) {
     const big = ob && wd ? `${cxmPl(ob, `objection`, `objections`)} filed, ${wd} withdrawn.` : ob ? `${cxmPl(ob, `objection`, `objections`)} filed.` : `${cxmPl(wd, `objection`, `objections`)} withdrawn.`;
     frames.push({ k: `Liquor permits`, big, small: liq.filter((r) => r.addr).slice(0, 3).map((r) => `${r.withdraw ? `Withdrew` : `Objected`}: ${r.addr}, ${cxmDate(r.date)}`).join(`. `) || `The addresses are not in these titles.` });
   }
+  const person = CX_PEOPLE.people.find((p) => p.title === `Council Member` && cxmSamePerson(p.name, seat.name));
+  const mv = person ? cxCouncilVotesOf(person.name) : [];
+  if (mv.length) {
+    const c = cxVoteCounts(mv);
+    frames.push({ k: `How ${first} voted`, big: `The City Record lists ${first}'s vote on ${c.total} recorded votes this year.`,
+      small: `${first} voted yea ${cxmPl(c.yea, `time`, `times`)}, nay ${cxmPl(c.nay, `time`, `times`)}, and was listed as absent ${cxmPl(c.absent, `time`, `times`)}. These are counts, not grades. Absent is not a no.` });
+  }
   frames.push({ k: `What ${first} led`, big: parts.own.length ? `${first} led ${cxmPl(parts.own.length, `proposal`, `proposals`)} this year.` : `${first} did not lead a proposal in this record.`, small: cxSummary(seat, parts.own, parts.joined, parts.dept) });
   const q = [...CX_COUNCIL_Q, ...CX_MAYOR_Q].map((x) => ({ x, m: cxmMatter(x[0]), w: Wm.find((z) => z.id === x[1]) }))
     .filter((o) => o.m && o.w && o.m.sponsors.some((s) => CX_SPONSOR_WARD[s] === w))
@@ -54,7 +61,8 @@ function cxmCouncilStory() {
   ];
   if (denied.length) frames.push({ k: `A reversal`, big: `${denied.length === 1 ? `One proposal` : `${denied.length} proposals`} passed after a committee recommended denial.`, small: `${cxmStatus(denied[0].m).flip} ${cxWords(cxShortTitle(denied[0].m.title), 16)} ${denied[0].m.file}.` });
   if (tabled.length) frames.push({ k: `Set aside`, big: `Council set aside ${cxmPl(tabled.length, `item`, `items`)} this year.`, small: `Tabled means put on hold. ` + tabled.map((m) => cxWords(cxShortTitle(m.title), 12)).join(` · `) });
-  frames.push({ k: `What isn't public`, big: `How each member voted isn't public yet.`, small: `Council's database records what passed, not each member's vote, and the 2026 City Record lists passed legislation without roll calls. So we show outcomes and sponsors, and nothing more.` });
+  const vs = cxVoteSummary();
+  frames.push({ k: `How members voted`, big: `${vs.votes} recorded votes name every member.`, small: `The City Record prints each member's vote when Council passes an ordinance or adopts a resolution. ${vs.split} of the ${vs.votes} had at least one nay. Each member's profile lists theirs. Absent is not a no.` });
   return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, deeper: { label: `See what is new in Council's record`, kind: `sheet`, sheet: `news`, panel: `news` }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
 function cxmMayorStory(answers) {

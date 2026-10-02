@@ -6,7 +6,9 @@
 
 Steps:
   1. keep a copy of today's data/*.json
-  2. run fetch_legistar.py, fetch_reasons.py, fetch_place.py, fetch_people.py, fetch_us.py (each retries with growing pauses)
+  2. run fetch_legistar.py, fetch_reasons.py, fetch_place.py, fetch_people.py, fetch_us.py (each retries with growing pauses),
+     then fetch_cityrecord.py (Council roll calls). That last step is best effort: if it fails, the old votes file stays,
+     a warning is printed, and everything else still publishes. A page the Clerk reformats must not stop the other records.
   3. safety checks: if the new snapshot looks broken (far fewer items than before, missing
      histories or ward maps), put the old files back and stop with an error, so a bad night
      never replaces good data. GitHub then emails the repository owner.
@@ -20,7 +22,7 @@ import datetime, json, os, shutil, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 DATA = os.path.join(HERE, "..", "data")
-FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json", "people-2026.json", "us-landscape-2026.json", "us-votes-2026.json")
+FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json", "people-2026.json", "us-landscape-2026.json", "us-votes-2026.json", "votes-2026.json")
 
 
 def load(d, name):
@@ -57,6 +59,13 @@ def check(old_dir, new_dir):
         vo = load(old_dir, "us-votes-2026.json")
         if vn["counts"]["votes"] < vo["counts"]["votes"]:
             bad.append(f"votes: {vn['counts']['votes']} recorded votes, down from {vo['counts']['votes']} (the record only grows)")
+    import fetch_cityrecord
+    cr = load(new_dir, "votes-2026.json")
+    bad += fetch_cityrecord.check(cr)
+    if old_dir:
+        co = load(old_dir, "votes-2026.json")
+        if cr["counts"]["files"] < co["counts"]["files"]:
+            bad.append(f"council votes: {cr['counts']['files']} files with a roll call, down from {co['counts']['files']} (the record only grows)")
     g = load(new_dir, "geo-2026.json")
     for k, want in (("wards2026", 15), ("wards2014", 17)):
         n = len(g["layers"].get(k, {}).get("features", []))
@@ -81,7 +90,7 @@ def main():
             shutil.copy(os.path.join(keep, f), DATA)
         sys.exit(f"REFRESH STOPPED, previous data kept: {why}")
 
-    import fetch_legistar, fetch_reasons, fetch_place, fetch_people, fetch_us, fetch_votes, changes
+    import fetch_legistar, fetch_reasons, fetch_place, fetch_people, fetch_us, fetch_votes, fetch_cityrecord, changes
     try:
         fetch_legistar.main()
         fetch_reasons.main()
@@ -91,6 +100,11 @@ def main():
         fetch_votes.main()
     except Exception as e:  # network or source failure after all retries
         restore(f"{type(e).__name__}: {e}")
+    try:  # Council roll calls: best effort, the rest of the record does not wait on it
+        fetch_cityrecord.main()
+    except Exception as e:
+        shutil.copy(os.path.join(keep, "votes-2026.json"), DATA)
+        print(f"::warning title=Council votes were not updated::{type(e).__name__}: {e}")
     bad = check(keep, DATA)
     if bad:
         restore("; ".join(bad))

@@ -15,9 +15,9 @@ hash. A deterministic examiner then checks anchor coverage, identity, chronology
 and records a verdict. Packets are shadow only: nothing here reaches the app.
 
 What this does not do, on purpose:
-  * It never claims a member's vote. Legistar records that Council approved a file; it does not
-    publish each member's vote (the roll call is in the City Record, not registered here yet). The
-    roll call claim is `missing`. A missing record is not a no.
+  * It never claims a member's vote without a roll call. Legistar records that Council approved a file; it does not
+    publish each member's vote. The roll call is in the City Record, which scripts/fetch_cityrecord.py reads into
+    data/votes-2026.json. A file with no entry there has a `missing` roll call. A missing record is not a no.
   * It never resolves a person by name alone. Council members are resolved by office, ward and term
     from the oath record (file 1-2026). Two members with the same name would both be quarantined.
     A sponsor who is not on that roster stays `unreviewed` and needs a person to resolve.
@@ -71,9 +71,10 @@ def sources():
         "sponsors": src("/matters/{id}/sponsors", "sponsor_list", "Sponsors in sequence. Sponsorship is not a vote. Snapshot: data/legistar-2026.json"),
         "histories": src("/matters/{id}/histories", "action_history", "Committee and Council actions with dates. No per-member roll call is published. Snapshot: data/place-2026.json"),
         "people": src("/officerecords", "office_records", "Who holds each Council seat and the Mayor, with person IDs and terms. Snapshot: data/people-2026.json"),
-        "votes": {"source_id": VOTES_SOURCE_ID, "owner": "Cleveland City Council (the City Record, or another official roll call record)", "canonical_url": None,
-                  "jurisdiction_id": JURISDICTION, "record_type": "roll_call", "access_method": "manual", "license_status": "review_required", "refresh_policy": "event",
-                  "fetched_by": "not wired yet", "note": "Member-by-member votes. Legistar publishes none. When a person registers a source, its votes go in data/votes-2026.json (format in bench/README.md)."},
+        "votes": {"source_id": VOTES_SOURCE_ID, "owner": "Cleveland City Council (the City Record, published weekly by the City Clerk, Clerk of Council)",
+                  "canonical_url": "https://www.clevelandcitycouncil.gov/legislation-laws/city-record",
+                  "jurisdiction_id": JURISDICTION, "record_type": "roll_call", "access_method": "pdf", "license_status": "review_required", "refresh_policy": "weekly",
+                  "fetched_by": "scripts/fetch_cityrecord.py", "note": "Member-by-member votes where the City Record prints names (yea, nay, absent). Legistar publishes none. The page states no terms of reuse and a person has not read them. Snapshot: data/votes-2026.json."},
     }
 
 
@@ -198,7 +199,7 @@ def member_vote_state(member, action_date):
     start, end = member.get("valid_from"), member.get("valid_to")
     if (start and action_date < start) or (end and action_date > end):
         return {"state": "not_applicable", "reason": f"Not in office on {action_date} (term {start or '?'} to {end or 'present'})"}
-    return {"state": "missing", "reason": "Legistar does not publish each member's vote; the roll call is in the City Record, which is not registered as a source yet"}
+    return {"state": "missing", "reason": "Legistar does not publish each member's vote, and the City Record snapshot has no named vote for this file"}
 
 
 def member_states(members, action_date):
@@ -305,7 +306,7 @@ def build_packet(m, rows, leg, hist_meta, ents, members, collisions, bodies, reg
         else:
             claim(f"The roll call on {label}: how each member of {COUNCIL} voted.", council, "roll_call", mid,
                   [{"snapshot_id": snap_h or snap_m, "locator": f"/matters/{m['id']}/histories, MatterHistoryRollCallFlag 0, no vote records", "url": m["url"]}],
-                  "missing", "Legistar records that Council approved this file and does not publish each member's vote. No roll call source is registered yet. "
+                  "missing", "Legistar records that Council approved this file and does not publish each member's vote, and the City Record snapshot has no named vote for it. "
                   "A missing record is not a no.", m["passed"],
                   {"member_states": member_states(members, m["passed"])})
     ops = [f"upsert_node:{mid}"] + [f"upsert_node:{n}" for n in sorted(nodes) if n != mid] + [f"upsert_edge:{e['edge_id']}" for e in edges]

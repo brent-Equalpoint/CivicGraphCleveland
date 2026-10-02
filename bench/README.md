@@ -48,10 +48,11 @@ content. The claims a packet can make, and only these: introduced on a date; a n
 (a `sponsorship` edge, never a vote); a body took a recorded action on a date; Council passed it on a
 date; and the roll call.
 
-**The roll call is `missing` today.** Legistar publishes no member-by-member votes: I checked its
-roll call fields, its vote endpoint, and its event minutes files for Council meetings, and all are empty
-(Oct 1, 2026). A member outside their term shows `not_applicable` with the term dates. Nothing is ever
-shown as an abstention or a no.
+**The roll call comes from the City Record, not Legistar.** Legistar publishes no member-by-member votes: its
+roll call fields, its vote endpoint, and its event minutes files for Council meetings are all empty (checked Oct 1, 2026).
+The City Record, which the Clerk publishes weekly, prints them, and `scripts/fetch_cityrecord.py` reads them into
+`data/votes-2026.json`. A file with no printed vote has a `missing` roll call. A member outside their term shows
+`not_applicable` with the term dates. Nothing is ever shown as an abstention or a no.
 
 **People are resolved by Legistar's person ID** (kept for every sponsor by `scripts/fetch_legistar.py`),
 checked against the office records in `data/people-2026.json`, with office, ward and term as before. An ID
@@ -60,7 +61,7 @@ quarantined. Without an ID, only a roster name and a term can resolve a person.
 
 ## Plugging in a roll call source
 
-When a person has found and checked an official roll call source, put its votes in `data/votes-2026.json`
+The City Record's votes are in `data/votes-2026.json`, written by `scripts/fetch_cityrecord.py` (nothing else writes it),
 and the Bench uses them. Format:
 
 ```json
@@ -81,7 +82,8 @@ and the Bench uses them. Format:
 Values: `yea`, `nay`, `abstain`, `absent`, `recused`. A member in office who is not listed is `missing`
 (the roll call becomes `partial`), never a no. A member's vote is accepted only when it rests on this
 source; a vote anchored to the action history is blocked. Register the source's owner and terms in
-`docs/civic-agent/votes-source-research.md` first. Nothing parses the City Record for you yet.
+`docs/civic-agent/votes-source-research.md` first. The file also carries `other` (votes to lay a file on the table),
+`issues` (each City Record issue read, with its size and SHA-256), and `skipped` (anything it could not read).
 
 ## What is kept
 
@@ -94,7 +96,7 @@ source; a vote anchored to the action history is blocked. Register the source's 
 
 Agents that read documents and judge them (the Examiner and Skeptic here are rules a script can state,
 not readers), raw HTTP snapshot storage (the registry hashes the normalized record in `data/`, and says
-so), a roll call source, automatic correction of the graph, and a review console beyond the GitHub
+so), a roll call source for committee votes (only Council's votes are read), automatic correction of the graph, and a review console beyond the GitHub
 workflow form. See `docs/ROADMAP.md`.
 
 ## Ontology note

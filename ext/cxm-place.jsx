@@ -46,6 +46,7 @@ function CxmPlace() {
   const wardsTxt = D.now.map((r) => `Ward ${r.ward}`).join(`, `) || `these wards`;
   const shown = lever === `all` ? D.items : D.items.filter((x) => x.lever[0] === lever);
   const passedSorted = [...D.passed].sort((a, b) => a.path.days - b.path.days);
+  const pv = u.useMemo(() => cxPlaceVotes(D.items), [D]);
   const placeKey = home ? (home.ward ? `ward-${home.ward}` : home.place || ``) : ``;
   const showLocal = placeKey && (isHome || !home.hood);
   const localCards = showLocal ? cxLocalCards(placeKey, (r, n) => openRoom(r, n), (p) => (p === `leaders` ? openSeat(home.ward ? `ward-${home.ward}` : `mayor`) : go(p === `ballot` ? `ballot` : `today`))) : [];
@@ -161,12 +162,14 @@ function CxmPlace() {
           {D.councilWideFunds.length > 0 && <div className="cxm-tile"><strong>Council-wide fund rules</strong><small className="cxm-mut">Not tied to one ward</small>{D.councilWideFunds.map((x) => <button key={x.m.file} type="button" className="cxm-fund" onClick={() => openSheet(`leg`, { file: x.m.file })}><span>{cxWords(cxShortTitle(x.m.title), 18)}</span></button>)}</div>}
         </CxmPlaceSec>
         <CxmPlaceSec id="votes" open={open} setOpen={setOpen} title="What the record shows about votes" sum="Outcomes, yes. Roll calls, no.">
-          <p className="cxm-fine">Council's database records the outcome of each vote (approved, adopted, amended) and each committee's recommendation. It does not publish how each member voted, and the 2026 City Record lists passed legislation without roll calls. To see individual votes, watch the meeting video or attend.</p>
+          <p className="cxm-fine">Council's database records the outcome of each vote (approved, adopted, amended) and each committee's recommendation. For a vote to pass an ordinance or adopt a resolution, the City Record also prints how each member voted. Where it does, that is counted here. A file with no printed vote has no record, which is not a no.</p>
           <div className="cxm-stats">
             <div><b>{D.passed.length}</b><span>decisions here with a recorded final vote</span></div>
             <div><b>{D.items.filter((x) => x.path.fin && /amended/.test(x.path.fin[1])).length}</b><span>changed before passing ("as amended")</span></div>
-            <div><b>0</b><span>member-by-member roll calls published</span></div>
+            <div><b>{pv.withRoll.length}</b><span>of these have a member-by-member vote in the City Record</span></div>
           </div>
+          {pv.split.length > 0 && <h4 className="cxm-h4" aria-level="2">Here: votes that were not unanimous</h4>}
+          {pv.split.map((x) => <button key={x.m.file} type="button" className="cxm-item" onClick={() => openSheet(`leg`, { file: x.m.file })}><strong>{cxShortTitle(x.m.title)}</strong><small>{cxVoteSplitText(x)} · {x.m.file}</small></button>)}
           {D.unusual.length > 0 && <h4 className="cxm-h4" aria-level="2">Citywide: decisions that did not simply pass</h4>}
           {D.unusual.map(({ m, p }) => <button key={m.file} type="button" className="cxm-item" onClick={() => openSheet(`leg`, { file: m.file })}><strong>{cxShortTitle(m.title)}</strong><small>{p.flags.map((f) => `${cxmDate(f[0])}: ${f[1]} (${f[2]})`).join(` · `)} · {m.file}</small></button>)}
         </CxmPlaceSec>
@@ -176,7 +179,8 @@ function CxmPlace() {
             <li>Decisions: Council's Legistar database ({CX_LEG.count} items since Jan. 1, 2026), action histories retrieved {CX_PL.retrieved.slice(0, 10)}. Addresses in titles were located with the U.S. Census Bureau geocoder; {Object.values(CX_PL.addresses).filter((r) => r.hood).length} of {Object.keys(CX_PL.addresses).length} addresses fell inside a mapped neighborhood.</li>
             <li>"Signed first" is the first council member listed on the record. For city requests, that is usually the ward member and the committee chair, and it does not by itself show personal support.</li>
             <li>Ward money amounts are read from the ordinance text and may not match final spending.</li>
-            <li>Not in any of these records: attendance, meetings held, calls returned, or how each member voted.</li>
+            <li>How each member voted: the City Record, Council's weekly official publication, pulled {CX_VOTES.retrieved_at.slice(0, 10)}. It prints names only for votes to pass or adopt, so a vote to suspend the rules shows no names.</li>
+            <li>Not in any of these records: meetings held or calls returned. Absences appear only where the City Record prints them on a vote.</li>
           </ul>
           <h4 className="cxm-h4" aria-level="2">What this page does not do</h4>
           <ul className="cxm-list">

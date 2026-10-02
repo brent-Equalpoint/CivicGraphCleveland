@@ -9,7 +9,9 @@ function CxmLegHistory({ m }) {
       <h3 className="cxm-h3">Votes & actions</h3>
       <div className="cxm-tl"><span className="cxm-tl-d">{cxmDate(m.intro)}</span><span><strong>Introduced</strong><small>City Council</small></span></div>
       {rows.filter((r) => !(r[1] === `introduced`)).map((r, k) => <div key={k} className="cxm-tl"><span className="cxm-tl-d">{cxmDate(r[0])}</span><span><strong>{r[1].charAt(0).toUpperCase() + r[1].slice(1)}</strong><small>{r[2]}</small></span></div>)}
-      <p className="cxm-note">Member-by-member roll calls aren't published in Council's online record or the 2026 City Record, so no individual votes are shown.</p>
+      {cxVoteRecord(m.file)
+        ? <CX_RollCall file={m.file} />
+        : <p className="cxm-note">{m.passed ? `The City Record snapshot has no member-by-member vote for this file. Council's own record shows the outcome only. A missing record is not a no.` : `This file has no passed date in Council's record, so there is no final vote to show.`}</p>}
     </div>
   );
 }

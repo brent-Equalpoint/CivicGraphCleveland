@@ -41,7 +41,9 @@ function CxeProfile({ seat, onFull }) {
       <h2 className="cxe-h2">The ward</h2>
       <p className="cxe-text">{near.length ? `Ward ${w} covers all or part of ${near.join(`, `)}.` : `Ward ${w} is one of Cleveland's 15 wards.`}</p>
       <h2 className="cxe-h2">How they voted</h2>
-      <p className="cxe-text">How each member voted is not public yet. A missing record is not a no.</p>
+      <p className="cxe-text">{person && cxCouncilVotesOf(person.name).length
+        ? (() => { const c = cxVoteCounts(cxCouncilVotesOf(person.name)); return `The City Record prints how each member voted. So far this year, ${name.split(` `)[0]} voted yea ${cxmPl(c.yea, `time`, `times`)}, nay ${cxmPl(c.nay, `time`, `times`)}, and was listed as absent ${cxmPl(c.absent, `time`, `times`)}. That is ${c.total} votes. These are counts, not grades. Absent is not a no. The full profile lists each vote.`; })()
+        : `The City Record has no named vote for this seat. A missing record is not a no.`}</p>
       <p className="cxe-text">Where this comes from: <a href={CX_COUNCIL_SITE} target="_blank" rel="noreferrer">Cleveland City Council</a> and <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">its legislative record</a>.</p>
       <button type="button" className="cxe-btn alt" onClick={onFull}>Read the full profile</button>
     </>

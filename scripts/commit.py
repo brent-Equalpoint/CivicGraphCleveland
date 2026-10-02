@@ -62,7 +62,7 @@ def project(p, approval=None, commit_id=None, committed_at=None):
             member_votes = [{"name": name(e), "ward": nodes[e].get("ward"), "vote": v} for e, v in sorted(rec_votes.items(), key=lambda kv: nodes[kv[0]].get("ward") or 0)]
             lines.append("Each member's recorded vote is listed below from the roll call record." + (" Members with no entry are not shown as a no." if roll["evidence_state"] == "partial" else ""))
         else:
-            lines.append("Each member's vote: not published in Legistar. The roll call is in the City Record. A missing record is not a no.")
+            lines.append("Each member's vote: not published in Legistar, and the City Record snapshot has no named vote for this file. A missing record is not a no.")
     records = {}
     anchors = [dict(a, claim_id=c["claim_id"], evidence_state=c["evidence_state"]) for c in claims for a in c["anchors"]]
     matter_id = next(i for i, n in nodes.items() if n["kind"] == "law")

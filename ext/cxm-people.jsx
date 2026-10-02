@@ -62,7 +62,7 @@ function CxmProfiles() {
           <div><dt><i className="cxm-sdot cxm-s-joined" aria-hidden="true" />Joined</dt><dd>A colleague's proposal they signed on to support.</dd></div>
           <div><dt><i className="cxm-sdot cxm-s-read" aria-hidden="true" />Signed for a city department</dt><dd>Routine requests from the mayor's departments. The Council President and committee chairs sign many of these as part of their role.</dd></div>
         </dl>
-        <p className="cxm-fine">This is not a vote record and not a score. Cleveland's database shows that Council approved a measure, not how each member voted. Everything comes from Cleveland's official legislative record, retrieved {CX_LEG.retrieved_at.slice(0, 10)}.</p>
+        <p className="cxm-fine">This is not a vote record and not a score. Sponsoring a proposal is not voting for it. How each member voted, where the City Record prints it, is on the full profile. Everything comes from Cleveland's official legislative record, retrieved {CX_LEG.retrieved_at.slice(0, 10)}.</p>
       </CxmDrop>
       <div key={seat.id} className="cxm-profile cxm-rise" role="region" aria-roledescription="profile" aria-label={`${seat.name}, profile ${i + 1} of ${deck.length}`}
         onPointerDown={(e) => { startX.current = e.target.closest(`button,a`) ? null : e.clientX; }}
