@@ -632,6 +632,123 @@ CHECKS['axe'] = async () => {
   }
 };
 
+// Text that spills out of the box that holds it. A "box" is anything with its own background or border; text inside a clipping or
+// scrolling parent, or inside something that is positioned on purpose (fixed, absolute, sticky), does not count.
+async function bleedBad(p) {
+  return p.evaluate(() => {
+    const out = [];
+    const tol = 2.5;
+    const boxy = (e, cs) => (cs.backgroundColor !== 'rgba(0, 0, 0, 0)' || parseFloat(cs.borderTopWidth) > 0 || parseFloat(cs.borderLeftWidth) > 0) && cs.display !== 'inline';
+    const all = [...document.querySelectorAll('body *')];
+    for (const e of all) {
+      if (['SCRIPT', 'STYLE', 'SVG', 'svg', 'PATH', 'CANVAS', 'IMG', 'INPUT', 'SELECT', 'TEXTAREA', 'OPTION'].includes(e.tagName)) continue;
+      const cs = getComputedStyle(e);
+      const r = e.getBoundingClientRect();
+      if (!r.width || !r.height || cs.visibility === 'hidden' || cs.display === 'none' || !boxy(e, cs)) continue;
+      if (r.height >= innerHeight * 0.8 || /atlas-shell|atlas-main|atlas-body|cxm-stage|cxm-main/.test(String(e.className))) continue;  // the page itself scrolls; it is not a card
+      if (/(hidden|clip|auto|scroll)/.test(cs.overflowY + cs.overflowX)) continue;
+      const walker = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+      let n, worst = 0, sample = '';
+      while ((n = walker.nextNode())) {
+        if (!n.textContent.trim()) continue;
+        let skip = e.tagName === 'DETAILS' && !e.open && !(n.parentElement && n.parentElement.closest('summary'));
+        for (let a = n.parentElement; !skip && a && a !== e; a = a.parentElement) {
+          const c = getComputedStyle(a);
+          if (/(hidden|clip|auto|scroll)/.test(c.overflowY + c.overflowX) || ['fixed', 'absolute', 'sticky'].includes(c.position) || c.display === 'none' || c.visibility === 'hidden' || a.getAttribute('aria-hidden') === 'true' || /cxm-sr|sp-ext/.test(a.className || '') || (a.tagName === 'DETAILS' && !a.open && !(n.parentElement && n.parentElement.closest('summary')))) { skip = true; break; }
+        }
+        if (skip) continue;
+        const range = document.createRange(); range.selectNodeContents(n);
+        for (const q of range.getClientRects()) {
+          if (!q.width || !q.height) continue;
+          const over = Math.max(q.bottom - r.bottom, r.top - q.top, q.right - r.right, r.left - q.left);
+          if (over > tol && over > worst) { worst = over; sample = n.textContent.trim().slice(0, 40); }
+        }
+      }
+      if (worst > tol) out.push({ cls: (e.className && e.className.baseVal === undefined ? e.className : String(e.className)).toString().slice(0, 50) || e.tagName, over: Math.round(worst), text: sample });
+    }
+    // keep only the outermost offender of a nested set
+    return out.filter((o, i) => !out.slice(0, i).some((q) => q.text === o.text)).slice(0, 12);
+  });
+}
+// Text cut off by a box that hides its overflow, so it cannot be read to the end. Single-line chrome that ends in an ellipsis on purpose
+// (the brand name, the Updated strip) and map labels are allowed; everything else must show all of its text.
+async function clipBad(p) {
+  return p.evaluate(() => {
+    const out = [];
+    for (const e of document.querySelectorAll('body *')) {
+      if (e.closest('svg') || /^(SCRIPT|STYLE|CANVAS|IMG|INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.tagName) && !e.innerText) continue;
+      const cs = getComputedStyle(e);
+      if (cs.display === 'none' || cs.visibility === 'hidden') continue;
+      const r = e.getBoundingClientRect();
+      if (!r.width || !r.height || r.width <= 2 || r.height <= 2) continue;
+      if (/cxm-sr|sp-ext|cxm-brand|cxm-fresh|cxm-skip|cxm-ring|cxm-story-btn/.test(String(e.className))) continue;
+      const clipsY = /(hidden|clip)/.test(cs.overflowY) && e.scrollHeight > e.clientHeight + 2;
+      const clipsX = /(hidden|clip)/.test(cs.overflowX) && cs.textOverflow === 'ellipsis' && e.scrollWidth > e.clientWidth + 2;
+      if ((clipsY || clipsX) && (e.innerText || '').trim().length > 3) out.push({ cls: String(e.className).slice(0, 50) || e.tagName, text: e.innerText.trim().slice(0, 40), kind: clipsY ? 'tall' : 'wide', by: clipsY ? e.scrollHeight - e.clientHeight : e.scrollWidth - e.clientWidth });
+    }
+    return out.slice(0, 12);
+  });
+}
+CHECKS['no-bleed'] = async () => {
+  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
+  for (const [name, url, o] of pages) {
+    const p = await open(url, o);
+    const bad = await bleedBad(p);
+    expect(bad.length === 0, `text spills out of its box on ${name}: ` + bad.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}"`).join('; '));
+    const cut = await clipBad(p);
+    expect(cut.length === 0, `text is cut off on ${name}: ` + cut.slice(0, 4).map((b) => `.${b.cls} ${b.kind} by ${b.by}px "${b.text}"`).join('; '));
+    await done(p);
+  }
+  // the detectors must catch the two ways text goes wrong, or a clean result means nothing
+  if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'selftest') {
+    const t = await open('/#phone', { mobile: true, easy: false });
+    await t.evaluate(() => {
+      const mk = (id, css) => { const d = document.createElement('div'); d.id = id; d.style.cssText = 'position:relative;width:200px;background:#333;color:#fff;border:1px solid #888;' + css; d.innerHTML = '<p style="margin:0">A long sentence that needs several lines of room to be read all the way to the end of it.</p>'; document.body.appendChild(d); };
+      mk('t-bleed', 'height:30px;overflow:visible;'); mk('t-clip', 'height:30px;overflow:hidden;');
+    });
+    const b = await bleedBad(t), c = await clipBad(t);
+    expect(b.some((x) => /t-bleed|A long sentence/.test(x.cls + x.text)), 'the spill detector missed text running out of a fixed-height box');
+    expect(c.some((x) => /A long sentence/.test(x.text)), 'the cut-off detector missed text hidden by a fixed-height box');
+    await done(t);
+  }
+  // the sheets with the most text on them
+  if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'sheets') {
+    const leg = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'legistar-2026.json'), 'utf8')).matters;
+    const longest = leg.slice().sort((a, b) => b.title.length - a.title.length)[0];
+    const s = await open('/#phone', { mobile: true, easy: false });
+    const scan = async (what) => {
+      const bad = await bleedBad(s), cut = await clipBad(s);
+      expect(bad.length === 0 && cut.length === 0, `text spills or is cut on ${what}: ` + [...bad.map((x) => `.${x.cls} +${x.over}px "${x.text}"`), ...cut.map((x) => `.${x.cls} cut ${x.by}px "${x.text}"`)].slice(0, 3).join('; '));
+    };
+    await clickText(s, 'Search'); await wait(300);
+    await s.type('input[type=search]', longest.file); await wait(500);
+    await scan('the search results');
+    await s.evaluate((f) => { const r = [...document.querySelectorAll('.cxm-row')].find((x) => (x.innerText || '').trim().startsWith(f)); r && r.click(); }, longest.file); await wait(700);
+    await scan(`the record sheet for ${longest.file}`);
+    await s.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); x && x.click(); }); await wait(300);
+    await clickText(s, 'Dictionary'); await wait(500);
+    await scan('the dictionary');
+    await s.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); x && x.click(); }); await wait(300);
+    await clickText(s, 'Explore'); await wait(500);
+    await clickText(s, 'Resident check'); await wait(500);
+    await scan('the Resident check');
+    await done(s);
+  }
+  // the Explore tab at every scroll position, because the focused room tile changes as you scroll
+  if (process.env.AXE_PAGE && process.env.AXE_PAGE !== 'explore') return;
+  const e = await open('/#phone', { mobile: true, easy: false });
+  await clickText(e, 'Explore'); await wait(600);
+  const stops = await e.evaluate(() => { const m = document.querySelector('.cxm-main'); return m ? Math.ceil(m.scrollHeight / 160) : 0; });
+  let worst = [];
+  for (let i = 0; i <= stops; i++) {
+    await e.evaluate((k) => { const m = document.querySelector('.cxm-main'); if (m) m.scrollTop = k * 160; }, i); await wait(450);
+    const bad = await bleedBad(e);
+    if (bad.length) worst = worst.concat(bad.map((b) => ({ ...b, at: i })));
+  }
+  expect(worst.length === 0, `text spills out of a room tile while scrolling Explore: ` + worst.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}" at step ${b.at}`).join('; '));
+  await done(e);
+};
+
 (async () => {
   if (argv('--list')) { console.log(Object.keys(CHECKS).join('\n')); return; }
   if (!fs.existsSync(path.join(SITE, 'index.html'))) { console.error(`No ${SITE}/index.html. Run python build.py first.`); process.exit(2); }

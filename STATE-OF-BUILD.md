@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  f7ea995d5259524b1ecad7bece6f30cf8b4b196dbe252c50bc411cd2d21a2e9a
-Size     2,931,861 bytes
+SHA-256  b37aedc2979b1f29e77f8eaac9ebcfefb306eb58bd4cc46ca60b6e1a78cc8d73
+Size     2,931,865 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `9c48cf451304eca74b5dbae2daff224afc08521c8eaf7a6e761757ccaef15a0d`, 2,294,354 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `1eaa5a2ebd10dadbf669fdfdd5d6f50f11fa127a891215f009d1b0765073b906`, 2,294,358 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -31,7 +31,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ```
 
-**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `55523b86ff8d44716ae92295594e2ac11f7c1dd5663e2222f4c2a35271bef833`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
+**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `906b72a9205a7b0718f5bb2296c6a8df4145fc9934ff08bc23689bd316e84de1`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
 
 ---
 
@@ -86,6 +86,8 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Headlines.** The receipt cards and the "What's new" cards (phone and desktop) and the search rows show a short plain headline in place of the long official title, and the card no longer repeats the title under it. `ext/cx-headline.jsx` writes the headline by fixed rules from the title, for example "Agreement with NuPoint Community Development Corporation: Senior Lawn Care Program" or "Change to city law: purchase of food and beverages for the Cleveland Municipal Court". The rules may shorten and reorder the title's own words and add only a short list of template words; `scripts/test_headline.js` fails if any headline holds a word that is not in the official title, over all 1,375 titles. They are rules, not a person's reading, so the full official title is one tap away in the record (see item 21, which still holds everywhere a title is read as detail). A title no rule fits shows its own first clause.
     - **Pull to close.** A sheet follows the finger down, the screen behind it fades, and on release it slides away (past about a quarter of its height, or a quick flick) or eases back. It works from the handle bar, or from the content when it is scrolled to the top, and never takes over scrolling, sideways drags, or lists that can still scroll. Reduced motion closes without the slide. The `sheet-pull` check sends real touches and fails on the old build.
     - **Checks.** 22 of 22 browser checks pass, plus the headline test. Two clean builds, identical hashes.
+
+23. **Oct 2: text may not spill out of, or be cut off by, the box that holds it.** The room tiles on Explore had a fixed height, so once their text was no longer clamped (item 21) the focused tile's longer line ran out of the bottom. The tiles now grow with their text. To stop this class of bug everywhere, the `no-bleed` check scans every phone and desktop screen (24 pages), the Explore tab at every scroll position, and the sheets with the most text (the longest record title, search results, the dictionary, the Resident check) for text that runs outside its box or is hidden by one. Single-line header chrome that ends in an ellipsis on purpose, and map labels, are the only allowed exceptions. The check first plants a bleeding box and a clipping box and fails if it does not catch both. It found the tile bug before the fix. 23 of 23 browser checks pass; two clean builds, identical hashes.
 
 ---
 

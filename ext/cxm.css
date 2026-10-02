@@ -285,7 +285,7 @@ html[data-cx-theme="original"] .cxm-crush { background: #2a170f; }
 .cxm-level-h circle.on { stroke: var(--acc2); stroke-width: 2; }
 .cxm-level-h circle.core { fill: var(--acc2); stroke: none; }
 .cxm-rooms > .cxm-h1, .cxm-rooms > p, .cxm-rooms > .cxm-searchbar, .cxm-rooms > .cxm-doors { margin-right: 26px; }
-.cxm-roomtile { height: 132px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--tile) !important; background: var(--tile) !important; transition: background .25s, border-color .25s, transform .25s; text-align: left; }
+.cxm-roomtile { min-height: 156px; display: flex; flex-direction: column; justify-content: space-between; gap: 6px; padding: 14px 16px; border-radius: 18px; border: 1px solid var(--tile) !important; background: var(--tile) !important; transition: background .25s, border-color .25s, transform .25s; text-align: left; }
 .cxm-roomtile.focus { background: var(--navy) !important; border-color: var(--acc2) !important; transform: scale(1.015); }
 .cxm-roomtile-q { font-size: 17px; font-weight: 700; line-height: 1.25; text-wrap: balance; }
 .cxm-roomtile-foot { display: flex; flex-direction: column; gap: 3px; }
