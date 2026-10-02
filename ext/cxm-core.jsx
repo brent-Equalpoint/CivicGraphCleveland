@@ -174,7 +174,7 @@ function cxmFromUrl() {
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`] };
+    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
   if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: mode || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
@@ -192,7 +192,7 @@ function cxmToUrl(tab, room, top, peopleMode) {
   url.search = ``;
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
-  else if (top && [`ledger`, `bench`, `news`, `priorities`].includes(top.type)) p.set(`panel`, top.type);
+  else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : peopleMode === `us` ? `us` : `leaders`);
@@ -357,6 +357,7 @@ const CXM_SHEETS = {
   decision: (s) => <CxmDecision id={s.id} />,
   review: () => <CxmReview />,
   news: () => <CxmNews />,
+  levies: () => <CxmLevies />,
   profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,
 };
 /* Pull a sheet down to close it, the way phones do. The sheet follows the finger, the dimmed screen behind it fades as it goes, and on
@@ -615,7 +616,7 @@ function cxStorageOk() {
   try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
 }
 /* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
-const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`];
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`, `levies`];
 function cxLinkProblem() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }

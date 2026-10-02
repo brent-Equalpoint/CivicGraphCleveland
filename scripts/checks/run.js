@@ -349,6 +349,48 @@ const CHECKS = {
     expect(during === '' && after && after.t === '' && after.top === top0, `scrolling inside a sheet pulled it: ${JSON.stringify({ during, after, top0 })}`);
     await done(p);
   },
+  async levies() {
+    // the levies guide: dollar figures match the official ballot wording, a typed home value scales them, Read more holds the reasons and both sides,
+    // sources are linked, a person's review status is honest, and nothing tells a resident how to vote
+    for (const [url, opt] of [['/?panel=levies#phone', { mobile: true, easy: false }], ['/?panel=levies#desktop', {}]]) {
+      const p = await open(url, opt);
+      const page = () => p.evaluate(() => document.querySelector('.lv').innerText.replace(/\s+/g, ' '));
+      let t = await page();
+      expect(/Issue 10/.test(t) && /Issue 11/.test(t), `the guide does not list Issues 10 and 11 (${url})`);
+      expect(/\$79 a year for each \$100,000/.test(t) && /\$196 a year for each \$100,000/.test(t), `the county figures are missing (${url})`);
+      expect(/\$99,684,616/.test(t) && /\$261,527,652/.test(t), `the official collection estimates are missing (${url})`);
+      expect(/Now about \$108\.50 a year\. The increase is \$87\.50 a year/.test(t), `the Issue 11 before and after is missing (${url})`);
+      expect(/Only in some places/.test(t) && (await count(p, '.lv-other')) >= 10, `the other tax issues are not listed (${url})`);
+      expect(/A person has not yet read them against those sources|Read against its sources by/.test(t), `the review status is not stated (${url})`);
+      expect(!/\b(vote yes|vote no|you should vote|we recommend|we urge|best choice|good deal|bad deal)\b/i.test(t), `the guide tells people how to vote (${url})`);
+      await p.type('#lv-home', '250000'); await wait(200);
+      t = await page();
+      expect(/For a home worth \$250,000: about \$198 a year/.test(t) && /For a home worth \$250,000: about \$490 a year/.test(t), `a typed home value did not scale the figures (${url})`);
+      await p.evaluate(() => document.querySelectorAll('.lv-more > summary').forEach((x) => x.click())); await wait(250);
+      t = await page();
+      for (const h of ['What it pays for', 'What changes if it passes', 'What happens if it fails', 'What people have said', 'Questions to ask yourself', 'The official ballot wording'])
+        expect(t.includes(h), `Read more lacks "${h}" (${url})`);
+      expect(/Supports it/.test(t) && /Raised a concern/.test(t), `the page shows only one side for Issue 11 (${url})`);
+      const bad = await p.evaluate(() => [...document.querySelectorAll('.lv-src a')].filter((a) => !/^https:\/\//.test(a.href) || a.target !== '_blank').length);
+      expect(bad === 0, `${bad} source links are not secure or do not open in a new tab (${url})`);
+      expect((await count(p, '.lv-src a')) >= 12, `the sources are not linked (${url})`);
+      await done(p);
+    }
+    // the ballot story points to the guide, and the Ballot tab has a card for it
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const sb = await m.$$('.cxm-story-btn'); let ballot = null;
+    for (const x of sb) { if (/ballot/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) ballot = x; }
+    expect(!!ballot, 'no ballot story on the phone Today screen');
+    if (ballot) await ballot.click(); await wait(500);
+    let seen = false;
+    for (let i = 0; i < 10 && !seen; i++) { seen = await m.evaluate(() => /See the levies/.test(document.body.innerText)); if (!seen) { const r = await m.$('.cxm-tap-r'); if (!r) break; await r.click(); await wait(250); } }
+    expect(seen, 'the ballot story does not reach "See the levies"');
+    await done(m);
+    const b = await open('/#phone', { mobile: true, easy: false });
+    await clickText(b, 'Ballot'); await wait(400);
+    expect(/Levies and taxes on your ballot/.test(await b.evaluate(() => document.body.innerText)), 'the Ballot tab has no levies card');
+    await done(b);
+  },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
     const m = await open('/#phone', { mobile: true, easy: false });
@@ -639,7 +681,10 @@ const AXE_PAGES = [
   ['phone today', '/#phone', { mobile: true, easy: false }], ['phone settings', '/?panel=settings#phone', { mobile: true, easy: false }], ['phone my priorities', '/?panel=priorities#phone', { mobile: true, easy: false }], ['phone settings original', '/?panel=settings#phone', { mobile: true, easy: false, theme: 'original' }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
+  // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }],
 ];
+const AXE_AFTER = { openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); } };
 async function axeBad(p) {
   await p.evaluate(axeSource);
   const v = await p.evaluate(() => axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] }, rules: { 'label-content-name-mismatch': { enabled: true } } })
@@ -651,6 +696,7 @@ CHECKS['axe'] = async () => {
   for (const [name, url, o] of AXE_PAGES) {
     if (process.env.AXE_PAGE && !process.env.AXE_PAGE.split(',').includes(name)) continue;
     const p = await open(url, o);
+    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
     const bad = await axeBad(p);
     expect(bad.length === 0, `axe on ${name}: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));
     await done(p);
@@ -718,6 +764,7 @@ CHECKS['no-bleed'] = async () => {
   const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
   for (const [name, url, o] of pages) {
     const p = await open(url, o);
+    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
     const bad = await bleedBad(p);
     expect(bad.length === 0, `text spills out of its box on ${name}: ` + bad.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}"`).join('; '));
     const cut = await clipBad(p);

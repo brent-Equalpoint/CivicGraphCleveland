@@ -64,8 +64,8 @@ function CxmBallot() {
         <p className="cxm-mut">Open a race to see what someone has said or voted on, and what their office controls. Missing evidence stays missing. Choosing "Still deciding" is okay.</p>
       </div>
       {lv.length > 0 && (
-        <button type="button" className="cxm-card cxm-card-acc cxm-keycard" onClick={() => setOverlay({ type: `keypad`, mode: `home`, kp: `150000` })}>
-          <span><strong>What would the county levies cost you?</strong><small>Type your home's value. The county's own estimate, not your bill.</small></span><b>$</b>
+        <button type="button" className="cxm-card cxm-card-acc cxm-keycard" onClick={() => openSheet(`levies`)}>
+          <span><strong>Levies and taxes on your ballot</strong><small>What each costs, what it pays for, what changes, and what people say. Type your home's value for a dollar figure.</small></span><b>$</b>
         </button>
       )}
       {groups.map(([g, list]) => (
@@ -225,6 +225,12 @@ function CxmLocalIssues() {
       <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Get-a-Sample-Ballot">Get your sample ballot</CxmSrc>
     </div>
   );
+}
+
+/* ---------- the levies guide as a phone sheet; the number pad stays one tap away ---------- */
+function CxmLevies() {
+  const { setOverlay } = useCxm();
+  return <div className="cxm-pad"><CX_Levies onPad={() => setOverlay({ type: `keypad`, mode: `home`, kp: `150000` })} /></div>;
 }
 
 /* ---------- levy and tax keypad ---------- */

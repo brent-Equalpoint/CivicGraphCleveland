@@ -37,3 +37,12 @@ Some English is built from pieces around a bold word or a link, or around a name
 
 ## Official ballot wording stays in English
 The Board of Elections' own question wording (charter amendments, tax levies, liquor options: "A majority affirmative vote is necessary for passage. Shall...?") is an official record and is kept in English in the app. The translator's draft Spanish for each is in `i18n/ballot-drafts.json`. Do not publish those as the ballot: the County Board of Elections provides its own Spanish ballots where required. Compare against theirs, and if the Board publishes Spanish question text, use it (add it to `manual.json` under `exact`).
+
+## Levies and taxes guide (added Oct 2, 2026)
+The countywide write-ups for Issues 10 and 11 (`ext/cx-levies.jsx`, between the LEVY-TEXT markers) are translated too. Things to check:
+- **Quotations** from news coverage (Amber Gibbs, Leslie Linaevers, Dale Miller, Yvonne Conwell, Mike O'Malley) are machine-translated from the English quotes. Where a person's exact words matter, compare with the original article.
+- **Department names** in the county's list of possible cuts ("Servicios para Niños y Familias", "Servicios para Personas Mayores y Adultos", "Servicios de Empleo y Familia") are translated so readers can follow them; the English names are in the source article. This is decision 1 again.
+- **Titles that carry gender** are written without one ("presidencia del Concejo del Condado", "integrante del Concejo del Condado", "persona que recibe servicios", "CEO").
+- **"Mill"** is kept as "mill" in the heading "Qué es un mill (milésimo)"; "milésimo" is the textbook word but few residents use it.
+- **The purposes in the ballot wording** (for example "current expenses") are translated when short and left in English when they are long, because the ballot's own words are official.
+- **"The coverage we read does not quote anyone opposing Issue 10..."** keeps the line "a missing record is not a no" in the Spanish; confirm it still reads as intended.

@@ -105,7 +105,11 @@ function cxmBallotStory() {
   if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `Today` : `Next deadline`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Times are Eastern. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Times are Eastern.` });
   if (i3) frames.push({ k: `State Issue 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
   const lv = cxmLevies();
-  if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Type your home's value and see the county's own estimate.`, type: `cta`, cta: `Type my home's value`, go: `keypad` });
+  lv.forEach((l) => {
+    const T = CX_LEVY_TEXT.issues[l.issue.number];
+    if (T) frames.push({ k: `Issue ${l.issue.number}`, big: `${T.name}: about $${l.per} a year for each $100,000 of home value.`, small: T.line });
+  });
+  if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. Is it right for you?`, small: `See what each pays for, what changes, and what people have said. We do not tell you how to vote.`, type: `cta`, cta: `See the levies`, go: `levies` });
   return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, deeper: { label: `Open my ballot`, kind: `tab`, tab: `ballot`, panel: `ballot` }, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
 }
 function cxmSamePerson(a, b) {
@@ -152,7 +156,7 @@ function CX_StoryFrame({ fr, s }) {
           {m && <a className="cx-story-link" href={m.url} target="_blank" rel="noreferrer">Read the record, file {m.file} (opens in a new tab)</a>}
         </div>
       )}
-      {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(fr.go === `place` ? `place` : `ballot`)}>{fr.go === `place` ? `Open Who decides here?` : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
+      {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => CX_NAV.panel(fr.go === `place` ? `place` : fr.go === `levies` ? `levies` : `ballot`)}>{fr.go === `place` ? `Open Who decides here?` : fr.go === `levies` ? `See the levies` : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
       <CxSource source={s.source} cls="cx-story-src" />
     </>
   );

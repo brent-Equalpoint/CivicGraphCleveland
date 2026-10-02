@@ -242,7 +242,7 @@ function CxmStory() {
         </div>
       )}
       {fr.type === `cta` && (
-        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
+        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
       {!asText && !fr.type && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
       {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}

@@ -957,3 +957,54 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .cxm-sheet { touch-action: pan-y; will-change: transform; }
 .cxm-sheet-bar { cursor: grab; touch-action: none; }
 .cxm-sheet-bar button { cursor: pointer; }
+
+/* ---- v5.17 Levies and taxes (ext/cx-levies.jsx). Fixed colors, like the profiles: a dark desktop page and a dark phone sheet. ---- */
+.lv { max-width: 760px; }
+.lv h1 { margin-bottom: 8px; }
+.lv-h2 { margin: 28px 0 10px; font-size: 22px; line-height: 1.25; }
+.lv-note { margin: 6px 0 0; font-size: 15.5px; line-height: 1.5; color: #e1ded8; }
+.lv-field { margin: 4px 0 8px; padding: 14px; border-radius: 14px; background: #ffffff0d; }
+.lv-field label { display: block; margin: 0 0 6px; font-weight: 700; font-size: 16px; }
+.lv-field input { box-sizing: border-box; width: 100%; max-width: 320px; min-height: 48px; padding: 0 14px; border-radius: 12px; border: 1px solid #ffffff4d; background: #0000003d; color: #f4f2ee; font: 600 20px/1 Inter, system-ui, sans-serif; }
+.lv-field input::placeholder { color: #cfccc6; font-weight: 400; }
+.lv-pad { margin-top: 10px; min-height: 44px; padding: 0 14px; border-radius: 10px; border: 1px solid #ffffff4d; background: transparent; color: #f4f2ee; font: 600 15px Inter, system-ui, sans-serif; cursor: pointer; }
+.lv-card { margin: 14px 0; padding: 18px; border-radius: 18px; background: #ffffff0f; border: 1px solid #ffffff1f; }
+.lv-card h2 { margin: 6px 0 6px; font-size: 24px; line-height: 1.2; }
+.lv-kick { margin: 0; font-size: 14.5px; color: #e1ded8; }
+.lv-chip { display: inline-block; margin-right: 6px; padding: 2px 10px; border-radius: 999px; background: #9fc0ff29; color: #d3e2ff; font-weight: 700; font-size: 14px; }
+.lv-line { margin: 0 0 12px; font-size: 17px; }
+.lv-cost { padding: 12px 14px; border-radius: 14px; background: #0000002e; }
+.lv-big { margin: 0 0 4px; font-size: 17px; line-height: 1.35; }
+.lv-big b { margin-right: 6px; font-size: 36px; line-height: 1.1; }
+.lv-mine { margin: 6px 0; font-size: 18px; }
+.lv-mine b { font-size: 22px; }
+.lv-sub { margin: 4px 0 0; font-size: 15.5px; color: #e1ded8; }
+.lv-more, .lv-wording, .lv-how, .lv-other > details { margin: 12px 0 0; }
+.lv-more > summary, .lv-how > summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 16px; border-radius: 12px; background: #ffffff1a; font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; }
+.lv-more > summary::-webkit-details-marker, .lv-how > summary::-webkit-details-marker, .lv-other summary::-webkit-details-marker, .lv-wording > summary::-webkit-details-marker { display: none; }
+.lv-more > summary::after, .lv-how > summary::after { content: "+"; font-size: 24px; font-weight: 500; }
+.lv-more[open] > summary::after, .lv-how[open] > summary::after { content: "\2212"; }
+.lv-body { padding: 4px 2px 0; }
+.lv-body h3 { margin: 18px 0 6px; font-size: 18px; }
+.lv-list { margin: 6px 0; padding-left: 22px; }
+.lv-list li { margin: 7px 0; }
+.lv-src { font-size: 14.5px; white-space: nowrap; }
+.lv-said { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 10px; }
+.lv-said li { padding: 12px 14px; border-radius: 12px; background: #ffffff0d; }
+.lv-said li.lv-for { background: #9fe6c317; }
+.lv-said li.lv-concern { background: #ffd1a91a; }
+.lv-side { display: inline-block; margin-left: 8px; padding: 1px 9px; border-radius: 999px; background: #ffffff1f; font-size: 13.5px; font-weight: 600; }
+.lv-quote { display: block; margin-top: 4px; }
+.lv-wording > summary, .lv-other summary { min-height: 44px; font-weight: 600; cursor: pointer; }
+.lv-wtext { margin: 8px 0 0; font-size: 15.5px; line-height: 1.55; color: #e1ded8; white-space: pre-line; }
+.lv-others { list-style: none; margin: 10px 0 0; padding: 0; display: grid; gap: 8px; }
+.lv-other > details { margin: 0; padding: 4px 14px; border-radius: 14px; background: #ffffff0d; }
+.lv-other summary { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 2px 14px; padding: 6px 0; }
+.lv-place { font-weight: 700; }
+.lv-oneline { font-size: 15px; color: #e1ded8; }
+.lv-review { margin-top: 18px; }
+.lv a:focus-visible, .lv button:focus-visible, .lv summary:focus-visible, .lv input:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
+html[data-cx-theme] .atlas-shell .lv p, html[data-cx-theme] .atlas-shell .lv li { color: #f4f2ee; }
+html[data-cx-theme] .atlas-shell .lv p.lv-note, html[data-cx-theme] .atlas-shell .lv p.lv-sub, html[data-cx-theme] .atlas-shell .lv p.lv-kick, html[data-cx-theme] .atlas-shell .lv p.lv-wtext, html[data-cx-theme] .atlas-shell .lv p.sp-note { color: #e1ded8; }
+@media (max-width: 480px) { .lv-card { padding: 14px; } .lv-big b { font-size: 32px; } }
+@media print { .lv-more:not([open]) .lv-body { display: block; } .lv-pad { display: none; } }

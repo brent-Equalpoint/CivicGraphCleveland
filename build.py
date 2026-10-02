@@ -108,6 +108,24 @@ def mark_office_reviewed(who):
     print(f"marked the profile office text reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def levy_fp():
+    """Fingerprint of the hand-written levy text: everything between the LEVY-TEXT markers in ext/cx-levies.jsx."""
+    src = open(os.path.join(EXT, "cx-levies.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* LEVY-TEXT-START \*/.*?/\* LEVY-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the LEVY-TEXT markers are missing from ext/cx-levies.jsx")
+    return hashlib.sha256(m.group(0).encode()).hexdigest()[:16]
+
+
+def mark_levies_reviewed(who):
+    """Record that a person read the levy write-ups against their sources, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-levies-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "levies-reviewed.json")
+    write(path, json.dumps({"fp": levy_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the levy write-ups reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def geo_svg(geo):
     """Project the ward and neighborhood layers to SVG paths (simple equirectangular at Cleveland's latitude)."""
     import math
@@ -339,6 +357,12 @@ def main():
     of_ok = of.get("fp") == office_fp()
     log(f"office text: {'reviewed by ' + of['by'] + ' on ' + of['checked'] if of_ok else 'NOT reviewed by a person (' + ('text changed since review' if of else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/office-reviewed.json ---- */\nconst CX_OFFICE_REVIEW = " + json.dumps({"ok": of_ok, "by": of.get("by") if of_ok else None, "checked": of.get("checked") if of_ok else None}) + ";\n"
+    # v5.17 levy write-ups: reviewed by a person only while their fingerprint still matches what that person read
+    lv_path = os.path.join(ROOT, "data", "levies-reviewed.json")
+    lv = json.load(open(lv_path, encoding="utf-8")) if os.path.exists(lv_path) else {}
+    lv_ok = lv.get("fp") == levy_fp()
+    log(f"levy text: {'reviewed by ' + lv['by'] + ' on ' + lv['checked'] if lv_ok else 'NOT reviewed by a person (' + ('text changed since review' if lv else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/levies-reviewed.json ---- */\nconst CX_LEVY_REVIEW = " + json.dumps({"ok": lv_ok, "by": lv.get("by") if lv_ok else None, "checked": lv.get("checked") if lv_ok else None}) + ";\n"
     # v5.16 weekly link check (scripts/check_links.py): only links that failed twice running are shown to residents
     lk_path = os.path.join(ROOT, "data", "links-2026.json")
     lk = json.load(open(lk_path, encoding="utf-8")) if os.path.exists(lk_path) else {"checked_at": None, "broken": []}
@@ -372,7 +396,7 @@ def main():
          "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-levies.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -565,6 +589,19 @@ def main():
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n"
                 "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
                 label="aux page: united states")
+    # v5.17 Levies and taxes: sidebar entry (under Voter education), address panel, page
+    src = patch(src, "`news`, `stories`, `profiles`, `us`]", "`news`, `stories`, `profiles`, `us`, `levies`]", count=2, label="url panels: levies")
+    src = patch(src,
+                "                      (0, W.jsx)(`span`, { children: `Voter education` }),\n                    ],\n                  }),\n",
+                "                      (0, W.jsx)(`span`, { children: `Voter education` }),\n                    ],\n                  }),\n"
+                "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `Levies and taxes`,\n                    className: F === `levies` ? `active` : ``,\n"
+                "                    onClick: () => cxPanel(`levies`),\n                    children: [(0, W.jsx)(CXI.Wallet, { size: 18 }), (0, W.jsx)(`span`, { children: `Levies and taxes` })],\n                  }),\n",
+                label="sidebar: levies")
+    src = patch(src,
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n"
+                "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n",
+                label="aux page: levies")
     # v5.16 drawer: a way from a council member's or the Mayor's map record to their formal profile
     src = patch(src,
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n",
@@ -914,6 +951,8 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 if __name__ == "__main__":
     if len(sys.argv) > 1 and sys.argv[1] == "--mark-reviewed":
         mark_reviewed(sys.argv[2:])
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-levies-reviewed":
+        mark_levies_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-office-reviewed":
         mark_office_reviewed(" ".join(sys.argv[2:]))
     else:

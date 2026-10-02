@@ -237,7 +237,29 @@
   "15-ward map, 2026 Cleveland Ward Map, 15 Cleveland wards.": "Mapa de 15 distritos, Mapa de Distritos de Cleveland de 2026, 15 distritos de Cleveland.",
   "Executive": "Ejecutivo",
   "Opens What's new.": "Abre Novedades.",
-  "· mayor's administration": "· administración del alcalde"
+  "· mayor's administration": "· administración del alcalde",
+  "New (additional)": "Nuevo (adicional)",
+  "Renewal": "Renovación",
+  "Renewal and increase": "Renovación y aumento",
+  "Increase": "Aumento",
+  "Tax issue": "Asunto de impuestos",
+  "one year": "un año",
+  "two years": "dos años",
+  "three years": "tres años",
+  "four years": "cuatro años",
+  "five years": "cinco años",
+  "six years": "seis años",
+  "seven years": "siete años",
+  "eight years": "ocho años",
+  "nine years": "nueve años",
+  "ten years": "diez años",
+  "current expenses": "gastos corrientes",
+  "general permanent improvements": "mejoras permanentes generales",
+  "providing emergency medical service": "prestar servicio médico de emergencia",
+  "providing and maintaining street lighting": "proveer y mantener el alumbrado público",
+  "paying the current operating expenses of the district": "pagar los gastos operativos corrientes del distrito",
+  "Pays for the county board that supports people with developmental disabilities, from birth through adulthood.": "Financia a la junta del condado que apoya a las personas con discapacidades del desarrollo, desde el nacimiento hasta la edad adulta.",
+  "Pays for county services such as child protection, senior services, homeless programs, addiction treatment, and support for MetroHealth.": "Financia servicios del condado como la protección infantil, los servicios para personas mayores, los programas para personas sin hogar, el tratamiento de adicciones y el apoyo a MetroHealth."
  },
  "masked": {
   "{n} days": "{n} días",
@@ -356,7 +378,8 @@
   "From 2026 (15 wards): Downtown highlighted; {*}": "Desde 2026 (15 distritos): Centro resaltado; {*}",
   "Design style: {*}. Switch to {*}.": "Estilo: {*}. Cambiar a {*}.",
   "· Wards {*}": "· Distritos {*}",
-  "· Ward {n}": "· Distrito {n}"
+  "· Ward {n}": "· Distrito {n}",
+  "{$} per {$}": "{$} por cada {$}"
  },
  "keep": [
   "Brooklyn Centre",
