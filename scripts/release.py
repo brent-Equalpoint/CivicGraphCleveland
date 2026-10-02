@@ -83,7 +83,7 @@ def main():
     print(f"  identical: single file {a['single'][:16]}..., site/index.html {a['index'][:16]}...")
 
     step(3, "Unit tests and data safety check")
-    for cmd in ([sys.executable, "scripts/test_bench.py"], [sys.executable, "scripts/test_bench_gate.py"], [sys.executable, "scripts/test_links.py"], [sys.executable, "scripts/test_us.py"], [sys.executable, "scripts/test_votes.py"], [sys.executable, "scripts/test_cityrecord.py"], [sys.executable, "scripts/refresh.py", "--check"]):
+    for cmd in ([sys.executable, "scripts/test_bench.py"], [sys.executable, "scripts/test_bench_gate.py"], [sys.executable, "scripts/test_links.py"], [sys.executable, "scripts/test_us.py"], [sys.executable, "scripts/test_votes.py"], [sys.executable, "scripts/test_cityrecord.py"], ["node", "scripts/test_headline.js"], [sys.executable, "scripts/refresh.py", "--check"]):
         rc, out = run(cmd)
         print(f"  {'ok  ' if rc == 0 else 'FAIL'} {' '.join(cmd[1:])}")
         if rc:

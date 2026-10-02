@@ -266,6 +266,87 @@ const CHECKS = {
     expect(!/…|\w\.\.\.(\s|$)/.test(list), 'a profile list still ends a title in an ellipsis');
     await done(p);
   },
+  async 'today-order'() {
+    // the stories lead the Today tab, like a feed; asking for a place is one slim row; no guide bubble takes the top
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const g = await m.evaluate(() => {
+      const t = (q) => { const e = document.querySelector(q); if (!e) return null; const r = e.getBoundingClientRect(); return { top: r.top, bottom: r.bottom, height: r.height }; };
+      const page = document.querySelector('.cxm-page'); const kids = page ? [...page.children].map((e) => e.className.split(' ')[0]) : [];
+      return { kids, stories: t('.cxm-stories'), set: t('.cxm-setplace'), count: t('.cxm-count'), says: !!document.querySelector('.cxm-says, .cxm-bubble'), main: t('.cxm-page'), setText: (document.querySelector('.cxm-setplace') || {}).innerText };
+    });
+    expect(g.kids[0] === 'cxm-stories', `the stories are not first on Today: ${g.kids.slice(0, 3)}`);
+    expect(!g.says, 'a guide speech bubble is still on Today');
+    expect(g.set && g.set.top >= g.stories.bottom - 1 && g.set.bottom <= g.count.top + 1, 'the place row is not between the stories and the countdown');
+    expect(g.set.height <= 72, `the place row takes ${Math.round(g.set.height)}px`);
+    expect(/Set your neighborhood/.test(g.setText || ''), `the place row is not direct: ${g.setText}`);
+    expect(g.stories.top - g.main.top < 24, `the stories start ${Math.round(g.stories.top - g.main.top)}px down the page`);
+    const cards = await m.evaluate(() => [...document.querySelectorAll('.cxm-rcpt')].map((e) => ({ t: (e.querySelector('.cxm-rcpt-t') || {}).innerText || '', second: !!(e.querySelector('.cxm-rcpt-w') && !e.classList.contains('cxm-news-row')) })));
+    expect(cards.length >= 4, `Today shows only ${cards.length} receipt cards`);
+    expect(cards.every((c) => c.t.length > 0 && c.t.length <= 130), `a receipt headline is ${Math.max(...cards.map((c) => c.t.length))} characters long`);
+    expect(!cards.some((c) => c.second), 'a receipt card repeats the official title under its headline');
+    await clickText(m, 'Set your neighborhood'); await wait(400);
+    expect(await has(m, '.cxm-sheet'), 'the place row does not open the neighborhood picker');
+    await done(m);
+  },
+  async 'sheet-pull'() {
+    // a sheet follows the finger down, then either eases back or leaves; it never steals scrolling
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const cdp = await m.createCDPSession();
+    const touch = (type, x, y) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    const pull = async (x, y0, y1, steps, gap, midcheck) => {
+      await touch('touchStart', x, y0);
+      for (let i = 1; i <= steps; i++) { await touch('touchMove', x + (arguments.length > 6 ? 0 : 0), y0 + ((y1 - y0) * i) / steps); await wait(gap); }
+      const mid = midcheck ? await midcheck() : null;
+      await touch('touchEnd');
+      return mid;
+    };
+    const state = () => m.evaluate(() => { const s = document.querySelector('.cxm-sheet'); const c = document.querySelector('.cxm-scrim'); return s ? { t: s.style.transform, top: Math.round(s.getBoundingClientRect().top), op: c ? c.style.opacity : '', bar: (() => { const b = s.querySelector('.cxm-sheet-bar').getBoundingClientRect(); return { x: b.x + b.width / 2, y: b.y + b.height / 2 }; })() } : null; });
+    const openSettings = async () => { await clickText(m, 'Settings'); await wait(600); };
+
+    await openSettings();
+    let s0 = await state();
+    expect(s0 && s0.t === '', 'a freshly opened sheet already has a pull offset');
+    // 1. a short pull follows the finger, fades the screen behind, and eases back on release
+    const mid = await pull(s0.bar.x - 100, s0.bar.y, s0.bar.y + 60, 6, 16, async () => state());
+    expect(mid && /translateY\(([3-6]\d)/.test(mid.t) && +mid.op < 1 && +mid.op > 0.8, `the sheet did not follow a 60px pull: ${JSON.stringify(mid && { t: mid.t, op: mid.op })}`);
+    await wait(700);
+    let s1 = await state();
+    expect(s1 && s1.t === '' && s1.top === s0.top, `the sheet did not ease back after a short pull: ${JSON.stringify(s1 && { t: s1.t, top: s1.top, was: s0.top })}`);
+    // 2. upward and sideways drags do nothing
+    await pull(s0.bar.x - 100, s0.bar.y + 20, s0.bar.y - 80, 6, 16);
+    await pull(s0.bar.x - 100, s0.bar.y, s0.bar.y + 30, 6, 16, async () => null);
+    await wait(700);
+    // 3. a long pull from the handle closes it
+    s0 = await state();
+    await pull(s0.bar.x - 100, s0.bar.y, s0.bar.y + 420, 12, 16);
+    await wait(700);
+    expect(!(await has(m, '.cxm-sheet')) && !(await has(m, '.cxm-scrim')), 'a long pull did not close the sheet');
+    // 4. a quick flick closes it even when short
+    await openSettings(); s0 = await state();
+    await pull(s0.bar.x - 100, s0.bar.y, s0.bar.y + 90, 3, 6);
+    await wait(700);
+    expect(!(await has(m, '.cxm-sheet')), 'a quick flick did not close the sheet');
+    // 5. pulling the content down from the top also closes it
+    await openSettings(); s0 = await state();
+    await pull(60, s0.top + 220, s0.top + 220 + 420, 12, 16);
+    await wait(700);
+    expect(!(await has(m, '.cxm-sheet')), 'pulling the content down from the top did not close the sheet');
+    await done(m);
+
+    // 6. scrolled content scrolls; it does not pull the sheet
+    const p = await open('/?panel=priorities#phone', { mobile: true, easy: false });
+    const c2 = await p.createCDPSession();
+    const touch2 = (type, x, y) => c2.send('Input.dispatchTouchEvent', { type, touchPoints: type === 'touchEnd' ? [] : [{ x, y }] });
+    await p.evaluate(() => { document.querySelector('.cxm-sheet').scrollTop = 400; }); await wait(200);
+    const top0 = await p.evaluate(() => Math.round(document.querySelector('.cxm-sheet').getBoundingClientRect().top));
+    await touch2('touchStart', 60, 500);
+    for (let i = 1; i <= 10; i++) { await touch2('touchMove', 60, 500 + i * 40); await wait(16); }
+    const during = await p.evaluate(() => document.querySelector('.cxm-sheet').style.transform);
+    await touch2('touchEnd'); await wait(500);
+    const after = await p.evaluate(() => { const s = document.querySelector('.cxm-sheet'); return s ? { t: s.style.transform, top: Math.round(s.getBoundingClientRect().top) } : null; });
+    expect(during === '' && after && after.t === '' && after.top === top0, `scrolling inside a sheet pulled it: ${JSON.stringify({ during, after, top0 })}`);
+    await done(p);
+  },
   async 'settings-sheet'() {
     // Settings holds settings only; the civic pieces that used to share it live where they are used
     const m = await open('/?room=voting#phone', { mobile: true, easy: false });

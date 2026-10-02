@@ -26,7 +26,7 @@ function CxmNewsRow({ r }) {
     <button type="button" className={`cxm-rcpt cxm-news-row k-${r.kind}`} disabled={!r.m} onClick={() => r.m && openSheet(`leg`, { file: r.f })}>
       <span className={`cxm-av cxm-av-${cxmNewsAv(r)}`}>{lead ? cxmInitials(lead) : `CH`}</span>
       <span className="cxm-rcpt-mid">
-        <span className="cxm-rcpt-t">{cxWords(r.title, 16)}</span>
+        <span className="cxm-rcpt-t">{cxHeadline(r.title)}</span>
         <span className="cxm-rcpt-s">{r.what}</span>
         <span className="cxm-rcpt-w">{r.f}{r.wards.length ? ` · Ward${r.wards.length > 1 ? `s` : ``} ${r.wards.join(`, `)}` : r.admin ? ` · mayor's administration` : ``}</span>
       </span>

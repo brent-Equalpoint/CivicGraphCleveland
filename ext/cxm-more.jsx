@@ -86,7 +86,7 @@ function CxmSearch() {
       [`Rooms`, Uh.filter((r) => hit(r.label) || hit(r.question)).map((r) => [r.label, r.question, () => openRoom(r.id)])],
       [`People`, [...idx.seats, idx.admin].filter((s) => hit(s.name) || hit(`ward ${s.ward}`)).map((s) => [s.name, s.ward ? `Ward ${s.ward}` : `City departments`, () => openSeat(s.id)])
         .concat(Hm.flatMap((c) => c.candidates.filter((x) => Qm(x.status) && hit(x.name)).map((x) => [x.name, `${c.name} · ${x.party}`, () => openSheet(`contest`, { id: c.id })])))],
-      [`Laws and proposals`, CX_LEG.matters.filter((m) => hit(m.file) || hit(m.title)).slice(0, 12).map((m) => [`${m.file} · ${cxWords(cxShortTitle(m.title), 14)}`, `${m.type} · ${m.status}`, () => openSheet(`leg`, { file: m.file })])],
+      [`Laws and proposals`, CX_LEG.matters.filter((m) => hit(m.file) || hit(m.title)).slice(0, 12).map((m) => [`${m.file} · ${cxHeadline(m.title)}`, `${m.type} · ${m.status}`, () => openSheet(`leg`, { file: m.file })])],
       [`Records`, nodes.slice(0, 10).map(([r, n]) => [n.name, `${r.label} · ${n.kind}`, () => openSheet(`record`, { room: r.id, node: n.id })])],
       [`Ballot`, Hm.filter((c) => hit(c.name) || hit(c.area)).slice(0, 8).map((c) => [c.name, `${cxArea(c.area, c.name)} ${c.term}`, () => openSheet(`contest`, { id: c.id })])
         .concat(Um.filter((i) => hit(i.title) || hit(i.area) || hit(`issue ${i.number}`) || hit(Xm(i).title)).slice(0, 8).map((i) => [`Issue ${i.number}: ${Xm(i).title}`, i.area, () => openSheet(`issue`, { id: i.id })]))],

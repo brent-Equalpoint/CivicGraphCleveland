@@ -260,7 +260,7 @@ function CX_NewsRow({ r }) {
     <li className={`cx-news-row cx-k-${r.kind}`}>
       <span className="cx-news-file">{r.f}</span>
       <span className="cx-news-mid">
-        <strong>{r.title}</strong>
+        <strong>{cxHeadline(r.title)}</strong>
         <span>{r.what}</span>
         <small>
           {r.m ? <>{r.m.type}{r.lead ? ` · led by ${r.lead}` : ``}{r.wards.length ? ` · Ward${r.wards.length > 1 ? `s` : ``} ${r.wards.join(`, `)}` : ``} · </> : null}
@@ -326,7 +326,7 @@ function CX_Latest({ seat }) {
   return (
     <div className="cx-latest">
       <h4 aria-level="3">Latest <small>since {since ? cxShortDate(since) : `the last check`}</small></h4>
-      {list.length ? <ul>{list.map((r) => <li key={r.f}><b>{r.f}</b> {cxWords(r.title, 14)} <span>{r.what}</span></li>)}</ul> : <p>Nothing new on {seat.ward ? `${seat.name}'s` : `the administration's`} proposals since {since ? cxShortDate(since) : `the last check`}. No record is not a no.</p>}
+      {list.length ? <ul>{list.map((r) => <li key={r.f}><b>{r.f}</b> {cxHeadline(r.title)} <span>{r.what}</span></li>)}</ul> : <p>Nothing new on {seat.ward ? `${seat.name}'s` : `the administration's`} proposals since {since ? cxShortDate(since) : `the last check`}. No record is not a no.</p>}
       <button type="button" className="cx-link-button" onClick={() => CX_NAV.panel(`news`)}>Everything new <CXI.Arrow size={13} /></button>
     </div>
   );

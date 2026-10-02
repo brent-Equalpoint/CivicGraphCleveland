@@ -357,15 +357,100 @@ const CXM_SHEETS = {
   news: () => <CxmNews />,
   profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,
 };
+/* Pull a sheet down to close it, the way phones do. The sheet follows the finger, the dimmed screen behind it fades as it goes, and on
+   release it either slides the rest of the way off or eases back, depending on how far and how fast it was pulled. A pull works from
+   the handle bar, or from anywhere in the sheet when its content is scrolled to the top. It never takes over scrolling: pulling up,
+   sideways, or inside a list that can still scroll does nothing special. With reduced motion on, it closes without the slide. */
+function useCxmPull(sheetRef, scrimRef, onClose) {
+  const closeRef = u.useRef(onClose);
+  closeRef.current = onClose;
+  u.useEffect(() => {
+    const el = sheetRef.current;
+    if (!el) return undefined;
+    const scrim = scrimRef.current;
+    const reduce = !!(globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches);
+    const EASE = `cubic-bezier(.2,.8,.2,1)`;
+    let on = !1, drag = !1, fromBar = !1, x0 = 0, y0 = 0, dy = 0, lastY = 0, lastT = 0, v = 0, timer = 0;
+    const paint = (y) => {
+      el.style.transform = `translateY(${y}px)`;
+      if (scrim) scrim.style.opacity = String(Math.max(0, 1 - y / Math.max(1, el.offsetHeight)));
+    };
+    const scrolledInside = (t) => {
+      for (let n = t; n && n !== el; n = n.parentElement) {
+        if (n.scrollHeight > n.clientHeight + 1 && /(auto|scroll)/.test(getComputedStyle(n).overflowY) && n.scrollTop > 0) return !0;
+        if (n.scrollWidth > n.clientWidth + 1 && /(auto|scroll)/.test(getComputedStyle(n).overflowX)) return !0;
+      }
+      return !1;
+    };
+    const begin = (x, y, target) => {
+      if (timer) { clearTimeout(timer); timer = 0; }
+      on = !0; drag = !1; x0 = x; y0 = lastY = y; lastT = performance.now(); v = 0; dy = 0;
+      fromBar = !!(target.closest && target.closest(`.cxm-sheet-bar`)) && !(target.closest && target.closest(`button`));
+    };
+    const move = (x, y, e) => {
+      if (!on) return;
+      if (!drag) {
+        const d = y - y0;
+        if (d < 6 || Math.abs(x - x0) > d) return;                       // not a downward pull
+        if (!fromBar && (el.scrollTop > 0 || scrolledInside(e.target))) { on = !1; return; }   // the content is still scrolling
+        drag = !0; y0 = y;
+        el.style.animation = `none`; el.style.transition = `none`; el.style.overflowY = `hidden`;
+        if (scrim) { scrim.style.animation = `none`; scrim.style.transition = `none`; }
+      }
+      dy = Math.max(0, y - y0);
+      const now = performance.now();
+      v = (y - lastY) / Math.max(1, now - lastT); lastY = y; lastT = now;
+      paint(dy);
+      if (e.cancelable) e.preventDefault();
+    };
+    const finish = () => {
+      if (!on) return;
+      on = !1;
+      if (!drag) return;
+      drag = !1;
+      const h = Math.max(1, el.offsetHeight);
+      const away = dy > h * 0.28 || v > 0.5;
+      if (away) {
+        if (!reduce) { el.style.transition = `transform .3s ${EASE}`; if (scrim) scrim.style.transition = `opacity .3s ease`; }
+        paint(h);
+        timer = setTimeout(() => closeRef.current(), reduce ? 0 : 280);
+      } else {
+        el.style.transition = reduce ? `none` : `transform .34s ${EASE}`;
+        if (scrim) scrim.style.transition = reduce ? `none` : `opacity .34s ease`;
+        paint(0);
+        timer = setTimeout(() => { el.style.transition = ``; el.style.transform = ``; el.style.overflowY = ``; if (scrim) { scrim.style.transition = ``; scrim.style.opacity = ``; } }, reduce ? 0 : 360);
+      }
+    };
+    const ts = (e) => { if (e.touches.length === 1) begin(e.touches[0].clientX, e.touches[0].clientY, e.target); else on = !1; };
+    const tm = (e) => { if (e.touches.length === 1) move(e.touches[0].clientX, e.touches[0].clientY, e); };
+    const md = (e) => { if (e.button === 0 && e.target.closest && e.target.closest(`.cxm-sheet-bar`)) begin(e.clientX, e.clientY, e.target); };
+    const mm = (e) => { if (on) move(e.clientX, e.clientY, e); };
+    el.addEventListener(`touchstart`, ts, { passive: !0 });
+    el.addEventListener(`touchmove`, tm, { passive: !1 });
+    el.addEventListener(`touchend`, finish);
+    el.addEventListener(`touchcancel`, finish);
+    el.addEventListener(`mousedown`, md);
+    globalThis.addEventListener(`mousemove`, mm);
+    globalThis.addEventListener(`mouseup`, finish);
+    return () => {
+      if (timer) clearTimeout(timer);
+      el.removeEventListener(`touchstart`, ts); el.removeEventListener(`touchmove`, tm); el.removeEventListener(`touchend`, finish); el.removeEventListener(`touchcancel`, finish);
+      el.removeEventListener(`mousedown`, md); globalThis.removeEventListener(`mousemove`, mm); globalThis.removeEventListener(`mouseup`, finish);
+    };
+  }, [sheetRef, scrimRef]);
+}
+
 function CxmSheet({ sheet, depth }) {
   const { closeSheet, backSheet } = useCxm();
   const closeRef = u.useRef(null);
   const bodyRef = u.useRef(null);
+  const scrimRef = u.useRef(null);
+  useCxmPull(bodyRef, scrimRef, closeSheet);
   u.useEffect(() => { closeRef.current?.focus({ preventScroll: !0 }); if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [sheet]);
   const render = CXM_SHEETS[sheet.type];
   return (
     <div className="cxm-sheet-wrap">
-      <button type="button" className="cxm-scrim" aria-label="Close panel" onClick={closeSheet} />
+      <button type="button" className="cxm-scrim" aria-label="Close panel" ref={scrimRef} onClick={closeSheet} />
       <section className="cxm-sheet" role="dialog" aria-modal="true" aria-label="Details" ref={bodyRef}>
         <div className="cxm-sheet-bar">
           {depth > 1 ? <button type="button" className="cxm-sheet-back" onClick={backSheet}><CXI.Back size={16} /> Back</button> : <span className="cxm-grab" aria-hidden="true" />}
@@ -468,16 +553,6 @@ function CxmGuide({ kind, size = 56 }) {
     </svg>
   );
 }
-function CxmSays({ children }) {
-  const { guide } = useCxm();
-  return (
-    <div className="cxm-says">
-      <CxmGuide kind={guide} size={56} />
-      <div className="cxm-bubble"><span className="cxm-kicker">{CXM_GUIDES[guide] || `Erie`}</span><p>{children}</p></div>
-    </div>
-  );
-}
-
 /* ---------- first question: where is home? ---------- */
 /* one label for "my place" wherever it shows */
 function cxmHomeLabel(h) {

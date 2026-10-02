@@ -37,14 +37,13 @@ function cxmFundLabel(r) {
 function CxmReceiptRow({ x }) {
   const { openSheet } = useCxm();
   const signer = cxPlSigner(x.m);
-  const title = x.fund ? <>{cxmFundLabel(x.fund)} → {x.fund.who || `see record`}</> : cxShortTitle(x.m.title);
+  const title = x.fund ? <>{cxmFundLabel(x.fund)} → {cxEntity(x.fund.who) || `see record`}</> : cxHeadline(x.m.title);
   const amount = x.fund ? (x.fund.amount ? (x.fund.counted ? cxmMoney(x.fund.amount) : `shared`) : `amount?`) : x.st.k === `read` ? `tabled` : ``;
   return (
     <button type="button" className={`cxm-rcpt ${x.st.k === `read` ? `read` : ``}`} onClick={() => openSheet(`leg`, { file: x.m.file, fund: !!x.fund })}>
       <span className={`cxm-av cxm-av-${x.st.k}`}>{signer ? cxmInitials(signer) : `CH`}</span>
       <span className="cxm-rcpt-mid">
         <span className="cxm-rcpt-t">{title}</span>
-        {x.fund && <span className="cxm-rcpt-w">{cxWords(cxShortTitle(x.m.title), 14)}</span>}
         <span className="cxm-rcpt-s"><CxmStatusDot k={x.st.k} />{x.st.label} · {cxmDate(x.when)}</span>
       </span>
       {amount && <span className="cxm-rcpt-a">{amount}</span>}
@@ -128,26 +127,16 @@ function cxmMoments(home) {
 
 /* ---------- Today ---------- */
 function CxmToday() {
-  const { home, openSheet, setOverlay, practice, seen, go, liked } = useCxm();
+  const { home, openSheet, setOverlay, practice, seen, go } = useCxm();
   const answers = practice.state.answers;
   const stories = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
   const moments = u.useMemo(() => cxmMoments(home), [home?.ward]);
   const [note, setNote] = u.useState(CXM_NOTICE.v);
   const days = cxmDaysTo(CXM_ELECTION);
   const nextDate = cxDatesNow().find((x) => x.state === `next` || x.state === `today`);
-  const line = !home ? `Hey neighbor. Tell me where home is and I'll show you what City Hall decided for your block.`
-    : !seen.ward && home.ward ? `Ward ${home.ward} has a new story, and City Hall's receipts are in.`
-    : liked.length ? `You've got ${cxmPl(liked.length, `question`, `questions`)} ready for City Hall. That's how it starts.`
-    : `Tap any receipt to see who paid whom and who signed off.`;
   return (
     <div className="cxm-page cxm-rise">
       {note && <div className="cxm-notice" role="status"><span>{note}</span><button type="button" onClick={() => { CXM_NOTICE.v = null; setNote(null); }}>Got it</button></div>}
-      <CxmSays>{line}</CxmSays>
-      {!home && (
-        <button type="button" className="cxm-card cxm-card-acc" onClick={() => openSheet(`home`)}>
-          <strong>Make this yours</strong><span>Pick your neighborhood to see your ward, your council member, and your receipts.</span>
-        </button>
-      )}
       <div className="cxm-stories" role="group" aria-label="Stories">
         {stories.map((s, i) => (
           <button key={s.id} type="button" className={`cxm-story-btn ${seen[s.id] ? `seen` : ``}`} aria-label={`${s.label} story${seen[s.id] ? `, seen` : `, new`}`} onClick={() => setOverlay({ type: `story`, list: stories, i, f: 0 })}>
@@ -156,6 +145,11 @@ function CxmToday() {
           </button>
         ))}
       </div>
+      {!home && (
+        <button type="button" className="cxm-setplace" onClick={() => openSheet(`home`)}>
+          <span><strong>Set your neighborhood</strong><small>See your ward, council member, and receipts.</small></span><CXI.Arrow size={16} />
+        </button>
+      )}
       <button type="button" className="cxm-card cxm-count" onClick={() => go(`ballot`)}>
         <span>
           <strong>{days > 1 ? `${days} days` : days === 1 ? `1 day` : days === 0 ? `Today` : `Done`}</strong>

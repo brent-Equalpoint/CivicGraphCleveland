@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  0bb99701a9940b3e376cee04993397ec54638d8ffa1b6432bd373d42a31f04f6
-Size     2,922,987 bytes
+SHA-256  f7ea995d5259524b1ecad7bece6f30cf8b4b196dbe252c50bc411cd2d21a2e9a
+Size     2,931,861 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `8911aaaf3f43cdc9f89e0d29c1768732a54cccd4db1b9f0e4c1bcc4b5ae205e9`, 2,285,480 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `9c48cf451304eca74b5dbae2daff224afc08521c8eaf7a6e761757ccaef15a0d`, 2,294,354 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -31,7 +31,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 ```
 
-**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `1c7de11b0c22a35a65bc37c056e28c5b26d8604d15889a2eb7f5e2e29c786e6f`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
+**Published copy:** a private Claude artifact, "Cleveland Civic Graph" (https://claude.ai/artifact/Tz9RyPcECL8PEXtcz5uJV8). It is **behind the local file**: since v5.12 the publish check rejects the page (it flags it as an oversized "review page"), so the live copy is version 15, equal to v5.11 plus corrected question wording. The local HTML above is complete. The current artifact build is `dist/Cleveland-Civic-Graph-v5.artifact.html` (SHA-256 `55523b86ff8d44716ae92295594e2ac11f7c1dd5663e2222f4c2a35271bef833`). The hosted Vercel site replaces the artifact as the public copy. Download and export buttons do nothing in the published copy; they work in the local file.
 
 ---
 
@@ -80,6 +80,12 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Story header.** "Read as text" is its own row and never wraps. The badge is a round mark you can see on the blue stories. A date such as "Nov. 3" stays together and a headline never ends on a lone word. The text view lines up with the header and has dividers between steps.
     - **Source line.** Every story (phone and desktop) and Easy mode shows only the linked source name, 10px higher; a screen reader still hears "Where this comes from". The desktop line no longer adds "Official records only."
     - **Checks.** `story-layout` and `titles-never-cut` fail on the old build. While fixing this I found the Congress graph check that no ideology word or score appears had backspace characters where `\b` belonged, so it never matched anything. It is repaired and passes. 20 of 20 browser checks pass; two clean builds, identical hashes.
+
+22. **Oct 2: Today leads with the stories, feed cards carry short headlines, and sheets pull down to close.** Three more fixes from using the phone.
+    - **Today.** The stories row is first, like a feed. Terry's speech bubble is gone from Today (it said the same thing the page already showed). "Make this yours" became one slim row, "Set your neighborhood", which opens the picker. The guide is still chosen in Settings and still rides the Explore rail.
+    - **Headlines.** The receipt cards and the "What's new" cards (phone and desktop) and the search rows show a short plain headline in place of the long official title, and the card no longer repeats the title under it. `ext/cx-headline.jsx` writes the headline by fixed rules from the title, for example "Agreement with NuPoint Community Development Corporation: Senior Lawn Care Program" or "Change to city law: purchase of food and beverages for the Cleveland Municipal Court". The rules may shorten and reorder the title's own words and add only a short list of template words; `scripts/test_headline.js` fails if any headline holds a word that is not in the official title, over all 1,375 titles. They are rules, not a person's reading, so the full official title is one tap away in the record (see item 21, which still holds everywhere a title is read as detail). A title no rule fits shows its own first clause.
+    - **Pull to close.** A sheet follows the finger down, the screen behind it fades, and on release it slides away (past about a quarter of its height, or a quick flick) or eases back. It works from the handle bar, or from the content when it is scrolled to the top, and never takes over scrolling, sideways drags, or lists that can still scroll. Reduced motion closes without the slide. The `sheet-pull` check sends real touches and fails on the old build.
+    - **Checks.** 22 of 22 browser checks pass, plus the headline test. Two clean builds, identical hashes.
 
 ---
 

@@ -259,7 +259,7 @@ added since do the same. So Phase 7 starts by moving the text into a lookup. It 
    addressed as "usted", no regional slang. The reviewer checks the neutrality lines word by word:
    "sponsorship is not a vote", "a missing record is not a no", "absent is not a no and not an abstention".
 9. **Rewrite the slang, do not translate it.** The relationship statuses on receipts ("Committed", "Talking
-   stage", "Left on read", "On pause") and lines like "Hey neighbor" are English idiom. The reviewer rewrites
+   stage", "Left on read", "On pause") and other friendly lines are English idiom. The reviewer rewrites
    them, or we choose plainer labels in both languages.
 10. **Flag stale translations automatically.** Store a fingerprint of the English string each Spanish string was
     reviewed against, as `data/reasons-reviewed.json` does for the reason summaries. When the English changes,
