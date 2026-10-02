@@ -15,6 +15,13 @@ const g = [];
 g.push('### Color: the two styles', '', 'Both are required and every screen is checked in both. Names are the CSS custom properties on `.cxm` in `ext/cxm.css`.', '');
 g.push(rows(['Name', 'Bento Blue (default)', 'Original (orange)'], names.map((k) => [`\`--${k}\``, sw(T.styles.bento[k]), sw(T.styles.original[k])])), '');
 g.push('Shared accents: ' + Object.entries(T.styles.shared).filter(([k]) => !k.startsWith('_')).map(([k, v]) => `\`--${k}\` ${sw(v)}`).join(', ') + '.', '');
+if (T.modes) {
+  const L = T.modes.light;
+  g.push('### Color: light mode', '', 'The mode (light or dark) is separate from the style. A person chooses System, Light, or Dark; System follows the phone or computer. Dark is the palette above and never changes. The palette below goes on `.cxm` when `html[data-cx-mode=light]`; everything else in light is generated from the dark rules by `light.py`, with the hand-written parts in `ext/cx-light.css`. Stories, the number pad, and accent cards keep the accent and white text in both modes. The desktop map and graph panels stay dark inside a light page for now.', '');
+  g.push(rows(['Name', 'Bento Blue, light', 'Original, light'], names.map((k) => [`\`--${k}\``, sw(L.bento[k]), sw(L.original[k])])), '');
+  g.push('Shared marks in light: ' + Object.entries(L.shared).map(([k, v]) => `\`--${k}\` ${sw(v)}`).join(', ') + '.', '');
+  g.push(rows(['Text', 'Background', 'What', 'Needs'], (T.contrast.light || []).map(([a, b, w, m]) => [sw(a), sw(b), w, `${m || 4.5}:1`])), '');
+}
 g.push('### Color: on dark pages, sheets, and stories', '', rows(['Use', 'Value'], [
   ['Text on dark', sw(T.color.text['on-dark'])], ['Softer text on dark', sw(T.color.text['on-dark-soft'])], ['Text on the accent', sw(T.color.text['on-accent'])],
   ['Text on the white story button', sw(T.color.text['ink-on-white'])], ['Link on dark', sw(T.color.link['on-dark'])], ['Focus ring', sw(T.color.focus)],

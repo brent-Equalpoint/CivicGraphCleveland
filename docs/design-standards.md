@@ -57,6 +57,10 @@ money or the ballot sit on the accent. Cards use dots or tinted backgrounds. **N
 
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)
 
+**Light and dark.** Every screen works in both modes (System, Light, Dark) and both styles. Dark is the source; light is generated from it, so a new color rule in `ext/cxm.css` or `ext/cx.css` is turned into its light counterpart automatically. A part that sits on the accent or on a dark island must be named in `light.py` so it is left alone. The mode is separate from the style. (`mode-switch`; the layout, contrast, and color-vision checks run in light by `CHECK_MODE=light`, and `release.py` runs them)
+
+**Color is never the only signal.** Every colored dot, bar, tint, or ring state also has a word beside it, a shape, or a lightness difference that survives losing color. Colors that mean different things are registered as a "meaning" group in `design/tokens.json` with what carries the meaning besides color; a group carried by color alone must stay 20 or more apart (CIEDE2000) under protanopia, deuteranopia, tritanopia, and achromatopsia. (`scripts/design/cvd.js`, run by `test_design.js`; `color-vision` finds marks with no word beside them and any color that is not registered)
+
 **Type.** Schibsted Grotesk for text, IBM Plex Mono for small labels. Sentence case; no all-caps labels. Story headline 34 px (25 px for
 a quotation), big figure 44 to 64 px, supporting line 16.5 px, body 15 px (17 px with larger text), fine print no smaller than 14 px.
 
@@ -92,7 +96,7 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 ## 7. The checks that enforce this
 
 `node scripts/design/audit.js` (the CSS is on the tokens) and `node scripts/checks/run.js` run all of them; `python scripts/release.py` runs them before anything ships.
-`design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
+`color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
 `spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`.
 

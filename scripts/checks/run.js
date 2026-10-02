@@ -44,8 +44,10 @@ function chromePath() {
 
 let B, BASE, fails;
 async function open(url, o = {}) {
+  if (process.env.CHECK_THEME === 'original' && !o.theme) o = { ...o, theme: 'original' };   // CHECK_THEME=original: run in the Original style
   const ctx = await B.createBrowserContext();
   const p = await ctx.newPage();
+  if (o.scheme) await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: o.scheme }]);
   await p.setViewport(o.mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
   p.errors = [];
   p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
@@ -53,6 +55,7 @@ async function open(url, o = {}) {
     await p.setRequestInterception(true);
     p.on('request', (r) => { const u = new URL(r.url()); if (o.mock[u.pathname]) r.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(o.mock[u.pathname]) }); else r.continue(); });
   }
+  if (o.mode !== 'system') await p.evaluateOnNewDocument((m) => { try { localStorage.setItem('cx-mode', m); } catch (e) {} }, o.mode || (process.env.CHECK_MODE === 'light' ? 'light' : 'dark'));   // dark unless CHECK_MODE=light (the browser's own setting is light, so System would be light); o.mode:'system' leaves the choice alone
   if (process.env.CHECK_LANG === 'es') await p.evaluateOnNewDocument(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} });   // CHECK_LANG=es: run the layout checks (no-bleed, targets, axe) in Spanish
   if (o.easy !== undefined || o.theme || o.pre) {
     await p.evaluateOnNewDocument((easy, theme) => { try { if (easy !== undefined) localStorage.setItem('cx-easy', easy ? 'on' : 'off'); if (theme) localStorage.setItem('cx-theme', theme); } catch (e) {} }, o.easy, o.theme);
@@ -149,7 +152,10 @@ const CHECKS = {
   },
   async 'easy-phone'() {
     let p = await open('/#phone', { mobile: true });
-    expect((await txt(p, '.cxe h1')) === 'Hello. What would you like to know?', 'first visit is not Easy mode');
+    expect(!(await has(p, '.cxe')) && (await has(p, '.cxm-tabs')) && (await has(p, '.cxm-stories')), 'a first visit does not open on Today (Easy mode must be an option, not the first screen)');
+    expect(await p.evaluate(() => /Try Easy mode/.test(document.querySelector('.cxm-main').innerText)), 'Today has no way into Easy mode');
+    await clickText(p, 'Want a simpler view? Try Easy mode', 'button'); await wait(400);
+    expect((await txt(p, '.cxe h1')) === 'Hello. What would you like to know?', 'the Easy mode link did not open Easy mode');
     expect(!(await has(p, '.cxm-tabs')), 'Easy mode still shows the tab bar');
     await clickText(p, 'What is on my ballot?'); const steps = await walkEasy(p);
     expect(steps >= 1, 'ballot story had no steps'); expect(/end of this one/.test((await txt(p, '.cxe-end')) || ''), 'story has no ending');
@@ -211,7 +217,7 @@ const CHECKS = {
     expect(/formal profile/.test((await txt(q, '.cx-drawer-profile button')) || ''), 'no profile button in the record drawer');
     await q.evaluate(() => document.querySelector('.cx-drawer-profile button').click()); await wait(900);
     expect(/Howse-Jones/.test((await txt(q, '.sp h1')) || ''), 'the drawer button did not open the profile'); await done(q);
-    const m = await open('/#phone', { mobile: true }); await clickText(m, 'Who represents me?');
+    const m = await open('/#phone', { mobile: true, easy: true }); await clickText(m, 'Who represents me?');
     await m.select('.cxe select', await m.evaluate(() => [...document.querySelector('.cxe select').options].find((o) => /Hough/.test(o.text)).value)); await wait(500); await walkEasy(m);
     await clickText(m, 'Read the short profile of'); await wait(500);
     expect(/Howse-Jones/.test((await txt(m, '.cxe h1')) || '') && /led \d+ proposal/.test((await txt(m, '.cxe-main')) || ''), 'the Easy mode short profile is missing its name or its counts');
@@ -482,6 +488,44 @@ const CHECKS = {
         await d.evaluate(() => [...document.querySelectorAll('.cx-story-nav button')].pop().click()); await wait(150);
       }
     }
+    await done(d);
+  },
+  async 'mode-switch'() {
+    // Light, dark, or the system's choice: System follows the browser's own setting live, Light and Dark override it, the choice is
+    // remembered on this device only, and the mode is set before the app draws so a reader never sees the wrong one flash by.
+    const mode = (p) => p.evaluate(() => document.documentElement.getAttribute('data-cx-mode') + '|' + document.documentElement.getAttribute('data-cx-mode-pref'));
+    const stored = (p) => p.evaluate(() => localStorage.getItem('cx-mode'));
+    let p = await open('/#phone', { mobile: true, easy: false, mode: 'system', scheme: 'light' });
+    expect((await mode(p)) === 'light|system', `System with a light browser should be light: ${await mode(p)}`);
+    await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'dark' }]); await wait(300);
+    expect((await mode(p)) === 'dark|system', `System did not follow the browser changing to dark: ${await mode(p)}`);
+    await done(p);
+    p = await open('/#phone', { mobile: true, easy: false, mode: 'system', scheme: 'dark' });
+    expect((await mode(p)) === 'dark|system', `System with a dark browser should be dark: ${await mode(p)}`);
+    await clickText(p, 'Settings'); await wait(300);
+    const pick = (label) => p.evaluate((l) => { const b = [...document.querySelectorAll('.cxm-sheet [aria-label="Light or dark"] button')].find((x) => x.innerText.trim() === l); if (!b) return false; b.click(); return true; }, label);
+    expect(await pick('Light'), 'no Light choice in Settings'); await wait(250);
+    expect((await mode(p)) === 'light|light' && (await stored(p)) === 'light', `choosing Light did not stick: ${await mode(p)} ${await stored(p)}`);
+    expect((await p.evaluate(() => getComputedStyle(document.querySelector('.cxm')).backgroundColor)) === 'rgb(245, 246, 250)', 'Light did not repaint the phone app');
+    await p.reload({ waitUntil: 'networkidle2' }); await wait(800);
+    expect((await mode(p)) === 'light|light', `the choice did not survive a reload: ${await mode(p)}`);
+    await clickText(p, 'Settings'); await wait(300);
+    expect(await pick('System'), 'no System choice in Settings'); await wait(250);
+    expect((await stored(p)) === null && (await mode(p)) === 'dark|system', `choosing System should clear the stored choice and follow the browser: ${await mode(p)} ${await stored(p)}`);
+    await done(p);
+    // before the app draws: the attribute is already there when the document finishes parsing
+    const f = await B.createBrowserContext(); const q = await f.newPage();
+    await q.evaluateOnNewDocument(() => { document.addEventListener('DOMContentLoaded', () => { window.__modeAtParse = document.documentElement.getAttribute('data-cx-mode'); }); try { localStorage.setItem('cx-mode', 'light'); } catch (e) {} });
+    await q.goto(BASE + '/#phone', { waitUntil: 'networkidle2' });
+    expect((await q.evaluate(() => window.__modeAtParse)) === 'light', 'the mode was not set before the page parsed (it would flash)');
+    await f.close();
+    // the desktop header button goes System, Light, Dark, and back
+    const d = await open('/#desktop', { mode: 'system', scheme: 'dark' });
+    const btn = () => d.evaluate(() => (document.querySelector('.cx-mode-switch') || { innerText: '' }).innerText.replace(/\s+/g, ' ').trim());
+    expect((await btn()) === 'Mode: System', `the header button should say System: ${await btn()}`);
+    const seq = [];
+    for (let i = 0; i < 3; i++) { await d.evaluate(() => document.querySelector('.cx-mode-switch').click()); await wait(200); seq.push((await btn()) + ' / ' + (await mode(d))); }
+    expect(seq.join(' | ') === 'Mode: Light / light|light | Mode: Dark / dark|dark | Mode: System / dark|system', `the header button sequence is wrong: ${seq.join(' | ')}`);
     await done(d);
   },
   async 'spanish-switch'() {
@@ -831,9 +875,10 @@ CHECKS['design-look'] = async () => {
   const file = path.join(__dirname, '..', '..', 'design', 'look.json');
   const have = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
   const now = {};
-  for (const style of ['bento', 'original']) {
+  for (const look of ['bento dark', 'original dark', 'bento light', 'original light']) {
+    const [style, mode] = look.split(' ');
     for (const [name, url, opt, step, sels] of LOOK_PAGES) {
-      const p = await open(url, { ...opt, theme: style === 'original' ? 'original' : undefined });
+      const p = await open(url, { ...opt, mode, theme: style === 'original' ? 'original' : undefined });
       if (step) {
         const ring = await p.$$('.cxm-story-btn'); let pick = null;
         for (const x of ring) { if (/Issue 10/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) pick = x; }
@@ -842,7 +887,7 @@ CHECKS['design-look'] = async () => {
         if (step === 'figure' || step === 'pad') await tap();
         if (step === 'pad') await tap();
       }
-      now[`${style} | ${name}`] = await lookOf(p, sels);
+      now[`${look} | ${name}`] = await lookOf(p, sels);
       await done(p);
     }
   }
@@ -859,6 +904,51 @@ CHECKS['design-look'] = async () => {
       else if (diff.length) fails.push(`${screen}: ${sel} looks different`);
     }
   }
+};
+/* Color vision. Part one (scripts/design/cvd.js, run by test_design.js) checks the color groups in design/tokens.json under protanopia,
+   deuteranopia, tritanopia, and achromatopsia. This part looks at the built screens: every small colored mark (a dot, a bar segment, a
+   swatch) must have a word with it, or a label, so color is never the only signal; and every color used as a mark must be in a "meaning"
+   group in design/tokens.json, so a new color meaning cannot be added without being tested. */
+const CV_PAGES = [
+  ['phone today', '/#phone', { mobile: true, easy: false }], ['phone ballot', '/?panel=ballot#phone', { mobile: true, easy: false }], ['phone news', '/?panel=news#phone', { mobile: true, easy: false }],
+  ['phone people', '/?panel=leaders#phone', { mobile: true, easy: false }], ['phone place', '/?panel=place#phone', { mobile: true, easy: false }], ['phone us', '/?panel=us#phone', { mobile: true, easy: false }],
+  ['desktop home', '/#desktop', {}], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}],
+  ['desktop us', '/?panel=us#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop stories', '/?panel=stories#desktop', {}],
+];
+CHECKS['color-vision'] = async () => {
+  const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'design', 'tokens.json'), 'utf8'));
+  const known = new Set();
+  for (const g of tokens.meaning) for (const hex of [...Object.values(g.colors), ...Object.values(g.colorsLight || {}), ...Object.values(g.colorsLight2 || {})]) known.add(hex.toLowerCase());
+  const hexOf = (rgb) => '#' + (rgb.match(/\d+/g) || []).slice(0, 3).map((n) => Number(n).toString(16).padStart(2, '0')).join('');
+  const unknown = new Map();
+  for (const [name, url, opt] of CV_PAGES) {
+    if (process.env.CV_PAGE && !process.env.CV_PAGE.split(',').includes(name)) continue;
+    const p = await open(url, opt);
+    const marks = await p.evaluate(() => {
+      const out = [];
+      for (const e of document.querySelectorAll('body *')) {
+        if (/^(SVG|PATH|IMG|INPUT|CANVAS|SCRIPT|STYLE)$/i.test(e.tagName) || e.closest('svg')) continue;
+        if (e.closest('.cxm-fresh, .cx-fresh-chip, .cxm-bars, .cxm-sheet-bar, .cx-theme-switch') || /cxm-grab|cx-theme-dot|control-divider|cxm-ring|cx-stories-ring/.test(String(e.className))) continue;
+        const cs = getComputedStyle(e), b = e.getBoundingClientRect();
+        if (!b.width || !b.height || cs.visibility === 'hidden' || cs.display === 'none') continue;
+        if (cs.backgroundColor === 'rgba(0, 0, 0, 0)' || (e.textContent || '').trim()) continue;
+        if (Math.min(b.width, b.height) > 14 || Math.max(b.width, b.height) > 160) continue;
+        const alpha = (cs.backgroundColor.match(/rgba?\(([^)]*)\)/)[1].split(',')[3]);
+        if (alpha !== undefined && Number(alpha) < 0.5) continue;
+        let near = (e.getAttribute('aria-label') || e.getAttribute('title') || '').trim(), up = e.parentElement;
+        for (let i = 0; i < 3 && near.length < 3 && up; i++, up = up.parentElement) near = (up.innerText || '').trim();
+        out.push({ cls: String(e.className).split(' ')[0] || e.tagName, bg: cs.backgroundColor, near: near.length >= 3 });
+      }
+      return out;
+    });
+    for (const m of marks) {
+      expect(m.near, `${name}: a ${m.cls} mark (${hexOf(m.bg)}) has no word or label with it, so color is its only signal`);
+      const h = hexOf(m.bg);
+      if (!known.has(h) && !unknown.has(h)) unknown.set(h, `${name} (${m.cls})`);
+    }
+    await done(p); await wait(400);
+  }
+  for (const [h, where] of unknown) expect(false, `${h} is used as a colored mark on ${where} but is in no "meaning" group in design/tokens.json: add it, say what carries its meaning, and run node scripts/design/cvd.js`);
 };
 // AXE_PAGE="desktop home,phone place" limits the run to those pages (a page name is the first word group of each AXE_PAGES row)
 CHECKS['axe'] = async () => {
@@ -998,7 +1088,7 @@ CHECKS['no-bleed'] = async () => {
   B = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: process.env.CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : [] });
   let failed = 0, ran = 0;
   for (const [name, fn] of Object.entries(CHECKS)) {
-    if (only && only !== true && !name.includes(only)) continue;
+    if (only && only !== true && !only.split(',').some((w) => name.includes(w))) continue;
     fails = []; const t = Date.now(); ran++;
     try { await fn(); } catch (e) { fails.push(`crashed: ${e.message.slice(0, 200)}`); }
     console.log(`${fails.length ? 'FAIL' : 'ok  '}  ${name}  (${((Date.now() - t) / 1000).toFixed(1)}s)`);

@@ -979,11 +979,11 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .lv-mine { margin: 6px 0; font-size: 18px; }
 .lv-mine b { font-size: 22px; }
 .lv-sub { margin: 4px 0 0; font-size: 15.5px; color: #e1ded8; }
-.lv-more, .lv-wording, .lv-how, .lv-other > details { margin: 12px 0 0; }
-.lv-more > summary, .lv-how > summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 16px; border-radius: 12px; background: #ffffff1a; font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; }
-.lv-more > summary::-webkit-details-marker, .lv-how > summary::-webkit-details-marker, .lv-other summary::-webkit-details-marker, .lv-wording > summary::-webkit-details-marker { display: none; }
-.lv-more > summary::after, .lv-how > summary::after { content: "+"; font-size: 24px; font-weight: 500; }
-.lv-more[open] > summary::after, .lv-how[open] > summary::after { content: "\2212"; }
+.lv-wording, .lv-how, .lv-other > details { margin: 12px 0 0; }
+.lv-how > summary { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 0 16px; border-radius: 12px; background: #ffffff1a; font-weight: 700; font-size: 17px; cursor: pointer; list-style: none; }
+.lv-how > summary::-webkit-details-marker, .lv-other summary::-webkit-details-marker, .lv-wording > summary::-webkit-details-marker { display: none; }
+.lv-how > summary::after { content: "+"; font-size: 24px; font-weight: 500; }
+.lv-how[open] > summary::after { content: "\2212"; }
 .lv-body { padding: 4px 2px 0; }
 .lv-body h3 { margin: 18px 0 6px; font-size: 18px; }
 .lv-list { margin: 6px 0; padding-left: 22px; }
@@ -1052,3 +1052,26 @@ html[data-cx-theme="original"] .lv-tile { background: var(--acc, #c2410c); }
 .lv-more-story .lv-wtext, .lv-more-story .lv-note { color: #f1f4ff; }
 /* a long word may never push a story line past the screen */
 .cxm-story-big, .cxm-story-small, .cxm-story-fig, .cx-story-big, .cx-story-small { overflow-wrap: break-word; max-width: 100%; }
+/* color is never the only signal: a concern gets a dashed outline, support a solid one, on top of the words and the tint */
+.lv-concern .lv-side { border: 1px dashed currentColor; background: transparent; }
+.lv-for .lv-side { border: 1px solid currentColor; }
+
+/* ---- v5.17 light mode (design/tokens.json, docs/plan-light-mode.md): the mode is html[data-cx-mode="light"|"dark"]; dark is the look above and does not change ---- */
+html[data-cx-mode="light"] { color-scheme: light; }
+.cx-mode-dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(90deg, #ffffff 50%, #141417 50%); border: 1px solid #ffffff80; flex: none; }
+.cxm-easy-link { align-self: center; margin: 2px 0 12px; }
+html[data-cx-mode="light"] .cxm {
+  --bg: #f5f6fa; --tile: #ffffff; --tile2: #eceef5; --line: #d9dce6; --ink: #14161d; --mut: #4a4f5e; --faint: #646a7a;
+  --acc: #2f66f3; --acc2: #1f4fd6; --soft: #1a45c4; --soft2: #14235f; --navy: #e6ecff; --navy2: #d6e0ff; --on-acc: #fff;
+  --amber: #a86a00; --teal: #1b857a; --purple: #6d4cd8; --coral: #c8402f;
+}
+html[data-cx-mode="light"][data-cx-theme="original"] .cxm {
+  --bg: #faf6f1; --tile: #ffffff; --tile2: #f3ebe2; --line: #e1d6c9; --ink: #1f1814; --mut: #5a4d42; --faint: #75675b;
+  --acc: #c2410c; --acc2: #a8330a; --soft: #9a2f08; --soft2: #3a1d10; --navy: #fbe8dc; --navy2: #f6d5c1; --on-acc: #fff;
+}
+html[data-cx-mode="light"].cxm-on, html[data-cx-mode="light"].cxm-on body { background: #f5f6fa; }
+html[data-cx-mode="light"] .cxm-stage { background: #e9ebf2; }
+html[data-cx-mode="light"] .inline-definition { color: var(--soft); }
+/* the link and focus color in light, for everything (phone, shared pages, desktop): blue in Bento, burnt orange in Original */
+html[data-cx-mode="light"] { --soft: #1a45c4; }
+html[data-cx-mode="light"][data-cx-theme="original"] { --soft: #9a2f08; }

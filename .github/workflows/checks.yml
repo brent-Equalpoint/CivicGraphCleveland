@@ -66,3 +66,12 @@ jobs:
           CHROME_PATH: /usr/bin/google-chrome
           CI: "true"
         run: node scripts/checks/run.js
+
+
+      - name: Light mode layout, contrast, and color-vision checks
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          CI: "true"
+        run: |
+          CHECK_MODE=light CHECK_THEME=bento node scripts/checks/run.js --only axe,no-bleed,story-fit,color-vision,targets,titles-never-cut,print
+          CHECK_MODE=light CHECK_THEME=original node scripts/checks/run.js --only axe,no-bleed,story-fit,color-vision,targets,titles-never-cut,print

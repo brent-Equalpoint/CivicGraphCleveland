@@ -127,7 +127,7 @@ function cxmMoments(home) {
 
 /* ---------- Today ---------- */
 function CxmToday() {
-  const { home, openSheet, setOverlay, practice, seen, go } = useCxm();
+  const { home, openSheet, setOverlay, practice, seen, go, setEasy } = useCxm();
   const answers = practice.state.answers;
   const stories = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
   const moments = u.useMemo(() => cxmMoments(home), [home?.ward]);
@@ -170,6 +170,7 @@ function CxmToday() {
           </button>
         ))}
       </section>
+      <button type="button" className="cxm-link cxm-easy-link" onClick={() => setEasy(!0)}>Want a simpler view? Try Easy mode</button>
     </div>
   );
 }

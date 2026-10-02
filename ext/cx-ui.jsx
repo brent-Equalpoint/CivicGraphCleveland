@@ -757,6 +757,54 @@ function CX_ThemeSwitch() {
   );
 }
 
+/* ---------- Light, dark, or follow the system. The style (Bento or Original) and the mode are two separate choices. ---------- */
+const CX_MODE = { pref: `system`, subs: new Set() };
+function cxModeEffective(pref) {
+  if (pref === `light` || pref === `dark`) return pref;
+  try { return globalThis.matchMedia && globalThis.matchMedia(`(prefers-color-scheme: light)`).matches ? `light` : `dark`; } catch { return `dark`; }
+}
+function cxModeApply() {
+  const root = document.documentElement;
+  root.setAttribute(`data-cx-mode`, cxModeEffective(CX_MODE.pref));
+  root.setAttribute(`data-cx-mode-pref`, CX_MODE.pref);
+  CX_MODE.subs.forEach((f) => f(CX_MODE.pref));
+}
+function cxSetMode(pref) {
+  CX_MODE.pref = pref === `light` || pref === `dark` ? pref : `system`;
+  try { if (CX_MODE.pref === `system`) localStorage.removeItem(`cx-mode`); else localStorage.setItem(`cx-mode`, CX_MODE.pref); } catch {}
+  cxModeApply();
+}
+(function cxModeBoot() {
+  try { const m = localStorage.getItem(`cx-mode`); CX_MODE.pref = m === `light` || m === `dark` ? m : `system`; } catch {}
+  try { const q = globalThis.matchMedia(`(prefers-color-scheme: light)`); const on = () => { if (CX_MODE.pref === `system`) cxModeApply(); }; if (q.addEventListener) q.addEventListener(`change`, on); else if (q.addListener) q.addListener(on); } catch {}
+})();
+function useCxMode() {
+  const [pref, set] = u.useState(CX_MODE.pref);
+  u.useEffect(() => { CX_MODE.subs.add(set); set(CX_MODE.pref); return () => CX_MODE.subs.delete(set); }, []);
+  return [pref, cxSetMode];
+}
+/* three buttons, for Settings */
+function CX_ModeChoice() {
+  const [pref, setPref] = useCxMode();
+  return (
+    <div className="cxm-seg" role="group" aria-label="Light or dark">
+      {[[`system`, `System`], [`light`, `Light`], [`dark`, `Dark`]].map(([id, label]) => <button key={id} type="button" aria-pressed={pref === id} className={pref === id ? `on` : ``} onClick={() => setPref(id)}>{label}</button>)}
+    </div>
+  );
+}
+/* one button for the desktop header: System, then Light, then Dark */
+function CX_ModeButton() {
+  const [pref, setPref] = useCxMode();
+  const next = pref === `system` ? `light` : pref === `light` ? `dark` : `system`;
+  const name = pref === `system` ? `System` : pref === `light` ? `Light` : `Dark`;
+  return (
+    <button type="button" className="cx-theme-switch cx-mode-switch" onClick={() => setPref(next)} title="Switch light or dark" aria-label={`Mode: ${name}. Switch to ${next === `system` ? `System` : next === `light` ? `Light` : `Dark`}.`}>
+      <i className="cx-mode-dot" aria-hidden="true" />
+      <span>Mode: <b>{name}</b></span>
+    </button>
+  );
+}
+
 /* v5.7: plain place labels for ballot races. The county catalogue labels statewide races "County Wide District". */
 const CX_STATEWIDE = /^(Governor|Attorney General|Auditor of State|Secretary of State|Treasurer of State|United States Senator|Justice of the Supreme Court|Chief Justice)/;
 function cxArea(area, name) {

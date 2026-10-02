@@ -165,6 +165,7 @@ function CxmYou() {
         <CxmKicker>Display</CxmKicker>
         <div className="cxm-kv"><span>Language / Idioma</span><CX_LangChoice /></div>
         <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
+        <div className="cxm-kv"><span>Light or dark</span><CX_ModeChoice /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
         <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
         {!canSave && <p className="cxm-fine" role="status">This browser is not saving settings, so Easy mode, style, and your guide start over each time you open the page. Private browsing can cause this.</p>}

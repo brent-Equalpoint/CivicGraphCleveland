@@ -4,7 +4,7 @@
 const { spawnSync } = require('child_process');
 const path = require('path');
 let bad = 0;
-for (const [name, args] of [['audit', ['scripts/design/audit.js']], ['doc', ['scripts/design/doc.js', '--check']]]) {
+for (const [name, args] of [['audit', ['scripts/design/audit.js']], ['doc', ['scripts/design/doc.js', '--check']], ['color vision', ['scripts/design/cvd.js']]]) {
   const r = spawnSync(process.execPath, args, { cwd: path.join(__dirname, '..'), encoding: 'utf8' });
   console.log(`${r.status === 0 ? 'ok  ' : 'FAIL'} design ${name}: ${(r.stdout + r.stderr).trim().split('\n').slice(-3).join(' | ')}`);
   if (r.status !== 0) bad++;

@@ -17,13 +17,13 @@ const fs = require('fs'), path = require('path');
 const ROOT = path.join(__dirname, '..', '..');
 const T = JSON.parse(fs.readFileSync(path.join(ROOT, 'design', 'tokens.json'), 'utf8'));
 const LEG_PATH = path.join(ROOT, 'design', 'legacy.json');
-const FILES = ['ext/cx.css', 'ext/cxm.css', 'ext/cx-bento.css'];
+const FILES = ['ext/cx.css', 'ext/cxm.css', 'ext/cx-bento.css', 'ext/cx-light.css'];
 const findings = [];
 const norm = (h) => { h = h.toLowerCase(); return /^#[0-9a-f]{3}$/.test(h) ? '#' + [...h.slice(1)].map((c) => c + c).join('') : h; };
 
 /* ---- the allowed values, from the tokens ---- */
 const hexes = new Set();
-(function walk(o) { for (const v of Object.values(o)) { if (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v)) hexes.add(norm(v)); else if (v && typeof v === 'object') walk(v); } })({ s: T.styles, c: T.color });
+(function walk(o) { for (const v of Object.values(o)) { if (typeof v === 'string' && /^#[0-9a-fA-F]{3,8}$/.test(v)) hexes.add(norm(v)); else if (v && typeof v === 'object') walk(v); } })({ s: T.styles, c: T.color, m: T.modes });
 const sizes = new Set(Object.values(T.type.scale));
 const radii = new Set([0, ...Object.values(T.shape.radius).map((v) => (v === '50%' ? '50%' : Number(v)))]);
 const weights = new Set(Object.values(T.type.weight));
@@ -37,7 +37,7 @@ for (const f of FILES) {
   const lines = fs.readFileSync(path.join(ROOT, f), 'utf8').split('\n');
   lines.forEach((ln, i) => {
     const where = `${f}:${i + 1}`;
-    if (/[–—]/.test(ln)) findings.push(`${where}: a dash in the CSS`);
+    if (/[\u2013\u2014]/.test(ln)) findings.push(`${where}: a dash in the CSS`);
     const bare = ln.replace(/\/\*.*?\*\//g, '');
     for (const m of bare.matchAll(/#[0-9a-fA-F]{3,8}\b/g)) { if (/^#[0-9a-fA-F]{3}$|^#[0-9a-fA-F]{4}$|^#[0-9a-fA-F]{6}$|^#[0-9a-fA-F]{8}$/.test(m[0])) put(use.colors, norm(m[0]), where); }
     for (const m of bare.matchAll(/font-size:\s*([\d.]+)px/g)) put(use.sizes, Number(m[1]), where);
@@ -72,11 +72,22 @@ for (const [style, block] of [['bento', main], ['original', orig]]) {
 }
 { const v = vars(main); for (const [k, hex] of Object.entries(T.styles.shared)) if (!k.startsWith('_') && v[k] !== norm(hex)) findings.push(`ext/cxm.css: --${k} is ${v[k] || 'missing'}, but design/tokens.json says ${norm(hex)}`); }
 
+/* ---- the light palette in cxm.css must be the light palette in tokens.json ---- */
+{
+  const lb = (cxm.match(/html\[data-cx-mode="light"\] \.cxm \{([\s\S]*?)\n\}/) || [])[1] || '',
+    lo = (cxm.match(/html\[data-cx-mode="light"\]\[data-cx-theme="original"\] \.cxm \{([\s\S]*?)\n\}/) || [])[1] || '';
+  for (const [style, block] of [['bento', lb], ['original', lo]]) {
+    const v = vars(block);
+    for (const [k, hex] of Object.entries(T.modes.light[style])) { if (v[k] !== norm(hex)) findings.push(`ext/cxm.css: --${k} in the light ${style} style is ${v[k] || 'missing'}, but design/tokens.json says ${norm(hex)}`); }
+  }
+  const v = vars(lb); for (const [k, hex] of Object.entries(T.modes.light.shared)) if (v[k] !== norm(hex)) findings.push(`ext/cxm.css: --${k} in light is ${v[k] || 'missing'}, but design/tokens.json says ${norm(hex)}`);
+}
+
 /* ---- contrast ---- */
 const lum = (h) => { const n = norm(h); const c = [1, 3, 5].map((i) => parseInt(n.slice(i, i + 2), 16) / 255).map((x) => (x <= 0.03928 ? x / 12.92 : Math.pow((x + 0.055) / 1.055, 2.4))); return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]; };
 const ratio = (a, b) => { const [x, y] = [lum(a), lum(b)].sort((p, q) => q - p); return (x + 0.05) / (y + 0.05); };
-for (const [fg, bg, what] of T.contrast.pairs) { const r = ratio(fg, bg); if (r < 4.5) findings.push(`design/tokens.json: ${what} (${fg} on ${bg}) is ${r.toFixed(2)}:1, under 4.5:1`); }
-if (/[–—]/.test(fs.readFileSync(path.join(ROOT, 'design', 'tokens.json'), 'utf8'))) findings.push('design/tokens.json: a dash');
+for (const [fg, bg, what, min] of [...T.contrast.pairs, ...(T.contrast.light || [])]) { const r = ratio(fg, bg), need = min || 4.5; if (r < need) findings.push(`design/tokens.json: ${what} (${fg} on ${bg}) is ${r.toFixed(2)}:1, under ${need}:1`); }
+if (/[\u2013\u2014]/.test(fs.readFileSync(path.join(ROOT, 'design', 'tokens.json'), 'utf8'))) findings.push('design/tokens.json: a dash');
 
 if (process.argv.includes('--explain')) {
   const total = (k) => [...use[k].values()].reduce((a, w) => a + w.length, 0);

@@ -227,14 +227,11 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [liked, setLiked] = u.useState([]);
   const [guide, setGuideState] = u.useState(() => cxmStore(`cx-guide`, `erie`));
   const [large, setLarge] = u.useState(!1);
-  // v5.16 Easy mode: remembered on this device only. First visit: Easy, unless the link points somewhere specific.
+  // v5.16 Easy mode: an option, remembered on this device only. A first visit opens Today; Easy mode starts only when someone chooses it.
   const [storyBack, setStoryBack] = u.useState(null);  // the story you were in when you chose Go deeper
   const [easy, setEasyState] = u.useState(() => {
     if (deskEasy) return !0;
-    const saved = cxmStore(`cx-easy`, ``);
-    if (saved === `on`) return !0;
-    if (saved === `off`) return !1;
-    return !(start.tab !== `today` || start.sheet || start.room || CXM_NOTICE.v);
+    return cxmStore(`cx-easy`, ``) === `on`;   // only if the person chose it before
   });
   const setEasy = (v) => { setEasyState(v); cxmPut(`cx-easy`, v ? `on` : `off`); };
   const [theme, setThemeState] = u.useState(() => document.documentElement.getAttribute(`data-cx-theme`) || `bento`);

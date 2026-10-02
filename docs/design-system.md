@@ -58,6 +58,44 @@ Both are required and every screen is checked in both. Names are the CSS custom 
 
 Shared accents: `--amber` `#ffd36b`, `--teal` `#2bb3a3`, `--purple` `#9b7bff`, `--coral` `#ff8a7a`.
 
+### Color: light mode
+
+The mode (light or dark) is separate from the style. A person chooses System, Light, or Dark; System follows the phone or computer. Dark is the palette above and never changes. The palette below goes on `.cxm` when `html[data-cx-mode=light]`; everything else in light is generated from the dark rules by `light.py`, with the hand-written parts in `ext/cx-light.css`. Stories, the number pad, and accent cards keep the accent and white text in both modes. The desktop map and graph panels stay dark inside a light page for now.
+
+| Name | Bento Blue, light | Original, light |
+| --- | --- | --- |
+| `--bg` | `#f5f6fa` | `#faf6f1` |
+| `--tile` | `#ffffff` | `#ffffff` |
+| `--tile2` | `#eceef5` | `#f3ebe2` |
+| `--line` | `#d9dce6` | `#e1d6c9` |
+| `--ink` | `#14161d` | `#1f1814` |
+| `--mut` | `#4a4f5e` | `#5a4d42` |
+| `--faint` | `#646a7a` | `#75675b` |
+| `--acc` | `#2f66f3` | `#c2410c` |
+| `--acc2` | `#1f4fd6` | `#a8330a` |
+| `--soft` | `#1a45c4` | `#9a2f08` |
+| `--soft2` | `#14235f` | `#3a1d10` |
+| `--navy` | `#e6ecff` | `#fbe8dc` |
+| `--navy2` | `#d6e0ff` | `#f6d5c1` |
+| `--on-acc` | `#fff` | `#fff` |
+
+Shared marks in light: `--amber` `#a86a00`, `--teal` `#1b857a`, `--purple` `#6d4cd8`, `--coral` `#c8402f`.
+
+| Text | Background | What | Needs |
+| --- | --- | --- | --- |
+| `#14161d` | `#f5f6fa` | text on the Bento light page | 4.5:1 |
+| `#1f1814` | `#faf6f1` | text on the Original light page | 4.5:1 |
+| `#4a4f5e` | `#ffffff` | muted text on a Bento light card | 4.5:1 |
+| `#5a4d42` | `#ffffff` | muted text on an Original light card | 4.5:1 |
+| `#646a7a` | `#f5f6fa` | faint text on the Bento light page | 4.5:1 |
+| `#75675b` | `#faf6f1` | faint text on the Original light page | 4.5:1 |
+| `#1a45c4` | `#f5f6fa` | links on the Bento light page | 4.5:1 |
+| `#9a2f08` | `#faf6f1` | links on the Original light page | 4.5:1 |
+| `#ffffff` | `#2f66f3` | white on the Bento blue (stories, same in both modes) | 4.5:1 |
+| `#ffffff` | `#c2410c` | white on the Original orange (stories, same in both modes) | 4.5:1 |
+| `#a86a00` | `#ffffff` | amber marks on a light card | 3:1 |
+| `#7a4b00` | `#ffffff` | amber text on a light card | 4.5:1 |
+
 ### Color: on dark pages, sheets, and stories
 
 | Use | Value |

@@ -258,7 +258,7 @@ function CxLevyMore({ n }) {
   const issue = Um.find((i) => i.number === n);
   if (!issue) return null;
   return (
-    <details className="lv-more lv-more-story">
+    <details className="lv-more-story">
       <summary>Read more</summary>
       <CxLevyBody issue={issue} />
     </details>
