@@ -26,6 +26,12 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
   let a script approve. Reviewers live in `bench/reviewers.json`. Design docs: `docs/civic-agent/`; what runs:
   `bench/README.md`. Tests: `scripts/test_bench.py`, `test_bench_gate.py`, `test_links.py`, `test_cityrecord.py`; browser checks:
   `node scripts/checks/run.js`. To ship: `python scripts/release.py`.
+- Spanish: the language switch and translator are `ext/cx-i18n.jsx`; the dictionary is `i18n/es.json`, built by `node scripts/i18n/merge.js`
+  from `i18n/work/translations.json` and `i18n/manual.json` (hand entries win). New or changed app text needs Spanish: run
+  `node scripts/i18n/inventory.js`, translate what is new, merge, then `python scripts/test_i18n.py` and `node scripts/i18n/crawl.js`.
+  Never hand-edit `i18n/es.json`. Spanish keeps every rule (no dashes, receipts not scores, sponsorship is not a vote) and
+  stays labeled a draft until a Spanish-speaking person has read it (what to read first: `i18n/review-notes.md`). Official ballot wording stays English.
+  `CHECK_LANG=es node scripts/checks/run.js --only axe` (or targets, no-bleed) runs a layout check in Spanish.
 - Profile office text and leadership roles (`ext/cx-seat.jsx`, between the OFFICE-TEXT markers) are interpretive: after a
   person reads them against their sources, run `python build.py --mark-office-reviewed "Name"`. Until then profiles say
   a person has not reviewed them.

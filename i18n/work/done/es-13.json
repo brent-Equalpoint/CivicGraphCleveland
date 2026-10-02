@@ -1,0 +1,952 @@
+[
+ {
+  "id": 2653,
+  "es": "Ese es el conteo en el registro público del Concejo al {*}. {*} son ordenanzas o resoluciones. El resto son resoluciones ceremoniales, cartas y puntos de la agenda.",
+  "status": "ok"
+ },
+ {
+  "id": 2654,
+  "es": "Qué tan rápido",
+  "status": "ok"
+ },
+ {
+  "id": 2655,
+  "es": "La mitad se aprobó en un plazo de {*} días.",
+  "status": "ok"
+ },
+ {
+  "id": 2656,
+  "es": "Esto cuenta las {*} propuestas con una votación final registrada, desde el día en que se presentó cada una.",
+  "status": "ok"
+ },
+ {
+  "id": 2657,
+  "es": "Un vuelco",
+  "status": "ok"
+ },
+ {
+  "id": 2658,
+  "es": "{*} se aprobaron después de que un comité recomendara rechazarlas.",
+  "status": "ok"
+ },
+ {
+  "id": 2659,
+  "es": "Una propuesta",
+  "status": "ok"
+ },
+ {
+  "id": 2660,
+  "es": "Puestas sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 2661,
+  "es": "Este año el Concejo puso {*} sobre la mesa.",
+  "status": "ok"
+ },
+ {
+  "id": 2662,
+  "es": "Puesta sobre la mesa significa dejada en espera.",
+  "status": "ok"
+ },
+ {
+  "id": 2663,
+  "es": "Cómo votaron los miembros",
+  "status": "ok"
+ },
+ {
+  "id": 2664,
+  "es": "{*} votaciones registradas nombran a cada miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 2665,
+  "es": "El City Record publica el voto de cada miembro cuando el Concejo aprueba una ordenanza o adopta una resolución. {*} de las {*} tuvieron al menos un voto en contra. El perfil de cada miembro muestra los suyos. Ausente no significa en contra.",
+  "status": "ok"
+ },
+ {
+  "id": 2666,
+  "es": "Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2667,
+  "es": "15 miembros · 2026 hasta ahora",
+  "status": "ok"
+ },
+ {
+  "id": 2668,
+  "es": "Ver lo nuevo en el registro del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2669,
+  "es": "De la Alcaldía",
+  "status": "ok"
+ },
+ {
+  "id": 2670,
+  "es": "{*} solicitudes enviadas al Concejo este año.",
+  "status": "ok"
+ },
+ {
+  "id": 2671,
+  "es": "Los departamentos de la ciudad envían solicitudes como contratos, subvenciones y pasos de proyectos. El Concejo todavía decide cada una.",
+  "status": "ok"
+ },
+ {
+  "id": 2672,
+  "es": "La administración del alcalde Bibb",
+  "status": "ok"
+ },
+ {
+  "id": 2673,
+  "es": "envió la propuesta al Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2674,
+  "es": "Lo que envió al Concejo en 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2675,
+  "es": "Leer el perfil del alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 2676,
+  "es": "DISTRITO DE TODO EL CONDADO",
+  "status": "ok"
+ },
+ {
+  "id": 2677,
+  "es": "Día de las Elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 2678,
+  "es": "{*} días. Martes 3 de noviembre.",
+  "status": "ok"
+ },
+ {
+  "id": 2679,
+  "es": "Mañana. Martes 3 de noviembre.",
+  "status": "ok"
+ },
+ {
+  "id": 2680,
+  "es": "Hoy es el Día de las Elecciones.",
+  "status": "ok"
+ },
+ {
+  "id": 2681,
+  "es": "El Día de las Elecciones ya pasó.",
+  "status": "ok"
+ },
+ {
+  "id": 2682,
+  "es": "Los resultados oficiales provienen de la Junta Electoral del Condado de Cuyahoga.",
+  "status": "ok"
+ },
+ {
+  "id": 2683,
+  "es": "{*} contiendas en la lista de candidatos del condado y {*} asuntos de todo el condado, más asuntos locales que dependen de su precinto.",
+  "status": "ok"
+ },
+ {
+  "id": 2684,
+  "es": "Hoy",
+  "status": "ok"
+ },
+ {
+  "id": 2685,
+  "es": "Próxima fecha límite",
+  "status": "ok"
+ },
+ {
+  "id": 2686,
+  "es": "Los horarios son del Este. Confirme los detalles con la Junta Electoral.",
+  "status": "ok"
+ },
+ {
+  "id": 2687,
+  "es": "{*}. Los horarios son del Este.",
+  "status": "ok"
+ },
+ {
+  "id": 2688,
+  "es": "Mañana",
+  "status": "ok"
+ },
+ {
+  "id": 2689,
+  "es": "Dentro de {*} días",
+  "status": "ok"
+ },
+ {
+  "id": 2690,
+  "es": "Asunto Estatal 3",
+  "status": "ok"
+ },
+ {
+  "id": 2691,
+  "es": "Gravámenes de impuestos",
+  "status": "ok"
+ },
+ {
+  "id": 2692,
+  "es": "{*}. ¿Cuánto le costarían?",
+  "status": "ok"
+ },
+ {
+  "id": 2693,
+  "es": "Escriba el valor de su vivienda y vea la estimación del propio condado.",
+  "status": "ok"
+ },
+ {
+  "id": 2694,
+  "es": "Escribir el valor de mi vivienda",
+  "status": "ok"
+ },
+ {
+  "id": 2695,
+  "es": "Su boleta",
+  "status": "ok"
+ },
+ {
+  "id": 2696,
+  "es": "El Día de las Elecciones es el martes 3 de noviembre",
+  "status": "ok"
+ },
+ {
+  "id": 2697,
+  "es": "Abrir mi boleta",
+  "status": "ok"
+ },
+ {
+  "id": 2698,
+  "es": "Junta Electoral del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 2699,
+  "es": "Su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2700,
+  "es": "{*} y el Distrito {*}: es complicado.",
+  "status": "ok"
+ },
+ {
+  "id": 2701,
+  "es": "El {*}% de {*} era el Distrito {*} en el mapa de 2014, que se usó hasta 2025.",
+  "status": "ok"
+ },
+ {
+  "id": 2702,
+  "es": "{*} y el Distrito {*}: siguen juntos.",
+  "status": "ok"
+ },
+ {
+  "id": 2703,
+  "es": "El número del distrito no cambió cuando el mapa pasó de 17 distritos a 15.",
+  "status": "ok"
+ },
+ {
+  "id": 2704,
+  "es": "El nuevo mapa",
+  "status": "ok"
+ },
+ {
+  "id": 2705,
+  "es": "El {*}% de {*} ahora es el Distrito {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2706,
+  "es": "{*}{*}Los porcentajes se calculan por superficie de terreno, no por cuántas personas viven allí.",
+  "status": "ok"
+ },
+ {
+  "id": 2707,
+  "es": "Qué cambió",
+  "status": "ok"
+ },
+ {
+  "id": 2708,
+  "es": "El mismo miembro del Concejo, con un nuevo número de distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 2709,
+  "es": "El mismo miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2710,
+  "es": "Ahora hay otro miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2711,
+  "es": "El archivo del mapa de 2014 de la ciudad indica a {*} para el Distrito {*}; el archivo de 2026 indica a {*} para el Distrito {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2712,
+  "es": "Abrir Mi lugar",
+  "status": "ok"
+ },
+ {
+  "id": 2713,
+  "es": "Su vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 2714,
+  "es": "Mapas de distritos de la Ciudad de Cleveland (2014 y 2026), de los datos abiertos de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2715,
+  "es": "Pensarlo en Mi constelación",
+  "status": "ok"
+ },
+ {
+  "id": 2716,
+  "es": "Leer el registro, expediente",
+  "status": "ok"
+ },
+ {
+  "id": 2717,
+  "es": "Abrir ¿Quién decide aquí?",
+  "status": "ok"
+ },
+ {
+  "id": 2718,
+  "es": "Abrir la guía del votante",
+  "status": "ok"
+ },
+ {
+  "id": 2719,
+  "es": "Historias",
+  "status": "ok"
+ },
+ {
+  "id": 2720,
+  "es": "Historias breves y sencillas hechas a partir de registros oficiales. Elija una y luego use el botón Siguiente o las teclas de flecha.",
+  "status": "ok"
+ },
+ {
+  "id": 2721,
+  "es": "Elija su distrito en ¿Quién decide aquí? para agregar una historia sobre su propio miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2722,
+  "es": "Elija una historia",
+  "status": "ok"
+ },
+ {
+  "id": 2723,
+  "es": "Atrás",
+  "status": "ok"
+ },
+ {
+  "id": 2724,
+  "es": "Paso",
+  "status": "ok"
+ },
+ {
+  "id": 2725,
+  "es": "Siguiente historia",
+  "status": "ok"
+ },
+ {
+  "id": 2726,
+  "es": "Siguiente",
+  "status": "ok"
+ },
+ {
+  "id": 2727,
+  "es": "Mostrar un paso a la vez",
+  "status": "ok"
+ },
+ {
+  "id": 2728,
+  "es": "Leer esta historia como texto",
+  "status": "ok"
+ },
+ {
+  "id": 2729,
+  "es": "Definir {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2730,
+  "es": "Explicación cívica guiada",
+  "status": "ok"
+ },
+ {
+  "id": 2731,
+  "es": "SU VISTA GUIADA",
+  "status": "ok"
+ },
+ {
+  "id": 2732,
+  "es": "Avance paso a paso",
+  "status": "ok"
+ },
+ {
+  "id": 2733,
+  "es": "Empezar de nuevo",
+  "status": "ok"
+ },
+ {
+  "id": 2734,
+  "es": "Pasos de la explicación guiada",
+  "status": "ok"
+ },
+ {
+  "id": 2735,
+  "es": "No necesita entender todo el mapa primero. Elija una puerta de entrada y mantendremos a la vista el camino que corresponda.",
+  "status": "ok"
+ },
+ {
+  "id": 2736,
+  "es": "Guiarme",
+  "status": "ok"
+ },
+ {
+  "id": 2737,
+  "es": "o elija un punto de partida abajo",
+  "status": "ok"
+ },
+ {
+  "id": 2738,
+  "es": "EN PALABRAS SENCILLAS",
+  "status": "ok"
+ },
+ {
+  "id": 2739,
+  "es": "Algunas palabras que ayudan a entender este tema",
+  "status": "ok"
+ },
+ {
+  "id": 2740,
+  "es": "Cada palabra abre el diccionario cívico con un ejemplo y el lugar que ocupa.",
+  "status": "ok"
+ },
+ {
+  "id": 2741,
+  "es": "¿Quién tiene poder aquí?",
+  "status": "ok"
+ },
+ {
+  "id": 2742,
+  "es": "QUIÉN PUEDE ACTUAR",
+  "status": "ok"
+ },
+ {
+  "id": 2743,
+  "es": "Siga estas paradas en orden",
+  "status": "ok"
+ },
+ {
+  "id": 2744,
+  "es": "Estas son paradas sugeridas, no una cadena de mando. Abra una para ver qué puede decidir y cómo se conecta.",
+  "status": "ok"
+ },
+ {
+  "id": 2745,
+  "es": "¿Cómo lo sabemos?",
+  "status": "ok"
+ },
+ {
+  "id": 2746,
+  "es": "REVISE EL REGISTRO",
+  "status": "ok"
+ },
+ {
+  "id": 2747,
+  "es": "Lo que respalda la evidencia y lo que falta",
+  "status": "ok"
+ },
+ {
+  "id": 2748,
+  "es": "Abrir el registro de fuentes",
+  "status": "ok"
+ },
+ {
+  "id": 2749,
+  "es": "Mapa del poder energético",
+  "status": "ok"
+ },
+ {
+  "id": 2750,
+  "es": "Quién es dueño, contrata, opera y regula su electricidad.",
+  "status": "ok"
+ },
+ {
+  "id": 2751,
+  "es": "Libro de decisiones y contratos",
+  "status": "ok"
+ },
+ {
+  "id": 2752,
+  "es": "Siga registros reales de Cleveland, con los vacíos a la vista.",
+  "status": "ok"
+ },
+ {
+  "id": 2753,
+  "es": "Inspecciones, planificación, Tribunal de Vivienda y alquileres.",
+  "status": "ok"
+ },
+ {
+  "id": 2754,
+  "es": "Departamentos, supervisión, tribunales y gasto local.",
+  "status": "ok"
+ },
+ {
+  "id": 2755,
+  "es": "Hospitales, escuelas, financiadores y redes más allá del Ayuntamiento.",
+  "status": "ok"
+ },
+ {
+  "id": 2756,
+  "es": "¿Su dirección está en Cleveland? ¿Quién la gobierna?",
+  "status": "ok"
+ },
+ {
+  "id": 2757,
+  "es": "Empiece por un tema",
+  "status": "ok"
+ },
+ {
+  "id": 2758,
+  "es": "Relaciones en palabras",
+  "status": "ok"
+ },
+ {
+  "id": 2759,
+  "es": "Conexiones, en palabras",
+  "status": "ok"
+ },
+ {
+  "id": 2760,
+  "es": "Cada línea del mapa, escrita en palabras. Las líneas continuas del mapa tienen fuente o están registradas; las líneas punteadas son interpretación o un registro que falta.",
+  "status": "ok"
+ },
+ {
+  "id": 2761,
+  "es": "cada uno de estos {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2762,
+  "es": "Fuente",
+  "status": "ok"
+ },
+ {
+  "id": 2763,
+  "es": "· fuente de la relación",
+  "status": "ok"
+ },
+ {
+  "id": 2764,
+  "es": "Evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 2765,
+  "es": "· hay fuentes de la entidad; no hay una cita específica de la relación",
+  "status": "ok"
+ },
+ {
+  "id": 2766,
+  "es": "No hay relaciones visibles con los filtros actuales.",
+  "status": "ok"
+ },
+ {
+  "id": 2767,
+  "es": "VISTA PREVIA DE INVESTIGACIÓN ·",
+  "status": "ok"
+ },
+ {
+  "id": 2768,
+  "es": "Lo que esta versión puede y no puede decirle",
+  "status": "ok"
+ },
+ {
+  "id": 2769,
+  "es": "Los registros se revisaron el",
+  "status": "ok"
+ },
+ {
+  "id": 2770,
+  "es": "Cómo está hecho esto",
+  "status": "ok"
+ },
+ {
+  "id": 2771,
+  "es": "¿Quién tiene autoridad aquí?",
+  "status": "ok"
+ },
+ {
+  "id": 2772,
+  "es": "¿Dónde se aplica?",
+  "status": "ok"
+ },
+ {
+  "id": 2773,
+  "es": "Se aplica a",
+  "status": "ok"
+ },
+ {
+  "id": 2774,
+  "es": "Alcance de esta sala: {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2775,
+  "es": "¿Qué puedo hacer después?",
+  "status": "ok"
+ },
+ {
+  "id": 2776,
+  "es": "Luego abra el registro oficial de",
+  "status": "ok"
+ },
+ {
+  "id": 2777,
+  "es": "y verifique la fecha en que se revisó (",
+  "status": "ok"
+ },
+ {
+  "id": 2778,
+  "es": "Verificación para residentes",
+  "status": "ok"
+ },
+ {
+  "id": 2779,
+  "es": "Tres preguntas que todo residente debería poder responder antes de actuar.",
+  "status": "ok"
+ },
+ {
+  "id": 2780,
+  "es": "¿Puede responder estas tres preguntas?",
+  "status": "ok"
+ },
+ {
+  "id": 2781,
+  "es": "Lea cada tarjeta y márquela cuando la entienda. Si alguna no le queda clara, abra un registro cercano o el diccionario. Nada de esto se guarda ni se envía a ningún lado.",
+  "status": "ok"
+ },
+ {
+  "id": 2782,
+  "es": "Puedo responder esto",
+  "status": "ok"
+ },
+ {
+  "id": 2783,
+  "es": "Marcar como entendida",
+  "status": "ok"
+ },
+ {
+  "id": 2784,
+  "es": "¿Aún tiene dudas? Mire un registro relacionado",
+  "status": "ok"
+ },
+ {
+  "id": 2785,
+  "es": "Abrir la fuente oficial",
+  "status": "ok"
+ },
+ {
+  "id": 2786,
+  "es": "Su miembro del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2787,
+  "es": "{*} representa al Distrito {*} en el 119.º Concejo Municipal de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 2788,
+  "es": "Directorio oficial de distritos",
+  "status": "ok"
+ },
+ {
+  "id": 2789,
+  "es": "Abrir el registro",
+  "status": "ok"
+ },
+ {
+  "id": 2790,
+  "es": "Comparar con mis prioridades",
+  "status": "ok"
+ },
+ {
+  "id": 2791,
+  "es": "Confirme su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2792,
+  "es": "Su dirección, y no su distrito, determina su boleta completa. Las contiendas y los asuntos de todo el condado son los mismos para todo votante de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 2793,
+  "es": "Junta Electoral",
+  "status": "ok"
+ },
+ {
+  "id": 2794,
+  "es": "Practique con su boleta",
+  "status": "ok"
+ },
+ {
+  "id": 2795,
+  "es": "Boleta de muestra oficial",
+  "status": "ok"
+ },
+ {
+  "id": 2796,
+  "es": "Servicios de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2797,
+  "es": "La administración del alcalde dirige departamentos como Obras Públicas, Construcción y Vivienda, y Servicios Públicos.",
+  "status": "ok"
+ },
+ {
+  "id": 2798,
+  "es": "Ver quién administra los servicios",
+  "status": "ok"
+ },
+ {
+  "id": 2799,
+  "es": "Tribunales que podrían corresponder",
+  "status": "ok"
+ },
+ {
+  "id": 2800,
+  "es": "El Tribunal Municipal de Cleveland y el Tribunal de Vivienda manejan distintos tipos de casos. Los tribunales siguen la ley, no los distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 2801,
+  "es": "Información de los tribunales",
+  "status": "ok"
+ },
+ {
+  "id": 2802,
+  "es": "¿Qué tribunal atiende mi problema?",
+  "status": "ok"
+ },
+ {
+  "id": 2803,
+  "es": "Tribunal Municipal",
+  "status": "ok"
+ },
+ {
+  "id": 2804,
+  "es": "Su ciudad o pueblo",
+  "status": "ok"
+ },
+ {
+  "id": 2805,
+  "es": "Es probable que su gobierno local no sea el Ayuntamiento de Cleveland. Revise su dirección para encontrar la ciudad, el pueblo o el municipio (township) que le corresponde.",
+  "status": "ok"
+ },
+ {
+  "id": 2806,
+  "es": "Búsqueda de la Junta Electoral",
+  "status": "ok"
+ },
+ {
+  "id": 2807,
+  "es": "Encontrar información para votar por dirección",
+  "status": "ok"
+ },
+ {
+  "id": 2808,
+  "es": "Las contiendas y los asuntos de todo el condado son los mismos en todo el Condado de Cuyahoga. Las contiendas locales dependen de su dirección.",
+  "status": "ok"
+ },
+ {
+  "id": 2809,
+  "es": "Servicios del condado",
+  "status": "ok"
+ },
+ {
+  "id": 2810,
+  "es": "El gobierno del Condado de Cuyahoga atiende a todas las comunidades del condado, de manera independiente de cualquier ayuntamiento.",
+  "status": "ok"
+ },
+ {
+  "id": 2811,
+  "es": "Abrir el gobierno del condado",
+  "status": "ok"
+ },
+ {
+  "id": 2812,
+  "es": "Sistemas regionales compartidos",
+  "status": "ok"
+ },
+ {
+  "id": 2813,
+  "es": "El transporte público, el servicio de alcantarillado y la planificación regional cruzan los límites de las ciudades.",
+  "status": "ok"
+ },
+ {
+  "id": 2814,
+  "es": "Ver autoridades regionales",
+  "status": "ok"
+ },
+ {
+  "id": 2815,
+  "es": "Averigüe primero",
+  "status": "ok"
+ },
+ {
+  "id": 2816,
+  "es": "La búsqueda de la Junta Electoral le indica, a partir de su dirección, su ciudad, su distrito, su precinto y sus demás distritos, en el sitio de la Junta.",
+  "status": "ok"
+ },
+ {
+  "id": 2817,
+  "es": "¿Cleveland o no?",
+  "status": "ok"
+ },
+ {
+  "id": 2818,
+  "es": "Varias comunidades vecinas tienen sus propios gobiernos, incluidas East Cleveland y Bratenahl. Un nombre parecido no significa que sea la misma ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 2819,
+  "es": "Comparar gobiernos cercanos",
+  "status": "ok"
+ },
+ {
+  "id": 2820,
+  "es": "Distrito {*}, Ciudad de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 2821,
+  "es": "En otra parte del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 2822,
+  "es": "Aún no lo sé",
+  "status": "ok"
+ },
+ {
+  "id": 2823,
+  "es": "MI CONTEXTO LOCAL",
+  "status": "ok"
+ },
+ {
+  "id": 2824,
+  "es": "Vea las partes del gobierno más cercanas a usted.",
+  "status": "ok"
+ },
+ {
+  "id": 2825,
+  "es": "Elija un lugar y el atlas destaca las oficinas, boletas y tribunales que con más probabilidad le correspondan. Nunca le pedimos su dirección. Las búsquedas oficiales se hacen en sitios web oficiales.",
+  "status": "ok"
+ },
+ {
+  "id": 2826,
+  "es": "Privado en esta visita",
+  "status": "ok"
+ },
+ {
+  "id": 2827,
+  "es": "Su elección permanece en la memoria de esta página y no se guarda, no se comparte ni se agrega a los enlaces. Al recargar la página, se borra.",
+  "status": "ok"
+ },
+ {
+  "id": 2828,
+  "es": "¿Dónde vive?",
+  "status": "ok"
+ },
+ {
+  "id": 2829,
+  "es": "Elija un lugar",
+  "status": "ok"
+ },
+ {
+  "id": 2830,
+  "es": "No lo sé",
+  "status": "ok"
+ },
+ {
+  "id": 2831,
+  "es": "¿No conoce su distrito? Elija \"No lo sé\" y use la búsqueda oficial.",
+  "status": "ok"
+ },
+ {
+  "id": 2832,
+  "es": "SU CONTEXTO",
+  "status": "ok"
+ },
+ {
+  "id": 2833,
+  "es": "La representación en el Concejo sigue el mapa de 2026 de 15 distritos. Su boleta, su distrito escolar y algunos servicios pueden seguir límites diferentes.",
+  "status": "ok"
+ },
+ {
+  "id": 2834,
+  "es": "El gobierno de su ciudad o pueblo, no el de Cleveland, toma la mayoría de las decisiones locales para su dirección.",
+  "status": "ok"
+ },
+ {
+  "id": 2835,
+  "es": "Empiece con una búsqueda oficial por dirección. Luego regrese y elija su lugar.",
+  "status": "ok"
+ },
+ {
+  "id": 2836,
+  "es": "Borrar",
+  "status": "ok"
+ },
+ {
+  "id": 2837,
+  "es": "Lo que esta página no hace",
+  "status": "ok"
+ },
+ {
+  "id": 2838,
+  "es": "No busca ni guarda direcciones. Las búsquedas oficiales se quedan en los sitios web oficiales.",
+  "status": "ok"
+ },
+ {
+  "id": 2839,
+  "es": "No determina precintos ni distritos. Su boleta completa puede ser distinta de la de su vecino.",
+  "status": "ok"
+ },
+ {
+  "id": 2840,
+  "es": "No le dice cómo votar ni clasifica a nadie.",
+  "status": "ok"
+ },
+ {
+  "id": 2841,
+  "es": "LIBRO DE DECISIONES Y CONTRATOS",
+  "status": "ok"
+ },
+ {
+  "id": 2842,
+  "es": "Siga una decisión hasta su registro.",
+  "status": "ok"
+ }
+]

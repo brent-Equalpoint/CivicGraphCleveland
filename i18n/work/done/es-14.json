@@ -1,0 +1,952 @@
+[
+ {
+  "id": 2843,
+  "es": "Cada entrada es un registro real de Cleveland que ya está cargado en este atlas. El libro de decisiones muestra lo que respalda el registro y enumera lo que aún falta. No suma dinero, no asigna puntajes a funcionarios ni infiere votos.",
+  "status": "ok"
+ },
+ {
+  "id": 2844,
+  "es": "Registros",
+  "status": "ok"
+ },
+ {
+  "id": 2845,
+  "es": "Acciones registradas",
+  "status": "ok"
+ },
+ {
+  "id": 2846,
+  "es": "Parciales o de contexto",
+  "status": "ok"
+ },
+ {
+  "id": 2847,
+  "es": "Faltan registros",
+  "status": "ok"
+ },
+ {
+  "id": 2848,
+  "es": "Los filtros cambian la lista, no los registros.",
+  "status": "ok"
+ },
+ {
+  "id": 2849,
+  "es": "Tema",
+  "status": "ok"
+ },
+ {
+  "id": 2850,
+  "es": "Todos los temas",
+  "status": "ok"
+ },
+ {
+  "id": 2851,
+  "es": "Toda la evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 2852,
+  "es": "Registros del libro de decisiones",
+  "status": "ok"
+ },
+ {
+  "id": 2853,
+  "es": "Ningún registro coincide con estos filtros",
+  "status": "ok"
+ },
+ {
+  "id": 2854,
+  "es": "El libro de decisiones tiene {*} registros. Al quitar los filtros se muestran todos.",
+  "status": "ok"
+ },
+ {
+  "id": 2855,
+  "es": "Quitar los filtros",
+  "status": "ok"
+ },
+ {
+  "id": 2856,
+  "es": "Aún falta",
+  "status": "ok"
+ },
+ {
+  "id": 2857,
+  "es": "Revisión registrada",
+  "status": "ok"
+ },
+ {
+  "id": 2858,
+  "es": "Mostrar este registro en el mapa",
+  "status": "ok"
+ },
+ {
+  "id": 2859,
+  "es": "Estados y controles",
+  "status": "ok"
+ },
+ {
+  "id": 2860,
+  "es": "Plan de entrega",
+  "status": "ok"
+ },
+ {
+  "id": 2861,
+  "es": "Reglas de evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 2862,
+  "es": "MESA DE INTELIGENCIA CÍVICA",
+  "status": "ok"
+ },
+ {
+  "id": 2863,
+  "es": "Cómo una pregunta de un residente se convierte en un registro público.",
+  "status": "ok"
+ },
+ {
+  "id": 2864,
+  "es": "ESTADO REAL · 1 DE OCTUBRE DE 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2865,
+  "es": "La arquitectura está diseñada. Una parte de la maquinaria ya funciona.",
+  "status": "ok"
+ },
+ {
+  "id": 2866,
+  "es": "Cada noche, un programa convierte el registro público del Concejo en un paquete por cada ordenanza o resolución. Revisiones basadas en reglas hacen el papel del Examinador y del Escéptico, y solo un publicador con nombre, mediante un flujo de trabajo firmado de GitHub, puede aprobar una versión exacta. Los registros aprobados muestran una marca de Revisado en los perfiles, con quién los verificó y qué encontró. Aún no funcionan: agentes que lean documentos, una fuente de votos de cada miembro y una mesa de correcciones. Todo lo que no tiene la marca de Revisado se reunió a mano, con las fuentes y los vacíos indicados.",
+  "status": "ok"
+ },
+ {
+  "id": 2867,
+  "es": "Secciones de la arquitectura",
+  "status": "ok"
+ },
+ {
+  "id": 2868,
+  "es": "Proceso de once pasos, desde la recepción hasta el seguimiento, con un ciclo de corrección que vuelve al registro de evidencia. Elija un paso para leerlo.",
+  "status": "ok"
+ },
+ {
+  "id": 2869,
+  "es": "Paso {*}: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2870,
+  "es": "PASO",
+  "status": "ok"
+ },
+ {
+  "id": 2871,
+  "es": "Anterior",
+  "status": "ok"
+ },
+ {
+  "id": 2872,
+  "es": "Líneas de investigación",
+  "status": "ok"
+ },
+ {
+  "id": 2873,
+  "es": "Una pregunta puede dirigirse a varias líneas. Cada una devuelve su propio paquete de evidencia, y ningún investigador aprueba su propio hallazgo.",
+  "status": "ok"
+ },
+ {
+  "id": 2874,
+  "es": "puestos. Cada puesto se detiene en el límite de su autoridad.",
+  "status": "ok"
+ },
+ {
+  "id": 2875,
+  "es": "Grupo",
+  "status": "ok"
+ },
+ {
+  "id": 2876,
+  "es": "Todos los puestos",
+  "status": "ok"
+ },
+ {
+  "id": 2877,
+  "es": "Puestos, lo que cada uno debe producir y lo que no puede hacer",
+  "status": "ok"
+ },
+ {
+  "id": 2878,
+  "es": "Puesto",
+  "status": "ok"
+ },
+ {
+  "id": 2879,
+  "es": "Debe producir",
+  "status": "ok"
+ },
+ {
+  "id": 2880,
+  "es": "No puede hacer",
+  "status": "ok"
+ },
+ {
+  "id": 2881,
+  "es": "Estados del flujo de trabajo",
+  "status": "ok"
+ },
+ {
+  "id": 2882,
+  "es": "Estados del flujo de trabajo con rutas de entrada, salida y falla",
+  "status": "ok"
+ },
+ {
+  "id": 2883,
+  "es": "Estado",
+  "status": "ok"
+ },
+ {
+  "id": 2884,
+  "es": "Sale cuando",
+  "status": "ok"
+ },
+ {
+  "id": 2885,
+  "es": "Ruta de falla",
+  "status": "ok"
+ },
+ {
+  "id": 2886,
+  "es": "Controles de revisión que no se pueden omitir",
+  "status": "ok"
+ },
+ {
+  "id": 2887,
+  "es": "Comenzar con un recorrido acotado: \"¿Quién autorizó una decisión con nombre de la ciudad y cuál fue el voto registrado?\" Luego, un contrato de energía y un gravamen para educación, manteniendo separadas sus cadenas de autoridad.",
+  "status": "ok"
+ },
+ {
+  "id": 2888,
+  "es": "Etapas de entrega con verificaciones de aceptación y estado",
+  "status": "ok"
+ },
+ {
+  "id": 2889,
+  "es": "Etapa",
+  "status": "ok"
+ },
+ {
+  "id": 2890,
+  "es": "Entregable",
+  "status": "ok"
+ },
+ {
+  "id": 2891,
+  "es": "Verificación de aceptación",
+  "status": "ok"
+ },
+ {
+  "id": 2892,
+  "es": "Estado",
+  "status": "ok"
+ },
+ {
+  "id": 2893,
+  "es": "Casos de aceptación",
+  "status": "ok"
+ },
+ {
+  "id": 2894,
+  "es": "CUANDO",
+  "status": "ok"
+ },
+ {
+  "id": 2895,
+  "es": "ENTONCES",
+  "status": "ok"
+ },
+ {
+  "id": 2896,
+  "es": "Estados de la evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 2897,
+  "es": "Un hash criptográfico prueba que un registro guardado no se cambió después de capturarse. No prueba que el contenido sea verdadero.",
+  "status": "ok"
+ },
+ {
+  "id": 2898,
+  "es": "Lo que lee la página pública",
+  "status": "ok"
+ },
+ {
+  "id": 2899,
+  "es": "La parte visible de la aplicación lee solo una proyección aprobada y con versión. Cada registro incluye: id, tipo, etiqueta, resumen sencillo, jurisdicción, geografía, fecha de corte, estado de la evidencia, anclas de fuente, validez, registros relacionados, siguiente paso, revisión y texto de accesibilidad.",
+  "status": "ok"
+ },
+ {
+  "id": 2900,
+  "es": "Salvaguardas para la alineación de valores",
+  "status": "ok"
+ },
+ {
+  "id": 2901,
+  "es": "Compare tema por tema, usando votaciones nominales, medidas patrocinadas, declaraciones oficiales y fechas.",
+  "status": "ok"
+ },
+ {
+  "id": 2902,
+  "es": "Nunca deduzca creencias a partir del partido, ni convierta un solo voto en una ideología.",
+  "status": "ok"
+ },
+ {
+  "id": 2903,
+  "es": "\"No hay evidencia suficiente\" y \"no aplica\" son respuestas válidas.",
+  "status": "ok"
+ },
+ {
+  "id": 2904,
+  "es": "Etiquete cada efecto proyectado como un escenario, no como un resultado.",
+  "status": "ok"
+ },
+ {
+  "id": 2905,
+  "es": "Pruebe distrito, gravamen, jurisdicción…",
+  "status": "ok"
+ },
+ {
+  "id": 2906,
+  "es": "Buscar en el diccionario cívico",
+  "status": "ok"
+ },
+ {
+  "id": 2907,
+  "es": "Categoría",
+  "status": "ok"
+ },
+ {
+  "id": 2908,
+  "es": "Todas las categorías",
+  "status": "ok"
+ },
+ {
+  "id": 2909,
+  "es": "Ejemplo:",
+  "status": "ok"
+ },
+ {
+  "id": 2910,
+  "es": "Relacionado",
+  "status": "ok"
+ },
+ {
+  "id": 2911,
+  "es": "Muéstreme dónde encaja esto",
+  "status": "ok"
+ },
+ {
+  "id": 2912,
+  "es": "Contexto oficial",
+  "status": "ok"
+ },
+ {
+  "id": 2913,
+  "es": "Explicar de forma sencilla",
+  "status": "ok"
+ },
+ {
+  "id": 2914,
+  "es": "Aún no hay definición para \"{*}\"",
+  "status": "ok"
+ },
+ {
+  "id": 2915,
+  "es": "Nada en esta categoría",
+  "status": "ok"
+ },
+ {
+  "id": 2916,
+  "es": "El diccionario explica palabras cívicas. Pruebe con una palabra más corta o vea todas las categorías.",
+  "status": "ok"
+ },
+ {
+  "id": 2917,
+  "es": "Mostrar todas las palabras",
+  "status": "ok"
+ },
+ {
+  "id": 2918,
+  "es": "definiciones en lenguaje sencillo. Son resúmenes para ayudarle a leer los registros, no definiciones legales.",
+  "status": "ok"
+ },
+ {
+  "id": 2919,
+  "es": "Bento Blue",
+  "status": "keep"
+ },
+ {
+  "id": 2920,
+  "es": "Cambiar el estilo de diseño",
+  "status": "ok"
+ },
+ {
+  "id": 2921,
+  "es": "Estilo de diseño: {*}. Cambiar a {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2922,
+  "es": "Original",
+  "status": "keep"
+ },
+ {
+  "id": 2923,
+  "es": "Estilo: <1>{*}</1>",
+  "status": "ok"
+ },
+ {
+  "id": 2924,
+  "es": "Estilo:",
+  "status": "ok"
+ },
+ {
+  "id": 2925,
+  "es": "Bento",
+  "status": "keep"
+ },
+ {
+  "id": 2926,
+  "es": "8th District Court of Appeals",
+  "status": "keep"
+ },
+ {
+  "id": 2927,
+  "es": "No votó",
+  "status": "ok"
+ },
+ {
+  "id": 2928,
+  "es": "Votó por una persona con nombre",
+  "status": "ok"
+ },
+ {
+  "id": 2929,
+  "es": "No se indica área de política",
+  "status": "ok"
+ },
+ {
+  "id": 2930,
+  "es": "No votó {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2931,
+  "es": "Nombró a una persona {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2932,
+  "es": "Nuevo Hampshire",
+  "status": "ok"
+ },
+ {
+  "id": 2933,
+  "es": "Nueva Jersey",
+  "status": "ok"
+ },
+ {
+  "id": 2934,
+  "es": "Nuevo México",
+  "status": "ok"
+ },
+ {
+  "id": 2935,
+  "es": "Nueva York",
+  "status": "ok"
+ },
+ {
+  "id": 2936,
+  "es": "Carolina del Norte",
+  "status": "ok"
+ },
+ {
+  "id": 2937,
+  "es": "Dakota del Norte",
+  "status": "ok"
+ },
+ {
+  "id": 2938,
+  "es": "Rhode Island",
+  "status": "keep"
+ },
+ {
+  "id": 2939,
+  "es": "Carolina del Sur",
+  "status": "ok"
+ },
+ {
+  "id": 2940,
+  "es": "Dakota del Sur",
+  "status": "ok"
+ },
+ {
+  "id": 2941,
+  "es": "Virginia Occidental",
+  "status": "ok"
+ },
+ {
+  "id": 2942,
+  "es": "Distrito de Columbia",
+  "status": "ok"
+ },
+ {
+  "id": 2943,
+  "es": "Puerto Rico",
+  "status": "keep"
+ },
+ {
+  "id": 2944,
+  "es": "Islas Vírgenes de EE. UU.",
+  "status": "ok"
+ },
+ {
+  "id": 2945,
+  "es": "Samoa Estadounidense",
+  "status": "ok"
+ },
+ {
+  "id": 2946,
+  "es": "Islas Marianas del Norte",
+  "status": "ok"
+ },
+ {
+  "id": 2947,
+  "es": "Senado",
+  "status": "ok"
+ },
+ {
+  "id": 2948,
+  "es": "Senado de Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 2949,
+  "es": "Cámara",
+  "status": "ok"
+ },
+ {
+  "id": 2950,
+  "es": "Cámara de Representantes de Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 2951,
+  "es": "Agencias ejecutivas",
+  "status": "ok"
+ },
+ {
+  "id": 2952,
+  "es": "Agencias ejecutivas federales",
+  "status": "ok"
+ },
+ {
+  "id": 2953,
+  "es": "{*} es miembro del Senado de Estados Unidos por {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2954,
+  "es": "{*} representa en la Cámara de Representantes de Estados Unidos a {*}, distrito {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2955,
+  "es": "{*} es la persona delegada ante la Cámara de Representantes de Estados Unidos por {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2956,
+  "es": "el subcomité {*} de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2957,
+  "es": "{*} forma parte de {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2958,
+  "es": "el {*} de",
+  "status": "ok"
+ },
+ {
+  "id": 2959,
+  "es": "{*} figura como quien preside.",
+  "status": "ok"
+ },
+ {
+  "id": 2960,
+  "es": "No se indica quién preside en el registro de integrantes del comité.",
+  "status": "ok"
+ },
+ {
+  "id": 2961,
+  "es": "{*} forma parte de {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2962,
+  "es": "{*} es una agencia federal de primer nivel en la lista del Federal Register.",
+  "status": "ok"
+ },
+ {
+  "id": 2963,
+  "es": ", y {*} más",
+  "status": "ok"
+ },
+ {
+  "id": 2964,
+  "es": "Estas son agencias federales que han publicado en el Federal Register en los últimos dos años. Algunos organismos conocidos aparecen bajo una agencia matriz.",
+  "status": "ok"
+ },
+ {
+  "id": 2965,
+  "es": "Sitio web oficial de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2966,
+  "es": "Sus senadores",
+  "status": "ok"
+ },
+ {
+  "id": 2967,
+  "es": "Cada estado tiene dos senadores de Estados Unidos, y cada uno representa a todo el estado de {*}. {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2968,
+  "es": "El período actual de {*} dura hasta {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2969,
+  "es": "{*} no tiene senadores.",
+  "status": "ok"
+ },
+ {
+  "id": 2970,
+  "es": "{*} tiene representación en el Congreso mediante una persona delegada en la Cámara, que no vota en la aprobación final de la mayoría de los proyectos de ley.",
+  "status": "ok"
+ },
+ {
+  "id": 2971,
+  "es": "Su representante",
+  "status": "ok"
+ },
+ {
+  "id": 2972,
+  "es": "{*} representa a {*} en la Cámara de Representantes de Estados Unidos. El período actual dura hasta {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2973,
+  "es": "todo el territorio de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2974,
+  "es": "{*}, distrito {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2975,
+  "es": "{*}: no se indica ningún puesto en un comité.",
+  "status": "ok"
+ },
+ {
+  "id": 2976,
+  "es": "En qué trabajan",
+  "status": "ok"
+ },
+ {
+  "id": 2977,
+  "es": "Los comités hacen gran parte del trabajo en el Congreso.",
+  "status": "ok"
+ },
+ {
+  "id": 2978,
+  "es": "{*}: aquí no consta ningún voto reciente que haya decidido un proyecto de ley o un nombramiento.",
+  "status": "ok"
+ },
+ {
+  "id": 2979,
+  "es": "Cómo votaron últimamente",
+  "status": "ok"
+ },
+ {
+  "id": 2980,
+  "es": "Sus votos más recientes que decidieron algo.",
+  "status": "ok"
+ },
+ {
+  "id": 2981,
+  "es": "{*} No votar no significa estar en contra. Cada voto es sobre una sola pregunta, y el registro oficial está enlazado en el mapa completo.",
+  "status": "ok"
+ },
+ {
+  "id": 2982,
+  "es": "Lo que aún no es público aquí",
+  "status": "ok"
+ },
+ {
+  "id": 2983,
+  "es": "Aquí no se muestra cómo votaron.",
+  "status": "ok"
+ },
+ {
+  "id": 2984,
+  "es": "Las votaciones nominales son registros públicos, pero esta página no pudo cargarlas. La falta de un registro aquí no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 2985,
+  "es": "Washington",
+  "status": "keep"
+ },
+ {
+  "id": 2986,
+  "es": "¿Quién me representa en Washington?",
+  "status": "ok"
+ },
+ {
+  "id": 2987,
+  "es": "el registro congress-legislators de los miembros actuales (dominio público)",
+  "status": "ok"
+ },
+ {
+  "id": 2988,
+  "es": "Estos son los votos oficiales registrados del",
+  "status": "ok"
+ },
+ {
+  "id": 2989,
+  "es": "º Congreso, última actualización",
+  "status": "ok"
+ },
+ {
+  "id": 2990,
+  "es": "Miembro",
+  "status": "ok"
+ },
+ {
+  "id": 2991,
+  "es": "Todos los temas (",
+  "status": "ok"
+ },
+ {
+  "id": 2992,
+  "es": "Solo votos que decidieron un proyecto de ley o un nombramiento",
+  "status": "ok"
+ },
+ {
+  "id": 2993,
+  "es": "Ningún voto registrado coincide.",
+  "status": "ok"
+ },
+ {
+  "id": 2994,
+  "es": "{*}, {*}: {*} voto{*} en el registro. {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2995,
+  "es": "Todos",
+  "status": "ok"
+ },
+ {
+  "id": 2996,
+  "es": "({*} a {*})",
+  "status": "ok"
+ },
+ {
+  "id": 2997,
+  "es": "Tema: {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2998,
+  "es": "El registro oficial<1> (se abre en una pestaña nueva)</1>",
+  "status": "ok"
+ },
+ {
+  "id": 2999,
+  "es": "El registro oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3000,
+  "es": "El proyecto de ley en Congress.gov<1> (se abre en una pestaña nueva)</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3001,
+  "es": "El proyecto de ley en Congress.gov",
+  "status": "ok"
+ },
+ {
+  "id": 3002,
+  "es": "Mostrar 25 más de",
+  "status": "ok"
+ },
+ {
+  "id": 3003,
+  "es": "Los temas son las áreas de política del Congressional Research Service, tal como Congress.gov etiqueta cada proyecto de ley. Los votos sobre un nombramiento o un asunto que no es un proyecto de ley no tienen área de política.",
+  "status": "ok"
+ },
+ {
+  "id": 3004,
+  "es": "Los votos registrados de la Cámara y",
+  "status": "ok"
+ },
+ {
+  "id": 3005,
+  "es": "del Senado se conservan",
+  "status": "ok"
+ },
+ {
+  "id": 3006,
+  "es": "; se siguen agregando {*} votos anteriores del Senado",
+  "status": "ok"
+ },
+ {
+  "id": 3007,
+  "es": "Votos por tema",
+  "status": "ok"
+ },
+ {
+  "id": 3008,
+  "es": "Los votos necesitan el sitio en línea, porque cargan un archivo de datos. Vuelva a intentarlo con conexión.",
+  "status": "ok"
+ },
+ {
+  "id": 3009,
+  "es": "Cargando los votos...",
+  "status": "ok"
+ },
+ {
+  "id": 3010,
+  "es": "Cada proyecto de ley tiene un área de política, elegida por el Congressional Research Service y mostrada en Congress.gov. Elija una para ver los votos registrados en ella, del más reciente al más antiguo. Esto enumera votos. No dice qué agencias se encargan de un tema, porque ese mapa necesita primero la revisión de una persona.",
+  "status": "ok"
+ },
+ {
+  "id": 3011,
+  "es": "Elija un tema",
+  "status": "ok"
+ },
+ {
+  "id": 3012,
+  "es": "Elija un tema para ver sus votos.",
+  "status": "ok"
+ },
+ {
+  "id": 3013,
+  "es": "Debajo de cada voto, cómo votaron los miembros de {*}, según el lugar que eligió en Sus miembros.",
+  "status": "ok"
+ },
+ {
+  "id": 3014,
+  "es": "Elija su estado en Sus miembros para ver cómo votaron sus propios miembros en cada voto.",
+  "status": "ok"
+ },
+ {
+  "id": 3015,
+  "es": "Sus miembros: {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3016,
+  "es": "Sus miembros: no figuran en la votación nominal de este voto.",
+  "status": "ok"
+ },
+ {
+  "id": 3017,
+  "es": "Mostrar 15 más de",
+  "status": "ok"
+ },
+ {
+  "id": 3018,
+  "es": "No votar no significa estar en contra, y cada voto es sobre una sola pregunta: un voto a favor de una regla o de una moción no es un voto a favor del proyecto de ley. Una persona aún no ha leído estas fuentes para revisar sus términos de uso.",
+  "status": "ok"
+ },
+ {
+  "id": 3019,
+  "es": "Período actual:",
+  "status": "ok"
+ },
+ {
+  "id": 3020,
+  "es": "(un dato con fuente, no un juicio).",
+  "status": "ok"
+ },
+ {
+  "id": 3021,
+  "es": "Comités: {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3022,
+  "es": "No se indica ningún puesto en un comité.",
+  "status": "ok"
+ },
+ {
+  "id": 3023,
+  "es": "Sitio web oficial de {*}<1> (se abre en una pestaña nueva)</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3024,
+  "es": ": sitio web oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3025,
+  "es": "Ver",
+  "status": "ok"
+ },
+ {
+  "id": 3026,
+  "es": "Sus miembros del Congreso",
+  "status": "ok"
+ },
+ {
+  "id": 3027,
+  "es": "Elija su estado y, para su representante, su distrito. Esto se queda en su dispositivo durante esta visita y nunca se pone en un enlace.",
+  "status": "ok"
+ },
+ {
+  "id": 3028,
+  "es": "Su estado",
+  "status": "ok"
+ },
+ {
+  "id": 3029,
+  "es": "Elija un estado",
+  "status": "ok"
+ },
+ {
+  "id": 3030,
+  "es": "Su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3031,
+  "es": "Elija un distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3032,
+  "es": "Todo el estado (distrito único)",
+  "status": "ok"
+ }
+]

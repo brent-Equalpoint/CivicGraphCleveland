@@ -1,0 +1,857 @@
+[
+ {
+  "id": 108,
+  "es": "Demócrata",
+  "status": "ok"
+ },
+ {
+  "id": 110,
+  "es": "Republicano",
+  "status": "ok"
+ },
+ {
+  "id": 112,
+  "es": "Libertario",
+  "status": "ok"
+ },
+ {
+  "id": 119,
+  "es": "No partidista",
+  "status": "ok"
+ },
+ {
+  "id": 699,
+  "es": "Representación",
+  "status": "ok"
+ },
+ {
+  "id": 712,
+  "es": "Administración",
+  "status": "ok"
+ },
+ {
+  "id": 719,
+  "es": "Legislación",
+  "status": "ok"
+ },
+ {
+  "id": 727,
+  "es": "Vivienda",
+  "status": "ok"
+ },
+ {
+  "id": 731,
+  "es": "Ética",
+  "status": "ok"
+ },
+ {
+  "id": 736,
+  "es": "Supervisión",
+  "status": "ok"
+ },
+ {
+  "id": 742,
+  "es": "Justicia",
+  "status": "ok"
+ },
+ {
+  "id": 771,
+  "es": "Transporte",
+  "status": "ok"
+ },
+ {
+  "id": 781,
+  "es": "Contratos",
+  "status": "ok"
+ },
+ {
+  "id": 784,
+  "es": "Policía",
+  "status": "ok"
+ },
+ {
+  "id": 785,
+  "es": "Bomberos",
+  "status": "ok"
+ },
+ {
+  "id": 789,
+  "es": "Instalaciones",
+  "status": "ok"
+ },
+ {
+  "id": 790,
+  "es": "Residuos",
+  "status": "ok"
+ },
+ {
+  "id": 793,
+  "es": "Servicios públicos",
+  "status": "ok"
+ },
+ {
+  "id": 794,
+  "es": "Agua",
+  "status": "ok"
+ },
+ {
+  "id": 802,
+  "es": "Permisos",
+  "status": "ok"
+ },
+ {
+  "id": 810,
+  "es": "Empleos",
+  "status": "ok"
+ },
+ {
+  "id": 813,
+  "es": "Planificación",
+  "status": "ok"
+ },
+ {
+  "id": 817,
+  "es": "Parques",
+  "status": "ok"
+ },
+ {
+  "id": 818,
+  "es": "Juventud",
+  "status": "ok"
+ },
+ {
+  "id": 819,
+  "es": "Recreación",
+  "status": "ok"
+ },
+ {
+  "id": 822,
+  "es": "Asuntos legales",
+  "status": "ok"
+ },
+ {
+  "id": 823,
+  "es": "Litigios",
+  "status": "ok"
+ },
+ {
+  "id": 827,
+  "es": "Tecnología",
+  "status": "ok"
+ },
+ {
+  "id": 836,
+  "es": "Seguridad",
+  "status": "ok"
+ },
+ {
+  "id": 852,
+  "es": "Fuerza laboral",
+  "status": "ok"
+ },
+ {
+  "id": 864,
+  "es": "Compras",
+  "status": "ok"
+ },
+ {
+  "id": 887,
+  "es": "Ordenanzas",
+  "status": "ok"
+ },
+ {
+  "id": 888,
+  "es": "Regulación",
+  "status": "ok"
+ },
+ {
+  "id": 893,
+  "es": "Niñez",
+  "status": "ok"
+ },
+ {
+  "id": 901,
+  "es": "Impuestos",
+  "status": "ok"
+ },
+ {
+  "id": 916,
+  "es": "Estacionamiento",
+  "status": "ok"
+ },
+ {
+  "id": 923,
+  "es": "Departamentos",
+  "status": "ok"
+ },
+ {
+  "id": 936,
+  "es": "Energía",
+  "status": "ok"
+ },
+ {
+  "id": 937,
+  "es": "Energía solar",
+  "status": "ok"
+ },
+ {
+  "id": 947,
+  "es": "Redistribución de distritos",
+  "status": "ok"
+ },
+ {
+  "id": 948,
+  "es": "Geografía",
+  "status": "ok"
+ },
+ {
+  "id": 954,
+  "es": "Boletas",
+  "status": "ok"
+ },
+ {
+  "id": 955,
+  "es": "Auditorías",
+  "status": "ok"
+ },
+ {
+  "id": 1516,
+  "es": "MetroHealth",
+  "status": "keep"
+ },
+ {
+  "id": 1541,
+  "es": "Tri-C",
+  "status": "keep"
+ },
+ {
+  "id": 1547,
+  "es": "CMSD",
+  "status": "keep"
+ },
+ {
+  "id": 1556,
+  "es": "Biblioteca",
+  "status": "ok"
+ },
+ {
+  "id": 1569,
+  "es": "Ideastream",
+  "status": "keep"
+ },
+ {
+  "id": 1580,
+  "es": "GCRTA",
+  "status": "keep"
+ },
+ {
+  "id": 1584,
+  "es": "Puerto",
+  "status": "ok"
+ },
+ {
+  "id": 1588,
+  "es": "NEORSD",
+  "status": "keep"
+ },
+ {
+  "id": 1593,
+  "es": "GCP",
+  "status": "keep"
+ },
+ {
+  "id": 1597,
+  "es": "Fundación",
+  "status": "ok"
+ },
+ {
+  "id": 1638,
+  "es": "Elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 1642,
+  "es": "Educación",
+  "status": "ok"
+ },
+ {
+  "id": 1756,
+  "es": "Fechas",
+  "status": "ok"
+ },
+ {
+  "id": 1765,
+  "es": "Alcance",
+  "status": "ok"
+ },
+ {
+  "id": 1774,
+  "es": "Comprador",
+  "status": "ok"
+ },
+ {
+  "id": 1783,
+  "es": "Proveedor",
+  "status": "ok"
+ },
+ {
+  "id": 1784,
+  "es": "Precio",
+  "status": "ok"
+ },
+ {
+  "id": 1788,
+  "es": "Enmiendas",
+  "status": "ok"
+ },
+ {
+  "id": 1807,
+  "es": "Pagos",
+  "status": "ok"
+ },
+ {
+  "id": 1811,
+  "es": "Presupuesto",
+  "status": "ok"
+ },
+ {
+  "id": 1814,
+  "es": "Recepción",
+  "status": "ok"
+ },
+ {
+  "id": 1816,
+  "es": "Enrutamiento",
+  "status": "ok"
+ },
+ {
+  "id": 1818,
+  "es": "Obtención",
+  "status": "ok"
+ },
+ {
+  "id": 1820,
+  "es": "Normalización",
+  "status": "ok"
+ },
+ {
+  "id": 1822,
+  "es": "Resolución",
+  "status": "ok"
+ },
+ {
+  "id": 1826,
+  "es": "Examen",
+  "status": "ok"
+ },
+ {
+  "id": 1828,
+  "es": "Cuestionamiento",
+  "status": "ok"
+ },
+ {
+  "id": 1830,
+  "es": "Explicación",
+  "status": "ok"
+ },
+ {
+  "id": 1837,
+  "es": "Planteamiento",
+  "status": "ok"
+ },
+ {
+  "id": 1840,
+  "es": "Orquestador",
+  "status": "ok"
+ },
+ {
+  "id": 1844,
+  "es": "Investigación",
+  "status": "ok"
+ },
+ {
+  "id": 1854,
+  "es": "Modelado",
+  "status": "ok"
+ },
+ {
+  "id": 1867,
+  "es": "Explicación",
+  "status": "ok"
+ },
+ {
+  "id": 1877,
+  "es": "Escéptico",
+  "status": "ok"
+ },
+ {
+  "id": 1884,
+  "es": "Publicación",
+  "status": "ok"
+ },
+ {
+  "id": 1895,
+  "es": "Salud",
+  "status": "ok"
+ },
+ {
+  "id": 1896,
+  "es": "Transporte público",
+  "status": "ok"
+ },
+ {
+  "id": 1898,
+  "es": "Condado",
+  "status": "ok"
+ },
+ {
+  "id": 1900,
+  "es": "Federal",
+  "status": "keep"
+ },
+ {
+  "id": 1934,
+  "es": "Constitución",
+  "status": "ok"
+ },
+ {
+  "id": 1937,
+  "es": "Registro",
+  "status": "ok"
+ },
+ {
+  "id": 1964,
+  "es": "Evaluación",
+  "status": "ok"
+ },
+ {
+  "id": 2028,
+  "es": "feb. de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2030,
+  "es": "junio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2044,
+  "es": "mayo de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2047,
+  "es": "sept. de 2025",
+  "status": "ok"
+ },
+ {
+  "id": 2062,
+  "es": "dic. de 2025",
+  "status": "ok"
+ },
+ {
+  "id": 2096,
+  "es": "ENR",
+  "status": "keep"
+ },
+ {
+  "id": 2097,
+  "es": "oct. de 2025",
+  "status": "ok"
+ },
+ {
+  "id": 2112,
+  "es": "marzo de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2114,
+  "es": "abril de 2025",
+  "status": "ok"
+ },
+ {
+  "id": 2144,
+  "es": "Ordenanza",
+  "status": "ok"
+ },
+ {
+  "id": 2146,
+  "es": "Resolución",
+  "status": "ok"
+ },
+ {
+  "id": 2199,
+  "es": "· Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 2208,
+  "es": "propuestas",
+  "status": "ok"
+ },
+ {
+  "id": 2209,
+  "es": "encabezó",
+  "status": "ok"
+ },
+ {
+  "id": 2238,
+  "es": "encabezar",
+  "status": "ok"
+ },
+ {
+  "id": 2239,
+  "es": "sumarse",
+  "status": "ok"
+ },
+ {
+  "id": 2241,
+  "es": "firmar",
+  "status": "ok"
+ },
+ {
+  "id": 2388,
+  "es": "Comunicación",
+  "status": "ok"
+ },
+ {
+  "id": 2389,
+  "es": "Punto",
+  "status": "ok"
+ },
+ {
+  "id": 2416,
+  "es": "En pausa",
+  "status": "ok"
+ },
+ {
+  "id": 2417,
+  "es": "Puesta sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 2418,
+  "es": "Rechazada",
+  "status": "ok"
+ },
+ {
+  "id": 2419,
+  "es": "Archivada",
+  "status": "ok"
+ },
+ {
+  "id": 2466,
+  "es": "desde",
+  "status": "ok"
+ },
+ {
+  "id": 2484,
+  "es": "Zonificación",
+  "status": "ok"
+ },
+ {
+  "id": 2545,
+  "es": "días",
+  "status": "ok"
+ },
+ {
+  "id": 2552,
+  "es": "puntos ·",
+  "status": "ok"
+ },
+ {
+  "id": 2557,
+  "es": "· Patrocinadores:",
+  "status": "ok"
+ },
+ {
+  "id": 2589,
+  "es": "Legislar",
+  "status": "ok"
+ },
+ {
+  "id": 2621,
+  "es": ", de",
+  "status": "ok"
+ },
+ {
+  "id": 2646,
+  "es": "encabezó (",
+  "status": "ok"
+ },
+ {
+  "id": 2647,
+  "es": "se sumó (",
+  "status": "ok"
+ },
+ {
+  "id": 2651,
+  "es": "en",
+  "status": "ok"
+ },
+ {
+  "id": 2655,
+  "es": "retirada.",
+  "status": "ok"
+ },
+ {
+  "id": 2673,
+  "es": ", retirada",
+  "status": "ok"
+ },
+ {
+  "id": 2731,
+  "es": "informe",
+  "status": "ok"
+ },
+ {
+  "id": 2732,
+  "es": "decidida,",
+  "status": "ok"
+ },
+ {
+  "id": 2733,
+  "es": "confirmada.",
+  "status": "ok"
+ },
+ {
+  "id": 2835,
+  "es": "Inicio",
+  "status": "ok"
+ },
+ {
+  "id": 2836,
+  "es": "Significado",
+  "status": "ok"
+ },
+ {
+  "id": 2837,
+  "es": "Poder",
+  "status": "ok"
+ },
+ {
+  "id": 2838,
+  "es": "Pruebas",
+  "status": "ok"
+ },
+ {
+  "id": 2858,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2864,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2866,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2868,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2870,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2974,
+  "es": "Proceso",
+  "status": "ok"
+ },
+ {
+  "id": 2975,
+  "es": "Puestos",
+  "status": "ok"
+ },
+ {
+  "id": 3045,
+  "es": "A favor {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3046,
+  "es": "En contra {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3047,
+  "es": "Presente {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3167,
+  "es": "Cielo",
+  "status": "ok"
+ },
+ {
+  "id": 3168,
+  "es": "Índice",
+  "status": "ok"
+ },
+ {
+  "id": 3169,
+  "es": "Enlazado",
+  "status": "ok"
+ },
+ {
+  "id": 3170,
+  "es": "Árbol",
+  "status": "ok"
+ },
+ {
+  "id": 3198,
+  "es": "más.",
+  "status": "ok"
+ },
+ {
+  "id": 3204,
+  "es": "miembros,",
+  "status": "ok"
+ },
+ {
+  "id": 3205,
+  "es": "comités,",
+  "status": "ok"
+ },
+ {
+  "id": 3206,
+  "es": "agencias.",
+  "status": "ok"
+ },
+ {
+  "id": 3208,
+  "es": "Aprobación",
+  "status": "ok"
+ },
+ {
+  "id": 3209,
+  "es": "Adopción",
+  "status": "ok"
+ },
+ {
+  "id": 3214,
+  "es": "en contra",
+  "status": "ok"
+ },
+ {
+  "id": 3230,
+  "es": ", en",
+  "status": "ok"
+ },
+ {
+  "id": 3231,
+  "es": "a favor,",
+  "status": "ok"
+ },
+ {
+  "id": 3246,
+  "es": "Todo el condado",
+  "status": "ok"
+ },
+ {
+  "id": 3247,
+  "es": "Tribunales",
+  "status": "ok"
+ },
+ {
+  "id": 3268,
+  "es": "agregado)",
+  "status": "ok"
+ },
+ {
+  "id": 3270,
+  "es": "elegido)",
+  "status": "ok"
+ },
+ {
+  "id": 3302,
+  "es": "· presentó",
+  "status": "ok"
+ },
+ {
+  "id": 3343,
+  "es": "sobre",
+  "status": "ok"
+ },
+ {
+  "id": 3446,
+  "es": "Boleta",
+  "status": "ok"
+ },
+ {
+  "id": 3472,
+  "es": "· Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3491,
+  "es": ", se sumó",
+  "status": "ok"
+ },
+ {
+  "id": 3499,
+  "es": "y",
+  "status": "ok"
+ },
+ {
+  "id": 3509,
+  "es": ", Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3592,
+  "es": "Resumen",
+  "status": "ok"
+ },
+ {
+  "id": 3594,
+  "es": "Posturas",
+  "status": "ok"
+ },
+ {
+  "id": 3612,
+  "es": ", consultado",
+  "status": "ok"
+ },
+ {
+  "id": 3628,
+  "es": "Todo",
+  "status": "ok"
+ },
+ {
+  "id": 3680,
+  "es": "Salas",
+  "status": "ok"
+ },
+ {
+  "id": 3682,
+  "es": "Términos",
+  "status": "ok"
+ },
+ {
+  "id": 3691,
+  "es": "términos",
+  "status": "ok"
+ },
+ {
+  "id": 3777,
+  "es": "Gobernador",
+  "status": "ok"
+ },
+ {
+  "id": 3789,
+  "es": "· PREGUNTA",
+  "status": "ok"
+ },
+ {
+  "id": 3848,
+  "es": "Más recientes",
+  "status": "ok"
+ }
+]

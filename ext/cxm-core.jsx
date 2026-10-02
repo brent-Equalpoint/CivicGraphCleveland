@@ -41,6 +41,7 @@ function CX_Root() {
   return (
     <CxBoundary label="The Civic Graph" phone={phone} resetKey={phone ? `phone` : `desktop`}>
       {phone || deskEasy ? <CxmApp deskEasy={!phone && deskEasy} onLeaveEasy={() => CX_EASY_HOOK.set(!1)} /> : <><Qh /><CX_HoverCard /><CX_LinkNotice /><CX_StorageNotice /></>}
+      <CX_LangNotice />
     </CxBoundary>
   );
 }

@@ -93,7 +93,9 @@ function CxmEasy() {
     if (speaking) { stopSpeaking(); return; }
     const text = boxRef.current ? boxRef.current.innerText : ``;
     const say = new globalThis.SpeechSynthesisUtterance(text);
-    say.lang = `en-US`;
+    const es = CX_I18N.lang === `es`;
+    say.lang = es ? `es-US` : `en-US`;
+    if (es) { const v = (globalThis.speechSynthesis.getVoices() || []).find((x) => /^es(-|_|$)/i.test(x.lang)); if (v) say.voice = v; }
     say.onend = () => setSpeaking(!1);
     say.onerror = () => setSpeaking(!1);
     globalThis.speechSynthesis.cancel();
@@ -119,6 +121,7 @@ function CxmEasy() {
       <header className="cxe-bar">
         <span className="cxe-brand">Civic Graph</span>
         <span className="cxe-bar-actions">
+          <CX_LangButton />
           {view.k !== `home` && <button type="button" onClick={toHome}>Start over</button>}
           <button type="button" onClick={() => toFull()}>{deskEasy ? `Full site` : `Full app`}</button>
         </span>

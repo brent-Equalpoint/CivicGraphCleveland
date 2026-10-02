@@ -1,0 +1,952 @@
+[
+ {
+  "id": 571,
+  "es": "Convenient Food Mart",
+  "status": "keep"
+ },
+ {
+  "id": 572,
+  "es": "12520 Lorain Avenue",
+  "status": "keep"
+ },
+ {
+  "id": 573,
+  "es": "3753 Pearl Road",
+  "status": "keep"
+ },
+ {
+  "id": 574,
+  "es": "Ventas en domingo · {*}",
+  "status": "ok"
+ },
+ {
+  "id": 575,
+  "es": "Permitir la venta propuesta de {*} los domingos en {*}, {*}, conforme a la opción local de licor especificada.",
+  "status": "ok"
+ },
+ {
+  "id": 576,
+  "es": "Rechazar esta solicitud de ventas en domingo en el lugar indicado.",
+  "status": "ok"
+ },
+ {
+  "id": 577,
+  "es": "Esto se aplica solo al precinto y al negocio indicados. No es una regla sobre el alcohol para toda la ciudad, y no describe todos los derechos de permiso existentes.",
+  "status": "ok"
+ },
+ {
+  "id": 578,
+  "es": "Aprobar la propuesta específica con el texto oficial que aparece abajo.",
+  "status": "ok"
+ },
+ {
+  "id": 579,
+  "es": "Rechazar esta propuesta específica. Los efectos sobre las reglas o los fondos existentes dependen de la propuesta.",
+  "status": "ok"
+ },
+ {
+  "id": 580,
+  "es": "No se ha cargado una revisión detallada del impacto, en lenguaje sencillo, para este asunto. Lea su alcance, su plazo y su texto exacto. No se estima ningún impacto financiero personal.",
+  "status": "ok"
+ },
+ {
+  "id": 581,
+  "es": "Distrito {*} del Senado Estatal",
+  "status": "ok"
+ },
+ {
+  "id": 582,
+  "es": "Distrito {*} de la Cámara",
+  "status": "ok"
+ },
+ {
+  "id": 583,
+  "es": "Distrito {*} del Concejo del Condado",
+  "status": "ok"
+ },
+ {
+  "id": 584,
+  "es": "COMPARE IDEAS, UNA PREGUNTA A LA VEZ",
+  "status": "ok"
+ },
+ {
+  "id": 585,
+  "es": "¿En qué puntos coinciden sus opiniones?",
+  "status": "ok"
+ },
+ {
+  "id": 586,
+  "es": "Comparar un cargo",
+  "status": "ok"
+ },
+ {
+  "id": 587,
+  "es": "Gobernador · planes declarados",
+  "status": "ok"
+ },
+ {
+  "id": 588,
+  "es": "Cámara de Representantes de EE. UU. · votos anteriores",
+  "status": "ok"
+ },
+ {
+  "id": 589,
+  "es": "Su opinión",
+  "status": "ok"
+ },
+ {
+  "id": 590,
+  "es": "Idea anterior",
+  "status": "ok"
+ },
+ {
+  "id": 591,
+  "es": "Idea siguiente",
+  "status": "ok"
+ },
+ {
+  "id": 592,
+  "es": "“Depende”, “Sigo aprendiendo” y los registros que faltan se excluyen y nunca se cuentan como desacuerdo.",
+  "status": "ok"
+ },
+ {
+  "id": 593,
+  "es": "Constelación",
+  "status": "ok"
+ },
+ {
+  "id": 594,
+  "es": "Tabla accesible",
+  "status": "ok"
+ },
+ {
+  "id": 595,
+  "es": "Constelación de coincidencias. Anillo interior: igual. Anillo exterior: diferente. La dirección no tiene significado político.",
+  "status": "ok"
+ },
+ {
+  "id": 596,
+  "es": "Igual",
+  "status": "ok"
+ },
+ {
+  "id": 597,
+  "es": "Mixto",
+  "status": "ok"
+ },
+ {
+  "id": 598,
+  "es": "Diferente",
+  "status": "ok"
+ },
+ {
+  "id": 599,
+  "es": "{*}: coinciden {*} de {*} registros comparables{*}",
+  "status": "ok"
+ },
+ {
+  "id": 600,
+  "es": "Alejar la vista de coincidencias",
+  "status": "ok"
+ },
+ {
+  "id": 601,
+  "es": "Acercar la vista de coincidencias",
+  "status": "ok"
+ },
+ {
+  "id": 602,
+  "es": "Restablecer vista",
+  "status": "ok"
+ },
+ {
+  "id": 603,
+  "es": "Mismas respuestas / registros comparables disponibles",
+  "status": "ok"
+ },
+ {
+  "id": 604,
+  "es": "Candidato",
+  "status": "ok"
+ },
+ {
+  "id": 605,
+  "es": "Iguales / comparados",
+  "status": "ok"
+ },
+ {
+  "id": 606,
+  "es": "Falta",
+  "status": "ok"
+ },
+ {
+  "id": 607,
+  "es": "· elección de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 608,
+  "es": "No comparado",
+  "status": "ok"
+ },
+ {
+  "id": 609,
+  "es": "Elija su distrito congresional en Mi boleta de práctica para ver los candidatos de esa contienda.",
+  "status": "ok"
+ },
+ {
+  "id": 610,
+  "es": "Más cerca significa más coincidencias en los registros respondidos de este tipo. La dirección no tiene significado. Un halo punteado marca su elección de práctica. El partido y la selección de la boleta no afectan la distancia.",
+  "status": "ok"
+ },
+ {
+  "id": 611,
+  "es": "La falta de un registro no significa que la respuesta sea no. Es posible que distintos candidatos tengan distinta cobertura de evidencia; una fracción no es una calificación general del candidato.",
+  "status": "ok"
+ },
+ {
+  "id": 612,
+  "es": "LO QUE ESTE CARGO PUEDE HACER",
+  "status": "ok"
+ },
+ {
+  "id": 613,
+  "es": "Referencia de autoridad ↗",
+  "status": "ok"
+ },
+ {
+  "id": 614,
+  "es": "Aún no se ha cargado ningún registro de política revisado",
+  "status": "ok"
+ },
+ {
+  "id": 615,
+  "es": "Leer la evidencia ↗",
+  "status": "ok"
+ },
+ {
+  "id": 616,
+  "es": "ANÁLISIS DE ESCENARIOS · NO ES UN PRONÓSTICO",
+  "status": "ok"
+ },
+ {
+  "id": 617,
+  "es": "Ficha oficial del candidato ↗",
+  "status": "ok"
+ },
+ {
+  "id": 618,
+  "es": "PRÁCTICA PRIVADA · 3 DE NOVIEMBRE DE 2026",
+  "status": "ok"
+ },
+ {
+  "id": 619,
+  "es": "Su boleta. Un poco más clara.",
+  "status": "ok"
+ },
+ {
+  "id": 620,
+  "es": "Pruebe una opción. Siga la evidencia. Tómese su tiempo.",
+  "status": "ok"
+ },
+ {
+  "id": 621,
+  "es": "Educación para votantes ↗",
+  "status": "ok"
+ },
+ {
+  "id": 622,
+  "es": "Esto nunca emite un voto. Sus elecciones se quedan solo en esta visita, a menos que decida guardarlas en este navegador.",
+  "status": "ok"
+ },
+ {
+  "id": 623,
+  "es": "Boleta de práctica manual · precinto no verificado",
+  "status": "ok"
+ },
+ {
+  "id": 624,
+  "es": "Se incluyen las contiendas y los asuntos de todo el condado. Agregue sus distritos y asuntos locales desde la boleta oficial. No los deducimos a partir de un distrito de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 625,
+  "es": "Cerrar configuración",
+  "status": "ok"
+ },
+ {
+  "id": 626,
+  "es": "Empiece con su boleta oficial",
+  "status": "ok"
+ },
+ {
+  "id": 627,
+  "es": "La página de boleta de muestra del condado decía que las boletas se estaban preparando cuando se revisó el 22 de septiembre. Mientras no esté disponible, esta es una boleta de práctica armada con el catálogo del condado, no una boleta personal verificada.",
+  "status": "ok"
+ },
+ {
+  "id": 628,
+  "es": "Buscar mis distritos ↗",
+  "status": "ok"
+ },
+ {
+  "id": 629,
+  "es": "Obtener mi boleta de muestra oficial ↗",
+  "status": "ok"
+ },
+ {
+  "id": 630,
+  "es": "Ingrese su dirección solo en el sitio web del condado. Si cambia un distrito, se eliminan las elecciones de práctica que ya no pertenecen a ese distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 631,
+  "es": "Distrito del Senado de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 632,
+  "es": "No lo sé / no está en mi boleta",
+  "status": "ok"
+ },
+ {
+  "id": 633,
+  "es": "Agregar asuntos locales de mi boleta oficial (",
+  "status": "ok"
+ },
+ {
+  "id": 634,
+  "es": "Seleccione solo los asuntos que aparecen en su boleta oficial. Un asunto de un distrito escolar o de un precinto puede no abarcar toda su ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 635,
+  "es": "Buscar un asunto por número o lugar",
+  "status": "ok"
+ },
+ {
+  "id": 636,
+  "es": "Pruebe Cleveland, 33 o un distrito escolar",
+  "status": "ok"
+ },
+ {
+  "id": 637,
+  "es": "· página oficial",
+  "status": "ok"
+ },
+ {
+  "id": 638,
+  "es": "Pasos de la boleta de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 639,
+  "es": "1. Mi boleta de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 640,
+  "es": "2. Mis coincidencias",
+  "status": "ok"
+ },
+ {
+  "id": 641,
+  "es": "3. ¿Qué podría cambiar?",
+  "status": "ok"
+ },
+ {
+  "id": 642,
+  "es": "Elija una contienda o un asunto",
+  "status": "ok"
+ },
+ {
+  "id": 643,
+  "es": "Asunto {*} · {*}",
+  "status": "ok"
+ },
+ {
+  "id": 644,
+  "es": "ELIJA COMO MÁXIMO UNO",
+  "status": "ok"
+ },
+ {
+  "id": 645,
+  "es": "PREGUNTA DE SÍ O NO",
+  "status": "ok"
+ },
+ {
+  "id": 646,
+  "es": "Su elección de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 647,
+  "es": "· Candidatura por escrito válida",
+  "status": "ok"
+ },
+ {
+  "id": 648,
+  "es": "Leer la evidencia sobre {*}",
+  "status": "ok"
+ },
+ {
+  "id": 649,
+  "es": "Registro y cargo ↗",
+  "status": "ok"
+ },
+ {
+  "id": 650,
+  "es": "Opciones no disponibles para elegir",
+  "status": "ok"
+ },
+ {
+  "id": 651,
+  "es": "en la lista del condado",
+  "status": "ok"
+ },
+ {
+  "id": 652,
+  "es": "Lista oficial de candidatos ↗",
+  "status": "ok"
+ },
+ {
+  "id": 653,
+  "es": "Un sí significa",
+  "status": "ok"
+ },
+ {
+  "id": 654,
+  "es": "Un no significa",
+  "status": "ok"
+ },
+ {
+  "id": 655,
+  "es": "Pregunta oficial",
+  "status": "ok"
+ },
+ {
+  "id": 656,
+  "es": "Leer la pregunta oficial",
+  "status": "ok"
+ },
+ {
+  "id": 657,
+  "es": "Texto en inglés extraído para su comodidad. El PDF del condado es la versión oficial.",
+  "status": "ok"
+ },
+ {
+  "id": 658,
+  "es": "Texto oficial · página",
+  "status": "ok"
+ },
+ {
+  "id": 659,
+  "es": "Dejar en blanco",
+  "status": "ok"
+ },
+ {
+  "id": 660,
+  "es": "Borrar elección",
+  "status": "ok"
+ },
+ {
+  "id": 661,
+  "es": "Siguiente elección",
+  "status": "ok"
+ },
+ {
+  "id": 662,
+  "es": "Revisar mi boleta de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 663,
+  "es": "HAGA ESPACIO PARA UNA PREGUNTA",
+  "status": "ok"
+ },
+ {
+  "id": 664,
+  "es": "No tiene que saberlo todo.",
+  "status": "ok"
+ },
+ {
+  "id": 665,
+  "es": "Abra “Registro y cargo” para ver lo que alguien ha dicho o sobre qué ha votado, y qué controla su cargo.",
+  "status": "ok"
+ },
+ {
+  "id": 666,
+  "es": "La evidencia que falta sigue faltando. Elegir “Aún no decido” está bien.",
+  "status": "ok"
+ },
+ {
+  "id": 667,
+  "es": "Comparar mis opiniones",
+  "status": "ok"
+ },
+ {
+  "id": 668,
+  "es": "¿Qué está cargado?",
+  "status": "ok"
+ },
+ {
+  "id": 669,
+  "es": "48 contiendas del catálogo del condado y 105 asuntos. Su configuración manual muestra un subconjunto. Las candidaturas son del 17 de septiembre; las fuentes se revisaron el 22 de septiembre.",
+  "status": "ok"
+ },
+ {
+  "id": 670,
+  "es": "La evidencia de políticas es un piloto pequeño: dos votos federales de dos representantes y cuatro propuestas declaradas de dos candidatos a gobernador. No es una historia política completa.",
+  "status": "ok"
+ },
+ {
+  "id": 671,
+  "es": "Instantánea de candidatos ↗",
+  "status": "ok"
+ },
+ {
+  "id": 672,
+  "es": "Instantánea de asuntos ↗",
+  "status": "ok"
+ },
+ {
+  "id": 673,
+  "es": "POSIBILIDADES, CON LÍMITES",
+  "status": "ok"
+ },
+ {
+  "id": 674,
+  "es": "Haga primero una elección de práctica. De todos modos puede revisar el registro de cualquier candidato en el paso de la boleta.",
+  "status": "ok"
+ },
+ {
+  "id": 675,
+  "es": "ASUNTO {*}",
+  "status": "ok"
+ },
+ {
+  "id": 676,
+  "es": "Explorar el registro y las posibilidades ↗",
+  "status": "ok"
+ },
+ {
+  "id": 677,
+  "es": "Leer la propuesta real ↗",
+  "status": "ok"
+ },
+ {
+  "id": 678,
+  "es": "elecciones hechas. Esta es su hoja de práctica, no una boleta verificada de su precinto ni un envío de voto.",
+  "status": "ok"
+ },
+ {
+  "id": 679,
+  "es": "Revisar la boleta de muestra oficial ↗",
+  "status": "ok"
+ },
+ {
+  "id": 680,
+  "es": "Guardar las elecciones de práctica en este navegador",
+  "status": "ok"
+ },
+ {
+  "id": 681,
+  "es": "Guardado localmente · visible para cualquier persona que use este perfil del navegador",
+  "status": "ok"
+ },
+ {
+  "id": 682,
+  "es": "Ocultar fechas y recursos",
+  "status": "ok"
+ },
+ {
+  "id": 683,
+  "es": "Fechas de las elecciones y recursos oficiales",
+  "status": "ok"
+ },
+ {
+  "id": 684,
+  "es": "Siga la evidencia y los límites de este cargo.",
+  "status": "ok"
+ },
+ {
+  "id": 685,
+  "es": "¿Borrar sus datos de práctica?",
+  "status": "ok"
+ },
+ {
+  "id": 686,
+  "es": "Esto elimina la boleta de práctica, la configuración de distritos, las respuestas sobre políticas y la copia guardada opcional en este navegador. No afecta su registro real como votante.",
+  "status": "ok"
+ },
+ {
+  "id": 687,
+  "es": "Conservar mis elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 688,
+  "es": "Borrar la boleta de práctica y las respuestas",
+  "status": "ok"
+ },
+ {
+  "id": 689,
+  "es": "No se pudieron leer las elecciones guardadas. Puede continuar sin guardar.",
+  "status": "ok"
+ },
+ {
+  "id": 690,
+  "es": "Este navegador no pudo guardar sus elecciones. Siguen disponibles durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 691,
+  "es": "Guardado en este navegador. Cualquier persona que use este perfil del navegador podría ver estas elecciones.",
+  "status": "ok"
+ },
+ {
+  "id": 692,
+  "es": "No se puede guardar. Sus elecciones permanecen solo durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 693,
+  "es": "Se eliminó la copia del dispositivo. Las elecciones actuales permanecen durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 694,
+  "es": "No se pudo eliminar la copia del dispositivo. Borre los datos del navegador de este sitio para eliminarla.",
+  "status": "ok"
+ },
+ {
+  "id": 695,
+  "es": "Se borraron la boleta de práctica y las respuestas sobre políticas.",
+  "status": "ok"
+ },
+ {
+  "id": 696,
+  "es": "Se borró esta visita. Borre los datos del navegador de este sitio para eliminar la copia guardada.",
+  "status": "ok"
+ },
+ {
+  "id": 697,
+  "es": "Residentes de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 698,
+  "es": "La fuente de la autoridad electoral municipal. Los residentes de Cleveland eligen al alcalde y a los representantes de los distritos, votan sobre preguntas de la boleta, usan los servicios de la ciudad, pagan impuestos y tarifas, y pueden presentar peticiones o comentar sobre las decisiones públicas.",
+  "status": "ok"
+ },
+ {
+  "id": 699,
+  "es": "Elegir a los funcionarios municipales",
+  "status": "ok"
+ },
+ {
+  "id": 700,
+  "es": "Votar sobre preguntas locales de la boleta",
+  "status": "ok"
+ },
+ {
+  "id": 701,
+  "es": "Presentar peticiones y participar en reuniones públicas",
+  "status": "ok"
+ },
+ {
+  "id": 702,
+  "es": "15 distritos entraron en vigor para el período del Concejo de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 703,
+  "es": "Participación pública",
+  "status": "ok"
+ },
+ {
+  "id": 704,
+  "es": "Una corporación municipal de Ohio cuyas facultades están organizadas por su carta municipal, la ley de Ohio y el código de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 705,
+  "es": "Límite municipal de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 706,
+  "es": "Autonomía municipal sujeta a la ley de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 707,
+  "es": "Legislación y administración locales",
+  "status": "ok"
+ },
+ {
+  "id": 708,
+  "es": "Gobierno municipal",
+  "status": "ok"
+ },
+ {
+  "id": 709,
+  "es": "Ayuntamiento de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 710,
+  "es": "Ejecutivo y Administración",
+  "status": "ok"
+ },
+ {
+  "id": 711,
+  "es": "El alcalde encabeza la rama ejecutiva y administrativa de Cleveland y dirige los departamentos y las divisiones.",
+  "status": "ok"
+ },
+ {
+  "id": 712,
+  "es": "Hacer cumplir las leyes",
+  "status": "ok"
+ },
+ {
+  "id": 713,
+  "es": "Dirigir la administración",
+  "status": "ok"
+ },
+ {
+  "id": 714,
+  "es": "Emitir órdenes ejecutivas dentro de las facultades de la carta municipal",
+  "status": "ok"
+ },
+ {
+  "id": 715,
+  "es": "Facultad del alcalde para emitir órdenes ejecutivas",
+  "status": "ok"
+ },
+ {
+  "id": 716,
+  "es": "Legislativo",
+  "status": "ok"
+ },
+ {
+  "id": 717,
+  "es": "El 119.º Concejo Municipal de Cleveland tiene 15 miembros que representan a 15 distritos durante el período 2026-2029.",
+  "status": "ok"
+ },
+ {
+  "id": 718,
+  "es": "Aprobar ordenanzas y resoluciones",
+  "status": "ok"
+ },
+ {
+  "id": 719,
+  "es": "Aprobar asignaciones de fondos",
+  "status": "ok"
+ },
+ {
+  "id": 720,
+  "es": "Realizar la revisión en comités",
+  "status": "ok"
+ },
+ {
+  "id": 721,
+  "es": "119.º Concejo Municipal de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 722,
+  "es": "Tribunales Municipales y Revisión",
+  "status": "ok"
+ },
+ {
+  "id": 723,
+  "es": "Los tribunales municipales y de vivienda resuelven los asuntos dentro de su jurisdicción. Las comisiones independientes y los órganos de revisión legal agregan supervisión sin pertenecer al Concejo Municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 724,
+  "es": "Jurisdicción de los tribunales de Cleveland y de los establecidos por ley",
+  "status": "ok"
+ },
+ {
+  "id": 725,
+  "es": "Resolver casos",
+  "status": "ok"
+ },
+ {
+  "id": 726,
+  "es": "Interpretar la ley aplicable",
+  "status": "ok"
+ },
+ {
+  "id": 727,
+  "es": "Realizar la revisión judicial",
+  "status": "ok"
+ },
+ {
+  "id": 728,
+  "es": "Debido proceso",
+  "status": "ok"
+ },
+ {
+  "id": 729,
+  "es": "Mayor Justin M. Bibb",
+  "status": "keep"
+ },
+ {
+  "id": 730,
+  "es": "Niñez y juventud",
+  "status": "ok"
+ },
+ {
+  "id": 731,
+  "es": "15 distritos, aproximadamente 25,000 residentes por distrito",
+  "status": "ok"
+ },
+ {
+  "id": 732,
+  "es": "Ocho comités permanentes",
+  "status": "ok"
+ },
+ {
+  "id": 733,
+  "es": "Tres comités ad hoc",
+  "status": "ok"
+ },
+ {
+  "id": 734,
+  "es": "El archivo legislativo contiene registros desde 2003",
+  "status": "ok"
+ },
+ {
+  "id": 735,
+  "es": "119.º Concejo, 2026-2029",
+  "status": "ok"
+ },
+ {
+  "id": 736,
+  "es": "Tribunal Municipal de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 737,
+  "es": "Un tribunal municipal que atiende la jurisdicción establecida por la ley de Ohio.",
+  "status": "ok"
+ },
+ {
+  "id": 738,
+  "es": "Jurisdicción del tribunal municipal establecida por ley",
+  "status": "ok"
+ },
+ {
+  "id": 739,
+  "es": "Atender casos dentro de la jurisdicción establecida por ley",
+  "status": "ok"
+ },
+ {
+  "id": 740,
+  "es": "Ley municipal",
+  "status": "ok"
+ },
+ {
+  "id": 741,
+  "es": "Tribunal de Vivienda de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 742,
+  "es": "Tribunal de Vivienda",
+  "status": "ok"
+ },
+ {
+  "id": 743,
+  "es": "Un tribunal especializado en asuntos de vivienda, construcción y otros asuntos municipales relacionados dentro de su jurisdicción.",
+  "status": "ok"
+ },
+ {
+  "id": 744,
+  "es": "Atender asuntos de vivienda y del código de construcción dentro de su jurisdicción",
+  "status": "ok"
+ },
+ {
+  "id": 745,
+  "es": "Código de construcción",
+  "status": "ok"
+ },
+ {
+  "id": 746,
+  "es": "Condiciones del vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 747,
+  "es": "Joseph T. Jones",
+  "status": "keep"
+ },
+ {
+  "id": 748,
+  "es": "Kevin L. Bishop",
+  "status": "keep"
+ },
+ {
+  "id": 749,
+  "es": "Deborah Gray",
+  "status": "keep"
+ },
+ {
+  "id": 750,
+  "es": "Richard A. Starr",
+  "status": "keep"
+ },
+ {
+  "id": 751,
+  "es": "Blaine A. Griffin",
+  "status": "keep"
+ },
+ {
+  "id": 752,
+  "es": "Austin N. Davis",
+  "status": "keep"
+ },
+ {
+  "id": 753,
+  "es": "Stephanie D. Howse-Jones",
+  "status": "keep"
+ },
+ {
+  "id": 754,
+  "es": "Kevin Conwell",
+  "status": "keep"
+ },
+ {
+  "id": 755,
+  "es": "Michael D. Polensek",
+  "status": "keep"
+ },
+ {
+  "id": 756,
+  "es": "Nikki Hudson",
+  "status": "keep"
+ },
+ {
+  "id": 757,
+  "es": "Tanmay Shah",
+  "status": "keep"
+ },
+ {
+  "id": 758,
+  "es": "Brian Kazy",
+  "status": "keep"
+ },
+ {
+  "id": 759,
+  "es": "Charles J. Slife",
+  "status": "keep"
+ },
+ {
+  "id": 760,
+  "es": "Patrocinó 522-2026, regulaciones de estacionamiento pagado",
+  "status": "ok"
+ }
+]

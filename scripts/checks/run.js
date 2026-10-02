@@ -53,6 +53,7 @@ async function open(url, o = {}) {
     await p.setRequestInterception(true);
     p.on('request', (r) => { const u = new URL(r.url()); if (o.mock[u.pathname]) r.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(o.mock[u.pathname]) }); else r.continue(); });
   }
+  if (process.env.CHECK_LANG === 'es') await p.evaluateOnNewDocument(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} });   // CHECK_LANG=es: run the layout checks (no-bleed, targets, axe) in Spanish
   if (o.easy !== undefined || o.theme || o.pre) {
     await p.evaluateOnNewDocument((easy, theme) => { try { if (easy !== undefined) localStorage.setItem('cx-easy', easy ? 'on' : 'off'); if (theme) localStorage.setItem('cx-theme', theme); } catch (e) {} }, o.easy, o.theme);
     if (o.pre) await p.evaluateOnNewDocument(o.pre);
@@ -65,8 +66,9 @@ async function open(url, o = {}) {
 const txt = (p, s) => p.evaluate((s) => { const e = document.querySelector(s); return e ? (e.innerText ?? e.textContent) : null; }, s);
 const has = (p, s) => p.evaluate((s) => !!document.querySelector(s), s);
 const count = (p, s) => p.evaluate((s) => document.querySelectorAll(s).length, s);
+const ES_WORDS = process.env.CHECK_LANG === 'es' ? require('../../i18n/es.json').exact : {};   // in Spanish a control is found by its Spanish name too
 async function clickText(p, label, sel = 'button, a') {
-  const h = await p.evaluateHandle((l, sel) => [...document.querySelectorAll(sel)].find((x) => (x.innerText || '').trim().startsWith(l) || x.getAttribute('aria-label') === l), label, sel);
+  const h = await p.evaluateHandle((l, sel, es) => [...document.querySelectorAll(sel)].find((x) => [l, es].filter(Boolean).some((w) => (x.innerText || '').trim().startsWith(w) || x.getAttribute('aria-label') === w)), label, sel, ES_WORDS[label] || '');
   const el = h.asElement(); if (!el) throw new Error(`no control "${label}"`);
   await el.click(); await wait(350);
 }
@@ -347,6 +349,29 @@ const CHECKS = {
     expect(during === '' && after && after.t === '' && after.top === top0, `scrolling inside a sheet pulled it: ${JSON.stringify({ during, after, top0 })}`);
     await done(p);
   },
+  async 'spanish-switch'() {
+    // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const snap = () => m.evaluate(() => document.querySelector('.cxm').innerText.replace(/\s+/g, ' ').trim());
+    const english = await snap();
+    await clickText(m, 'Settings'); await wait(300);
+    await m.evaluate(() => [...document.querySelectorAll('.cxm-sheet button')].find((b) => b.innerText.trim() === 'Español').click()); await wait(1600);
+    expect(await m.evaluate(() => document.documentElement.lang) === 'es', 'the page language did not become Spanish');
+    expect(/Ajustes|Idioma/.test((await txt(m, '.cxm-sheet')) || ''), 'Settings did not change to Spanish');
+    expect(/borrador/i.test((await txt(m, '.cx-notice')) || ''), 'the Spanish draft notice is missing');
+    await m.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(500);
+    const tabs = await m.evaluate(() => [...document.querySelectorAll('.cxm-tabs span')].map((e) => e.innerText).join('|'));
+    expect(tabs === 'Hoy|Explorar|Mi lugar|Personas|Boleta', `the tabs are not in Spanish: ${tabs}`);
+    expect(await m.evaluate(() => localStorage.getItem('cx-lang')) === 'es', 'the language choice was not remembered');
+    // back to English: every word comes back
+    await clickText(m, 'Ajustes'); await wait(300);
+    await m.evaluate(() => [...document.querySelectorAll('.cxm-sheet button')].find((b) => b.innerText.trim() === 'English').click()); await wait(900);
+    await m.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(500);
+    expect(await m.evaluate(() => document.documentElement.lang) === 'en', 'the page language did not return to English');
+    const back = await snap();
+    expect(back === english, `English did not come back exactly: ${back.slice(0, 120)} / ${english.slice(0, 120)}`);
+    await done(m);
+  },
   async 'settings-sheet'() {
     // Settings holds settings only; the civic pieces that used to share it live where they are used
     const m = await open('/?room=voting#phone', { mobile: true, easy: false });
@@ -602,9 +627,9 @@ const CHECKS = {
 /* Known axe false positives. A violation matching one of these is skipped; everything else fails. */
 const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /data-node="(people|ohio-governor)"/, why: 'SVG label lines join without a space in the visible text, so the full name does contain the words' },
-  { rule: 'label-content-name-mismatch', target: /aria-label="Step \d+: /, why: 'diagram step: number and name are separate SVG texts' },
+  { rule: 'label-content-name-mismatch', target: /aria-label="(Step|Paso) \d+: /, why: 'diagram step: number and name are separate SVG texts' },
   { rule: 'label-content-name-mismatch', target: /(^|\s)\.human$|\.cx-step/, why: 'diagram step 10: number and name are separate SVG texts' },
-  { rule: 'label-content-name-mismatch', target: /story, (new|seen)"\]/, why: 'initials in the story ring are decorative (aria-hidden); the name holds the visible word' },
+  { rule: 'label-content-name-mismatch', target: /(story|Historia[^"]*), (new|seen|nueva|vista)"\]/, why: 'initials in the story ring are decorative (aria-hidden); the name holds the visible word' },
 ];
 const AXE_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],

@@ -12,10 +12,11 @@ function CxmFresh() {
   const said = f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`;
   const more = f.stale ? `Newer records may exist` : n ? `${cxmPl(n, `change`, `changes`)} this week` : `What's new`;
   return (
-    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)} aria-label={`${said} ${more}. Opens What's new.`}>
+    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)}>
       <i aria-hidden="true" />
       <span>{said}</span>{` `}
       <b>{more} <CXI.Arrow size={12} /></b>
+      <span className="cxm-fresh-hint"> Opens What's new.</span>
     </button>
   );
 }

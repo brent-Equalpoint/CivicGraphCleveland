@@ -163,6 +163,7 @@ function CxmYou() {
       <p className="cxm-mut">These settings stay in this browser on this phone. Nothing is sent anywhere.</p>
       <section className="cxm-section">
         <CxmKicker>Display</CxmKicker>
+        <div className="cxm-kv"><span>Language / Idioma</span><CX_LangChoice /></div>
         <div className="cxm-kv"><span>Style</span><CxmSeg label="Style" items={[[`bento`, `Bento`], [`original`, `Original`]]} value={theme} onChange={setTheme} /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
         <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>

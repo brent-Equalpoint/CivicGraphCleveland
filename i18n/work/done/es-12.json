@@ -1,0 +1,952 @@
+[
+ {
+  "id": 2463,
+  "es": "Reglas de fondos para todo el Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2464,
+  "es": "no vinculadas a un solo distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2465,
+  "es": "Patrocinadores:",
+  "status": "ok"
+ },
+ {
+  "id": 2466,
+  "es": "<1>6</1> Lo que muestra el registro sobre las votaciones",
+  "status": "ok"
+ },
+ {
+  "id": 2467,
+  "es": "Lo que muestra el registro sobre las votaciones",
+  "status": "ok"
+ },
+ {
+  "id": 2468,
+  "es": "La base de datos del Concejo registra el resultado de cada votación (aprobada, adoptada, enmendada) y la recomendación de cada comité. Cuando se vota para aprobar una ordenanza o adoptar una resolución, el City Record también publica cómo votó cada miembro. Donde lo hace, eso se cuenta aquí. Un expediente sin voto publicado no tiene registro, y eso no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 2469,
+  "es": "decisiones aquí con una votación final registrada",
+  "status": "ok"
+ },
+ {
+  "id": 2470,
+  "es": "cambiadas antes de aprobarse (\"según fue enmendada\")",
+  "status": "ok"
+ },
+ {
+  "id": 2471,
+  "es": "de estas tienen un voto de cada miembro en el City Record",
+  "status": "ok"
+ },
+ {
+  "id": 2472,
+  "es": "Aquí: votaciones que no fueron unánimes",
+  "status": "ok"
+ },
+ {
+  "id": 2473,
+  "es": "En toda la ciudad: decisiones que no simplemente se aprobaron",
+  "status": "ok"
+ },
+ {
+  "id": 2474,
+  "es": "Mapas: datos abiertos de la Ciudad de Cleveland, obtenidos el",
+  "status": "ok"
+ },
+ {
+  "id": 2475,
+  "es": "Decisiones: la base de datos Legistar del Concejo (",
+  "status": "ok"
+ },
+ {
+  "id": 2476,
+  "es": "elementos desde el 1 de enero de 2026), historiales de acciones obtenidos el",
+  "status": "ok"
+ },
+ {
+  "id": 2477,
+  "es": "direcciones quedaron dentro de un vecindario del mapa.",
+  "status": "ok"
+ },
+ {
+  "id": 2478,
+  "es": "\"Firmó primero\" es el primer miembro del Concejo que figura en el registro. En las solicitudes de la ciudad, suele ser el miembro del distrito y quien preside el comité, y por sí solo no demuestra apoyo personal.",
+  "status": "ok"
+ },
+ {
+  "id": 2479,
+  "es": "Los montos de dinero de los distritos se toman del texto de la ordenanza y pueden no coincidir con el gasto final.",
+  "status": "ok"
+ },
+ {
+  "id": 2480,
+  "es": "Cómo votó cada miembro: el City Record, la publicación oficial semanal del Concejo, obtenido el",
+  "status": "ok"
+ },
+ {
+  "id": 2481,
+  "es": "No figuran en ninguno de estos registros las reuniones realizadas ni las llamadas devueltas. Las ausencias aparecen solo donde el City Record las publica en una votación.",
+  "status": "ok"
+ },
+ {
+  "id": 2482,
+  "es": "Texto oficial, {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2483,
+  "es": "Resumen legislativo",
+  "status": "ok"
+ },
+ {
+  "id": 2484,
+  "es": "Por qué lo respaldaron sus partidarios",
+  "status": "ok"
+ },
+ {
+  "id": 2485,
+  "es": "En lenguaje sencillo, a partir de las razones escritas en el registro oficial por las personas que lo presentaron. Este es su argumento a favor, no una revisión neutral.",
+  "status": "ok"
+ },
+ {
+  "id": 2486,
+  "es": "El registro oficial de",
+  "status": "ok"
+ },
+ {
+  "id": 2487,
+  "es": "cambió después de que se revisó este resumen",
+  "status": "ok"
+ },
+ {
+  "id": 2488,
+  "es": "Lo que dice el registro",
+  "status": "ok"
+ },
+ {
+  "id": 2489,
+  "es": "Fuente:",
+  "status": "ok"
+ },
+ {
+  "id": 2490,
+  "es": "Votación nominal de la Cámara",
+  "status": "ok"
+ },
+ {
+  "id": 2491,
+  "es": "Página de la campaña",
+  "status": "ok"
+ },
+ {
+  "id": 2492,
+  "es": "Un órgano legislativo de 15 miembros. Los miembros representan distritos, presentan y patrocinan legislación, trabajan por medio de comités y votan como Concejo en pleno.",
+  "status": "ok"
+ },
+ {
+  "id": 2493,
+  "es": "Asignar fondos",
+  "status": "ok"
+ },
+ {
+  "id": 2494,
+  "es": "Confirmar o revisar nombramientos cuando se requiera",
+  "status": "ok"
+ },
+ {
+  "id": 2495,
+  "es": "Realizar audiencias públicas de comités",
+  "status": "ok"
+ },
+ {
+  "id": 2496,
+  "es": "Alcalde y máximo funcionario ejecutivo de Cleveland. El cargo dirige la administración y puede emitir órdenes ejecutivas a las divisiones, departamentos y agencias de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 2497,
+  "es": "Máximo funcionario ejecutivo",
+  "status": "ok"
+ },
+ {
+  "id": 2498,
+  "es": "Dirigir la administración de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2499,
+  "es": "Emitir órdenes ejecutivas",
+  "status": "ok"
+ },
+ {
+  "id": 2500,
+  "es": "Nombrar funcionarios cuando esté autorizado",
+  "status": "ok"
+ },
+ {
+  "id": 2501,
+  "es": "Preside el Gabinete Municipal para Niños y Jóvenes según la Orden Ejecutiva 2025-01",
+  "status": "ok"
+ },
+ {
+  "id": 2502,
+  "es": "Alcaldía",
+  "status": "ok"
+ },
+ {
+  "id": 2503,
+  "es": "Líder de la mayoría",
+  "status": "ok"
+ },
+ {
+  "id": 2504,
+  "es": "Whip de la mayoría",
+  "status": "ok"
+ },
+ {
+  "id": 2505,
+  "es": "Directorio oficial de distritos de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 2506,
+  "es": "brent-Equalpoint/CivicGraphCleveland",
+  "status": "keep"
+ },
+ {
+  "id": 2507,
+  "es": "Error: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2508,
+  "es": "Alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 2509,
+  "es": "Miembro del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2510,
+  "es": "Esta fuente no respondió en las últimas verificaciones, desde el",
+  "status": "ok"
+ },
+ {
+  "id": 2511,
+  "es": "(se abre en una pestaña nueva)",
+  "status": "ok"
+ },
+ {
+  "id": 2512,
+  "es": "No pudimos encontrar ese puesto.",
+  "status": "ok"
+ },
+ {
+  "id": 2513,
+  "es": "Miembro del Concejo, Distrito {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2514,
+  "es": "No figura en el registro",
+  "status": "ok"
+ },
+ {
+  "id": 2515,
+  "es": "Y",
+  "status": "ok"
+ },
+ {
+  "id": 2516,
+  "es": "más en el registro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2517,
+  "es": "Fuente oficial",
+  "status": "ok"
+ },
+ {
+  "id": 2518,
+  "es": "Registros obtenidos",
+  "status": "ok"
+ },
+ {
+  "id": 2519,
+  "es": "De un vistazo",
+  "status": "ok"
+ },
+ {
+  "id": 2520,
+  "es": "Cargo",
+  "status": "ok"
+ },
+ {
+  "id": 2521,
+  "es": "Área que representa",
+  "status": "ok"
+ },
+ {
+  "id": 2522,
+  "es": "Período",
+  "status": "ok"
+ },
+ {
+  "id": 2523,
+  "es": "Función de liderazgo",
+  "status": "ok"
+ },
+ {
+  "id": 2524,
+  "es": "Revisado por {*} el {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2525,
+  "es": "Una persona todavía no ha verificado esta función con su fuente.",
+  "status": "ok"
+ },
+ {
+  "id": 2526,
+  "es": "Comités",
+  "status": "ok"
+ },
+ {
+  "id": 2527,
+  "es": "El registro público del Concejo en Legistar no incluye los puestos en comités.",
+  "status": "ok"
+ },
+ {
+  "id": 2528,
+  "es": "El sitio web del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2529,
+  "es": "incluye las asignaciones a comités.",
+  "status": "ok"
+ },
+ {
+  "id": 2530,
+  "es": "Páginas oficiales",
+  "status": "ok"
+ },
+ {
+  "id": 2531,
+  "es": "Personas en el registro legislativo del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 2532,
+  "es": "Qué hace este cargo",
+  "status": "ok"
+ },
+ {
+  "id": 2533,
+  "es": "Esta descripción fue revisada por {*} el {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2534,
+  "es": "Una persona todavía no ha revisado esta descripción con su fuente. Léala como punto de partida y revise la fuente.",
+  "status": "ok"
+ },
+ {
+  "id": 2535,
+  "es": "El registro de este año",
+  "status": "ok"
+ },
+ {
+  "id": 2536,
+  "es": "La administración del alcalde envió",
+  "status": "ok"
+ },
+ {
+  "id": 2537,
+  "es": "al Concejo en 2026. Los departamentos de la ciudad envían solicitudes de rutina, como contratos, subvenciones y pasos de proyectos. El Concejo sigue decidiendo cada una.",
+  "status": "ok"
+ },
+ {
+  "id": 2538,
+  "es": "Órdenes ejecutivas:",
+  "status": "ok"
+ },
+ {
+  "id": 2539,
+  "es": "la lista de órdenes ejecutivas del alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 2540,
+  "es": "<1>{*}</1> propuestas encabezadas, como primer nombre en el expediente",
+  "status": "ok"
+ },
+ {
+  "id": 2541,
+  "es": "propuestas encabezadas, como primer nombre en el expediente",
+  "status": "ok"
+ },
+ {
+  "id": 2542,
+  "es": "<1>{*}</1> propuestas a las que se sumó como parte del grupo patrocinador",
+  "status": "ok"
+ },
+ {
+  "id": 2543,
+  "es": "propuestas a las que se sumó como parte del grupo patrocinador",
+  "status": "ok"
+ },
+ {
+  "id": 2544,
+  "es": "<1>{*}</1> elementos que firmó por un departamento de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2545,
+  "es": "elementos que firmó por un departamento de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2546,
+  "es": "Estos son conteos de lo que figura en el registro público del Concejo, no calificaciones. Patrocinar una propuesta no es lo mismo que votar a favor de ella.",
+  "status": "ok"
+ },
+ {
+  "id": 2547,
+  "es": "Propuestas",
+  "status": "ok"
+ },
+ {
+  "id": 2548,
+  "es": "Elementos recientes de la administración",
+  "status": "ok"
+ },
+ {
+  "id": 2549,
+  "es": "Dinero y decisiones vinculados a este puesto",
+  "status": "ok"
+ },
+ {
+  "id": 2550,
+  "es": "Ingresos de los casinos y dinero del Fondo de Equidad de los Vecindarios que el texto de las ordenanzas vincula al Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2551,
+  "es": "No se encontró dinero de distrito vinculado al Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2552,
+  "es": "en el texto de las ordenanzas de este año. Que falte aquí significa que no se encontró ninguno, no que no haya pasado nada.",
+  "status": "ok"
+ },
+ {
+  "id": 2553,
+  "es": "Objeciones a permisos de licor en el Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2554,
+  "es": "Las cinco acciones más recientes",
+  "status": "ok"
+ },
+ {
+  "id": 2555,
+  "es": "Todavía no hay en el registro propuestas bajo este puesto.",
+  "status": "ok"
+ },
+ {
+  "id": 2556,
+  "es": "Departamentos de la ciudad y órdenes ejecutivas",
+  "status": "ok"
+ },
+ {
+  "id": 2557,
+  "es": "El alcalde dirige la administración de la ciudad, que incluye estos organismos. Cada nombre enlaza con la fuente que tiene la aplicación para él. Varios son la página general de contacto de la ciudad, no una página sobre ese departamento, así que úselos como una vía de entrada, no como prueba de lo que hace un departamento.",
+  "status": "ok"
+ },
+ {
+  "id": 2558,
+  "es": "Órdenes ejecutivas en el registro",
+  "status": "ok"
+ },
+ {
+  "id": 2559,
+  "es": "Todavía no hay ninguna orden ejecutiva cargada en la aplicación.",
+  "status": "ok"
+ },
+ {
+  "id": 2560,
+  "es": "Solo se enumeran las órdenes ejecutivas que ya están en este atlas, y las descripciones de los departamentos provienen de los datos de salas de la aplicación, que una persona no ha vuelto a leer para esta página. La lista del propio alcalde es la completa:",
+  "status": "ok"
+ },
+ {
+  "id": 2561,
+  "es": "Cómo votaron",
+  "status": "ok"
+ },
+ {
+  "id": 2562,
+  "es": "El alcalde no es miembro del Concejo, así que el City Record no publica una votación nominal del alcalde. El Concejo vota sobre lo que le envía la administración del alcalde; esos votos están en el perfil de cada miembro del Concejo. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 2563,
+  "es": "Estos vecindarios tocan el Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2564,
+  "es": "en el mapa de 2026. El porcentaje es cuánto del terreno de ese vecindario está en este distrito, no cuántas personas viven allí.",
+  "status": "ok"
+ },
+ {
+  "id": 2565,
+  "es": "No hay datos de superposición de vecindarios cargados para este distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 2566,
+  "es": "Los distritos pasaron de 17 a 15 para el período que comenzó en 2026. ¿No sabe con certeza cuál es su distrito? Lo determina su dirección.",
+  "status": "ok"
+ },
+ {
+  "id": 2567,
+  "es": "Encontrar mi distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2568,
+  "es": "Fuentes y correcciones",
+  "status": "ok"
+ },
+ {
+  "id": 2569,
+  "es": "Legislación, patrocinadores y fechas de aprobación:",
+  "status": "ok"
+ },
+ {
+  "id": 2570,
+  "es": "Registro legislativo del Concejo (Legistar)",
+  "status": "ok"
+ },
+ {
+  "id": 2571,
+  "es": "Acciones del comité y del Concejo: el mismo registro, obtenido el",
+  "status": "ok"
+ },
+ {
+  "id": 2572,
+  "es": "Cómo votó cada miembro:",
+  "status": "ok"
+ },
+ {
+  "id": 2573,
+  "es": "el City Record",
+  "status": "ok"
+ },
+ {
+  "id": 2574,
+  "es": ", la publicación oficial semanal del Concejo, obtenida el",
+  "status": "ok"
+ },
+ {
+  "id": 2575,
+  "es": "Quién ocupa el puesto y el período: registros de cargos de Legistar, obtenidos el",
+  "status": "ok"
+ },
+ {
+  "id": 2576,
+  "es": "Personas en Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 2577,
+  "es": "Mapa de distritos y vecindarios: los mapas de distritos y vecindarios de los datos abiertos de la Ciudad de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 2578,
+  "es": "Retrato y función:",
+  "status": "ok"
+ },
+ {
+  "id": 2579,
+  "es": "¿Detectó un error?",
+  "status": "ok"
+ },
+ {
+  "id": 2580,
+  "es": "Informarlo en GitHub",
+  "status": "ok"
+ },
+ {
+  "id": 2581,
+  "es": "O escriba a",
+  "status": "ok"
+ },
+ {
+  "id": 2582,
+  "es": "Una persona revisa cada informe con el registro oficial, y lo que decide se enumera en Correcciones, en la página Cómo se construye esto. Los registros oficiales de arriba son siempre el lugar para verificar un dato por su cuenta.",
+  "status": "ok"
+ },
+ {
+  "id": 2583,
+  "es": "Imprimir este perfil",
+  "status": "ok"
+ },
+ {
+  "id": 2584,
+  "es": "Una hoja de datos para cada uno de los 15 miembros del Concejo y el alcalde, en el mismo orden siempre. Cada dato enlaza con su registro público.",
+  "status": "ok"
+ },
+ {
+  "id": 2585,
+  "es": "Elegir un puesto",
+  "status": "ok"
+ },
+ {
+  "id": 2586,
+  "es": "Mapa de los {*} distritos de Cleveland en el mapa de 2026 con el Distrito {*} resaltado.{*} La lista completa está abajo.",
+  "status": "ok"
+ },
+ {
+  "id": 2587,
+  "es": "Sus vecindarios más grandes incluyen {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2588,
+  "es": "en el mapa de 2026 de los 15 distritos de Cleveland. Los vecindarios se enumeran abajo en palabras.",
+  "status": "ok"
+ },
+ {
+  "id": 2589,
+  "es": "Leer el perfil formal de",
+  "status": "ok"
+ },
+ {
+  "id": 2590,
+  "es": "Verificado en parte",
+  "status": "ok"
+ },
+ {
+  "id": 2591,
+  "es": "Los registros no coinciden",
+  "status": "ok"
+ },
+ {
+  "id": 2592,
+  "es": "Puede estar desactualizado",
+  "status": "ok"
+ },
+ {
+  "id": 2593,
+  "es": "No aplica",
+  "status": "ok"
+ },
+ {
+  "id": 2594,
+  "es": "<1>Revisado</1> Verificado con sus fuentes por {*} el {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2595,
+  "es": "Revisado",
+  "status": "ok"
+ },
+ {
+  "id": 2596,
+  "es": "Verificado con sus fuentes por",
+  "status": "ok"
+ },
+ {
+  "id": 2597,
+  "es": "Qué se verificó.",
+  "status": "ok"
+ },
+ {
+  "id": 2598,
+  "es": "Cómo votó cada miembro, según el registro de votación nominal.",
+  "status": "ok"
+ },
+ {
+  "id": 2599,
+  "es": "Distrito {*},",
+  "status": "ok"
+ },
+ {
+  "id": 2600,
+  "es": "Lo que el revisor vio y registró.",
+  "status": "ok"
+ },
+ {
+  "id": 2601,
+  "es": "Una nota guardada en el registro:",
+  "status": "ok"
+ },
+ {
+  "id": 2602,
+  "es": "El revisor buscó pruebas en contra y no registró ninguna.",
+  "status": "ok"
+ },
+ {
+  "id": 2603,
+  "es": "El verificador señaló:",
+  "status": "ok"
+ },
+ {
+  "id": 2604,
+  "es": "El verificador vetó este registro, y el responsable de publicación lo aprobó de todos modos, escribiendo:",
+  "status": "ok"
+ },
+ {
+  "id": 2605,
+  "es": "De dónde proviene.",
+  "status": "ok"
+ },
+ {
+  "id": 2606,
+  "es": "Esta es la versión aprobada el",
+  "status": "ok"
+ },
+ {
+  "id": 2607,
+  "es": "{*} de los {*} elementos de esta página tienen un registro revisado: una persona con nombre lo verificó con sus fuentes. Abra uno marcado como Revisado para ver qué se verificó.",
+  "status": "ok"
+ },
+ {
+  "id": 2608,
+  "es": "Todavía ninguna persona ha revisado ningún elemento de esta página. Cuando se revise uno, mostrará una marca de Revisado con quién lo verificó, qué encontró y de dónde proviene.",
+  "status": "ok"
+ },
+ {
+  "id": 2609,
+  "es": "Confirmado y en proceso de corrección",
+  "status": "ok"
+ },
+ {
+  "id": 2610,
+  "es": "No respaldado por el registro oficial",
+  "status": "ok"
+ },
+ {
+  "id": 2611,
+  "es": "Ya informado",
+  "status": "ok"
+ },
+ {
+  "id": 2612,
+  "es": "No trata de un dato de la aplicación",
+  "status": "ok"
+ },
+ {
+  "id": 2613,
+  "es": "Estado de la revisión, al",
+  "status": "ok"
+ },
+ {
+  "id": 2614,
+  "es": "<1>{*}</1> aprobados por un responsable de publicación con nombre y todavía vigentes",
+  "status": "ok"
+ },
+ {
+  "id": 2615,
+  "es": "aprobados por un responsable de publicación con nombre y todavía vigentes",
+  "status": "ok"
+ },
+ {
+  "id": 2616,
+  "es": "<1>{*}</1> aprobados antes, pero la fuente cambió, así que una persona debe revisarlos de nuevo",
+  "status": "ok"
+ },
+ {
+  "id": 2617,
+  "es": "aprobados antes, pero la fuente cambió, así que una persona debe revisarlos de nuevo",
+  "status": "ok"
+ },
+ {
+  "id": 2618,
+  "es": "<1>{*}</1> necesitan que una persona los revise antes de poder aprobarse",
+  "status": "ok"
+ },
+ {
+  "id": 2619,
+  "es": "necesitan que una persona los revise antes de poder aprobarse",
+  "status": "ok"
+ },
+ {
+  "id": 2620,
+  "es": "<1>{*}</1> retenidos por una verificación, por ejemplo un nombre que podría referirse a dos personas",
+  "status": "ok"
+ },
+ {
+  "id": 2621,
+  "es": "retenidos por una verificación, por ejemplo un nombre que podría referirse a dos personas",
+  "status": "ok"
+ },
+ {
+  "id": 2622,
+  "es": "<1>{*}</1> pasaron las verificaciones y esperan a una persona",
+  "status": "ok"
+ },
+ {
+  "id": 2623,
+  "es": "pasaron las verificaciones y esperan a una persona",
+  "status": "ok"
+ },
+ {
+  "id": 2624,
+  "es": "Los elementos del Concejo se rastrean. Nada se muestra como revisado hasta que un responsable de publicación con nombre haya aprobado esa versión exacta.",
+  "status": "ok"
+ },
+ {
+  "id": 2625,
+  "es": "Correcciones",
+  "status": "ok"
+ },
+ {
+  "id": 2626,
+  "es": "Todavía no se ha decidido ningún informe de error. Si detecta uno, cada perfil tiene un enlace para informarlo. Una persona revisa cada informe con el registro oficial y enumera aquí la decisión.",
+  "status": "ok"
+ },
+ {
+  "id": 2627,
+  "es": "<1>{*}</1> informe{*} con decisión; confirmados: <2>{*}</2>.",
+  "status": "ok"
+ },
+ {
+  "id": 2628,
+  "es": "Informe",
+  "status": "ok"
+ },
+ {
+  "id": 2629,
+  "es": "De dónde proviene esto:",
+  "status": "ok"
+ },
+ {
+  "id": 2630,
+  "es": "Distrito {*}, este año",
+  "status": "ok"
+ },
+ {
+  "id": 2631,
+  "es": "El Distrito {*} destinó {*} a grupos locales.",
+  "status": "ok"
+ },
+ {
+  "id": 2632,
+  "es": "Ingresos de los casinos y dinero del Fondo de Equidad de los Vecindarios que el texto de las ordenanzas vincula al Distrito {*}: {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 2633,
+  "es": "El elemento más grande",
+  "status": "ok"
+ },
+ {
+  "id": 2634,
+  "es": "Todavía no hay dinero de distrito vinculado al Distrito {*} en los registros de este año.",
+  "status": "ok"
+ },
+ {
+  "id": 2635,
+  "es": "Que falte aquí significa que no se encontró ninguno en el texto de las ordenanzas, no que no haya pasado nada.",
+  "status": "ok"
+ },
+ {
+  "id": 2636,
+  "es": "{*} presentadas, {*} retiradas.",
+  "status": "ok"
+ },
+ {
+  "id": 2637,
+  "es": "Retiró",
+  "status": "ok"
+ },
+ {
+  "id": 2638,
+  "es": "Objetó",
+  "status": "ok"
+ },
+ {
+  "id": 2639,
+  "es": "Las direcciones no aparecen en estos títulos.",
+  "status": "ok"
+ },
+ {
+  "id": 2640,
+  "es": "Cómo votó {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2641,
+  "es": "El City Record enumera el voto de {*} en {*} votaciones registradas este año.",
+  "status": "ok"
+ },
+ {
+  "id": 2642,
+  "es": "{*} votó a favor en {*} ocasiones, en contra en {*} y figuró como ausente en {*}. Estos son conteos, no calificaciones. Estar ausente no significa votar en contra.",
+  "status": "ok"
+ },
+ {
+  "id": 2643,
+  "es": "Qué encabezó {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2644,
+  "es": "{*} encabezó {*} este año.",
+  "status": "ok"
+ },
+ {
+  "id": 2645,
+  "es": "{*} no encabezó ninguna propuesta en este registro.",
+  "status": "ok"
+ },
+ {
+  "id": 2646,
+  "es": "Su turno",
+  "status": "ok"
+ },
+ {
+  "id": 2647,
+  "es": "puso su nombre en la propuesta",
+  "status": "ok"
+ },
+ {
+  "id": 2648,
+  "es": "Su miembro del Concejo, 2026 hasta ahora",
+  "status": "ok"
+ },
+ {
+  "id": 2649,
+  "es": "Leer el perfil de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 2650,
+  "es": "Registro público del Concejo Municipal de Cleveland (Legistar)",
+  "status": "ok"
+ },
+ {
+  "id": 2651,
+  "es": "Este año hasta ahora",
+  "status": "ok"
+ },
+ {
+  "id": 2652,
+  "es": "El Concejo ha tratado {*} elementos este año.",
+  "status": "ok"
+ }
+]

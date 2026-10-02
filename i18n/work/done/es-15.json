@@ -1,0 +1,952 @@
+[
+ {
+  "id": 3033,
+  "es": "Distrito {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3034,
+  "es": "¿No está seguro de cuál es su distrito? Su dirección lo determina.",
+  "status": "ok"
+ },
+ {
+  "id": 3035,
+  "es": "El buscador oficial de la Cámara de Representantes<1> (se abre en una pestaña nueva)</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3036,
+  "es": "El buscador oficial de la Cámara de Representantes",
+  "status": "ok"
+ },
+ {
+  "id": 3037,
+  "es": "lo encuentra.",
+  "status": "ok"
+ },
+ {
+  "id": 3038,
+  "es": "Senador de Estados Unidos por {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3039,
+  "es": "no tiene senadores. Su representación en el Congreso está a cargo de un delegado en la Cámara de Representantes.",
+  "status": "ok"
+ },
+ {
+  "id": 3040,
+  "es": "Representante de {*}, distrito {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3041,
+  "es": "Representante o delegado",
+  "status": "ok"
+ },
+ {
+  "id": 3042,
+  "es": "Elija un distrito para ver a su representante.",
+  "status": "ok"
+ },
+ {
+  "id": 3043,
+  "es": "Aquí no se muestra cómo votaron. Las votaciones nominales son registros públicos, y la falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3044,
+  "es": "Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 3045,
+  "es": "Cargando el registro federal...",
+  "status": "ok"
+ },
+ {
+  "id": 3046,
+  "es": "El gráfico de Estados Unidos necesita el sitio alojado en línea. No forma parte del archivo sin conexión, porque carga un archivo de datos de aproximadamente medio megabyte.",
+  "status": "ok"
+ },
+ {
+  "id": 3047,
+  "es": "Miembro del Congreso",
+  "status": "ok"
+ },
+ {
+  "id": 3048,
+  "es": "Sus miembros",
+  "status": "ok"
+ },
+ {
+  "id": 3049,
+  "es": "El Congreso, sus comités y las agencias federales, a partir de registros públicos. Elija cualquier elemento para ver con qué se conecta, en palabras.",
+  "status": "ok"
+ },
+ {
+  "id": 3050,
+  "es": "Acerca de estas fuentes (una vista previa)",
+  "status": "ok"
+ },
+ {
+  "id": 3051,
+  "es": "Vista previa. Esto se elabora con registros de dominio público y del Federal Register obtenidos",
+  "status": "ok"
+ },
+ {
+  "id": 3052,
+  "es": "Buscar una persona, comité o agencia",
+  "status": "ok"
+ },
+ {
+  "id": 3053,
+  "es": "Husted, Agriculture, Treasury",
+  "status": "keep"
+ },
+ {
+  "id": 3054,
+  "es": "Filtros",
+  "status": "ok"
+ },
+ {
+  "id": 3055,
+  "es": "Miembros",
+  "status": "ok"
+ },
+ {
+  "id": 3056,
+  "es": "Agencias",
+  "status": "ok"
+ },
+ {
+  "id": 3057,
+  "es": "Cámara",
+  "status": "ok"
+ },
+ {
+  "id": 3058,
+  "es": "Ambas",
+  "status": "ok"
+ },
+ {
+  "id": 3059,
+  "es": "Resaltar un estado",
+  "status": "ok"
+ },
+ {
+  "id": 3060,
+  "es": "Resultados de la búsqueda",
+  "status": "ok"
+ },
+ {
+  "id": 3061,
+  "es": "Mapa de {*} nodos federales: miembros del Congreso, comités y agencias. Use la vista Índice, Vinculada o Árbol para ver la misma información como texto. Teclas: el corchete derecho y el izquierdo se mueven entre nodos, las flechas desplazan el mapa, más y menos acercan o alejan, Escape borra la selección y la barra diagonal busca.",
+  "status": "ok"
+ },
+ {
+  "id": 3062,
+  "es": "Acercar",
+  "status": "ok"
+ },
+ {
+  "id": 3063,
+  "es": "Alejar",
+  "status": "ok"
+ },
+ {
+  "id": 3064,
+  "es": "Ajustar todo",
+  "status": "ok"
+ },
+ {
+  "id": 3065,
+  "es": "Ajustar",
+  "status": "ok"
+ },
+ {
+  "id": 3066,
+  "es": "Comités conjuntos",
+  "status": "ok"
+ },
+ {
+  "id": 3067,
+  "es": "Agencias. Los círculos son personas, los rombos son comités y los cuadrados son agencias.",
+  "status": "ok"
+ },
+ {
+  "id": 3068,
+  "es": "mostrados. Elija uno para ver sus conexiones.",
+  "status": "ok"
+ },
+ {
+  "id": 3069,
+  "es": "Miembros, comités y agencias federales",
+  "status": "ok"
+ },
+ {
+  "id": 3070,
+  "es": "Nombre",
+  "status": "ok"
+ },
+ {
+  "id": 3071,
+  "es": "Qué es",
+  "status": "ok"
+ },
+ {
+  "id": 3072,
+  "es": "Dónde",
+  "status": "ok"
+ },
+ {
+  "id": 3073,
+  "es": "Parte de una agencia",
+  "status": "ok"
+ },
+ {
+  "id": 3074,
+  "es": "Elija una persona, comité o agencia (busque arriba, o use las vistas Cielo o Índice) para ver todo con lo que se conecta.",
+  "status": "ok"
+ },
+ {
+  "id": 3075,
+  "es": "Conectado con",
+  "status": "ok"
+ },
+ {
+  "id": 3076,
+  "es": "Congreso",
+  "status": "ok"
+ },
+ {
+  "id": 3077,
+  "es": "Acerca de",
+  "status": "ok"
+ },
+ {
+  "id": 3078,
+  "es": "Seleccionado",
+  "status": "ok"
+ },
+ {
+  "id": 3079,
+  "es": "Ver todo",
+  "status": "ok"
+ },
+ {
+  "id": 3080,
+  "es": "Seleccione a cualquier persona o elemento. Un nodo seleccionado ilumina sus conexiones.",
+  "status": "ok"
+ },
+ {
+  "id": 3081,
+  "es": "Fuentes: congress-legislators (dominio público), el Federal Register. Obtenido",
+  "status": "ok"
+ },
+ {
+  "id": 3082,
+  "es": "Puesta sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 3083,
+  "es": "City Record, {*}",
+  "status": "keep"
+ },
+ {
+  "id": 3084,
+  "es": "Expediente",
+  "status": "ok"
+ },
+ {
+  "id": 3085,
+  "es": "(de antes del registro de este año; no hay título cargado).",
+  "status": "ok"
+ },
+ {
+  "id": 3086,
+  "es": "Voto",
+  "status": "ok"
+ },
+ {
+  "id": 3087,
+  "es": "La copia del City Record no tiene un voto con nombre para este escaño. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3088,
+  "es": "El City Record, la publicación oficial semanal del Concejo, imprime cómo votó cada miembro en una votación para aprobar una ordenanza o adoptar una resolución. Esto es lo que imprime para",
+  "status": "ok"
+ },
+ {
+  "id": 3089,
+  "es": "en lo que va de este año (hasta la sesión del",
+  "status": "ok"
+ },
+ {
+  "id": 3090,
+  "es": "<1>{*}</1> votó a favor",
+  "status": "ok"
+ },
+ {
+  "id": 3091,
+  "es": "<1>{*}</1> votó en contra",
+  "status": "ok"
+ },
+ {
+  "id": 3092,
+  "es": "<1>{*}</1> figura como ausente",
+  "status": "ok"
+ },
+ {
+  "id": 3093,
+  "es": "Estos son conteos de lo que se imprime, no calificaciones. Cada voto es sobre una pregunta de un expediente. Ausente no significa en contra ni abstención. Una votación para suspender las reglas imprime solo un recuento sin nombres, por lo que aquí no se cuenta.",
+  "status": "ok"
+ },
+ {
+  "id": 3094,
+  "es": "Votaciones en las que",
+  "status": "ok"
+ },
+ {
+  "id": 3095,
+  "es": "no votó en contra en ninguna de estas votaciones.",
+  "status": "ok"
+ },
+ {
+  "id": 3096,
+  "es": "Todas las votaciones impresas para",
+  "status": "ok"
+ },
+ {
+  "id": 3097,
+  "es": "de estas es una votación sobre poner un expediente sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 3098,
+  "es": "de estas son votaciones sobre poner un expediente sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 3099,
+  "es": "El City Record<1> (se abre en una pestaña nueva)</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3100,
+  "es": "The City Record",
+  "status": "keep"
+ },
+ {
+  "id": 3101,
+  "es": ", publicado semanalmente por el Secretario de la Ciudad, Secretario del Concejo. Obtenido",
+  "status": "ok"
+ },
+ {
+  "id": 3102,
+  "es": "A favor",
+  "status": "ok"
+ },
+ {
+  "id": 3103,
+  "es": "En contra",
+  "status": "ok"
+ },
+ {
+  "id": 3104,
+  "es": "Ausente",
+  "status": "ok"
+ },
+ {
+  "id": 3105,
+  "es": "De",
+  "status": "ok"
+ },
+ {
+  "id": 3106,
+  "es": "(edición). Ausente no significa en contra ni abstención.",
+  "status": "ok"
+ },
+ {
+  "id": 3107,
+  "es": "Este expediente también fue objeto de otra votación registrada, el {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3108,
+  "es": "{*}: {*} a favor, {*} en contra. En contra: {*}.{*}",
+  "status": "ok"
+ },
+ {
+  "id": 3109,
+  "es": "Ausente (no significa en contra): {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3110,
+  "es": "Distrito de la Cámara de Representantes de EE. UU.",
+  "status": "ok"
+ },
+ {
+  "id": 3111,
+  "es": "Distrito del Senado estatal",
+  "status": "ok"
+ },
+ {
+  "id": 3112,
+  "es": "Distrito de la Cámara de Representantes de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 3113,
+  "es": "Distrito del Concejo del Condado",
+  "status": "ok"
+ },
+ {
+  "id": 3114,
+  "es": "Sus distritos",
+  "status": "ok"
+ },
+ {
+  "id": 3115,
+  "es": "Martes, 3 de noviembre · Los lugares de votación abren de 6:30 a. m. a 7:30 p. m.",
+  "status": "ok"
+ },
+ {
+  "id": 3116,
+  "es": "Mi boleta",
+  "status": "ok"
+ },
+ {
+  "id": 3117,
+  "es": "Su boleta. Un poco más clara. Pruebe una opción. Siga la evidencia. Tómese su tiempo.",
+  "status": "ok"
+ },
+ {
+  "id": 3118,
+  "es": "Esto nunca emite un voto. Las opciones se quedan solo durante esta visita, a menos que usted elija guardarlas en este navegador. Boleta de práctica manual · precinto sin verificar.",
+  "status": "ok"
+ },
+ {
+  "id": 3119,
+  "es": "Faltan {*} días para el Día de las Elecciones.",
+  "status": "ok"
+ },
+ {
+  "id": 3120,
+  "es": "Las horas son del Este. Una solicitud pide una boleta; no es su boleta completada.",
+  "status": "ok"
+ },
+ {
+  "id": 3121,
+  "es": "Establecer mis distritos",
+  "status": "ok"
+ },
+ {
+  "id": 3122,
+  "es": "Su dirección, no su distrito del Concejo, determina su boleta completa. Elija sus distritos y solo se mostrarán sus contiendas. Nunca pedimos su dirección.",
+  "status": "ok"
+ },
+ {
+  "id": 3123,
+  "es": "Sin establecer",
+  "status": "ok"
+ },
+ {
+  "id": 3124,
+  "es": "Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3125,
+  "es": "Solo los distritos impares del Concejo del Condado están en la boleta este año. Se incluyen las contiendas y los asuntos de todo el condado. Agregue sus distritos y asuntos locales a partir de la boleta oficial. No los deducimos a partir de un distrito del Concejo Municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 3126,
+  "es": "Encontrar mis distritos por dirección",
+  "status": "ok"
+ },
+ {
+  "id": 3127,
+  "es": "Deje espacio para una pregunta",
+  "status": "ok"
+ },
+ {
+  "id": 3128,
+  "es": "No tiene que saberlo todo.",
+  "status": "ok"
+ },
+ {
+  "id": 3129,
+  "es": "Abra una contienda para ver lo que alguien ha dicho o votado, y qué controla su cargo. La evidencia que falta sigue faltando. Elegir \"Aún no decido\" está bien.",
+  "status": "ok"
+ },
+ {
+  "id": 3130,
+  "es": "¿Cuánto le costarían los gravámenes del condado?",
+  "status": "ok"
+ },
+ {
+  "id": 3131,
+  "es": "Escriba el valor de su vivienda. Es la estimación del propio condado, no su factura.",
+  "status": "ok"
+ },
+ {
+  "id": 3132,
+  "es": "Asunto {*}: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3133,
+  "es": "· revisión en lenguaje sencillo no cargada",
+  "status": "ok"
+ },
+ {
+  "id": 3134,
+  "es": "Agregar un asunto local de mi precinto (",
+  "status": "ok"
+ },
+ {
+  "id": 3135,
+  "es": "Revisar mi boleta de práctica (",
+  "status": "ok"
+ },
+ {
+  "id": 3136,
+  "es": "Su boleta de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 3137,
+  "es": "contiendas y asuntos marcados. Las opciones se quedan en este navegador. Cualquier persona que use este perfil del navegador podría ver las opciones guardadas.",
+  "status": "ok"
+ },
+ {
+  "id": 3138,
+  "es": "Guardar en este navegador<1>{*}</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3139,
+  "es": "Guardar en este navegador",
+  "status": "ok"
+ },
+ {
+  "id": 3140,
+  "es": "Guardado en este navegador",
+  "status": "ok"
+ },
+ {
+  "id": 3141,
+  "es": "Solo esta visita · al recargar se borran las opciones si no se guardan",
+  "status": "ok"
+ },
+ {
+  "id": 3142,
+  "es": "Borrar mis datos de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 3143,
+  "es": "Ver cómo se alinean los candidatos a gobernador con sus respuestas",
+  "status": "ok"
+ },
+ {
+  "id": 3144,
+  "es": "Educación para votantes",
+  "status": "ok"
+ },
+ {
+  "id": 3145,
+  "es": "Un poco de comprensión ayuda mucho.",
+  "status": "ok"
+ },
+ {
+  "id": 3146,
+  "es": "Una pregunta a la vez. Aprenda quién decide, qué significa un voto y dónde obtener ayuda.",
+  "status": "ok"
+ },
+ {
+  "id": 3147,
+  "es": "¿Quién hace qué?",
+  "status": "ok"
+ },
+ {
+  "id": 3148,
+  "es": "Las ramas federales, explicadas",
+  "status": "ok"
+ },
+ {
+  "id": 3149,
+  "es": "Legislatura de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 3150,
+  "es": "Tres pasos antes de elegir",
+  "status": "ok"
+ },
+ {
+  "id": 3151,
+  "es": "Encuentre el cargo o la propuesta exactos en su boleta.",
+  "status": "ok"
+ },
+ {
+  "id": 3152,
+  "es": "Mire el registro oficial y lo que la persona realmente controla.",
+  "status": "ok"
+ },
+ {
+  "id": 3153,
+  "es": "Compare las ventajas y desventajas con lo que le importa. Puede seguir aprendiendo sin elegir un bando.",
+  "status": "ok"
+ },
+ {
+  "id": 3154,
+  "es": "Contiendas estatales de un vistazo",
+  "status": "ok"
+ },
+ {
+  "id": 3155,
+  "es": "{*} contiendas de la lista del condado con fecha del 17 de septiembre",
+  "status": "ok"
+ },
+ {
+  "id": 3156,
+  "es": "Candidatos por escrito válidos:",
+  "status": "ok"
+ },
+ {
+  "id": 3157,
+  "es": "Revisión de fuentes: 22 de septiembre de 2026. Esta guía es una instantánea con fecha, no una oficina electoral. Confirme las instrucciones actuales con la Junta Electoral.",
+  "status": "ok"
+ },
+ {
+  "id": 3158,
+  "es": "Registro y función ·",
+  "status": "ok"
+ },
+ {
+  "id": 3159,
+  "es": "Lo que puede hacer este cargo.",
+  "status": "ok"
+ },
+ {
+  "id": 3160,
+  "es": "Límites.",
+  "status": "ok"
+ },
+ {
+  "id": 3161,
+  "es": "Fuente oficial de la autoridad",
+  "status": "ok"
+ },
+ {
+  "id": 3162,
+  "es": "Esta contienda no está en los distritos que usted estableció, por lo que aquí no se conservará una elección. Establezca sus distritos en la pestaña Boleta.",
+  "status": "ok"
+ },
+ {
+  "id": 3163,
+  "es": "Candidatos <1>{*}</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3164,
+  "es": "Candidatos",
+  "status": "ok"
+ },
+ {
+  "id": 3165,
+  "es": "Toque un nombre para practicar su elección. Registro abre lo que consta de ese candidato.",
+  "status": "ok"
+ },
+ {
+  "id": 3166,
+  "es": "· candidato por escrito válido",
+  "status": "ok"
+ },
+ {
+  "id": 3167,
+  "es": "{*}: registro del candidato",
+  "status": "ok"
+ },
+ {
+  "id": 3168,
+  "es": "Registro",
+  "status": "ok"
+ },
+ {
+  "id": 3169,
+  "es": "Omitir esta contienda",
+  "status": "ok"
+ },
+ {
+  "id": 3170,
+  "es": "También en la lista del condado, pero no válidos:",
+  "status": "ok"
+ },
+ {
+  "id": 3171,
+  "es": "Ver sus planes declarados junto a sus respuestas",
+  "status": "ok"
+ },
+ {
+  "id": 3172,
+  "es": "Ver sus votos anteriores junto a sus respuestas",
+  "status": "ok"
+ },
+ {
+  "id": 3173,
+  "es": "Su elección se queda en este navegador. Las etiquetas de partido provienen de la lista de candidatos de la Junta Electoral (página",
+  "status": "ok"
+ },
+ {
+  "id": 3174,
+  "es": "). Un partido no determina cómo decidirá una persona.",
+  "status": "ok"
+ },
+ {
+  "id": 3175,
+  "es": "Lista oficial de candidatos",
+  "status": "ok"
+ },
+ {
+  "id": 3176,
+  "es": "Asunto",
+  "status": "ok"
+ },
+ {
+  "id": 3177,
+  "es": "No se ha cargado una revisión detallada en lenguaje sencillo de este asunto. Lea el texto oficial a continuación.",
+  "status": "ok"
+ },
+ {
+  "id": 3178,
+  "es": "Toque Sí o No para practicar su elección. Se queda en este navegador.",
+  "status": "ok"
+ },
+ {
+  "id": 3179,
+  "es": "Un voto de sí significa",
+  "status": "ok"
+ },
+ {
+  "id": 3180,
+  "es": "Un voto de no significa",
+  "status": "ok"
+ },
+ {
+  "id": 3181,
+  "es": "Considere.",
+  "status": "ok"
+ },
+ {
+  "id": 3182,
+  "es": "Omitir",
+  "status": "ok"
+ },
+ {
+  "id": 3183,
+  "es": "Este asunto local aún no está en su boleta de práctica. Agréguelo desde \"Agregar un asunto local\".",
+  "status": "ok"
+ },
+ {
+  "id": 3184,
+  "es": "Texto oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3185,
+  "es": "Lista de asuntos del condado, página {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3186,
+  "es": "Lea la propuesta real, página de la lista de asuntos del condado",
+  "status": "ok"
+ },
+ {
+  "id": 3187,
+  "es": "Asuntos locales ·",
+  "status": "ok"
+ },
+ {
+  "id": 3188,
+  "es": "¿Cuáles asuntos locales están en su boleta?",
+  "status": "ok"
+ },
+ {
+  "id": 3189,
+  "es": "Un asunto local puede aplicarse a un solo precinto. Revise su boleta de muestra y luego agregue los que le correspondan.",
+  "status": "ok"
+ },
+ {
+  "id": 3190,
+  "es": "Buscar por lugar, precinto o palabras",
+  "status": "ok"
+ },
+ {
+  "id": 3191,
+  "es": "Cleveland 03-Q, venta en domingo, escuela…",
+  "status": "ok"
+ },
+ {
+  "id": 3192,
+  "es": "Ningún asunto local coincide con \"{*}\"",
+  "status": "ok"
+ },
+ {
+  "id": 3193,
+  "es": "Los asuntos locales se enumeran por lugar y precinto. Pruebe con el nombre de un lugar, un código de precinto o una palabra del asunto. Su boleta de muestra de la Junta Electoral muestra exactamente cuáles le corresponden.",
+  "status": "ok"
+ },
+ {
+  "id": 3194,
+  "es": "Borrar la búsqueda",
+  "status": "ok"
+ },
+ {
+  "id": 3195,
+  "es": "Abrir el buscador oficial de boletas de muestra",
+  "status": "ok"
+ },
+ {
+  "id": 3196,
+  "es": "Leer",
+  "status": "ok"
+ },
+ {
+  "id": 3197,
+  "es": "Agregado",
+  "status": "ok"
+ },
+ {
+  "id": 3198,
+  "es": "Agregar",
+  "status": "ok"
+ },
+ {
+  "id": 3199,
+  "es": "Mostrando 60 de",
+  "status": "ok"
+ },
+ {
+  "id": 3200,
+  "es": "Obtener su boleta de muestra",
+  "status": "ok"
+ },
+ {
+  "id": 3201,
+  "es": "Calculadora de costos",
+  "status": "ok"
+ },
+ {
+  "id": 3202,
+  "es": "Cerrar",
+  "status": "ok"
+ },
+ {
+  "id": 3203,
+  "es": "Valor de la vivienda",
+  "status": "ok"
+ },
+ {
+  "id": 3204,
+  "es": "Pago anual",
+  "status": "ok"
+ },
+ {
+  "id": 3205,
+  "es": "Lo que gana en un año",
+  "status": "ok"
+ },
+ {
+  "id": 3206,
+  "es": "El valor de mercado de su vivienda",
+  "status": "ok"
+ },
+ {
+  "id": 3207,
+  "es": "Estimaciones del condado por cada $100,000 de valor de mercado, de las guías de los asuntos.",
+  "status": "ok"
+ },
+ {
+  "id": 3208,
+  "es": "No es su factura de impuestos.",
+  "status": "ok"
+ },
+ {
+  "id": 3209,
+  "es": "Impuesto sobre la renta de Cleveland,",
+  "status": "ok"
+ },
+ {
+  "id": 3210,
+  "es": "¿Trabaja en otra ciudad? Un crédito por el impuesto pagado allí puede reducirlo. El desglose por departamento aún no está cargado. Fuente: <1>{*}</1>.",
+  "status": "ok"
+ },
+ {
+  "id": 3211,
+  "es": "¿Trabaja en otra ciudad? Un crédito por el impuesto pagado allí puede reducirlo. El desglose por departamento aún no está cargado. Fuente:",
+  "status": "ok"
+ },
+ {
+  "id": 3212,
+  "es": "Eliminar",
+  "status": "ok"
+ },
+ {
+  "id": 3213,
+  "es": "Listo",
+  "status": "ok"
+ },
+ {
+  "id": 3214,
+  "es": "Lo que podría pasar, con límites",
+  "status": "ok"
+ },
+ {
+  "id": 3215,
+  "es": "¿Qué podrían afectar sus elecciones?",
+  "status": "ok"
+ },
+ {
+  "id": 3216,
+  "es": "Comience con la persona o propuesta que seleccionó. Un resultado futuro depende de otros votantes, otros funcionarios, las leyes, el financiamiento y la implementación. No calculamos probabilidades de ganar ni prometemos resultados.",
+  "status": "ok"
+ },
+ {
+  "id": 3217,
+  "es": "Primero haga una elección de práctica. Aun así, puede abrir el registro de cualquier candidato desde una contienda más arriba.",
+  "status": "ok"
+ },
+ {
+  "id": 3218,
+  "es": "Asunto {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3219,
+  "es": "Sí",
+  "status": "ok"
+ },
+ {
+  "id": 3220,
+  "es": "Hay ejemplos con fuentes disponibles. Abra el registro para ver planes, historial, dependencias y ventajas y desventajas.",
+  "status": "ok"
+ },
+ {
+  "id": 3221,
+  "es": "No hay cargado ningún registro revisado de políticas específico del candidato. No se deduce ninguna postura futura.",
+  "status": "ok"
+ },
+ {
+  "id": 3222,
+  "es": "Explorar el registro y las posibilidades",
+  "status": "ok"
+ }
+]

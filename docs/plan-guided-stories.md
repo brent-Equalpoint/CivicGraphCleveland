@@ -196,7 +196,7 @@ then add more stories.
 3. Spanish is in scope, as Phase 7. To keep it cheap, Phase 1 stores every story and Easy mode string as
    data, not inline text, so translating later means adding a file, not rewriting screens. Spanish copy
    needs review by a Spanish-speaking resident before it ships. (Checked Oct 2, 2026: the text is still inline in
-   the screens, so Phase 7 begins by moving it into a lookup. See "Phase 7 in detail".)
+   the screens. Phase 7 was built without moving it: a translator in the page swaps text using a dictionary. See "Phase 7 in detail".)
 4. Easy mode is the default for first-time visitors, with "Full" one tap away. Affects Phase 1c.
 
 ## Roadmap
@@ -221,73 +221,28 @@ Rules that apply to every phase: both styles (Bento and Original), both layouts,
 no em dashes, no left accent stripes, nothing personal in links or requests, a clean rebuild with the
 hash recorded next to any claim, and an updated STATE-OF-BUILD.md.
 
-## Phase 7 in detail: Spanish
+## Phase 7 in detail: Spanish (as built Oct 2, 2026)
 
-Scope stays where this plan put it: stories, Easy mode, and navigation (the tabs, the top bar, the sheets' own
-words, Settings, and search). Nothing else is translated in this phase.
+**Scope.** The whole app, on the phone and on a computer, including Easy mode, the stories, and the desktop app. This replaced the earlier scope (stories, Easy mode, and navigation only) when the request widened to "the entire app, desktop and mobile".
 
-**Measured Oct 2, 2026 (a rough count of the English text in the code).** About 1,700 words of fixed text and
-about 100 sentences that are built around data (counts, names, dates). Easy mode is about 380 words plus 9
-sentences. Stories are about 490 words plus about 60 sentences. Navigation is about 800 words plus about 25
-sentences. The whole app holds about 21,000 words of its own text, roughly ten times this scope; that is not
-planned here.
+**Approach.** The English code is not rewritten. A translator in the page (`ext/cx-i18n.jsx`) reads the Spanish dictionary (`i18n/es.json`) and swaps each piece of text on screen for its Spanish, and keeps doing so as the page changes. This was chosen because half the text lives in the compiled Sep 23 desktop app, which cannot reasonably be edited string by string, and because English stays exactly as it was: choosing English puts every original word back. Anything the dictionary has no entry for stays English and is marked `lang="en"` so a screen reader uses an English voice.
 
-**Where the plan and the code differ.** Decision 3 and Phase 1 say story and Easy mode text is stored as data.
-In the code it is still written inside the screens as template strings, and the votes and Settings screens
-added since do the same. So Phase 7 starts by moving the text into a lookup. It is not just adding a file.
+**The dictionary** has three kinds of entry: exact text; "masked" sentences built around data, written with placeholders (`{n}` number, `{$}` money, `{f}` file number, `{d}` date, `{t}` time, `{*}` any other text); and a list of text to keep in English (names, official titles). A paragraph with a bold word or a link in it is matched as one whole sentence, with the elements written `<1>...</1>`, so word order can change. Dates and times are converted by the app (1 de junio de 2026, 3:45 p. m.).
 
-### Steps, in order
+**How it was made.** `scripts/i18n/inventory.js` parses the real source with a JavaScript parser and lists every piece of text the app can show (about 3,800 strings, 37,000 words). `scripts/i18n/split.js` cuts it into batches; each batch was drafted by a translator working from `i18n/glossary.md` and checked by `scripts/i18n/check_batch.js` (placeholders, tags, numbers, dashes). `scripts/i18n/ingest.js` stores results keyed by the English text, so re-reading the source never loses finished work. `scripts/i18n/merge.js` builds `i18n/es.json` from them, the hand-written fixes in `i18n/manual.json`, and the names in the data files. `scripts/i18n/crawl.js` walks the app in Spanish and lists every piece of text still in English.
 
-1. **Move the text into a lookup (one key per string).** About 450 strings across `cx-story.jsx`, `cx-us.jsx`
-   (the Congress story), `cxm-easy.jsx`, `cxm-today.jsx` (the story viewer), `cxm-core.jsx`, and the Settings
-   and search parts of `cxm-more.jsx`. English moves first, with no change on screen. Done when the phone and
-   desktop text crawl is identical before and after.
-2. **Rewrite data sentences as whole templates.** "X voted nay on Y" is one template with blanks, never pieces
-   joined together, because Spanish word order and plurals differ. Plurals and gendered words are handled in
-   the template ("1 voto", "2 votos"). The one-word pluralizer used today (`cxmPl`) is English only.
-3. **Format dates and numbers by language.** They are fixed to US English today.
-4. **Add the language choice.** Offer Spanish, never switch silently from the browser setting. Keep the choice
-   on the device only, not in links or requests. Set the page language, and mark any English text inside a
-   Spanish page (official titles) as English so screen readers switch voice.
-5. **Make "Read it to me" speak Spanish** when the page is Spanish, and test it on a phone.
-6. **Agree a glossary before drafting.** Ward, council, ordinance, levy, tabled, sponsor, emergency measure,
-   and the office names. Follow the terms the City of Cleveland and the Board of Elections already use in
-   Spanish for anything official.
-7. **Draft the Spanish.** A machine draft is allowed, but it ships behind a visible "not yet reviewed by a
-   person" label until the reviewer signs off.
-8. **Review by a Spanish-speaking, civic-literate resident.** One consistent, neutral US Spanish register,
-   addressed as "usted", no regional slang. The reviewer checks the neutrality lines word by word:
-   "sponsorship is not a vote", "a missing record is not a no", "absent is not a no and not an abstention".
-9. **Rewrite the slang, do not translate it.** The relationship statuses on receipts ("Committed", "Talking
-   stage", "Left on read", "On pause") and other friendly lines are English idiom. The reviewer rewrites
-   them, or we choose plainer labels in both languages.
-10. **Flag stale translations automatically.** Store a fingerprint of the English string each Spanish string was
-    reviewed against, as `data/reasons-reviewed.json` does for the reason summaries. When the English changes,
-    the Spanish shows as not reviewed and the build says so.
+**Where the language is chosen.** A button in the desktop header and in Easy mode, and a choice in the phone's Settings. It is kept in this browser only. The hosted site fetches the dictionary only when Español is chosen; the single offline file carries it inside. "Escuchar" (read aloud) uses a Spanish voice.
 
-### Checks to add
+**What stays in English, and says so.** Official record titles, ordinance text, and candidate statements stay in English; they are marked English for screen readers. A notice at the top, in Spanish, says the translation is a draft that a person has not reviewed.
 
-- Every key exists in both languages, and the Spanish never shows a key name; a missing Spanish string shows the
-  English visibly.
-- In Spanish, a crawl of the stories, Easy mode, and navigation finds no English except official titles and
-  text, which are marked as English.
-- At 390 px wide, with Spanish text about 25 percent longer, nothing scrolls sideways, every control is at
-  least 44 px, and the axe check passes.
-- Both styles and both layouts still work.
-- A Spanish-speaking resident does one task in the Spanish stories and Easy mode, and the result is recorded.
+### Checks
+- `scripts/test_i18n.py` (in CI and the release script): placeholders, tags, numbers, dashes, and the glossary terms in every entry.
+- `scripts/i18n/crawl.js`: the app in Spanish has no English left that is not on the keep list.
+- The browser checks run in Spanish for text that spills or is cut off, for the 44 px targets, and for accessibility.
+- English is untouched, and a check confirms switching to Spanish and back restores every word.
 
-### What stays in English, and says so
-
-Official record titles, ordinance text, and candidate statements stay in English. A machine translation of a
-legal title would be unreliable. The Spanish screens that lead into them say so in a short plain notice. The
-profiles, ballot, place pages, votes, dictionary, and ledger are not translated in this phase, and the app does
-not look as if they are.
-
-### Done when
-
-A reviewer signs off on the stories, Easy mode, and navigation copy; the language choice persists locally;
-screen readers switch voice correctly (tested on a phone, not only a desktop browser); and the notice about
-English-only records is in place.
+### Still needs a person
+A Spanish-speaking, civic-literate resident reads `i18n/es.json` against `i18n/glossary.md` and the questions in `i18n/review-notes.md`, fixes wording in `i18n/manual.json`, and signs off. Until then the app says it is a draft. Then one real-device test with VoiceOver and TalkBack, and one resident doing one task in Spanish.
 
 ## What to claim, and when
 

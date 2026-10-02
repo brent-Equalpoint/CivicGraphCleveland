@@ -1,0 +1,952 @@
+[
+ {
+  "id": 1331,
+  "es": "La ciudad informa de 15 miembros que representan a 15 distritos al inicio del 119.º Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 1332,
+  "es": "Ordenanza sobre alquileres a corto plazo adoptada",
+  "status": "ok"
+ },
+ {
+  "id": 1333,
+  "es": "Legistar registra la aprobación de la Ordenanza 561-2026. La aprobación por sí sola no identifica el voto de cada miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 1334,
+  "es": "La ordenanza sobre alquileres a corto plazo entra en vigor",
+  "status": "ok"
+ },
+ {
+  "id": 1335,
+  "es": "El registro indica el 1 de julio como fecha de entrada en vigor, aparte de la fecha de aprobación en junio.",
+  "status": "ok"
+ },
+ {
+  "id": 1336,
+  "es": "Fuente de una organización",
+  "status": "ok"
+ },
+ {
+  "id": 1337,
+  "es": "Enlace copiado. Incluye esta vista, no sus prioridades privadas.",
+  "status": "ok"
+ },
+ {
+  "id": 1338,
+  "es": "Copie la dirección de su navegador para compartir esta vista.",
+  "status": "ok"
+ },
+ {
+  "id": 1339,
+  "es": "Saltar al mapa cívico",
+  "status": "ok"
+ },
+ {
+  "id": 1340,
+  "es": "Inicio de Cleveland Civic Graph",
+  "status": "ok"
+ },
+ {
+  "id": 1341,
+  "es": "Una vista más clara de las decisiones públicas",
+  "status": "ok"
+ },
+ {
+  "id": 1342,
+  "es": "Buscar en esta sala cívica",
+  "status": "ok"
+ },
+ {
+  "id": 1343,
+  "es": "Buscar {*}…",
+  "status": "ok"
+ },
+ {
+  "id": 1344,
+  "es": "Borrar la búsqueda",
+  "status": "ok"
+ },
+ {
+  "id": 1345,
+  "es": "Compartir vista",
+  "status": "ok"
+ },
+ {
+  "id": 1346,
+  "es": "Expandir la navegación",
+  "status": "ok"
+ },
+ {
+  "id": 1347,
+  "es": "Contraer la navegación",
+  "status": "ok"
+ },
+ {
+  "id": 1348,
+  "es": "Explore su ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 1349,
+  "es": "Partes del sistema cívico",
+  "status": "ok"
+ },
+ {
+  "id": 1350,
+  "es": "Empiece con una pregunta.",
+  "status": "ok"
+ },
+ {
+  "id": 1351,
+  "es": "Siga el rastro hasta la evidencia.",
+  "status": "ok"
+ },
+ {
+  "id": 1352,
+  "es": "Primero Cleveland · Versión preliminar de investigación",
+  "status": "ok"
+ },
+ {
+  "id": 1353,
+  "es": "Volver a la sala anterior",
+  "status": "ok"
+ },
+ {
+  "id": 1354,
+  "es": "Instantánea de las fuentes · 22 de septiembre de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 1355,
+  "es": "COMPRENDA SU CIUDAD",
+  "status": "ok"
+ },
+ {
+  "id": 1356,
+  "es": "Modo de lectura",
+  "status": "ok"
+ },
+ {
+  "id": 1357,
+  "es": "Sencillo",
+  "status": "ok"
+ },
+ {
+  "id": 1358,
+  "es": "Auditoría",
+  "status": "ok"
+ },
+ {
+  "id": 1359,
+  "es": "Pruebe con otra palabra o elija otra pestaña cívica.",
+  "status": "ok"
+ },
+ {
+  "id": 1360,
+  "es": "EMPIECE AQUÍ",
+  "status": "ok"
+ },
+ {
+  "id": 1361,
+  "es": "Siga una conexión",
+  "status": "ok"
+ },
+ {
+  "id": 1362,
+  "es": "Elija una persona o un registro. La cámara gira para ponerlo en primer plano. Abra un elemento conectado para seguir explorando.",
+  "status": "ok"
+ },
+ {
+  "id": 1363,
+  "es": "EVIDENCIA Y COBERTURA",
+  "status": "ok"
+ },
+ {
+  "id": 1364,
+  "es": "¿Qué podemos respaldar?",
+  "status": "ok"
+ },
+ {
+  "id": 1365,
+  "es": "Un enlace a una fuente no significa que cada afirmación se haya auditado de forma independiente. Los registros de relaciones sin cita propia se indican más abajo.",
+  "status": "ok"
+ },
+ {
+  "id": 1366,
+  "es": "Registro de fuentes (",
+  "status": "ok"
+ },
+ {
+  "id": 1367,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 1368,
+  "es": "Exportar los datos de evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 1369,
+  "es": "Mapa",
+  "status": "ok"
+ },
+ {
+  "id": 1370,
+  "es": "Texto",
+  "status": "ok"
+ },
+ {
+  "id": 1371,
+  "es": "Tamaño de los íconos",
+  "status": "ok"
+ },
+ {
+  "id": 1372,
+  "es": "Ruta de enfoque",
+  "status": "ok"
+ },
+ {
+  "id": 1373,
+  "es": "Salir de la vista completa",
+  "status": "ok"
+ },
+ {
+  "id": 1374,
+  "es": "Vista completa",
+  "status": "ok"
+ },
+ {
+  "id": 1375,
+  "es": "Opciones del mapa",
+  "status": "ok"
+ },
+ {
+  "id": 1376,
+  "es": "Etiquetas",
+  "status": "ok"
+ },
+ {
+  "id": 1377,
+  "es": "Inteligentes",
+  "status": "ok"
+ },
+ {
+  "id": 1378,
+  "es": "Solo cercanas",
+  "status": "ok"
+ },
+ {
+  "id": 1379,
+  "es": "Reducir el movimiento",
+  "status": "ok"
+ },
+ {
+  "id": 1380,
+  "es": "Usar texto si la conexión es lenta",
+  "status": "ok"
+ },
+ {
+  "id": 1381,
+  "es": "Imprimir esta vista",
+  "status": "ok"
+ },
+ {
+  "id": 1382,
+  "es": "Teclado: use Tab para llegar a un nodo, Intro para seleccionarlo y las flechas izquierda y derecha para pasar de un nodo a otro. En el fondo del mapa, las flechas desplazan la vista, +/− acercan o alejan y 0 restablece.",
+  "status": "ok"
+ },
+ {
+  "id": 1383,
+  "es": "Las mismas entidades, relaciones y fuentes que en el mapa. Los filtros se aplican a ambas vistas.",
+  "status": "ok"
+ },
+ {
+  "id": 1384,
+  "es": "Entidades cívicas y su jurisdicción",
+  "status": "ok"
+ },
+ {
+  "id": 1385,
+  "es": "Nombre y función",
+  "status": "ok"
+ },
+ {
+  "id": 1386,
+  "es": "No hay registros que coincidan. Borre su búsqueda o active más capas.",
+  "status": "ok"
+ },
+ {
+  "id": 1387,
+  "es": "Capas visibles del mapa",
+  "status": "ok"
+ },
+ {
+  "id": 1388,
+  "es": "Línea continua: relación con fuente o registrada · Línea discontinua: interpretación o falta el registro. La posición en el anillo agrupa los temas; no implica control.",
+  "status": "ok"
+ },
+ {
+  "id": 1389,
+  "es": "Comparar con",
+  "status": "ok"
+ },
+ {
+  "id": 1390,
+  "es": "Elija otra persona o institución",
+  "status": "ok"
+ },
+ {
+  "id": 1391,
+  "es": "REGISTROS FECHADOS SELECCIONADOS",
+  "status": "ok"
+ },
+ {
+  "id": 1392,
+  "es": "Leer el registro",
+  "status": "ok"
+ },
+ {
+  "id": 1393,
+  "es": "Esto cambia el registro seleccionado, no la fecha de todo el gráfico.",
+  "status": "ok"
+ },
+ {
+  "id": 1394,
+  "es": "Altura del panel de detalles",
+  "status": "ok"
+ },
+ {
+  "id": 1395,
+  "es": "REGISTRO SELECCIONADO",
+  "status": "ok"
+ },
+ {
+  "id": 1396,
+  "es": "Cerrar detalles",
+  "status": "ok"
+ },
+ {
+  "id": 1397,
+  "es": "Los registros de votos individuales no se han cargado para este elemento. La decisión de una institución no establece el voto de cada miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 1398,
+  "es": "Aquí todavía no hay declaraciones de postura con fuente. El partido, el patrocinio y la ubicación en el mapa no establecen lo que cree una persona. Abra Mi constelación para ver el piloto de votos verificados.",
+  "status": "ok"
+ },
+ {
+  "id": 1399,
+  "es": "Abrir el registro de fuentes",
+  "status": "ok"
+ },
+ {
+  "id": 1400,
+  "es": "Fuente de la relación",
+  "status": "ok"
+ },
+ {
+  "id": 1401,
+  "es": "Hay fuentes de la entidad. No se adjuntó una cita específica de la relación.",
+  "status": "ok"
+ },
+ {
+  "id": 1402,
+  "es": "No se cargaron registros de relaciones para este elemento. Su posición en un anillo no establece autoridad sobre otros nodos.",
+  "status": "ok"
+ },
+ {
+  "id": 1403,
+  "es": "Fuentes públicas. Vacíos visibles. Sin etiquetas políticas inferidas.",
+  "status": "ok"
+ },
+ {
+  "id": 1404,
+  "es": "Explorar mis prioridades",
+  "status": "ok"
+ },
+ {
+  "id": 1405,
+  "es": "Descartar la notificación",
+  "status": "ok"
+ },
+ {
+  "id": 1406,
+  "es": "Diccionario cívico",
+  "status": "ok"
+ },
+ {
+  "id": 1407,
+  "es": "Primero, palabras sencillas. Abra la sala conectada para ver las fuentes oficiales y más detalles.",
+  "status": "ok"
+ },
+ {
+  "id": 1408,
+  "es": "Todavía no hay definición. Pruebe con una palabra más corta.",
+  "status": "ok"
+ },
+ {
+  "id": 1409,
+  "es": "definiciones iniciales. Son resúmenes en lenguaje sencillo, no definiciones legales.",
+  "status": "ok"
+ },
+ {
+  "id": 1410,
+  "es": "Fuentes adjuntas a las entidades de esta sala. Los números describen la cobertura, no un puntaje de verificación.",
+  "status": "ok"
+ },
+ {
+  "id": 1411,
+  "es": "Versión compilada del 23 de septiembre (compilación Agentic Bench)",
+  "status": "ok"
+ },
+ {
+  "id": 1412,
+  "es": "Ciudad de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 1413,
+  "es": "Los cargos electos propios de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1414,
+  "es": "Gobiernos vecinos",
+  "status": "ok"
+ },
+ {
+  "id": 1415,
+  "es": "Ciudades y villas independientes, con sus propios líderes.",
+  "status": "ok"
+ },
+ {
+  "id": 1416,
+  "es": "Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1417,
+  "es": "Oficinas del condado que atienden a muchas comunidades.",
+  "status": "ok"
+ },
+ {
+  "id": 1418,
+  "es": "Autoridades regionales",
+  "status": "ok"
+ },
+ {
+  "id": 1419,
+  "es": "Organismos públicos cuyo trabajo cruza los límites de las ciudades.",
+  "status": "ok"
+ },
+ {
+  "id": 1420,
+  "es": "Tribunales que cruzan límites",
+  "status": "ok"
+ },
+ {
+  "id": 1421,
+  "es": "Tribunales cuya jurisdicción la define la ley, no los límites de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1422,
+  "es": "Village of Bratenahl",
+  "status": "keep"
+ },
+ {
+  "id": 1423,
+  "es": "Un gobierno de villa independiente, junto a Cleveland, en la orilla del lago Erie. Tiene sus propios funcionarios electos, reglas y servicios.",
+  "status": "ok"
+ },
+ {
+  "id": 1424,
+  "es": "City of East Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 1425,
+  "es": "East Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 1426,
+  "es": "Una ciudad independiente, con su propio alcalde, concejo y servicios. El nombre incluye \"Cleveland\", pero los residentes de East Cleveland votan por los cargos de East Cleveland, no por los de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1427,
+  "es": "Otras comunidades del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1428,
+  "es": "Otras comunidades",
+  "status": "ok"
+ },
+ {
+  "id": 1429,
+  "es": "El Condado de Cuyahoga contiene muchas ciudades, villas y municipios (townships) independientes. Cada uno tiene su propia dirección y sus propias reglas locales. Esta versión no carga la lista completa; una búsqueda por dirección confirma dónde vive usted.",
+  "status": "ok"
+ },
+ {
+  "id": 1430,
+  "es": "Búsqueda de dirección de la Junta Electoral",
+  "status": "ok"
+ },
+ {
+  "id": 1431,
+  "es": "Cuyahoga County Land Bank",
+  "status": "keep"
+ },
+ {
+  "id": 1432,
+  "es": "County Land Bank",
+  "status": "keep"
+ },
+ {
+  "id": 1433,
+  "es": "Una organización de reutilización de terrenos en todo el condado que adquiere y estabiliza propiedades vacías o con impuestos atrasados, y las devuelve a un uso productivo.",
+  "status": "ok"
+ },
+ {
+  "id": 1434,
+  "es": "Cuyahoga Land Bank",
+  "status": "keep"
+ },
+ {
+  "id": 1435,
+  "es": "Northeast Ohio Regional Sewer District",
+  "status": "keep"
+ },
+ {
+  "id": 1436,
+  "es": "Un servicio público regional de tratamiento de aguas residuales y programas de aguas pluviales. Atiende a Cleveland y a las comunidades miembro, así que una decisión sobre alcantarillado puede alcanzar más allá de los límites de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1437,
+  "es": "Área de servicio del distrito",
+  "status": "ok"
+ },
+ {
+  "id": 1438,
+  "es": "Área de servicio de NEORSD",
+  "status": "ok"
+ },
+ {
+  "id": 1439,
+  "es": "Northeast Ohio Areawide Coordinating Agency",
+  "status": "keep"
+ },
+ {
+  "id": 1440,
+  "es": "La agencia regional de planificación del transporte y del medio ambiente en el noreste de Ohio. Sus planes pueden influir en el financiamiento de carreteras y transporte público que cruza los límites municipales.",
+  "status": "ok"
+ },
+ {
+  "id": 1441,
+  "es": "Región de planificación del noreste de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1442,
+  "es": "Los residentes de Cleveland son el público representado y eligen a los líderes de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1443,
+  "es": "Los votantes de Cleveland eligen al alcalde en toda la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1444,
+  "es": "Cada uno de los 15 distritos de Cleveland elige a un miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 1445,
+  "es": "Los gobiernos vecinos comparten una frontera, no autoridad. Cada uno conserva sus propios funcionarios electos y sus propias reglas.",
+  "status": "ok"
+ },
+ {
+  "id": 1446,
+  "es": "East Cleveland es su propia ciudad. Un nombre parecido no crea un gobierno compartido.",
+  "status": "ok"
+ },
+ {
+  "id": 1447,
+  "es": "En esta versión no se carga una lista completa de municipios y límites.",
+  "status": "ok"
+ },
+ {
+  "id": 1448,
+  "es": "presta servicios del condado a",
+  "status": "ok"
+ },
+ {
+  "id": 1449,
+  "es": "Los servicios del condado incluyen a los residentes de Cleveland; los poderes de la ciudad y los del condado siguen siendo distintos.",
+  "status": "ok"
+ },
+ {
+  "id": 1450,
+  "es": "Pertenencia a una organización. Las oficinas conservan los poderes que les asigna la ley.",
+  "status": "ok"
+ },
+ {
+  "id": 1451,
+  "es": "La Junta Electoral del condado administra las elecciones de Cleveland y de otras comunidades del condado.",
+  "status": "ok"
+ },
+ {
+  "id": 1452,
+  "es": "El trabajo de reutilización de terrenos abarca todo el condado, no solo una ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1453,
+  "es": "El servicio regional de transporte público cruza los límites de las ciudades. Su junta, no el Concejo Municipal, aprueba la política y los presupuestos del transporte público.",
+  "status": "ok"
+ },
+ {
+  "id": 1454,
+  "es": "Cleveland está dentro del área de servicio del distrito, junto con otras comunidades miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 1455,
+  "es": "Los planes regionales de transporte y medio ambiente abarcan comunidades de toda la región de planificación.",
+  "status": "ok"
+ },
+ {
+  "id": 1456,
+  "es": "El Tribunal Municipal de Cleveland atiende casos dentro de su jurisdicción conforme a la ley de Ohio.",
+  "status": "ok"
+ },
+ {
+  "id": 1457,
+  "es": "tiene jurisdicción civil en",
+  "status": "ok"
+ },
+ {
+  "id": 1458,
+  "es": "La jurisdicción civil municipal incluye Cleveland y Bratenahl. El alcance de un tribunal lo define la ley, no el Ayuntamiento.",
+  "status": "ok"
+ },
+ {
+  "id": 1459,
+  "es": "revisa apelaciones elegibles de",
+  "status": "ok"
+ },
+ {
+  "id": 1460,
+  "es": "La guía de apelaciones abarca las decisiones del tribunal municipal. La elegibilidad y los plazos dependen de cada caso.",
+  "status": "ok"
+ },
+ {
+  "id": 1461,
+  "es": "Gobierno y datos abiertos",
+  "status": "ok"
+ },
+ {
+  "id": 1462,
+  "es": "Salud y atención médica",
+  "status": "ok"
+ },
+ {
+  "id": 1463,
+  "es": "Aprendizaje y juventud",
+  "status": "ok"
+ },
+ {
+  "id": 1464,
+  "es": "Cultura e información",
+  "status": "ok"
+ },
+ {
+  "id": 1465,
+  "es": "Terrenos, sistemas y medio ambiente",
+  "status": "ok"
+ },
+ {
+  "id": 1466,
+  "es": "Empleos y filantropía",
+  "status": "ok"
+ },
+ {
+  "id": 1467,
+  "es": "Redes vecinales",
+  "status": "ok"
+ },
+ {
+  "id": 1468,
+  "es": "El gobierno municipal que presta servicios, propone presupuestos, hace cumplir el código local y se coordina con socios regionales y estatales.",
+  "status": "ok"
+ },
+ {
+  "id": 1469,
+  "es": "Los residentes eligen a un alcalde y a miembros del Concejo; los departamentos realizan el trabajo de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1470,
+  "es": "Cleveland City Council",
+  "status": "keep"
+ },
+ {
+  "id": 1471,
+  "es": "El órgano legislativo que considera ordenanzas, aprueba gastos, celebra audiencias y representa a los distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 1472,
+  "es": "Los residentes de cada distrito están representados por un miembro del Concejo electo.",
+  "status": "ok"
+ },
+ {
+  "id": 1473,
+  "es": "Sitio web del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 1474,
+  "es": "Cleveland Open Data",
+  "status": "keep"
+ },
+ {
+  "id": 1475,
+  "es": "Datos abiertos",
+  "status": "ok"
+ },
+ {
+  "id": 1476,
+  "es": "hace visible la evidencia para",
+  "status": "ok"
+ },
+ {
+  "id": 1477,
+  "es": "El programa de datos abiertos de la ciudad ofrece información pública legible por máquinas para residentes, investigadores y desarrolladores cívicos.",
+  "status": "ok"
+ },
+ {
+  "id": 1478,
+  "es": "Los residentes se conectan mediante la posibilidad de inspeccionar, reutilizar y cuestionar los datos públicos.",
+  "status": "ok"
+ },
+ {
+  "id": 1479,
+  "es": "Portal de datos abiertos",
+  "status": "ok"
+ },
+ {
+  "id": 1480,
+  "es": "MetroHealth System",
+  "status": "keep"
+ },
+ {
+  "id": 1481,
+  "es": "atiende y sirve de ancla a",
+  "status": "ok"
+ },
+ {
+  "id": 1482,
+  "es": "Un sistema hospitalario público con una misión de red de seguridad, atención clínica, trabajo de salud pública e inversión importante en los vecindarios.",
+  "status": "ok"
+ },
+ {
+  "id": 1483,
+  "es": "Los pacientes, los empleados, los contribuyentes y los residentes del condado se conectan mediante la atención y la gobernanza.",
+  "status": "ok"
+ },
+ {
+  "id": 1484,
+  "es": "Resumen de MetroHealth",
+  "status": "ok"
+ },
+ {
+  "id": 1485,
+  "es": "Cleveland Clinic",
+  "status": "keep"
+ },
+ {
+  "id": 1486,
+  "es": "atiende e investiga",
+  "status": "ok"
+ },
+ {
+  "id": 1487,
+  "es": "Un sistema médico académico sin fines de lucro cuyos hospitales, investigación, personal y trabajo en políticas influyen en los resultados de salud de la región.",
+  "status": "ok"
+ },
+ {
+  "id": 1488,
+  "es": "Los pacientes y los residentes se conectan mediante la atención, los empleos, la investigación y los programas comunitarios.",
+  "status": "ok"
+ },
+ {
+  "id": 1489,
+  "es": "Acerca de Cleveland Clinic",
+  "status": "ok"
+ },
+ {
+  "id": 1490,
+  "es": "University Hospitals",
+  "status": "keep"
+ },
+ {
+  "id": 1491,
+  "es": "atiende y enseña",
+  "status": "ok"
+ },
+ {
+  "id": 1492,
+  "es": "Un sistema regional de salud académico que une hospitales, formación clínica, investigación y salud comunitaria.",
+  "status": "ok"
+ },
+ {
+  "id": 1493,
+  "es": "Los residentes se conectan como pacientes, estudiantes, trabajadores y vecinos.",
+  "status": "ok"
+ },
+ {
+  "id": 1494,
+  "es": "Case Western Reserve University",
+  "status": "keep"
+ },
+ {
+  "id": 1495,
+  "es": "Case Western",
+  "status": "keep"
+ },
+ {
+  "id": 1496,
+  "es": "educa e investiga",
+  "status": "ok"
+ },
+ {
+  "id": 1497,
+  "es": "Una universidad de investigación con programas de derecho, medicina, ingeniería, ciencias sociales e innovación cívica.",
+  "status": "ok"
+ },
+ {
+  "id": 1498,
+  "es": "Los estudiantes, los profesores, los pacientes y los residentes se conectan mediante el aprendizaje y la investigación.",
+  "status": "ok"
+ },
+ {
+  "id": 1499,
+  "es": "Sitio de la universidad",
+  "status": "ok"
+ },
+ {
+  "id": 1500,
+  "es": "Cleveland State University",
+  "status": "keep"
+ },
+ {
+  "id": 1501,
+  "es": "Cleveland State",
+  "status": "keep"
+ },
+ {
+  "id": 1502,
+  "es": "Una universidad pública urbana vinculada al desarrollo de la fuerza laboral, el servicio público, el derecho, la salud y la vida cívica del centro de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1503,
+  "es": "Los residentes se conectan mediante títulos, programas públicos, empleos e investigación.",
+  "status": "ok"
+ },
+ {
+  "id": 1504,
+  "es": "Cuyahoga Community College",
+  "status": "keep"
+ },
+ {
+  "id": 1505,
+  "es": "capacita y transfiere",
+  "status": "ok"
+ },
+ {
+  "id": 1506,
+  "es": "Una universidad comunitaria pública que ofrece capacitación laboral, títulos de asociado, programas para adultos y vías de transferencia.",
+  "status": "ok"
+ },
+ {
+  "id": 1507,
+  "es": "Los estudiantes se conectan con empleadores, universidades y servicios públicos mediante la educación.",
+  "status": "ok"
+ },
+ {
+  "id": 1508,
+  "es": "Sitio de Tri-C",
+  "status": "ok"
+ },
+ {
+  "id": 1509,
+  "es": "Cleveland Metropolitan School District",
+  "status": "keep"
+ },
+ {
+  "id": 1510,
+  "es": "El distrito escolar público que atiende a los estudiantes y las familias de Cleveland. El alcalde nombra a los miembros de la junta con derecho a voto a partir de una lista de candidatos propuestos.",
+  "status": "ok"
+ },
+ {
+  "id": 1511,
+  "es": "Las familias se conectan mediante las escuelas, los servicios, los presupuestos y las decisiones de la junta.",
+  "status": "ok"
+ },
+ {
+  "id": 1512,
+  "es": "Cleveland Public Library",
+  "status": "keep"
+ },
+ {
+  "id": 1513,
+  "es": "Public Library",
+  "status": "keep"
+ },
+ {
+  "id": 1514,
+  "es": "enseña e informa",
+  "status": "ok"
+ },
+ {
+  "id": 1515,
+  "es": "Un sistema de bibliotecas públicas que ofrece aprendizaje, investigación, acceso digital, programas públicos e información confiable.",
+  "status": "ok"
+ },
+ {
+  "id": 1516,
+  "es": "Los residentes se conectan mediante las sucursales, las colecciones, los programas y el aprendizaje cívico.",
+  "status": "ok"
+ },
+ {
+  "id": 1517,
+  "es": "Cuyahoga Arts & Culture",
+  "status": "keep"
+ },
+ {
+  "id": 1518,
+  "es": "Arts & Culture",
+  "status": "keep"
+ },
+ {
+  "id": 1519,
+  "es": "Un fondo público para las artes, respaldado por el condado, que otorga subvenciones y apoya la participación cultural en todo el Condado de Cuyahoga.",
+  "status": "ok"
+ },
+ {
+  "id": 1520,
+  "es": "Los residentes se conectan mediante subvenciones, programas, artistas y organizaciones culturales.",
+  "status": "ok"
+ }
+]

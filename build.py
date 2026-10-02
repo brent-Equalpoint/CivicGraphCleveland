@@ -184,7 +184,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/i18n/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -372,7 +372,7 @@ def main():
          "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -576,7 +576,8 @@ def main():
                 "                  (0, W.jsx)(`span`, { children: `Resident check` }),\n                ],\n              }),\n",
                 "                  (0, W.jsx)(`span`, { children: `Resident check` }),\n                ],\n              }),\n"
                 "              (0, W.jsxs)(`button`, {\n                onClick: () => cxEasyOn(),\n                children: [\n"
-                "                  (0, W.jsx)(CXI.Help, { size: 17 }),\n                  (0, W.jsx)(`span`, { children: `Easy mode` }),\n                ],\n              }),\n",
+                "                  (0, W.jsx)(CXI.Help, { size: 17 }),\n                  (0, W.jsx)(`span`, { children: `Easy mode` }),\n                ],\n              }),\n"
+                "              (0, W.jsx)(CX_LangButton, {}),\n",
                 label="header: easy mode")
     # v5.16 accessibility: an accessible name must contain the words a person can see, so voice control can say them
     src = patch(src,
@@ -812,7 +813,15 @@ def main():
             "@keyframes cxboot{from{opacity:.35;transform:scale(.8)}to{opacity:1;transform:scale(1.15)}}"
             "@media (prefers-reduced-motion:reduce){#cx-boot i{animation:none}}</style>\n")
 
+    # Spanish: the reviewed dictionary (i18n/es.json). The single file carries it inside the page; the hosted site serves it as a file
+    # that is fetched only when someone chooses Español.
+    i18n_path = os.path.join(ROOT, "i18n", "es.json")
+    i18n = json.load(open(i18n_path, encoding="utf-8"))
+    i18n_min = json.dumps(i18n, ensure_ascii=False, separators=(",", ":"))
+    log(f"data   {sha(i18n_path)}  i18n/es.json  ({len(i18n['exact'])} exact, {len(i18n['masked'])} patterns, {len(i18n['keep'])} kept in English)")
+
     def page(inline_assets, fonts):
+        i18n_tag = ('<script type="application/json" id="cx-i18n-es">' + i18n_min.replace("</", "<\\/") + '</script>\n') if inline_assets else ""
         icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else '<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n'
         offline = "" if inline_assets else OFFLINE_NOTICE
         return f"""<!doctype html>
@@ -834,7 +843,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 {css}
 </style>
 <script>{preamble(inline_assets)}</script>
-<script>{js}</script>
+{i18n_tag}<script>{js}</script>
 </body>
 </html>
 """
@@ -888,6 +897,9 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
             continue
         write(os.path.join(SITE, "bench", name), body)
         log(f"SITE   {sha(body.encode())}  site/bench/{name}")
+    os.makedirs(os.path.join(SITE, "i18n"), exist_ok=True)
+    write(os.path.join(SITE, "i18n", "es.json"), i18n_min + "\n")
+    log(f"SITE   {sha((i18n_min + chr(10)).encode())}  site/i18n/es.json")
     write(os.path.join(SITE, "favicon.svg"), FAVICON_SVG + "\n")
     log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")
     site_bytes = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(SITE) for f in fs)

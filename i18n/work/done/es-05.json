@@ -1,0 +1,952 @@
+[
+ {
+  "id": 951,
+  "es": "La moratoria incluye licencias o permisos emitidos por Public Utilities.",
+  "status": "ok"
+ },
+ {
+  "id": 952,
+  "es": "La regulación del estacionamiento se aplica por medio de la administración de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 953,
+  "es": "La ordenanza de presupuesto asigna fondos operativos.",
+  "status": "ok"
+ },
+ {
+  "id": 954,
+  "es": "La legislación trata de las reglas de seguridad pública sobre el control de animales.",
+  "status": "ok"
+ },
+ {
+  "id": 955,
+  "es": "La ordenanza autoriza mejoras públicas y contratos para la generación de energía solar.",
+  "status": "ok"
+ },
+ {
+  "id": 956,
+  "es": "La ordenanza autoriza la contratación y la aceptación de fondos.",
+  "status": "ok"
+ },
+ {
+  "id": 957,
+  "es": "Registro oficial de patrocinio. El patrocinio no se convierte en un puntaje ideológico.",
+  "status": "ok"
+ },
+ {
+  "id": 958,
+  "es": "Residentes y quienes pagan tarifas",
+  "status": "ok"
+ },
+ {
+  "id": 959,
+  "es": "Las personas que reciben el servicio, pagan las tarifas y pueden participar en las decisiones públicas.",
+  "status": "ok"
+ },
+ {
+  "id": 960,
+  "es": "Control local",
+  "status": "ok"
+ },
+ {
+  "id": 961,
+  "es": "Oficinas de la ciudad, el Concejo, los presupuestos y los servicios públicos.",
+  "status": "ok"
+ },
+ {
+  "id": 962,
+  "es": "Control de los servicios públicos",
+  "status": "ok"
+ },
+ {
+  "id": 963,
+  "es": "Las entidades que atienden a los clientes, compran energía y manejan la distribución.",
+  "status": "ok"
+ },
+ {
+  "id": 964,
+  "es": "Mercado y red eléctrica",
+  "status": "ok"
+ },
+ {
+  "id": 965,
+  "es": "Mercados mayoristas, transmisión y relaciones de compra de energía.",
+  "status": "ok"
+ },
+ {
+  "id": 966,
+  "es": "Plantas y proveedores",
+  "status": "ok"
+ },
+ {
+  "id": 967,
+  "es": "Instalaciones de generación y las empresas que las poseen u operan.",
+  "status": "ok"
+ },
+ {
+  "id": 968,
+  "es": "Supervisión del gobierno",
+  "status": "ok"
+ },
+ {
+  "id": 969,
+  "es": "Organismos estatales y federales que regulan la seguridad, las tarifas, los mercados y la contaminación.",
+  "status": "ok"
+ },
+ {
+  "id": 970,
+  "es": "Residentes de Cleveland y quienes pagan tarifas",
+  "status": "ok"
+ },
+ {
+  "id": 971,
+  "es": "Los residentes reciben el servicio de electricidad, pagan facturas o tarifas y pueden influir en las decisiones públicas por medio de las elecciones, las audiencias, los comentarios y las solicitudes de registros públicos.",
+  "status": "ok"
+ },
+ {
+  "id": 972,
+  "es": "Áreas de servicio de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 973,
+  "es": "City of Cleveland Public Utilities",
+  "status": "keep"
+ },
+ {
+  "id": 974,
+  "es": "El alcalde dirige la administración de la ciudad. La oficina no fija todas las reglas del mercado regional de electricidad, pero está conectada con la administración de los servicios públicos que son propiedad de la ciudad y con la política local.",
+  "status": "ok"
+ },
+ {
+  "id": 975,
+  "es": "El Concejo puede aprobar ordenanzas locales, aprobar asignaciones de fondos, celebrar audiencias y autorizar acciones públicas cuando la carta municipal o la ley le da ese papel.",
+  "status": "ok"
+ },
+ {
+  "id": 976,
+  "es": "Cleveland Department of Public Utilities",
+  "status": "keep"
+ },
+ {
+  "id": 977,
+  "es": "Public Utilities",
+  "status": "keep"
+ },
+ {
+  "id": 978,
+  "es": "El departamento administra y supervisa los servicios públicos que son propiedad de Cleveland, incluida Cleveland Public Power.",
+  "status": "ok"
+ },
+ {
+  "id": 979,
+  "es": "Sistema de servicios públicos propiedad de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 980,
+  "es": "City of Cleveland Department of Public Utilities",
+  "status": "keep"
+ },
+ {
+  "id": 981,
+  "es": "La empresa de electricidad de propiedad municipal de Cleveland. La ciudad indica que CPP atiende aproximadamente a 74,000 clientes residenciales, comerciales e industriales.",
+  "status": "ok"
+ },
+ {
+  "id": 982,
+  "es": "Cleveland y las áreas de servicio conectadas",
+  "status": "ok"
+ },
+ {
+  "id": 983,
+  "es": "Division of Cleveland Public Power",
+  "status": "keep"
+ },
+ {
+  "id": 984,
+  "es": "The Illuminating Company",
+  "status": "keep"
+ },
+ {
+  "id": 985,
+  "es": "Illuminating Co.",
+  "status": "keep"
+ },
+ {
+  "id": 986,
+  "es": "Una empresa de distribución de propiedad de inversionistas que atiende a clientes del noreste de Ohio. Sus tarifas de distribución y sus reglas de servicio se manejan por medio de la regulación de servicios públicos de Ohio, y no solo por el Concejo Municipal de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 987,
+  "es": "Territorio de servicio del noreste de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 988,
+  "es": "Empresas operadoras de FirstEnergy",
+  "status": "ok"
+ },
+ {
+  "id": 989,
+  "es": "American Municipal Power",
+  "status": "keep"
+ },
+ {
+  "id": 990,
+  "es": "Un socio de energía pública cuya cartera puede incluir generación propiedad de sus miembros, contratos de energía a largo plazo, compras por temporada y compras en el mercado. La participación de Cleveland debe verificarse acuerdo por acuerdo.",
+  "status": "ok"
+ },
+ {
+  "id": 991,
+  "es": "Membresía de energía municipal en varios estados",
+  "status": "ok"
+ },
+ {
+  "id": 992,
+  "es": "PJM Interconnection",
+  "status": "keep"
+ },
+ {
+  "id": 993,
+  "es": "PJM opera un mercado mayorista de electricidad competitivo y administra la confiabilidad de su red regional de transmisión. No es un departamento de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 994,
+  "es": "Alcance regional de la transmisión y del mercado mayorista",
+  "status": "ok"
+ },
+ {
+  "id": 995,
+  "es": "Federal Energy Regulatory Commission",
+  "status": "keep"
+ },
+ {
+  "id": 996,
+  "es": "Perry Nuclear Power Plant",
+  "status": "keep"
+ },
+ {
+  "id": 997,
+  "es": "Perry nuclear",
+  "status": "keep"
+ },
+ {
+  "id": 998,
+  "es": "Una instalación regional de generación nuclear. El mapa separa la propiedad de la planta, la operación con licencia, los contratos de electricidad, el despacho de la red y la supervisión de la seguridad nuclear.",
+  "status": "ok"
+ },
+ {
+  "id": 999,
+  "es": "Condado de Lake, Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1000,
+  "es": "Registros de reactores de la U.S. Nuclear Regulatory Commission",
+  "status": "ok"
+ },
+ {
+  "id": 1001,
+  "es": "Davis-Besse Nuclear Power Station",
+  "status": "keep"
+ },
+ {
+  "id": 1002,
+  "es": "Una instalación regional de generación nuclear cerca de Oak Harbor. La NRC es la autoridad de seguridad y licencias; el despacho del mercado y los contratos de electricidad son relaciones aparte.",
+  "status": "ok"
+ },
+ {
+  "id": 1003,
+  "es": "Condado de Ottawa, Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1004,
+  "es": "Public Utilities Commission of Ohio",
+  "status": "keep"
+ },
+ {
+  "id": 1005,
+  "es": "El regulador de servicios públicos de Ohio. Supervisa las tarifas y la regulación de la distribución de las empresas de propiedad de inversionistas, incluidos los asuntos que afectan a los clientes de Cleveland de The Illuminating Company.",
+  "status": "ok"
+ },
+ {
+  "id": 1006,
+  "es": "Estado de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1007,
+  "es": "Supervisión federal de los mercados mayoristas interestatales de electricidad y de las reglas de transmisión. FERC no maneja la atención al cliente del servicio minorista de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1008,
+  "es": "Autoridad federal e interestatal",
+  "status": "ok"
+ },
+ {
+  "id": 1009,
+  "es": "Nuclear Regulatory Commission",
+  "status": "keep"
+ },
+ {
+  "id": 1010,
+  "es": "Autoridad federal de seguridad y licencias nucleares. Es independiente del dueño de la planta, el operador, el comprador de servicios públicos y el mercado de la red.",
+  "status": "ok"
+ },
+ {
+  "id": 1011,
+  "es": "Jurisdicción nuclear federal",
+  "status": "ok"
+ },
+ {
+  "id": 1012,
+  "es": "U.S. Nuclear Regulatory Commission",
+  "status": "keep"
+ },
+ {
+  "id": 1013,
+  "es": "Registros de compra de energía de CPP",
+  "status": "ok"
+ },
+ {
+  "id": 1014,
+  "es": "Contratos de CPP",
+  "status": "ok"
+ },
+ {
+  "id": 1015,
+  "es": "Un registro a nivel de contrato debe identificar al comprador, al vendedor, la instalación, el plazo, la cantidad, el precio, las enmiendas, las condiciones de salida, el voto que lo autorizó y el efecto en las tarifas de los residentes. El prototipo público marca el inventario de contratos como incompleto hasta que se verifique cada acuerdo.",
+  "status": "ok"
+ },
+ {
+  "id": 1016,
+  "es": "Cartera de Cleveland Public Power",
+  "status": "ok"
+ },
+ {
+  "id": 1017,
+  "es": "Inventario de contratos por verificar",
+  "status": "ok"
+ },
+ {
+  "id": 1018,
+  "es": "CPP es la relación con el servicio público de propiedad de la ciudad que hay que rastrear.",
+  "status": "ok"
+ },
+ {
+  "id": 1019,
+  "es": "Algunos clientes de Cleveland reciben el servicio por medio del sistema de distribución de propiedad de inversionistas.",
+  "status": "ok"
+ },
+ {
+  "id": 1020,
+  "es": "Relación administrativa local.",
+  "status": "ok"
+ },
+ {
+  "id": 1021,
+  "es": "Las acciones del Concejo pueden autorizar presupuestos locales, ordenanzas y contratos públicos cuando la ley lo exige.",
+  "status": "ok"
+ },
+ {
+  "id": 1022,
+  "es": "El departamento administra y supervisa los servicios públicos propiedad de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1023,
+  "es": "La participación en AMP debe verificarse contrato por contrato; ser miembro no prueba por sí solo la participación en cada proyecto.",
+  "status": "ok"
+ },
+ {
+  "id": 1024,
+  "es": "Las páginas de contratos conectan las aprobaciones públicas con las obligaciones financieras.",
+  "status": "ok"
+ },
+ {
+  "id": 1025,
+  "es": "PUCO es la relación estatal de regulación de servicios públicos para las tarifas de distribución de las empresas de propiedad de inversionistas.",
+  "status": "ok"
+ },
+ {
+  "id": 1026,
+  "es": "Las relaciones del mercado mayorista y de la transmisión son distintas del servicio minorista local.",
+  "status": "ok"
+ },
+ {
+  "id": 1027,
+  "es": "El despacho de la red no es lo mismo que la propiedad ni que un contrato de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1028,
+  "es": "La NRC se encarga de la seguridad y las licencias nucleares.",
+  "status": "ok"
+ },
+ {
+  "id": 1029,
+  "es": "FERC supervisa las reglas del mercado mayorista interestatal y de la transmisión.",
+  "status": "ok"
+ },
+ {
+  "id": 1030,
+  "es": "La distribución minorista estatal y la autoridad mayorista federal son niveles distintos.",
+  "status": "ok"
+ },
+ {
+  "id": 1031,
+  "es": "Estudiantes y familias",
+  "status": "ok"
+ },
+ {
+  "id": 1032,
+  "es": "Los niños, las personas que los cuidan y las comunidades a quienes el sistema debe servir.",
+  "status": "ok"
+ },
+ {
+  "id": 1033,
+  "es": "Liderazgo del distrito",
+  "status": "ok"
+ },
+ {
+  "id": 1034,
+  "es": "CMSD, su junta, su CEO, las escuelas y las decisiones del distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 1035,
+  "es": "El camino de nombramientos del alcalde, los gravámenes, los bonos, las instalaciones y las votaciones públicas.",
+  "status": "ok"
+ },
+ {
+  "id": 1036,
+  "es": "Autoridad de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1037,
+  "es": "Fondos estatales, informes de calificaciones escolares, estándares, patrocinadores autorizados y la ley estatal.",
+  "status": "ok"
+ },
+ {
+  "id": 1038,
+  "es": "Programas federales",
+  "status": "ok"
+ },
+ {
+  "id": 1039,
+  "es": "Fondos federales, protecciones de los derechos civiles, privacidad y reglas de los programas.",
+  "status": "ok"
+ },
+ {
+  "id": 1040,
+  "es": "Socios y contratos",
+  "status": "ok"
+ },
+ {
+  "id": 1041,
+  "es": "Patrocinadores de escuelas chárter, sindicatos, proveedores, instalaciones y socios comunitarios.",
+  "status": "ok"
+ },
+ {
+  "id": 1042,
+  "es": "Estudiantes y familias de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 1043,
+  "es": "Estudiantes + familias",
+  "status": "ok"
+ },
+ {
+  "id": 1044,
+  "es": "Los estudiantes y las familias viven el sistema escolar de forma directa. Pueden participar por medio de la inscripción, las reuniones de la junta, los comentarios públicos, el voto en gravámenes y bonos, y los caminos formales de queja o apelación.",
+  "status": "ok"
+ },
+ {
+  "id": 1045,
+  "es": "Cleveland Metropolitan School District y las opciones de escuelas públicas conectadas",
+  "status": "ok"
+ },
+ {
+  "id": 1046,
+  "es": "El distrito de escuelas públicas de Cleveland. El mapa trata al distrito como una institución y luego separa la junta, el CEO, las decisiones de fondos, las escuelas, los sindicatos y las reglas estatales o federales relacionadas con él.",
+  "status": "ok"
+ },
+ {
+  "id": 1047,
+  "es": "CMSD Board of Education",
+  "status": "keep"
+ },
+ {
+  "id": 1048,
+  "es": "Junta escolar",
+  "status": "ok"
+ },
+ {
+  "id": 1049,
+  "es": "La junta es el órgano público de decisión para el gobierno del distrito. En los paquetes de documentos y los registros de las reuniones de la junta, las familias pueden seguir las agendas, las resoluciones, los presupuestos y las votaciones.",
+  "status": "ok"
+ },
+ {
+  "id": 1050,
+  "es": "Dr. Warren Morgan, CMSD CEO",
+  "status": "keep"
+ },
+ {
+  "id": 1051,
+  "es": "CEO Warren Morgan",
+  "status": "keep"
+ },
+ {
+  "id": 1052,
+  "es": "El CEO del distrito dirige la administración y las operaciones. El perfil de un líder debe mostrar responsabilidades y decisiones documentadas, y no deducir creencias personales a partir de una sola política o un solo voto.",
+  "status": "ok"
+ },
+ {
+  "id": 1053,
+  "es": "Oficina del CEO de CMSD",
+  "status": "ok"
+ },
+ {
+  "id": 1054,
+  "es": "Decisiones sobre gravámenes, bonos y escuelas",
+  "status": "ok"
+ },
+ {
+  "id": 1055,
+  "es": "Gravámenes + bonos",
+  "status": "ok"
+ },
+ {
+  "id": 1056,
+  "es": "Los gravámenes y los bonos son decisiones de finanzas públicas que pueden afectar el dinero de operación, los edificios, la deuda y las obligaciones a largo plazo. Cada registro debe conectarse con el texto de la boleta, la votación, el monto, el plazo y las escuelas afectadas.",
+  "status": "ok"
+ },
+ {
+  "id": 1057,
+  "es": "Cleveland y los límites del distrito escolar",
+  "status": "ok"
+ },
+ {
+  "id": 1058,
+  "es": "Junta Electoral del Condado de Cuyahoga / registros de CMSD",
+  "status": "ok"
+ },
+ {
+  "id": 1059,
+  "es": "Camino de nombramientos del alcalde y de la junta escolar",
+  "status": "ok"
+ },
+ {
+  "id": 1060,
+  "es": "Camino de nombramientos",
+  "status": "ok"
+ },
+ {
+  "id": 1061,
+  "es": "La función del alcalde de Cleveland al nombrar a los miembros de la junta de CMSD es una conexión de gobierno que debe mostrarse con el registro del nombramiento y las funciones públicas de la junta, y no como un control total del distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 1062,
+  "es": "Gobierno de la Ciudad de Cleveland y de CMSD",
+  "status": "ok"
+ },
+ {
+  "id": 1063,
+  "es": "Registro de nombramientos de la Ciudad de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 1064,
+  "es": "Ohio Department of Education and Workforce",
+  "status": "keep"
+ },
+ {
+  "id": 1065,
+  "es": "Ohio DEW",
+  "status": "keep"
+ },
+ {
+  "id": 1066,
+  "es": "La agencia estatal de educación se relaciona con los fondos escolares, las informes de calificaciones escolares, los estándares, la administración de programas federales y los requisitos para escuelas o distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 1067,
+  "es": "Escuelas comunitarias y patrocinadores de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1068,
+  "es": "Escuelas comunitarias",
+  "status": "ok"
+ },
+ {
+  "id": 1069,
+  "es": "Las escuelas comunitarias de Ohio son públicas, gratuitas e independientes de los distritos tradicionales. Sus patrocinadores y operadores son una relación aparte que las familias deberían poder revisar.",
+  "status": "ok"
+ },
+ {
+  "id": 1070,
+  "es": "Sistema de educación pública de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1071,
+  "es": "Escuelas comunitarias del Ohio Department of Education",
+  "status": "ok"
+ },
+ {
+  "id": 1072,
+  "es": "Maestros y contratos laborales",
+  "status": "ok"
+ },
+ {
+  "id": 1073,
+  "es": "Contratos laborales",
+  "status": "ok"
+ },
+ {
+  "id": 1074,
+  "es": "Los convenios colectivos determinan las condiciones de trabajo, el personal, los sueldos y las operaciones escolares. El mapa debe enlazar el convenio vigente y cualquier acción de la junta que lo apruebe.",
+  "status": "ok"
+ },
+ {
+  "id": 1075,
+  "es": "Relaciones laborales y de negociación de CMSD",
+  "status": "ok"
+ },
+ {
+  "id": 1076,
+  "es": "Registro del contrato por verificar",
+  "status": "ok"
+ },
+ {
+  "id": 1077,
+  "es": "U.S. Department of Education",
+  "status": "keep"
+ },
+ {
+  "id": 1078,
+  "es": "Educación de EE. UU.",
+  "status": "ok"
+ },
+ {
+  "id": 1079,
+  "es": "El nivel federal administra y coordina muchas formas de ayuda para la educación y protege derechos por medio de programas y leyes. No dirige las escuelas de Cleveland en el día a día.",
+  "status": "ok"
+ },
+ {
+  "id": 1080,
+  "es": "Programas federales de educación",
+  "status": "ok"
+ },
+ {
+  "id": 1081,
+  "es": "Resumen del U.S. Department of Education",
+  "status": "ok"
+ },
+ {
+  "id": 1082,
+  "es": "Los programas federales pueden ofrecer apoyo específico, incluidos programas para estudiantes con discapacidades, estudiantes en situación de pobreza y otros grupos protegidos o desatendidos.",
+  "status": "ok"
+ },
+ {
+  "id": 1083,
+  "es": "CMSD y las escuelas de Ohio que califican",
+  "status": "ok"
+ },
+ {
+  "id": 1084,
+  "es": "Programas del U.S. Department of Education",
+  "status": "ok"
+ },
+ {
+  "id": 1085,
+  "es": "Instalaciones y proveedores escolares",
+  "status": "ok"
+ },
+ {
+  "id": 1086,
+  "es": "Instalaciones + proveedores",
+  "status": "ok"
+ },
+ {
+  "id": 1087,
+  "es": "Los contratos de construcción, transporte, comida, tecnología e instalaciones pueden mover mucho dinero público. Cada relación con un proveedor necesita un contrato, una autorización, un plazo y un registro de desempeño.",
+  "status": "ok"
+ },
+ {
+  "id": 1088,
+  "es": "Instalaciones y compras de CMSD",
+  "status": "ok"
+ },
+ {
+  "id": 1089,
+  "es": "Registro de proveedores y contratos por verificar",
+  "status": "ok"
+ },
+ {
+  "id": 1090,
+  "es": "CMSD es la institución local de escuelas públicas que hay que rastrear.",
+  "status": "ok"
+ },
+ {
+  "id": 1091,
+  "es": "Los registros de la junta muestran las acciones de gobierno público.",
+  "status": "ok"
+ },
+ {
+  "id": 1092,
+  "es": "La junta y el CEO tienen funciones distintas: una de gobierno y otra de administración.",
+  "status": "ok"
+ },
+ {
+  "id": 1093,
+  "es": "Las decisiones sobre gravámenes, bonos, presupuesto y escuelas deben poder rastrearse hasta sus registros.",
+  "status": "ok"
+ },
+ {
+  "id": 1094,
+  "es": "El registro de nombramientos muestra una conexión, no un control total.",
+  "status": "ok"
+ },
+ {
+  "id": 1095,
+  "es": "Las reglas y los fondos del estado son un nivel aparte de la administración del distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 1096,
+  "es": "Los registros de fondos escolares de Ohio conectan el dinero del estado con las finanzas del distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 1097,
+  "es": "Las escuelas comunitarias son relaciones independientes de escuelas públicas, no departamentos de CMSD.",
+  "status": "ok"
+ },
+ {
+  "id": 1098,
+  "es": "La negociación colectiva debe enlazarse con el convenio y con el registro de la junta.",
+  "status": "ok"
+ },
+ {
+  "id": 1099,
+  "es": "Los programas estatales y federales se administran de forma conectada, pero no idéntica.",
+  "status": "ok"
+ },
+ {
+  "id": 1100,
+  "es": "Los programas federales distribuyen apoyo educativo específico.",
+  "status": "ok"
+ },
+ {
+  "id": 1101,
+  "es": "Se necesitan registros de compras para rastrear el gasto público.",
+  "status": "ok"
+ },
+ {
+  "id": 1102,
+  "es": "Residentes y elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 1103,
+  "es": "Concejo y decisiones",
+  "status": "ok"
+ },
+ {
+  "id": 1104,
+  "es": "Administración de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 1105,
+  "es": "Tribunales y revisión",
+  "status": "ok"
+ },
+ {
+  "id": 1106,
+  "es": "Otros organismos públicos",
+  "status": "ok"
+ },
+ {
+  "id": 1107,
+  "es": "Que un asunto aparezca en la agenda significa que se está considerando, no que se aprobó ni que hay un contrato firmado.",
+  "status": "ok"
+ },
+ {
+  "id": 1108,
+  "es": "Cámara de Representantes de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1109,
+  "es": "Una de las dos cámaras de la legislatura de Ohio. Sus miembros consideran proyectos de ley estatales y representan a los distritos de la Cámara de Representantes de Ohio.",
+  "status": "ok"
+ },
+ {
+  "id": 1110,
+  "es": "Distritos de la Cámara de Representantes de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1111,
+  "es": "Senado de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1112,
+  "es": "La otra cámara de la legislatura de Ohio. Sus distritos son distintos de los distritos de la ciudad y de los de la Cámara de Representantes de Ohio.",
+  "status": "ok"
+ },
+ {
+  "id": 1113,
+  "es": "Distritos del Senado de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1114,
+  "es": "Cámara de Representantes de EE. UU.",
+  "status": "ok"
+ },
+ {
+  "id": 1115,
+  "es": "Una de las cámaras del Congreso. Los miembros de la Cámara representan a distritos congresionales.",
+  "status": "ok"
+ },
+ {
+  "id": 1116,
+  "es": "Distritos congresionales",
+  "status": "ok"
+ },
+ {
+  "id": 1117,
+  "es": "Una de las cámaras del Congreso. Los senadores de EE. UU. representan a los estados. El Senado tiene sus propias responsabilidades dentro del sistema federal.",
+  "status": "ok"
+ },
+ {
+  "id": 1118,
+  "es": "Estados y Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 1119,
+  "es": "Concejo del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1120,
+  "es": "La rama legislativa del condado es independiente del Concejo Municipal de Cleveland. Los residentes eligen a sus miembros por distrito del concejo del condado.",
+  "status": "ok"
+ },
+ {
+  "id": 1121,
+  "es": "Distritos del concejo del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1122,
+  "es": "Ejecutivo del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1123,
+  "es": "El ejecutivo del condado dirige la administración del condado, de forma independiente del alcalde de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1124,
+  "es": "Ley de tribunales municipales de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1125,
+  "es": "El Código Revisado de Ohio 1901.01 establece los tribunales municipales, incluido el Tribunal Municipal de Cleveland. La autoridad del tribunal no es simplemente una línea de mando de un departamento de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1126,
+  "es": "Autoridad legal de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1127,
+  "es": "RTA opera el sistema regional de transporte público. Su junta aprueba las políticas, los presupuestos y los contratos importantes. El servicio de autobuses y el mantenimiento de las calles de la ciudad tienen caminos de decisión distintos.",
+  "status": "ok"
+ },
+ {
+  "id": 1128,
+  "es": "Área de servicio del transporte regional",
+  "status": "ok"
+ },
+ {
+  "id": 1129,
+  "es": "Junta de Fideicomisarios de RTA",
+  "status": "ok"
+ },
+ {
+  "id": 1130,
+  "es": "La junta fija las políticas, supervisa a la administración y aprueba el presupuesto. Los residentes pueden hacer comentarios en las reuniones de la junta; las reuniones de los comités tienen reglas de comentarios distintas.",
+  "status": "ok"
+ },
+ {
+  "id": 1131,
+  "es": "Asamblea General de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1132,
+  "es": "La Cámara y el Senado de Ohio consideran los proyectos de ley estatales. Un proyecto de ley debe seguir el proceso legislativo estatal antes de convertirse en ley.",
+  "status": "ok"
+ },
+ {
+  "id": 1133,
+  "es": "Oficina del Gobernador de Ohio",
+  "status": "ok"
+ },
+ {
+  "id": 1134,
+  "es": "El gobernador dirige la rama ejecutiva de Ohio. La autoridad estatal es distinta de la del alcalde y el Concejo de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1135,
+  "es": "Congreso de Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 1136,
+  "es": "La Cámara de Representantes y el Senado de EE. UU. hacen las leyes federales mediante el proceso legislativo federal. Los distritos congresionales son distintos de los distritos de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1137,
+  "es": "Gobierno del Condado de Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 1138,
+  "es": "El gobierno del condado atiende a Cleveland y a otras comunidades del Condado de Cuyahoga. Sus oficinas son independientes del Ayuntamiento de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 1139,
+  "es": "Ohio Environmental Protection Agency",
+  "status": "keep"
+ },
+ {
+  "id": 1140,
+  "es": "Ohio EPA administra los programas y permisos ambientales del estado. La agencia responsable depende del tipo de contaminación o de permiso.",
+  "status": "ok"
+ }
+]

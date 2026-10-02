@@ -1,0 +1,867 @@
+[
+ {
+  "id": 3603,
+  "es": "Elegir prioridades",
+  "status": "ok"
+ },
+ {
+  "id": 3604,
+  "es": "De sus respuestas en la constelación: ambos respaldaron",
+  "status": "ok"
+ },
+ {
+  "id": 3605,
+  "es": "LA MAYORÍA DE LO QUE ENVIAMOS AL CONCEJO TRATABA SOBRE",
+  "status": "ok"
+ },
+ {
+  "id": 3606,
+  "es": "ESTE AÑO, LA MAYOR PARTE DE LO QUE ENCABECÉ",
+  "status": "ok"
+ },
+ {
+  "id": 3607,
+  "es": "UNA SOLICITUD SOBRE SUS PRIORIDADES",
+  "status": "ok"
+ },
+ {
+  "id": 3608,
+  "es": "ALGO QUE ENCABECÉ ESTE AÑO",
+  "status": "ok"
+ },
+ {
+  "id": 3609,
+  "es": "Comprobantes, no puntajes. Patrocinar una propuesta no es votar. Registros del Concejo de 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 3610,
+  "es": "guardados en sus cartas. Se quedan en este dispositivo durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 3611,
+  "es": "· Su prioridad: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3612,
+  "es": "Lo que esto significa para usted: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3613,
+  "es": "Propuestas a las que se sumó ({*})",
+  "status": "ok"
+ },
+ {
+  "id": 3614,
+  "es": "Solicitudes rutinarias de departamentos que firmó ({*})",
+  "status": "ok"
+ },
+ {
+  "id": 3615,
+  "es": "Solicitudes que los departamentos de la ciudad enviaron al Concejo ({*})",
+  "status": "ok"
+ },
+ {
+  "id": 3616,
+  "es": "Seleccione el texto y cópielo.",
+  "status": "ok"
+ },
+ {
+  "id": 3617,
+  "es": "Su carta",
+  "status": "ok"
+ },
+ {
+  "id": 3618,
+  "es": "Un borrador inicial creado a partir de sus prioridades, las propuestas que guardó y este registro. Edítelo con sus propias palabras. Desde aquí no se envía nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3619,
+  "es": "Datos de contacto del distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3620,
+  "es": "Alcalde Bibb",
+  "status": "ok"
+ },
+ {
+  "id": 3621,
+  "es": "Cámara de Representantes de EE. UU.",
+  "status": "ok"
+ },
+ {
+  "id": 3622,
+  "es": "Distrito congresional {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3623,
+  "es": "El alcalde no aparece en la boleta de noviembre. Esto compara sus respuestas con las propuestas que la administración del alcalde Bibb envió al Concejo Municipal en 2026, ya sea en su nombre o como solicitud de un departamento de la ciudad. Enviar una propuesta muestra que la administración la respalda. El Concejo sigue decidiendo.",
+  "status": "ok"
+ },
+ {
+  "id": 3624,
+  "es": "El Concejo no aparece en la boleta de noviembre. Esto muestra cómo coinciden sus respuestas con las propuestas de 2026 que los miembros de su Concejo eligieron patrocinar. Patrocinar muestra apoyo; no es un voto en el pleno. Un miembro que no patrocinó no tiene registro aquí, y eso nunca significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3625,
+  "es": "Su elección de candidato de práctica nunca completa estas respuestas. Esta pequeña muestra de evidencia no es una prueba de identidad política ni una recomendación.",
+  "status": "ok"
+ },
+ {
+  "id": 3626,
+  "es": "¿En qué distrito de la Cámara de Representantes de EE. UU. vive?",
+  "status": "ok"
+ },
+ {
+  "id": 3627,
+  "es": "Cleveland está dividido entre dos distritos. Su dirección determina cuál le corresponde.",
+  "status": "ok"
+ },
+ {
+  "id": 3628,
+  "es": "Buscar por dirección",
+  "status": "ok"
+ },
+ {
+  "id": 3629,
+  "es": "PROPUESTA DE LA ADMINISTRACIÓN",
+  "status": "ok"
+ },
+ {
+  "id": 3630,
+  "es": "PROPUESTA DEL CONCEJO",
+  "status": "ok"
+ },
+ {
+  "id": 3631,
+  "es": "VOTO REGISTRADO",
+  "status": "ok"
+ },
+ {
+  "id": 3632,
+  "es": "Leer el",
+  "status": "ok"
+ },
+ {
+  "id": 3633,
+  "es": "\"Depende\", \"Sigo aprendiendo\" y los registros faltantes se excluyen y nunca se cuentan como desacuerdo.",
+  "status": "ok"
+ },
+ {
+  "id": 3634,
+  "es": "PROPUESTAS QUE ENVIÓ SU ADMINISTRACIÓN",
+  "status": "ok"
+ },
+ {
+  "id": 3635,
+  "es": "PROPUESTAS QUE RESPALDÓ",
+  "status": "ok"
+ },
+ {
+  "id": 3636,
+  "es": "COINCIDENCIA EN VOTOS PASADOS",
+  "status": "ok"
+ },
+ {
+  "id": 3637,
+  "es": "COINCIDENCIA CON PLANES DECLARADOS",
+  "status": "ok"
+ },
+ {
+  "id": 3638,
+  "es": "Constelación: cuanto más cerca está una persona de usted, más de sus respuestas de sí y no coinciden con el registro de esa persona",
+  "status": "ok"
+ },
+ {
+  "id": 3639,
+  "es": "igual en {*} de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3640,
+  "es": "Usted",
+  "status": "ok"
+ },
+ {
+  "id": 3641,
+  "es": "Responda sí o no a una idea con un registro documentado para ubicar a alguien en el mapa.",
+  "status": "ok"
+ },
+ {
+  "id": 3642,
+  "es": "Anillos blancos: quién consta en el registro sobre esta pregunta.",
+  "status": "ok"
+ },
+ {
+  "id": 3643,
+  "es": "Más cerca significa más coincidencia en los registros respondidos de este tipo. La dirección no tiene significado.",
+  "status": "ok"
+ },
+ {
+  "id": 3644,
+  "es": "Un halo punteado marca su elección de práctica.",
+  "status": "ok"
+ },
+ {
+  "id": 3645,
+  "es": "El partido y la selección en la boleta no afectan la distancia.",
+  "status": "ok"
+ },
+ {
+  "id": 3646,
+  "es": "No patrocinar significa que no hay registro, no que la respuesta sea no. El punto dorado es el miembro de su distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3647,
+  "es": "Toque a una persona para abrirla.",
+  "status": "ok"
+ },
+ {
+  "id": 3648,
+  "es": "Todos siguen visibles",
+  "status": "ok"
+ },
+ {
+  "id": 3649,
+  "es": "La falta de un registro no significa que la respuesta sea no",
+  "status": "ok"
+ },
+ {
+  "id": 3650,
+  "es": "La falta de un registro no significa que la respuesta sea no. Diferentes",
+  "status": "ok"
+ },
+ {
+  "id": 3651,
+  "es": "pueden tener una cobertura de evidencia distinta; una fracción no es una",
+  "status": "ok"
+ },
+ {
+  "id": 3652,
+  "es": "· Su elección de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 3653,
+  "es": "{*} de {*} registros comparables coinciden · {*} faltantes",
+  "status": "ok"
+ },
+ {
+  "id": 3654,
+  "es": "No comparado · aún no hay una respuesta de sí o no que coincida ni una postura con fuente",
+  "status": "ok"
+ },
+ {
+  "id": 3655,
+  "es": "De la fuente detrás de esta pregunta",
+  "status": "ok"
+ },
+ {
+  "id": 3656,
+  "es": "Puso su nombre en ella",
+  "status": "ok"
+ },
+ {
+  "id": 3657,
+  "es": "Ver el registro completo,",
+  "status": "ok"
+ },
+ {
+  "id": 3658,
+  "es": "Siguiente pregunta",
+  "status": "ok"
+ },
+ {
+  "id": 3659,
+  "es": "Volver a la primera",
+  "status": "ok"
+ },
+ {
+  "id": 3660,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 3661,
+  "es": "Sin datos de distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3662,
+  "es": "¿Quién decide aquí?",
+  "status": "ok"
+ },
+ {
+  "id": 3663,
+  "es": "Todo lo que aparece aquí proviene de registros públicos: los mapas de distritos de la ciudad, la base de datos legislativa del Concejo y el texto de las ordenanzas. Nada aquí le asigna un puntaje a nadie. Donde el registro guarda silencio, lo dice.",
+  "status": "ok"
+ },
+ {
+  "id": 3664,
+  "es": "(hogar)",
+  "status": "ok"
+ },
+ {
+  "id": 3665,
+  "es": "Establecer como mi lugar",
+  "status": "ok"
+ },
+ {
+  "id": 3666,
+  "es": "Estado de la relación con el Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3667,
+  "es": ": es complicado. El mapa de 2026 trasladó la mayor parte de",
+  "status": "ok"
+ },
+ {
+  "id": 3668,
+  "es": "al Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3669,
+  "es": "Más cercano a usted ·",
+  "status": "ok"
+ },
+ {
+  "id": 3670,
+  "es": "Quién representa a {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3671,
+  "es": "y {*} más",
+  "status": "ok"
+ },
+ {
+  "id": 3672,
+  "es": "Perfil",
+  "status": "ok"
+ },
+ {
+  "id": 3673,
+  "es": "Antes (2014 a 2025)",
+  "status": "ok"
+ },
+ {
+  "id": 3674,
+  "es": "Figura en el archivo de mapas de la ciudad: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3675,
+  "es": "Límites del vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 3676,
+  "es": "Decisiones vinculadas a {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3677,
+  "es": "{*} en 2026 por dirección o nombre",
+  "status": "ok"
+ },
+ {
+  "id": 3678,
+  "es": "Emergencia",
+  "status": "ok"
+ },
+ {
+  "id": 3679,
+  "es": "Firmada primero por {*}{*}",
+  "status": "ok"
+ },
+ {
+  "id": 3680,
+  "es": "Permisos de licor en {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3681,
+  "es": "{*} en el registro",
+  "status": "ok"
+ },
+ {
+  "id": 3682,
+  "es": "Ninguno en 2026",
+  "status": "ok"
+ },
+ {
+  "id": 3683,
+  "es": "En toda la ciudad, la mitad se aprueba en un plazo de {*} días",
+  "status": "ok"
+ },
+ {
+  "id": 3684,
+  "es": "Fondos del distrito en {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3685,
+  "es": "{*} de los miembros de estos distritos",
+  "status": "ok"
+ },
+ {
+  "id": 3686,
+  "es": "No vinculado a un solo distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3687,
+  "es": "Resultados, sí. Votaciones nominales, no.",
+  "status": "ok"
+ },
+ {
+  "id": 3688,
+  "es": "Fuentes y límites",
+  "status": "ok"
+ },
+ {
+  "id": 3689,
+  "es": "En revisión",
+  "status": "ok"
+ },
+ {
+  "id": 3690,
+  "es": "Últimos 30 días de registros",
+  "status": "ok"
+ },
+ {
+  "id": 3691,
+  "es": "Antes, este año",
+  "status": "ok"
+ },
+ {
+  "id": 3692,
+  "es": "Distrito {*} y su miembro",
+  "status": "ok"
+ },
+ {
+  "id": 3693,
+  "es": "Fondos de distrito en toda la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 3694,
+  "es": "Puesta sobre la mesa por el Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 3695,
+  "es": "{*}ingresos de los casinos",
+  "status": "ok"
+ },
+ {
+  "id": 3696,
+  "es": "{*}fondo de equidad",
+  "status": "ok"
+ },
+ {
+  "id": 3697,
+  "es": "Comprobantes del Ayuntamiento<1>.</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3698,
+  "es": "Comprobantes del Ayuntamiento",
+  "status": "ok"
+ },
+ {
+  "id": 3699,
+  "es": "Quién le pagó a quién, quién dio su visto bueno y en qué etapa está.",
+  "status": "ok"
+ },
+ {
+  "id": 3700,
+  "es": "Los fondos del Distrito {*} y lo que encabezó su miembro del Concejo, además de todo lo que el Concejo puso sobre la mesa.",
+  "status": "ok"
+ },
+ {
+  "id": 3701,
+  "es": "Elija su lugar para ver los comprobantes de su propio distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3702,
+  "es": "Ver todos ({*})",
+  "status": "ok"
+ },
+ {
+  "id": 3703,
+  "es": "Los estados de la relación son nuestras etiquetas en palabras sencillas para el estado del registro: Aprobada significa que fue aprobada, En revisión significa que sigue en revisión y Puesta sobre la mesa significa que fue aplazada. Los montos son los límites escritos en cada ordenanza.",
+  "status": "ok"
+ },
+ {
+  "id": 3704,
+  "es": "Fondos que dirige el Distrito {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3705,
+  "es": "Se destinaron {*} a {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3706,
+  "es": "Aún no aparecen fondos del Distrito {*} en los registros de este año.",
+  "status": "ok"
+ },
+ {
+  "id": 3707,
+  "es": "Cada miembro del Concejo dirige ingresos de los casinos y fondos del Fondo de Equidad de los Vecindarios a grupos locales. Esta es la partida más grande del Distrito {*} en el registro de este año: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3708,
+  "es": "Aún no aparecen fondos de distrito para el Distrito {*} en los registros de este año.",
+  "status": "ok"
+ },
+ {
+  "id": 3709,
+  "es": "Que falte algo aquí significa que no se encontró ninguna partida vinculada a un distrito en el texto de las ordenanzas de 2026, no que no haya pasado nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3710,
+  "es": "Distrito {*}: {*}, {*} este año.",
+  "status": "ok"
+ },
+ {
+  "id": 3711,
+  "es": "Distrito {*}: aún no se encontró nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3712,
+  "es": "Las partidas aparecen aquí en cuanto el registro las tiene.",
+  "status": "ok"
+ },
+ {
+  "id": 3713,
+  "es": "En toda Cleveland: {*} partidas, unos {*}, en {*} distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 3714,
+  "es": "Las partidas compartidas por varios distritos no se cuentan para ningún distrito en particular. Los montos son los límites escritos en cada ordenanza.",
+  "status": "ok"
+ },
+ {
+  "id": 3715,
+  "es": "Cada partida es una legislación patrocinada por el miembro del Concejo del distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3716,
+  "es": "Su miembro del Concejo, {*}, patrocinó todas las partidas contadas aquí.",
+  "status": "ok"
+ },
+ {
+  "id": 3717,
+  "es": "Aún no se encontraron partidas vinculadas a un distrito para {*}. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3718,
+  "es": "¿Es así como le gustaría que se gastara la parte del Distrito {*}?",
+  "status": "ok"
+ },
+ {
+  "id": 3719,
+  "es": "Su factura de electricidad",
+  "status": "ok"
+ },
+ {
+  "id": 3720,
+  "es": "Una pausa a los centros de datos tiene que ver en parte con lo que usted paga por la electricidad.",
+  "status": "ok"
+ },
+ {
+  "id": 3721,
+  "es": "Una pausa a los centros de datos tiene que ver en parte con su factura de electricidad.",
+  "status": "ok"
+ },
+ {
+  "id": 3722,
+  "es": "La pausa cubre al Distrito {*} igual que a todos los distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 3723,
+  "es": "La pausa cubre a todos los distritos por igual.",
+  "status": "ok"
+ },
+ {
+  "id": 3724,
+  "es": "El Concejo quiere que se escriban reglas antes de que se construya alguno.",
+  "status": "ok"
+ },
+ {
+  "id": 3725,
+  "es": "{*}, {*} {*}. Las razones son los argumentos de los patrocinadores, tomados del texto de la ordenanza.",
+  "status": "ok"
+ },
+ {
+  "id": 3726,
+  "es": "Elija su lugar para ver si su miembro del Concejo la patrocinó.",
+  "status": "ok"
+ },
+ {
+  "id": 3727,
+  "es": "Su miembro del Concejo, {*}, puso su nombre en ella.",
+  "status": "ok"
+ },
+ {
+  "id": 3728,
+  "es": "{*} no figura como patrocinador. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3729,
+  "es": "Construcción cerca de usted",
+  "status": "ok"
+ },
+ {
+  "id": 3730,
+  "es": "Si construye una casa nueva en el distrito del East Side, la ciudad podría eximirle de los cargos por permisos.",
+  "status": "ok"
+ },
+ {
+  "id": 3731,
+  "es": "Las casas nuevas en un distrito del East Side no pagan cargos de la ciudad por permisos.",
+  "status": "ok"
+ },
+ {
+  "id": 3732,
+  "es": "Si construye una casa nueva aquí, la ciudad podría eximirle de los cargos por permisos.",
+  "status": "ok"
+ },
+ {
+  "id": 3733,
+  "es": "Sus cargos por permisos no cambian.",
+  "status": "ok"
+ },
+ {
+  "id": 3734,
+  "es": "Este cambio cubre solo el Distrito TIF del East Side{*}. {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3735,
+  "es": ", y el Distrito {*} no está dentro de él",
+  "status": "ok"
+ },
+ {
+  "id": 3736,
+  "es": "Parte del Distrito {*} queda dentro del nuevo distrito del East Side.",
+  "status": "ok"
+ },
+ {
+  "id": 3737,
+  "es": "El distrito abarca partes de los Distritos {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3738,
+  "es": "En el Distrito {*} no cambia nada sobre los cargos por permisos. Si un acuerdo como este le importa a su distrito, es una pregunta para {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3739,
+  "es": "Es una apuesta por construir donde se ha construido poco durante décadas.",
+  "status": "ok"
+ },
+ {
+  "id": 3740,
+  "es": "También fue solicitada por la administración del alcalde. {*}, {*} {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3741,
+  "es": "Establecer su vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 3742,
+  "es": "Vea su distrito, su miembro del Concejo y sus comprobantes.",
+  "status": "ok"
+ },
+ {
+  "id": 3743,
+  "es": "hasta el Día de las Elecciones, martes 3 de noviembre",
+  "status": "ok"
+ },
+ {
+  "id": 3744,
+  "es": "es el Día de las Elecciones. Los lugares de votación están abiertos de 6:30 a. m. a 7:30 p. m.",
+  "status": "ok"
+ },
+ {
+  "id": 3745,
+  "es": "El Día de las Elecciones fue el martes 3 de noviembre. Vea los resultados oficiales.",
+  "status": "ok"
+ },
+ {
+  "id": 3746,
+  "es": "Hoy:",
+  "status": "ok"
+ },
+ {
+  "id": 3747,
+  "es": "Próximo:",
+  "status": "ok"
+ },
+ {
+  "id": 3748,
+  "es": "en {*} días",
+  "status": "ok"
+ },
+ {
+  "id": 3749,
+  "es": "Cerca de casa<1>.</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3750,
+  "es": "Cerca de casa",
+  "status": "ok"
+ },
+ {
+  "id": 3751,
+  "es": "Toque para ampliar la vista desde usted hasta la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 3752,
+  "es": "Cerrar historia",
+  "status": "ok"
+ },
+ {
+  "id": 3753,
+  "es": "Leer como texto",
+  "status": "ok"
+ },
+ {
+  "id": 3754,
+  "es": "Paso {*} de {*}. {*}{*} {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3755,
+  "es": "Agregado a su carta",
+  "status": "ok"
+ },
+ {
+  "id": 3756,
+  "es": "Este es el último paso",
+  "status": "ok"
+ },
+ {
+  "id": 3757,
+  "es": "Toque el lado derecho para seguir",
+  "status": "ok"
+ },
+ {
+  "id": 3758,
+  "es": "CLEVELAND",
+  "status": "keep"
+ },
+ {
+  "id": 3759,
+  "es": "Alejar la vista a {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3760,
+  "es": "Alejar la vista a Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 3761,
+  "es": "¿Quién decidió esto?",
+  "status": "ok"
+ },
+ {
+  "id": 3762,
+  "es": "Siguiente momento",
+  "status": "ok"
+ },
+ {
+  "id": 3763,
+  "es": "Quién decidió esto<1>.</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3764,
+  "es": "Quién decidió esto",
+  "status": "ok"
+ },
+ {
+  "id": 3765,
+  "es": "Es un",
+  "status": "ok"
+ },
+ {
+  "id": 3766,
+  "es": "Punto en común<1>!</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3767,
+  "es": "Usted y",
+  "status": "ok"
+ },
+ {
+  "id": 3768,
+  "es": "están del mismo lado en este tema.",
+  "status": "ok"
+ },
+ {
+  "id": 3769,
+  "es": "Usted dijo que sí.",
+  "status": "ok"
+ },
+ {
+  "id": 3770,
+  "es": "). Patrocinar una propuesta no es votar. Esa es toda la coincidencia. Sin porcentajes.",
+  "status": "ok"
+ },
+ {
+  "id": 3771,
+  "es": "Hacerles una pregunta",
+  "status": "ok"
+ },
+ {
+  "id": 3772,
+  "es": "Seguir",
+  "status": "ok"
+ },
+ {
+  "id": 3773,
+  "es": "Su primera pregunta para el Ayuntamiento está guardada. Envíela cuando quiera.",
+  "status": "ok"
+ },
+ {
+  "id": 3774,
+  "es": "Abrir mi carta ·",
+  "status": "ok"
+ },
+ {
+  "id": 3775,
+  "es": "Descartar",
+  "status": "ok"
+ }
+]

@@ -21,20 +21,31 @@ function cxFindTerm(term) {
 
 /* Wrap known dictionary terms in plain text with inline definition buttons. */
 function CX_Definable({ text, onTerm, limit = 4 }) {
+  const [lang] = useCxLang();
   if (!text) return null;
-  const terms = [...Wh].map((e) => e.term).sort((a, b) => b.length - a.length);
+  // In Spanish the whole sentence is translated first, then the Spanish glossary words are wrapped, so word order stays natural.
+  // A click still opens the English-keyed entry. If the sentence has no Spanish yet, the English path below is used.
+  const es = lang === `es` ? cxI18nText(text) : null;
+  const pairs = es ? [...Wh].map((e) => [cxI18nText(e.term) || e.term, e.term]) : [...Wh].map((e) => [e.term, e.term]);
+  const toEn = new Map(pairs.map(([sp, en]) => [sp.toLowerCase(), en]));
+  const terms = pairs.map((p) => p[0]).sort((a, b) => b.length - a.length);
   const esc = (s) => s.replace(/[.*+?^${}()|[\]\\]/g, `\\$&`);
-  const re = new RegExp(`\\b(${terms.map(esc).join(`|`)})s?\\b`, `i`);
+  // \b does not know accented letters, so the Spanish match asks for "not a letter" before and after instead (no lookbehind: older Safari lacks it)
+  const re = es
+    ? new RegExp(`(^|[^\\p{L}])(${terms.map(esc).join(`|`)})(?:e?s)?(?![\\p{L}])`, `iu`)
+    : new RegExp(`\\b(${terms.map(esc).join(`|`)})s?\\b`, `i`);
   const out = [];
   const used = new Set();
-  let rest = text;
+  let rest = es || text;
   let key = 0;
   while (rest && used.size < limit) {
     const m = rest.match(re);
     if (!m) break;
-    const word = m[0];
-    const base = m[1].toLowerCase();
-    const idx = m.index;
+    const lead = es ? m[1] : ``;
+    const word = es ? m[0].slice(lead.length) : m[0];
+    const found = es ? m[2] : m[1];
+    const base = (es ? toEn.get(found.toLowerCase()) || found : found).toLowerCase();
+    const idx = m.index + lead.length;
     if (used.has(base)) {
       out.push(rest.slice(0, idx + word.length));
       rest = rest.slice(idx + word.length);
@@ -43,14 +54,14 @@ function CX_Definable({ text, onTerm, limit = 4 }) {
     used.add(base);
     out.push(rest.slice(0, idx));
     out.push(
-      <button key={`d${key++}`} type="button" className="inline-definition" title={`Define ${base}`} onClick={() => onTerm(base)}>
+      <button key={`d${key++}`} type="button" className="inline-definition" title={es ? `Definir ${found.toLowerCase()}` : `Define ${base}`} onClick={() => onTerm(base)}>
         {word}
       </button>,
     );
     rest = rest.slice(idx + word.length);
   }
   out.push(rest);
-  return <>{out}</>;
+  return es ? <span lang="es" data-no-translate>{out}</span> : <>{out}</>;
 }
 
 /* ---------- 4-step guided view (Start, Meaning, Power, Proof) ---------- */

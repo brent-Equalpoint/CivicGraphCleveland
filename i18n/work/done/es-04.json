@@ -1,0 +1,952 @@
+[
+ {
+  "id": 761,
+  "es": "Copatrocinó 561-2026, alquileres a corto plazo",
+  "status": "ok"
+ },
+ {
+  "id": 762,
+  "es": "Copatrocinó 556-2026, moratoria de permisos para centros de datos",
+  "status": "ok"
+ },
+ {
+  "id": 763,
+  "es": "Patrocinó 556-2026, moratoria de permisos para centros de datos",
+  "status": "ok"
+ },
+ {
+  "id": 764,
+  "es": "Política de estacionamiento",
+  "status": "ok"
+ },
+ {
+  "id": 765,
+  "es": "Alquileres a corto plazo",
+  "status": "ok"
+ },
+ {
+  "id": 766,
+  "es": "Centros de datos",
+  "status": "ok"
+ },
+ {
+  "id": 767,
+  "es": "Liderazgo del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 768,
+  "es": "{*} representa al Distrito {*} en el 119.º Concejo Municipal de Cleveland. La actividad que aparece abajo se limita a registros de patrocinio y liderazgo respaldados por fuentes, no a un puntaje de ideología inferido.",
+  "status": "ok"
+ },
+ {
+  "id": 769,
+  "es": "Distrito {*} de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 770,
+  "es": "Representar a los residentes del distrito",
+  "status": "ok"
+ },
+ {
+  "id": 771,
+  "es": "Presentar legislación y votar sobre ella",
+  "status": "ok"
+ },
+ {
+  "id": 772,
+  "es": "Formar parte de los comités del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 773,
+  "es": "En este prototipo no se cargó ninguna muestra de legislación",
+  "status": "ok"
+ },
+ {
+  "id": 774,
+  "es": "Representación del distrito",
+  "status": "ok"
+ },
+ {
+  "id": 775,
+  "es": "Department of Finance",
+  "status": "keep"
+ },
+ {
+  "id": 776,
+  "es": "Fondos públicos, contabilidad, presupuesto y compras",
+  "status": "ok"
+ },
+ {
+  "id": 777,
+  "es": "Department of Public Safety",
+  "status": "keep"
+ },
+ {
+  "id": 778,
+  "es": "Policía, bomberos, emergencias y administración de seguridad pública",
+  "status": "ok"
+ },
+ {
+  "id": 779,
+  "es": "Department of Public Works",
+  "status": "keep"
+ },
+ {
+  "id": 780,
+  "es": "Instalaciones, residuos, calles, apoyo a la recreación y bienes públicos",
+  "status": "ok"
+ },
+ {
+  "id": 781,
+  "es": "Obras públicas",
+  "status": "ok"
+ },
+ {
+  "id": 782,
+  "es": "Department of Public Utilities",
+  "status": "keep"
+ },
+ {
+  "id": 783,
+  "es": "Agua, energía eléctrica, control de la contaminación del agua y funciones de servicios públicos relacionadas",
+  "status": "ok"
+ },
+ {
+  "id": 784,
+  "es": "Energía eléctrica",
+  "status": "ok"
+ },
+ {
+  "id": 785,
+  "es": "Department of Public Health",
+  "status": "keep"
+ },
+ {
+  "id": 786,
+  "es": "Programas de salud pública, regulación, datos y salud comunitaria",
+  "status": "ok"
+ },
+ {
+  "id": 787,
+  "es": "Salud pública",
+  "status": "ok"
+ },
+ {
+  "id": 788,
+  "es": "Equidad en salud",
+  "status": "ok"
+ },
+ {
+  "id": 789,
+  "es": "Building & Housing",
+  "status": "keep"
+ },
+ {
+  "id": 790,
+  "es": "Permisos de construcción, inspecciones, administración del código de vivienda y trabajos seguros contra el plomo",
+  "status": "ok"
+ },
+ {
+  "id": 791,
+  "es": "Seguridad frente al plomo",
+  "status": "ok"
+ },
+ {
+  "id": 792,
+  "es": "Community Development",
+  "status": "keep"
+ },
+ {
+  "id": 793,
+  "es": "Programas de vivienda y de desarrollo de los vecindarios",
+  "status": "ok"
+ },
+ {
+  "id": 794,
+  "es": "Desarrollo de los vecindarios",
+  "status": "ok"
+ },
+ {
+  "id": 795,
+  "es": "Economic Development",
+  "status": "keep"
+ },
+ {
+  "id": 796,
+  "es": "Programas de negocios, desarrollo, subvenciones y desarrollo económico",
+  "status": "ok"
+ },
+ {
+  "id": 797,
+  "es": "Desarrollo económico",
+  "status": "ok"
+ },
+ {
+  "id": 798,
+  "es": "City Planning Commission",
+  "status": "keep"
+ },
+ {
+  "id": 799,
+  "es": "Planificación, revisión de zonificación, uso del suelo y revisión de diseño",
+  "status": "ok"
+ },
+ {
+  "id": 800,
+  "es": "Uso del suelo",
+  "status": "ok"
+ },
+ {
+  "id": 801,
+  "es": "Parks & Recreation",
+  "status": "keep"
+ },
+ {
+  "id": 802,
+  "es": "Parques, recreación, programas para jóvenes e instalaciones públicas",
+  "status": "ok"
+ },
+ {
+  "id": 803,
+  "es": "Department of Law",
+  "status": "keep"
+ },
+ {
+  "id": 804,
+  "es": "Asesoría y representación legal para la Ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 805,
+  "es": "Revisión legal",
+  "status": "ok"
+ },
+ {
+  "id": 806,
+  "es": "Innovation & Technology",
+  "status": "keep"
+ },
+ {
+  "id": 807,
+  "es": "Planificación tecnológica, sistemas, ciberseguridad, 311 y análisis urbano",
+  "status": "ok"
+ },
+ {
+  "id": 808,
+  "es": "Área de servicio en toda la ciudad; algunos servicios públicos se extienden más allá de los límites de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 809,
+  "es": "Administrar las funciones de la ciudad que se les asignan",
+  "status": "ok"
+ },
+ {
+  "id": 810,
+  "es": "Aplicar las leyes promulgadas y las instrucciones del poder ejecutivo",
+  "status": "ok"
+ },
+ {
+  "id": 811,
+  "es": "Directorio de departamentos de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 812,
+  "es": "Development, Planning & Sustainability",
+  "status": "keep"
+ },
+ {
+  "id": 813,
+  "es": "Finance, Diversity, Equity & Inclusion",
+  "status": "keep"
+ },
+ {
+  "id": 814,
+  "es": "Health, Human Services & the Arts",
+  "status": "keep"
+ },
+ {
+  "id": 815,
+  "es": "Municipal Services & Properties",
+  "status": "keep"
+ },
+ {
+  "id": 816,
+  "es": "Workforce, Education, Training & Youth Development",
+  "status": "keep"
+ },
+ {
+  "id": 817,
+  "es": "Transportation & Mobility",
+  "status": "keep"
+ },
+ {
+  "id": 818,
+  "es": "Un comité permanente del 119.º Concejo Municipal de Cleveland que revisa la legislación de su área temática.",
+  "status": "ok"
+ },
+ {
+  "id": 819,
+  "es": "Jurisdicción legislativa en toda la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 820,
+  "es": "Celebrar audiencias",
+  "status": "ok"
+ },
+ {
+  "id": 821,
+  "es": "Revisar y recomendar legislación",
+  "status": "ok"
+ },
+ {
+  "id": 822,
+  "es": "Estructura de comités del 119.º Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 823,
+  "es": "Revisa asuntos de planificación, zonificación, diseño y uso del suelo en reuniones públicas.",
+  "status": "ok"
+ },
+ {
+  "id": 824,
+  "es": "Revisión de planificación y zonificación",
+  "status": "ok"
+ },
+ {
+  "id": 825,
+  "es": "Reuniones públicas",
+  "status": "ok"
+ },
+ {
+  "id": 826,
+  "es": "Civil Service Commission",
+  "status": "keep"
+ },
+ {
+  "id": 827,
+  "es": "Supervisa a los empleados municipales activos del servicio clasificado conforme a la Carta y a las reglas del Servicio Civil.",
+  "status": "ok"
+ },
+ {
+  "id": 828,
+  "es": "Personal de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 829,
+  "es": "Supervisión del empleo clasificado",
+  "status": "ok"
+ },
+ {
+  "id": 830,
+  "es": "Reglas del Servicio Civil",
+  "status": "ok"
+ },
+ {
+  "id": 831,
+  "es": "Empleo público",
+  "status": "ok"
+ },
+ {
+  "id": 832,
+  "es": "Community Police Commission",
+  "status": "keep"
+ },
+ {
+  "id": 833,
+  "es": "Una comisión independiente con funciones de supervisión y revisión relacionadas con la mala conducta policial y la reforma de la policía.",
+  "status": "ok"
+ },
+ {
+  "id": 834,
+  "es": "Supervisión independiente",
+  "status": "ok"
+ },
+ {
+  "id": 835,
+  "es": "Revisar los sistemas de reforma policial y de mala conducta",
+  "status": "ok"
+ },
+ {
+  "id": 836,
+  "es": "Rendición de cuentas de la policía",
+  "status": "ok"
+ },
+ {
+  "id": 837,
+  "es": "Board of Control",
+  "status": "keep"
+ },
+ {
+  "id": 838,
+  "es": "Un órgano de la ciudad cuyas actas y reuniones públicas documentan ciertos contratos y aprobaciones administrativas.",
+  "status": "ok"
+ },
+ {
+  "id": 839,
+  "es": "Gobierno de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 840,
+  "es": "Revisar los asuntos que le asigna la ley de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 841,
+  "es": "Registrar las decisiones en actas públicas",
+  "status": "ok"
+ },
+ {
+  "id": 842,
+  "es": "Juntas y comisiones de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 843,
+  "es": "Gabinete Municipal para la Niñez y la Juventud",
+  "status": "ok"
+ },
+ {
+  "id": 844,
+  "es": "Gabinete de la Juventud",
+  "status": "ok"
+ },
+ {
+  "id": 845,
+  "es": "Creado por la Orden Ejecutiva 2025-01 para coordinar el trabajo municipal que afecta a residentes de 0 a 24 años.",
+  "status": "ok"
+ },
+ {
+  "id": 846,
+  "es": "En toda la ciudad, residentes de 0 a 24 años",
+  "status": "ok"
+ },
+ {
+  "id": 847,
+  "es": "Coordinación entre departamentos",
+  "status": "ok"
+ },
+ {
+  "id": 848,
+  "es": "Plan anual para la niñez y la juventud",
+  "status": "ok"
+ },
+ {
+  "id": 849,
+  "es": "Informes trimestrales al alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 850,
+  "es": "Movilidad económica",
+  "status": "ok"
+ },
+ {
+  "id": 851,
+  "es": "Orden Ejecutiva 2025-01",
+  "status": "ok"
+ },
+ {
+  "id": 852,
+  "es": "Charter of the City of Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 853,
+  "es": "Carta de la Ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 854,
+  "es": "El documento legal local fundamental que organiza los poderes y los cargos de la ciudad, sujeto a las leyes de Ohio y a las leyes federales.",
+  "status": "ok"
+ },
+ {
+  "id": 855,
+  "es": "Organiza el gobierno municipal",
+  "status": "ok"
+ },
+ {
+  "id": 856,
+  "es": "Define los cargos y los poderes locales",
+  "status": "ok"
+ },
+ {
+  "id": 857,
+  "es": "Autonomía municipal",
+  "status": "ok"
+ },
+ {
+  "id": 858,
+  "es": "Carta y ordenanzas codificadas",
+  "status": "ok"
+ },
+ {
+  "id": 859,
+  "es": "Codified Ordinances of Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 860,
+  "es": "Código de la Ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 861,
+  "es": "Las ordenanzas permanentes y generales de Cleveland, organizadas en una biblioteca de códigos en línea.",
+  "status": "ok"
+ },
+ {
+  "id": 862,
+  "es": "Ley local",
+  "status": "ok"
+ },
+ {
+  "id": 863,
+  "es": "Reglas administrativas, de salud, de uso del suelo, de tránsito, de servicios públicos y de negocios",
+  "status": "ok"
+ },
+ {
+  "id": 864,
+  "es": "Código de Ordenanzas de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 865,
+  "es": "Establece el Gabinete Municipal para la Niñez y la Juventud y asigna funciones entre departamentos.",
+  "status": "ok"
+ },
+ {
+  "id": 866,
+  "es": "Poder ejecutivo de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 867,
+  "es": "Coordina los departamentos de la ciudad que atienden a niños y jóvenes",
+  "status": "ok"
+ },
+ {
+  "id": 868,
+  "es": "Órdenes ejecutivas de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 869,
+  "es": "Ordenanza 561-2026",
+  "status": "ok"
+ },
+ {
+  "id": 870,
+  "es": "Crea y enmienda secciones del código que regulan los alquileres a corto plazo, el impuesto sobre la ocupación transitoria y disposiciones de zonificación relacionadas.",
+  "status": "ok"
+ },
+ {
+  "id": 871,
+  "es": "Enmienda las Ordenanzas Codificadas de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 872,
+  "es": "Estado: Aprobada",
+  "status": "ok"
+ },
+ {
+  "id": 873,
+  "es": "Adoptada el 1 de junio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 874,
+  "es": "En vigor a partir del 1 de julio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 875,
+  "es": "Expediente 561-2026 de Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 876,
+  "es": "Ordenanza de emergencia 556-2026",
+  "status": "ok"
+ },
+ {
+  "id": 877,
+  "es": "Moratoria de centros de datos",
+  "status": "ok"
+ },
+ {
+  "id": 878,
+  "es": "Declara una moratoria en la revisión de permisos y licencias de la ciudad para centros de datos.",
+  "status": "ok"
+ },
+ {
+  "id": 879,
+  "es": "Limita temporalmente los permisos de la ciudad para el uso cubierto",
+  "status": "ok"
+ },
+ {
+  "id": 880,
+  "es": "Adoptada el 15 de julio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 881,
+  "es": "En vigor a partir del 20 de julio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 882,
+  "es": "Expediente 556-2026 de Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 883,
+  "es": "Ordenanza de emergencia 522-2026",
+  "status": "ok"
+ },
+ {
+  "id": 884,
+  "es": "Estacionamiento de pago",
+  "status": "ok"
+ },
+ {
+  "id": 885,
+  "es": "Enmienda secciones del código de Cleveland que regulan el estacionamiento de pago.",
+  "status": "ok"
+ },
+ {
+  "id": 886,
+  "es": "Sistema de estacionamiento de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 887,
+  "es": "Enmienda las reglas de estacionamiento",
+  "status": "ok"
+ },
+ {
+  "id": 888,
+  "es": "En vigor a partir del 10 de junio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 889,
+  "es": "Servicios municipales",
+  "status": "ok"
+ },
+ {
+  "id": 890,
+  "es": "Expediente 522-2026 de Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 891,
+  "es": "Ordenanza de emergencia 117-2026",
+  "status": "ok"
+ },
+ {
+  "id": 892,
+  "es": "Asigna fondos a los departamentos municipales para el año fiscal 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 893,
+  "es": "Administración de toda la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 894,
+  "es": "Asigna fondos operativos",
+  "status": "ok"
+ },
+ {
+  "id": 895,
+  "es": "Expediente 117-2026 de Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 896,
+  "es": "Ordenanza de emergencia 605-2026",
+  "status": "ok"
+ },
+ {
+  "id": 897,
+  "es": "Ley de perros peligrosos",
+  "status": "ok"
+ },
+ {
+  "id": 898,
+  "es": "Deroga y reemplaza las disposiciones del Capítulo 604 sobre perros que causan molestias, perros peligrosos y perros violentos.",
+  "status": "ok"
+ },
+ {
+  "id": 899,
+  "es": "Enmienda el código de seguridad pública",
+  "status": "ok"
+ },
+ {
+  "id": 900,
+  "es": "Control de animales",
+  "status": "ok"
+ },
+ {
+  "id": 901,
+  "es": "Expediente 605-2026 de Legistar",
+  "status": "ok"
+ },
+ {
+  "id": 902,
+  "es": "Ordenanza de emergencia 620-2026",
+  "status": "ok"
+ },
+ {
+  "id": 903,
+  "es": "Instalaciones solares",
+  "status": "ok"
+ },
+ {
+  "id": 904,
+  "es": "Autoriza un método y contratos para construir instalaciones de generación de energía solar y aceptar financiamiento relacionado.",
+  "status": "ok"
+ },
+ {
+  "id": 905,
+  "es": "Instalaciones de la ciudad cubiertas",
+  "status": "ok"
+ },
+ {
+  "id": 906,
+  "es": "Autoriza mejoras públicas y contratación",
+  "status": "ok"
+ },
+ {
+  "id": 907,
+  "es": "Orden del día del Comité Plenario del 1 de junio de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 908,
+  "es": "Elección municipal de Cleveland de 2025",
+  "status": "ok"
+ },
+ {
+  "id": 909,
+  "es": "Los votantes de Cleveland eligieron a un alcalde y a representantes del Concejo para el período que comienza en 2026. Este prototipo enlaza con registros electorales, pero todavía no carga los totales de votos certificados por precinto.",
+  "status": "ok"
+ },
+ {
+  "id": 910,
+  "es": "Precintos y distritos de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 911,
+  "es": "Elegir a los funcionarios municipales",
+  "status": "ok"
+ },
+ {
+  "id": 912,
+  "es": "Mapa de distritos de Cleveland de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 913,
+  "es": "La ciudad pasó de 17 a 15 distritos para el período de 2026. La búsqueda oficial relaciona una dirección con su distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 914,
+  "es": "15 distritos de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 915,
+  "es": "Define los límites de la representación en el Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 916,
+  "es": "Buscar mi distrito (2026)",
+  "status": "ok"
+ },
+ {
+  "id": 917,
+  "es": "Administra las elecciones, los registros de votantes, los mapas de precintos, las listas de candidatos y asuntos, los resultados y la información de auditoría posterior a la elección para el condado.",
+  "status": "ok"
+ },
+ {
+  "id": 918,
+  "es": "Administrar las elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 919,
+  "es": "Publicar los resultados",
+  "status": "ok"
+ },
+ {
+  "id": 920,
+  "es": "Mantener los mapas y registros electorales",
+  "status": "ok"
+ },
+ {
+  "id": 921,
+  "es": "Los residentes son el público representado y la fuente de la autoridad electoral municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 922,
+  "es": "El alcalde es elegido en toda la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 923,
+  "es": "Los residentes emiten boletas municipales.",
+  "status": "ok"
+ },
+ {
+  "id": 924,
+  "es": "La elección de 2025 dio lugar al período que comienza en 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 925,
+  "es": "La geografía de los distritos determina la representación en el Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 926,
+  "es": "La junta electoral del condado administra y publica los registros electorales.",
+  "status": "ok"
+ },
+ {
+  "id": 927,
+  "es": "La junta electoral proporciona los registros de mapas de precintos y distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 928,
+  "es": "La carta de la ciudad organiza el poder ejecutivo.",
+  "status": "ok"
+ },
+ {
+  "id": 929,
+  "es": "La carta de la ciudad organiza el poder legislativo.",
+  "status": "ok"
+ },
+ {
+  "id": 930,
+  "es": "Los tribunales operan dentro de la estructura legal estatutaria de Ohio y la estructura legal municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 931,
+  "es": "El alcalde dirige el poder ejecutivo.",
+  "status": "ok"
+ },
+ {
+  "id": 932,
+  "es": "El Concejo Municipal ejerce la autoridad legislativa municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 933,
+  "es": "El Tribunal Municipal aparece en la sala judicial y de revisión.",
+  "status": "ok"
+ },
+ {
+  "id": 934,
+  "es": "El Tribunal de Vivienda aparece en la sala judicial y de revisión.",
+  "status": "ok"
+ },
+ {
+  "id": 935,
+  "es": "La carta confiere al alcalde el poder ejecutivo y administrativo.",
+  "status": "ok"
+ },
+ {
+  "id": 936,
+  "es": "La carta organiza el Concejo y la estructura de distritos.",
+  "status": "ok"
+ },
+ {
+  "id": 937,
+  "es": "La legislación del Concejo crea y enmienda las ordenanzas codificadas.",
+  "status": "ok"
+ },
+ {
+  "id": 938,
+  "es": "La administración aplica las leyes promulgadas y está limitada por ellas.",
+  "status": "ok"
+ },
+ {
+  "id": 939,
+  "es": "Los residentes del Distrito {*} eligen a su representante en el Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 940,
+  "es": "El Distrito {*} está representado en el pleno del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 941,
+  "es": "El mapa de distritos de 2026 define el Distrito {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 942,
+  "es": "El departamento forma parte de la administración de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 943,
+  "es": "El comité revisa la legislación que se le asigna antes de que actúe el pleno del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 944,
+  "es": "El alcalde emitió la orden ejecutiva.",
+  "status": "ok"
+ },
+ {
+  "id": 945,
+  "es": "La orden establece el gabinete y asigna funciones.",
+  "status": "ok"
+ },
+ {
+  "id": 946,
+  "es": "La orden exige la participación de varios departamentos.",
+  "status": "ok"
+ },
+ {
+  "id": 947,
+  "es": "El registro legislativo oficial muestra la acción del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 948,
+  "es": "La ordenanza promulga y enmienda secciones del código.",
+  "status": "ok"
+ },
+ {
+  "id": 949,
+  "es": "El registro se indexa en Building and Housing.",
+  "status": "ok"
+ },
+ {
+  "id": 950,
+  "es": "La moratoria abarca permisos y certificados.",
+  "status": "ok"
+ }
+]

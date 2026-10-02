@@ -1,0 +1,952 @@
+[
+ {
+  "id": 3413,
+  "es": "Tres preguntas que todo residente debería poder responder",
+  "status": "ok"
+ },
+ {
+  "id": 3414,
+  "es": "Ha alejado el mapa por completo.",
+  "status": "ok"
+ },
+ {
+  "id": 3415,
+  "es": "Desplácese hacia arriba para volver al inicio.",
+  "status": "ok"
+ },
+ {
+  "id": 3416,
+  "es": "Ir a {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3417,
+  "es": "Erie",
+  "status": "keep"
+ },
+ {
+  "id": 3418,
+  "es": "Mapa de {*}: {*} registros. Toque un punto para ver una vista previa y vuelva a tocarlo para abrirlo. La vista de texto lista todo.",
+  "status": "ok"
+ },
+ {
+  "id": 3419,
+  "es": "Seleccionado. Vuelva a tocar para abrir su registro.",
+  "status": "ok"
+ },
+ {
+  "id": 3420,
+  "es": "Toque para ver una vista previa.",
+  "status": "ok"
+ },
+ {
+  "id": 3421,
+  "es": "Cerrar vista previa",
+  "status": "ok"
+ },
+ {
+  "id": 3422,
+  "es": "Abrir registro",
+  "status": "ok"
+ },
+ {
+  "id": 3423,
+  "es": "Línea continua: relación con fuente o registrada · Línea discontinua: interpretación o falta de registro.",
+  "status": "ok"
+ },
+ {
+  "id": 3424,
+  "es": "Active \"Mostrar las pruebas\" para ver qué líneas tienen fuente.",
+  "status": "ok"
+ },
+ {
+  "id": 3425,
+  "es": "Las flechas van de quien actúa hacia aquello sobre lo que actúa. La posición en el anillo agrupa los temas; no implica control.",
+  "status": "ok"
+ },
+ {
+  "id": 3426,
+  "es": "Los {*} distritos de Cleveland en el mapa de 2026{*}",
+  "status": "ok"
+ },
+ {
+  "id": 3427,
+  "es": ", Distrito {*} resaltado",
+  "status": "ok"
+ },
+ {
+  "id": 3428,
+  "es": "distritos en el mapa de 2026 (Ord. núm. 1-2025). Toque un distrito para abrir a su miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 3429,
+  "es": "Todas las salas",
+  "status": "ok"
+ },
+ {
+  "id": 3430,
+  "es": "Mostrar las pruebas",
+  "status": "ok"
+ },
+ {
+  "id": 3431,
+  "es": "No hay relaciones visibles para esta sala.",
+  "status": "ok"
+ },
+ {
+  "id": 3432,
+  "es": "Vista guiada",
+  "status": "ok"
+ },
+ {
+  "id": 3433,
+  "es": "En palabras sencillas",
+  "status": "ok"
+ },
+ {
+  "id": 3434,
+  "es": "Quién puede actuar",
+  "status": "ok"
+ },
+ {
+  "id": 3435,
+  "es": "Paradas sugeridas, no una cadena de mando.",
+  "status": "ok"
+ },
+ {
+  "id": 3436,
+  "es": "Revisar el registro",
+  "status": "ok"
+ },
+ {
+  "id": 3437,
+  "es": "Registros con fecha",
+  "status": "ok"
+ },
+ {
+  "id": 3438,
+  "es": "Registros en esta sala ·",
+  "status": "ok"
+ },
+ {
+  "id": 3439,
+  "es": "Otros registros",
+  "status": "ok"
+ },
+ {
+  "id": 3440,
+  "es": "Verificación para residentes: ¿puedo responder las tres preguntas?",
+  "status": "ok"
+ },
+ {
+  "id": 3441,
+  "es": "Este registro no está en el atlas.",
+  "status": "ok"
+ },
+ {
+  "id": 3442,
+  "es": "Secciones del registro",
+  "status": "ok"
+ },
+ {
+  "id": 3443,
+  "es": "Votos y acciones",
+  "status": "ok"
+ },
+ {
+  "id": 3444,
+  "es": "Dónde se aplica",
+  "status": "ok"
+ },
+ {
+  "id": 3445,
+  "es": "Función en el sistema",
+  "status": "ok"
+ },
+ {
+  "id": 3446,
+  "es": "Temas",
+  "status": "ok"
+ },
+ {
+  "id": 3447,
+  "es": "Revisión de fuentes registrada",
+  "status": "ok"
+ },
+ {
+  "id": 3448,
+  "es": "Registros conectados <1>{*}</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3449,
+  "es": "Registros conectados",
+  "status": "ok"
+ },
+ {
+  "id": 3450,
+  "es": "No hay registros de relaciones cargados para este elemento. Su posición en el mapa no establece autoridad sobre otros registros.",
+  "status": "ok"
+ },
+ {
+  "id": 3451,
+  "es": "Actividad registrada",
+  "status": "ok"
+ },
+ {
+  "id": 3452,
+  "es": "El patrocinio no demuestra un voto nominal ni una postura completa sobre una política.",
+  "status": "ok"
+ },
+ {
+  "id": 3453,
+  "es": "Registro del contrato",
+  "status": "ok"
+ },
+ {
+  "id": 3454,
+  "es": "Proveedor, precio, MW/MWh, fecha de inicio, vencimiento, voto de aprobación, enmiendas y condiciones de salida: aún sin verificar.",
+  "status": "ok"
+ },
+ {
+  "id": 3455,
+  "es": "No infiera una obligación contractual a partir de la pertenencia o la cercanía en el mapa.",
+  "status": "ok"
+ },
+ {
+  "id": 3456,
+  "es": "Todavía no se han cargado los registros de votos individuales para este elemento. La decisión de una institución no demuestra el voto de cada miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 3457,
+  "es": "Todavía no hay declaraciones de postura con fuente adjuntas aquí. El partido, el patrocinio y la ubicación en el mapa no demuestran lo que cree una persona.",
+  "status": "ok"
+ },
+ {
+  "id": 3458,
+  "es": "Ver lo que patrocinó en 2026",
+  "status": "ok"
+ },
+ {
+  "id": 3459,
+  "es": "Cobertura de la evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 3460,
+  "es": "Retrato:",
+  "status": "ok"
+ },
+ {
+  "id": 3461,
+  "es": "Fuente del retrato",
+  "status": "ok"
+ },
+ {
+  "id": 3462,
+  "es": "Registro del Concejo,",
+  "status": "ok"
+ },
+ {
+  "id": 3463,
+  "es": "Marque cada una cuando la entienda. Aquí no se guarda ni se envía nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3464,
+  "es": "de 3 respondidas.",
+  "status": "ok"
+ },
+ {
+  "id": 3465,
+  "es": "Puede haber registros más recientes",
+  "status": "ok"
+ },
+ {
+  "id": 3466,
+  "es": "{*} esta semana",
+  "status": "ok"
+ },
+ {
+  "id": 3467,
+  "es": "{*} {*}. Abre Novedades.",
+  "status": "ok"
+ },
+ {
+  "id": 3468,
+  "es": "Ayuntamiento",
+  "status": "ok"
+ },
+ {
+  "id": 3469,
+  "es": "· administración del alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 3470,
+  "es": "Novedades desde",
+  "status": "ok"
+ },
+ {
+  "id": 3471,
+  "es": "{*} cambios en el Ayuntamiento",
+  "status": "ok"
+ },
+ {
+  "id": 3472,
+  "es": "Una semana tranquila en el Ayuntamiento",
+  "status": "ok"
+ },
+ {
+  "id": 3473,
+  "es": "{*} {*}, su miembro del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 3474,
+  "es": "Nada nuevo de {*} esta semana. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3475,
+  "es": "Ver todas las novedades",
+  "status": "ok"
+ },
+ {
+  "id": 3476,
+  "es": "Alcaldía",
+  "status": "ok"
+ },
+ {
+  "id": 3477,
+  "es": "Registro público del Concejo",
+  "status": "ok"
+ },
+ {
+  "id": 3478,
+  "es": "Qué cambió en el registro de 2026 del Concejo Municipal desde",
+  "status": "ok"
+ },
+ {
+  "id": 3479,
+  "es": ", detectado al comparar dos copias del registro oficial. Obtenido el",
+  "status": "ok"
+ },
+ {
+  "id": 3480,
+  "es": "(hora del Este).",
+  "status": "ok"
+ },
+ {
+  "id": 3481,
+  "es": "Estos registros se obtuvieron {*}. Puede haber acciones más recientes en el <1>sitio del Concejo</1>.",
+  "status": "ok"
+ },
+ {
+  "id": 3482,
+  "es": "Cambios de quién",
+  "status": "ok"
+ },
+ {
+  "id": 3483,
+  "es": "Cuánto tiempo atrás",
+  "status": "ok"
+ },
+ {
+  "id": 3484,
+  "es": "Últimos 7 días",
+  "status": "ok"
+ },
+ {
+  "id": 3485,
+  "es": "Últimos 45 días",
+  "status": "ok"
+ },
+ {
+  "id": 3486,
+  "es": "No hay cambios aquí en este período. El registro no cambió; eso no significa que no haya pasado nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3487,
+  "es": "Cómo se mantiene al día",
+  "status": "ok"
+ },
+ {
+  "id": 3488,
+  "es": "{*} del registro hasta ahora",
+  "status": "ok"
+ },
+ {
+  "id": 3489,
+  "es": "Cada noche la aplicación obtiene el registro público Legistar del Concejo Municipal de Cleveland, lo compara con el de la noche anterior y enumera lo que cambió. Si los datos de una noche parecen dañados, los registros anteriores se quedan y no se publica nada.",
+  "status": "ok"
+ },
+ {
+  "id": 3490,
+  "es": "Las noticias no se agregan automáticamente. Una persona revisa cada una antes de que aparezca.",
+  "status": "ok"
+ },
+ {
+  "id": 3491,
+  "es": "Patrocinar una propuesta no es votar. La falta de un registro no significa que la respuesta sea no. Las etiquetas en lenguaje sencillo son nuestras; el estado oficial está en cada registro.",
+  "status": "ok"
+ },
+ {
+  "id": 3492,
+  "es": "Lo más reciente desde",
+  "status": "ok"
+ },
+ {
+  "id": 3493,
+  "es": "<1>La elección del 3 de noviembre ya terminó.</1> Su boleta de práctica se queda aquí para que pueda consultarla. <2>Resultados oficiales</2>",
+  "status": "ok"
+ },
+ {
+  "id": 3494,
+  "es": "La elección del 3 de noviembre ya terminó.",
+  "status": "ok"
+ },
+ {
+  "id": 3495,
+  "es": "Su boleta de práctica se queda aquí para que pueda consultarla.",
+  "status": "ok"
+ },
+ {
+  "id": 3496,
+  "es": "Resultados oficiales",
+  "status": "ok"
+ },
+ {
+  "id": 3497,
+  "es": "En {*} días",
+  "status": "ok"
+ },
+ {
+  "id": 3498,
+  "es": "Presentada",
+  "status": "ok"
+ },
+ {
+  "id": 3499,
+  "es": "La copia del City Record no tiene el voto de cada miembro para este expediente. El registro del propio Concejo muestra solo el resultado. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3500,
+  "es": "Este expediente no tiene fecha de aprobación en el registro del Concejo, así que no hay un voto final que mostrar.",
+  "status": "ok"
+ },
+ {
+  "id": 3501,
+  "es": "no está en el registro de 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 3502,
+  "es": "Estado de la relación:",
+  "status": "ok"
+ },
+ {
+  "id": 3503,
+  "es": "Encontrado en la",
+  "status": "ok"
+ },
+ {
+  "id": 3504,
+  "es": "verificación del registro.",
+  "status": "ok"
+ },
+ {
+  "id": 3505,
+  "es": "Escrito en la ordenanza como el límite para este elemento.",
+  "status": "ok"
+ },
+ {
+  "id": 3506,
+  "es": "Compartido entre los Distritos {*}; no se cuenta para un solo distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3507,
+  "es": "Es posible que el fondo mencionado en el texto use los números de distrito anteriores; no se cuenta para un solo distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3508,
+  "es": "Detalles de la transacción",
+  "status": "ok"
+ },
+ {
+  "id": 3509,
+  "es": "Pago entre",
+  "status": "ok"
+ },
+ {
+  "id": 3510,
+  "es": "De",
+  "status": "ok"
+ },
+ {
+  "id": 3511,
+  "es": "la parte nombrada en la ordenanza",
+  "status": "ok"
+ },
+ {
+  "id": 3512,
+  "es": "Firmado por",
+  "status": "ok"
+ },
+ {
+  "id": 3513,
+  "es": "Dónde está",
+  "status": "ok"
+ },
+ {
+  "id": 3514,
+  "es": "Presentada {*}; {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3515,
+  "es": "Rapidez",
+  "status": "ok"
+ },
+ {
+  "id": 3516,
+  "es": "días desde la presentación hasta el voto final",
+  "status": "ok"
+ },
+ {
+  "id": 3517,
+  "es": "Mecanismo",
+  "status": "ok"
+ },
+ {
+  "id": 3518,
+  "es": "Patrocinada por",
+  "status": "ok"
+ },
+ {
+  "id": 3519,
+  "es": "(Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3520,
+  "es": "Preguntar sobre esto en una carta",
+  "status": "ok"
+ },
+ {
+  "id": 3521,
+  "es": "Su argumento, según el registro oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3522,
+  "es": "Título oficial completo",
+  "status": "ok"
+ },
+ {
+  "id": 3523,
+  "es": "Fuentes",
+  "status": "ok"
+ },
+ {
+  "id": 3524,
+  "es": "Registro del Concejo Municipal de Cleveland,",
+  "status": "ok"
+ },
+ {
+  "id": 3525,
+  "es": "Texto de la ordenanza",
+  "status": "ok"
+ },
+ {
+  "id": 3526,
+  "es": "Registro Legistar de Cleveland, obtenido el",
+  "status": "ok"
+ },
+ {
+  "id": 3527,
+  "es": "(hora del Este); historial de acciones obtenido el",
+  "status": "ok"
+ },
+ {
+  "id": 3528,
+  "es": "Leyes y propuestas",
+  "status": "ok"
+ },
+ {
+  "id": 3529,
+  "es": "Buscar salas, personas, leyes, la boleta y términos",
+  "status": "ok"
+ },
+ {
+  "id": 3530,
+  "es": "Pruebe con Howse-Jones, centros de datos, Asunto 3, TIF",
+  "status": "ok"
+ },
+ {
+  "id": 3531,
+  "es": "Howse-Jones",
+  "status": "keep"
+ },
+ {
+  "id": 3532,
+  "es": "Asunto 3",
+  "status": "ok"
+ },
+ {
+  "id": 3533,
+  "es": "Nada coincide con \"{*}\"",
+  "status": "ok"
+ },
+ {
+  "id": 3534,
+  "es": "Pruebe con una palabra más corta, un nombre, un número de asunto o un número de expediente. La búsqueda abarca salas, personas, leyes, la boleta y términos.",
+  "status": "ok"
+ },
+ {
+  "id": 3535,
+  "es": "Abrir el diccionario",
+  "status": "ok"
+ },
+ {
+  "id": 3536,
+  "es": "Diccionario cívico ·",
+  "status": "ok"
+ },
+ {
+  "id": 3537,
+  "es": "Buscar una palabra",
+  "status": "ok"
+ },
+ {
+  "id": 3538,
+  "es": "Resúmenes en lenguaje sencillo, no definiciones legales.",
+  "status": "ok"
+ },
+ {
+  "id": 3539,
+  "es": "Cleveland Civic Graph",
+  "status": "keep"
+ },
+ {
+  "id": 3540,
+  "es": "Enlace copiado. Abre esta pantalla en un teléfono o en una computadora. No contiene nada personal.",
+  "status": "ok"
+ },
+ {
+  "id": 3541,
+  "es": "Estos ajustes se quedan en este navegador de este teléfono. No se envía nada a ningún lado.",
+  "status": "ok"
+ },
+ {
+  "id": 3542,
+  "es": "Pantalla",
+  "status": "ok"
+ },
+ {
+  "id": 3543,
+  "es": "Estilo",
+  "status": "ok"
+ },
+ {
+  "id": 3544,
+  "es": "Texto más grande",
+  "status": "ok"
+ },
+ {
+  "id": 3545,
+  "es": "Modo fácil",
+  "status": "ok"
+ },
+ {
+  "id": 3546,
+  "es": "Un paso a la vez, texto más grande y Escuchar",
+  "status": "ok"
+ },
+ {
+  "id": 3547,
+  "es": "Este navegador no está guardando los ajustes, así que el Modo fácil, el estilo y su guía vuelven a empezar cada vez que abre la página. La navegación privada puede causar esto.",
+  "status": "ok"
+ },
+ {
+  "id": 3548,
+  "es": "Su guía",
+  "status": "ok"
+ },
+ {
+  "id": 3549,
+  "es": "Acerca de y compartir",
+  "status": "ok"
+ },
+ {
+  "id": 3550,
+  "es": "Fuentes, método y lo que aún no está funcionando",
+  "status": "ok"
+ },
+ {
+  "id": 3551,
+  "es": "Compartir esta pantalla",
+  "status": "ok"
+ },
+ {
+  "id": 3552,
+  "es": "Un enlace sencillo al lugar donde está. Su lugar y sus elecciones no van incluidos.",
+  "status": "ok"
+ },
+ {
+  "id": 3553,
+  "es": "Vista de escritorio",
+  "status": "ok"
+ },
+ {
+  "id": 3554,
+  "es": "El mapa completo con los modos Simple, Explorar y Auditoría",
+  "status": "ok"
+ },
+ {
+  "id": 3555,
+  "es": "Mis prioridades",
+  "status": "ok"
+ },
+ {
+  "id": 3556,
+  "es": "Sus elecciones se quedan en este navegador de este teléfono. No se envía nada a ningún lado.",
+  "status": "ok"
+ },
+ {
+  "id": 3557,
+  "es": "Elija hasta cinco",
+  "status": "ok"
+ },
+ {
+  "id": 3558,
+  "es": "Empiece por lo que le importa. Luego mire una decisión real. Una prioridad le dice al atlas qué quiere examinar. Su postura sobre una política específica es otra elección. Todo es opcional. \"Aún no decido\" significa que quiere saber más.",
+  "status": "ok"
+ },
+ {
+  "id": 3559,
+  "es": "Luego mire una decisión real",
+  "status": "ok"
+ },
+ {
+  "id": 3560,
+  "es": "· Su postura: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3561,
+  "es": "Cartas",
+  "status": "ok"
+ },
+ {
+  "id": 3562,
+  "es": "Escribir a {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3563,
+  "es": "Escribir al alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 3564,
+  "es": "{*} guardadas para preguntar sobre ellas",
+  "status": "ok"
+ },
+ {
+  "id": 3565,
+  "es": "Aún no hay propuestas guardadas",
+  "status": "ok"
+ },
+ {
+  "id": 3566,
+  "es": "<1>Privado en este navegador.</1> Los enlaces normales para compartir el mapa no incluyen estas elecciones.",
+  "status": "ok"
+ },
+ {
+  "id": 3567,
+  "es": "Privado en este navegador.",
+  "status": "ok"
+ },
+ {
+  "id": 3568,
+  "es": "Los enlaces normales para compartir el mapa no incluyen estas elecciones.",
+  "status": "ok"
+ },
+ {
+  "id": 3569,
+  "es": "Recordar en este dispositivo",
+  "status": "ok"
+ },
+ {
+  "id": 3570,
+  "es": "Exportar",
+  "status": "ok"
+ },
+ {
+  "id": 3571,
+  "es": "Borrar mis elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 3572,
+  "es": "Decisiones y contratos",
+  "status": "ok"
+ },
+ {
+  "id": 3573,
+  "es": "Cómo están las cosas · 24 de septiembre de 2026",
+  "status": "ok"
+ },
+ {
+  "id": 3574,
+  "es": "La arquitectura está diseñada. La maquinaria no está funcionando.",
+  "status": "ok"
+ },
+ {
+  "id": 3575,
+  "es": "Los agentes de investigación, la consulta de fuentes, el almacén de evidencia, la consola de revisión y el servicio de publicación están especificados aquí, pero no están en funcionamiento. Los registros de este atlas se reunieron y revisaron a mano, con las fuentes y las lagunas indicadas.",
+  "status": "ok"
+ },
+ {
+  "id": 3576,
+  "es": "Cuándo",
+  "status": "ok"
+ },
+ {
+  "id": 3577,
+  "es": "Entonces",
+  "status": "ok"
+ },
+ {
+  "id": 3578,
+  "es": "Solo elecciones personales. Este archivo no contiene ninguna recomendación de candidatos.",
+  "status": "ok"
+ },
+ {
+  "id": 3579,
+  "es": "Su postura sobre esta decisión específica",
+  "status": "ok"
+ },
+ {
+  "id": 3580,
+  "es": "Su respuesta se mantiene separada de la importancia del asunto y de la identidad partidista.",
+  "status": "ok"
+ },
+ {
+  "id": 3581,
+  "es": "Preguntas relacionadas con sus prioridades",
+  "status": "ok"
+ },
+ {
+  "id": 3582,
+  "es": "Elija una prioridad para poner sus preguntas al frente. También puede continuar sin elegir.",
+  "status": "ok"
+ },
+ {
+  "id": 3583,
+  "es": "Lo que respalda el registro oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3584,
+  "es": "Lo que enseña este ejemplo",
+  "status": "ok"
+ },
+ {
+  "id": 3585,
+  "es": "Preguntas para hacer sobre esta decisión",
+  "status": "ok"
+ },
+ {
+  "id": 3586,
+  "es": "· Su prioridad:",
+  "status": "ok"
+ },
+ {
+  "id": 3587,
+  "es": "Personas nombradas en el registro revisado",
+  "status": "ok"
+ },
+ {
+  "id": 3588,
+  "es": "El patrocinio es una acción documentada. No sustituye un voto nominal individual.",
+  "status": "ok"
+ },
+ {
+  "id": 3589,
+  "es": "Evidencia del voto:",
+  "status": "ok"
+ },
+ {
+  "id": 3590,
+  "es": "Evidencia y lagunas",
+  "status": "ok"
+ },
+ {
+  "id": 3591,
+  "es": "Solo se puede mostrar una elección coincidente para la misma propuesta y la misma etapa. Esta página no convierte el patrocinio, el partido ni un solo voto en una identidad política completa.",
+  "status": "ok"
+ },
+ {
+  "id": 3592,
+  "es": "Personas",
+  "status": "ok"
+ },
+ {
+  "id": 3593,
+  "es": "Vista de personas",
+  "status": "ok"
+ },
+ {
+  "id": 3594,
+  "es": "{*} de 5 elegidas. Dan forma a los puntos en común que se muestran abajo.",
+  "status": "ok"
+ },
+ {
+  "id": 3595,
+  "es": "Elija hasta cinco para ver en qué coincide con cada miembro.",
+  "status": "ok"
+ },
+ {
+  "id": 3596,
+  "es": "Cómo leer estos perfiles",
+  "status": "ok"
+ },
+ {
+  "id": 3597,
+  "es": "Esto no es un registro de votos ni un puntaje. Patrocinar una propuesta no es votar a favor de ella. Cómo votó cada miembro, cuando el City Record lo publica, está en el perfil completo. Todo proviene del registro legislativo oficial de Cleveland, obtenido",
+  "status": "ok"
+ },
+ {
+  "id": 3598,
+  "es": "{*}, perfil {*} de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3599,
+  "es": "DEPARTAMENTOS DE LA CIUDAD",
+  "status": "ok"
+ },
+ {
+  "id": 3600,
+  "es": "· SU DISTRITO",
+  "status": "ok"
+ },
+ {
+  "id": 3601,
+  "es": "este año.",
+  "status": "ok"
+ },
+ {
+  "id": 3602,
+  "es": "Elija sus prioridades para ver en qué coincide.",
+  "status": "ok"
+ }
+]

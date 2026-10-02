@@ -1,0 +1,952 @@
+[
+ {
+  "id": 1901,
+  "es": "Se mantiene privado, y los efectos proyectados se identifican como escenarios.",
+  "status": "ok"
+ },
+ {
+  "id": 1902,
+  "es": "Un aprobador firma la versión A, pero el paquete cambia a la versión B",
+  "status": "ok"
+ },
+ {
+  "id": 1903,
+  "es": "Se rechaza la confirmación.",
+  "status": "ok"
+ },
+ {
+  "id": 1904,
+  "es": "Aparece un registro contrario creíble",
+  "status": "ok"
+ },
+ {
+  "id": 1905,
+  "es": "Se conservan el estado en disputa y el desacuerdo, y luego se envían a revisión humana.",
+  "status": "ok"
+ },
+ {
+  "id": 1906,
+  "es": "Alguien navega sin el mapa visual",
+  "status": "ok"
+ },
+ {
+  "id": 1907,
+  "es": "La vista de texto muestra los mismos nodos, relaciones, fuentes y vía de corrección con el teclado y con un lector de pantalla.",
+  "status": "ok"
+ },
+ {
+  "id": 1908,
+  "es": "La afirmación específica cuenta con respaldo directo de registros adecuados y pasó la revisión.",
+  "status": "ok"
+ },
+ {
+  "id": 1909,
+  "es": "Solo una parte de la afirmación está establecida.",
+  "status": "ok"
+ },
+ {
+  "id": 1910,
+  "es": "Registros creíbles no coinciden. Se muestra como en disputa, nunca como resuelto.",
+  "status": "ok"
+ },
+ {
+  "id": 1911,
+  "es": "Es posible que el dato haya cambiado desde que se verificó.",
+  "status": "ok"
+ },
+ {
+  "id": 1912,
+  "es": "No se ha encontrado el registro. Un voto que falta nunca se muestra como abstención.",
+  "status": "ok"
+ },
+ {
+  "id": 1913,
+  "es": "El campo no aplica, por ejemplo, un voto anterior a que alguien asumiera el cargo.",
+  "status": "ok"
+ },
+ {
+  "id": 1914,
+  "es": "Renovación de {*} con {*}{*}",
+  "status": "ok"
+ },
+ {
+  "id": 1915,
+  "es": "Derogación de la ley de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 1916,
+  "es": "Nueva ley de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 1917,
+  "es": "Cambio a la ley de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 1918,
+  "es": "Objeción a",
+  "status": "ok"
+ },
+ {
+  "id": 1919,
+  "es": "Objeción retirada:",
+  "status": "ok"
+ },
+ {
+  "id": 1920,
+  "es": "Mejora pública: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 1921,
+  "es": "Proyecto estatal: {*}",
+  "status": "ok"
+ },
+ {
+  "id": 1922,
+  "es": "Aprobación de {*}",
+  "status": "ok"
+ },
+ {
+  "id": 1923,
+  "es": "miércoles",
+  "status": "keep"
+ },
+ {
+  "id": 1924,
+  "es": "sábado",
+  "status": "keep"
+ },
+ {
+  "id": 1925,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 1926,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 1927,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 1928,
+  "es": "Switch to English",
+  "status": "keep"
+ },
+ {
+  "id": 1929,
+  "es": "Cambiar a español",
+  "status": "keep"
+ },
+ {
+  "id": 1930,
+  "es": "English",
+  "status": "keep"
+ },
+ {
+  "id": 1931,
+  "es": "Español",
+  "status": "keep"
+ },
+ {
+  "id": 1932,
+  "es": "Language / Idioma",
+  "status": "keep"
+ },
+ {
+  "id": 1933,
+  "es": "Esta traducción es un borrador. Una persona todavía no la ha revisado. Los títulos y textos oficiales de las leyes y los registros siguen en inglés.",
+  "status": "keep"
+ },
+ {
+  "id": 1934,
+  "es": "Entendido",
+  "status": "keep"
+ },
+ {
+  "id": 1935,
+  "es": "Lo más importante",
+  "status": "ok"
+ },
+ {
+  "id": 1936,
+  "es": "Aún no decido",
+  "status": "ok"
+ },
+ {
+  "id": 1937,
+  "es": "Elegir esto significa que usted quiere saber cuánto les cuestan a su hogar las decisiones públicas: impuestos, facturas de servicios públicos, tarifas y deudas que asume la ciudad y que los residentes pagan después.",
+  "status": "ok"
+ },
+ {
+  "id": 1938,
+  "es": "Piense en ello como revisar el pago mensual, no solo el precio de etiqueta.",
+  "status": "ok"
+ },
+ {
+  "id": 1939,
+  "es": "Cleveland cobra un impuesto sobre los ingresos de 2.5%. Los residentes lo pagan sobre lo que ganan, y quienes viven en otro lugar lo pagan por el trabajo realizado dentro de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1940,
+  "es": "CCA Division of Taxation",
+  "status": "keep"
+ },
+ {
+  "id": 1941,
+  "es": "Cleveland Public Power es la empresa eléctrica de la propia ciudad. En 2024, el Concejo Municipal aprobó sus primeros aumentos de tarifas desde 1983: unos $4.85 más al mes en 2025 y $3.45 más en 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 1942,
+  "es": "Las tarifas de alcantarillado del Distrito Regional de Alcantarillado del Noreste de Ohio subieron el 1 de enero de 2026, un poco menos de $4 al mes para el cliente promedio.",
+  "status": "ok"
+ },
+ {
+  "id": 1943,
+  "es": "En la reevaluación de 2024, los valores de las propiedades del condado subieron alrededor de 32% en promedio, pero la mayoría de las facturas de impuestos subieron mucho menos, porque los gravámenes de impuestos que aprueban los votantes determinan la mayoría de las tasas.",
+  "status": "ok"
+ },
+ {
+  "id": 1944,
+  "es": "El Concejo Municipal fija las tarifas de Cleveland Water y de Cleveland Public Power. Cambiar la tasa del impuesto sobre los ingresos requiere la aprobación de los votantes.",
+  "status": "ok"
+ },
+ {
+  "id": 1945,
+  "es": "La junta de NEORSD fija las tarifas de alcantarillado y de aguas pluviales.",
+  "status": "ok"
+ },
+ {
+  "id": 1946,
+  "es": "El condado fija los valores de las propiedades, y los votantes aprueban los gravámenes de impuestos que determinan la mayoría de las tasas del impuesto a la propiedad.",
+  "status": "ok"
+ },
+ {
+  "id": 1947,
+  "es": "Mantener las tarifas bajas ahora, o pagar por las tuberías y las líneas eléctricas para que no fallen más adelante.",
+  "status": "ok"
+ },
+ {
+  "id": 1948,
+  "es": "Gravar los ingresos ganados en la ciudad, o seguir siendo atractiva para empleadores y trabajadores.",
+  "status": "ok"
+ },
+ {
+  "id": 1949,
+  "es": "Aprobar gravámenes de impuestos para escuelas y servicios, o mantener bajos los costos mensuales para propietarios e inquilinos.",
+  "status": "ok"
+ },
+ {
+  "id": 1950,
+  "es": "¿Qué ayuda hay para los residentes que tienen dificultades para pagar las facturas de agua, alcantarillado o electricidad?",
+  "status": "ok"
+ },
+ {
+  "id": 1951,
+  "es": "¿Cómo mejorará el aumento de la tarifa eléctrica de 2026 los apagones y el servicio en nuestro distrito?",
+  "status": "ok"
+ },
+ {
+  "id": 1952,
+  "es": "¿Qué gravámenes de impuestos estarán en mi boleta y cuánto le costaría cada uno a un propietario típico?",
+  "status": "ok"
+ },
+ {
+  "id": 1953,
+  "es": "Elegir esto significa que a usted le importa que las personas puedan encontrar, conservar y pagar un hogar seguro en Cleveland, tanto como inquilinos como propietarios.",
+  "status": "ok"
+ },
+ {
+  "id": 1954,
+  "es": "Piense en las reglas de vivienda como las reglas de un juego de mesa: deciden cuántas casas se construyen, quién puede alquilarlas y qué se considera seguro.",
+  "status": "ok"
+ },
+ {
+  "id": 1955,
+  "es": "Cleveland ofrece una reducción de impuestos a la propiedad por 15 años en viviendas nuevas o rehabilitadas. El tamaño de la reducción depende del vecindario. Los proyectos grandes de apartamentos deben incluir algunas unidades asequibles o pagar una tarifa. Estas reglas comenzaron el 1 de enero de 2024.",
+  "status": "ok"
+ },
+ {
+  "id": 1956,
+  "es": "Esas reducciones de impuestos significan menos dinero para las escuelas por ahora. El condado estimó que el distrito escolar de Cleveland se quedó sin unos $41.5 millones en 2025 debido a propiedades con reducción de impuestos.",
+  "status": "ok"
+ },
+ {
+  "id": 1957,
+  "es": "Signal Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 1958,
+  "es": "Una ley de la ciudad de 2019 exige que los arrendadores de alquileres más antiguos demuestren que las unidades son seguras en cuanto al plomo. Alrededor de un tercio de las unidades de alquiler tenía certificados a principios de 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 1959,
+  "es": "En junio de 2026, el Concejo aprobó la Ordenanza 561-2026 para otorgar licencias a los alquileres a corto plazo como Airbnb. No más del 10% de una cuadra o un edificio residencial puede ser alquileres a corto plazo.",
+  "status": "ok"
+ },
+ {
+  "id": 1960,
+  "es": "El Concejo Municipal aprueba las leyes de vivienda: reducción de impuestos, reglas de seguridad frente al plomo, registro de alquileres y alquileres a corto plazo.",
+  "status": "ok"
+ },
+ {
+  "id": 1961,
+  "es": "Los departamentos del alcalde dirigen los programas, entre ellos Desarrollo Comunitario, Edificios y Vivienda, y Salud Pública.",
+  "status": "ok"
+ },
+ {
+  "id": 1962,
+  "es": "El Tribunal de Vivienda atiende los casos de vivienda y de códigos de construcción.",
+  "status": "ok"
+ },
+ {
+  "id": 1963,
+  "es": "Reducciones de impuestos que fomentan la construcción, o más ingresos ahora para escuelas y servicios.",
+  "status": "ok"
+ },
+ {
+  "id": 1964,
+  "es": "Reglas de seguridad estrictas que protegen a los inquilinos, o costos más bajos para los pequeños arrendadores, que pueden mantener bajos los alquileres.",
+  "status": "ok"
+ },
+ {
+  "id": 1965,
+  "es": "Ingresos por alquileres a corto plazo para los propietarios, o cuadras tranquilas y estables para los vecinos.",
+  "status": "ok"
+ },
+ {
+  "id": 1966,
+  "es": "¿Cuántos alquileres en nuestro distrito tienen certificado de seguridad frente al plomo, y qué pasa con el resto?",
+  "status": "ok"
+ },
+ {
+  "id": 1967,
+  "es": "¿Deberían cambiar las reglas de reducción de impuestos para proteger el financiamiento de las escuelas, y cómo afectaría eso a la construcción nueva?",
+  "status": "ok"
+ },
+ {
+  "id": 1968,
+  "es": "¿Cómo se harán cumplir las reglas de alquileres a corto plazo en mi calle?",
+  "status": "ok"
+ },
+ {
+  "id": 1969,
+  "es": "Elegir esto significa que a usted le importa prevenir el daño, recibir ayuda rápida en una emergencia y lograr que las personas con poder para hacer cumplir las leyes rindan cuentas.",
+  "status": "ok"
+ },
+ {
+  "id": 1970,
+  "es": "Piense en un equipo con árbitro: los jugadores deben poder hacer su trabajo, y alguien debe poder señalar una falta.",
+  "status": "ok"
+ },
+ {
+  "id": 1971,
+  "es": "Desde 2015, la policía de Cleveland trabaja bajo un decreto de consentimiento federal, un acuerdo de reforma que un tribunal hace cumplir y que siguió a una determinación del Departamento de Justicia de que hubo uso excesivo de la fuerza.",
+  "status": "ok"
+ },
+ {
+  "id": 1972,
+  "es": "En mayo de 2026, el juez federal se negó a poner fin al decreto. Señaló avances, pero concluyó que la ciudad aún no había cumplido todos sus términos.",
+  "status": "ok"
+ },
+ {
+  "id": 1973,
+  "es": "Los votantes aprobaron el Asunto 24 en 2021. Este le dio a la Comisión Comunitaria de Policía, de 13 miembros, la autoridad final sobre la política, la capacitación y la disciplina de la policía.",
+  "status": "ok"
+ },
+ {
+  "id": 1974,
+  "es": "Cleveland forma equipos de agentes de policía y clínicos de salud mental para algunas llamadas de crisis. Había 8 equipos de este tipo en septiembre de 2025.",
+  "status": "ok"
+ },
+ {
+  "id": 1975,
+  "es": "Un juez federal supervisa el decreto de consentimiento, con un equipo de monitoreo independiente.",
+  "status": "ok"
+ },
+ {
+  "id": 1976,
+  "es": "La Comisión Comunitaria de Policía tiene la última palabra sobre la política, la capacitación y la disciplina de la policía, según la carta de la ciudad.",
+  "status": "ok"
+ },
+ {
+  "id": 1977,
+  "es": "El alcalde dirige la División de Policía, y el Concejo Municipal aprueba su presupuesto.",
+  "status": "ok"
+ },
+ {
+  "id": 1978,
+  "es": "Poner fin a la supervisión federal para recuperar el control local, o mantenerla hasta que se compruebe cada reforma.",
+  "status": "ok"
+ },
+ {
+  "id": 1979,
+  "es": "Contratar a más agentes, o gastar más en equipos de crisis y en prevención de la violencia.",
+  "status": "ok"
+ },
+ {
+  "id": 1980,
+  "es": "Una supervisión civil independiente y sólida, o líneas de autoridad más sencillas dentro del Ayuntamiento.",
+  "status": "ok"
+ },
+ {
+  "id": 1981,
+  "es": "¿Qué requisitos del decreto de consentimiento siguen sin cumplirse y cuál es el plan?",
+  "status": "ok"
+ },
+ {
+  "id": 1982,
+  "es": "¿Cuántos equipos de crisis de salud mental atienden nuestro distrito policial?",
+  "status": "ok"
+ },
+ {
+  "id": 1983,
+  "es": "¿Cómo se están atendiendo en nuestro distrito las inquietudes sobre permisos de licor y molestias a la comunidad?",
+  "status": "ok"
+ },
+ {
+  "id": 1984,
+  "es": "Elegir esto significa que a usted le importa si los niños de Cleveland pueden llegar a buenas escuelas y programas, y quién toma esas decisiones.",
+  "status": "ok"
+ },
+ {
+  "id": 1985,
+  "es": "Piense en la ruta de un autobús escolar: quien traza la ruta decide a quién recoge, cuánto dura el viaje y dónde termina.",
+  "status": "ok"
+ },
+ {
+  "id": 1986,
+  "es": "Los votantes de Cleveland no eligen a la junta escolar. Según una ley de Ohio de 1998, el alcalde nombra a la junta de nueve miembros del CMSD a partir de nombres que presenta un panel de nominación. En 2002, los votantes decidieron mantener este sistema.",
+  "status": "ok"
+ },
+ {
+  "id": 1987,
+  "es": "El Plan de Cleveland, aprobado por la legislatura estatal en 2012, dio a las escuelas más flexibilidad con una rendición de cuentas basada en el desempeño. Los votantes aprobaron un gravamen escolar en 2012 y lo renovaron o aumentaron en 2016 y 2020.",
+  "status": "ok"
+ },
+ {
+  "id": 1988,
+  "es": "En diciembre de 2025, la junta escolar aprobó el plan Building Brighter Futures: 29 escuelas menos para 2026-27, incluidos 18 edificios cerrados, por la caída de la matrícula y un ahorro de unos $30 millones al año.",
+  "status": "ok"
+ },
+ {
+  "id": 1989,
+  "es": "Say Yes Cleveland ayuda a los graduados del CMSD y de escuelas chárter asociadas a pagar la universidad. Para 2026-27, cubre la matrícula restante en universidades públicas de Ohio para familias que ganan $96,000 o menos.",
+  "status": "ok"
+ },
+ {
+  "id": 1990,
+  "es": "Say Yes Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 1991,
+  "es": "El alcalde nombra a la junta escolar. La junta contrata al director ejecutivo del distrito y aprueba planes como las fusiones de escuelas.",
+  "status": "ok"
+ },
+ {
+  "id": 1992,
+  "es": "La legislatura de Ohio redactó la ley de control por parte del alcalde y controla gran parte del financiamiento escolar.",
+  "status": "ok"
+ },
+ {
+  "id": 1993,
+  "es": "Los votantes de Cleveland aprueban o rechazan los gravámenes escolares.",
+  "status": "ok"
+ },
+ {
+  "id": 1994,
+  "es": "Una junta nombrada con una línea clara de responsabilidad, o una junta electa que responde directamente ante los votantes.",
+  "status": "ok"
+ },
+ {
+  "id": 1995,
+  "es": "Cerrar edificios para ahorrar dinero, o mantener las escuelas más cerca de casa.",
+  "status": "ok"
+ },
+ {
+  "id": 1996,
+  "es": "Aumentar los gravámenes para las escuelas, o mantener más bajos los impuestos a la propiedad.",
+  "status": "ok"
+ },
+ {
+  "id": 1997,
+  "es": "¿Cómo afectan las fusiones de escuelas a los estudiantes de nuestro distrito, incluidos los estudiantes con discapacidades?",
+  "status": "ok"
+ },
+ {
+  "id": 1998,
+  "es": "¿Qué pasará con los edificios escolares que cierren en nuestro vecindario?",
+  "status": "ok"
+ },
+ {
+  "id": 1999,
+  "es": "¿Cómo pueden los residentes opinar sobre quién es nombrado para la junta escolar?",
+  "status": "ok"
+ },
+ {
+  "id": 2000,
+  "es": "Elegir esto significa que a usted le importan la igualdad de trato ante la ley, la protección contra la discriminación y qué decisiones personales puede o no puede limitar el gobierno.",
+  "status": "ok"
+ },
+ {
+  "id": 2001,
+  "es": "Piense en las reglas de un parque público: todos pueden entrar y las reglas se aplican de la misma manera a todos.",
+  "status": "ok"
+ },
+ {
+  "id": 2002,
+  "es": "La ley de vivienda justa de Cleveland prohíbe la discriminación en la vivienda por características como la raza, la religión, la discapacidad, la situación familiar, la orientación sexual y la identidad de género. La Oficina de Vivienda Justa de la ciudad recibe quejas al 216-664-2018.",
+  "status": "ok"
+ },
+ {
+  "id": 2003,
+  "es": "El Concejo Municipal creó la Junta de Relaciones Comunitarias en 1945 para mejorar las relaciones entre grupos raciales y culturales.",
+  "status": "ok"
+ },
+ {
+  "id": 2004,
+  "es": "Encyclopedia of Cleveland History",
+  "status": "keep"
+ },
+ {
+  "id": 2005,
+  "es": "El Condado de Cuyahoga aprobó en 2018 una ley de derechos humanos que prohíbe la discriminación por orientación sexual e identidad de género en el empleo, la vivienda y los lugares públicos en todo el condado.",
+  "status": "ok"
+ },
+ {
+  "id": 2006,
+  "es": "Ohio puede limitar lo que hacen las ciudades. En 2024, los legisladores estatales prohibieron los límites locales al tabaco con sabor. Un grupo de ciudades de Ohio lo impugnó, y la Corte Suprema de Ohio escuchó el caso en junio de 2026 y todavía no ha dictado una decisión.",
+  "status": "ok"
+ },
+ {
+  "id": 2007,
+  "es": "El Concejo Municipal aprueba las leyes de vivienda justa y de no discriminación de Cleveland, y las oficinas de la ciudad las hacen cumplir.",
+  "status": "ok"
+ },
+ {
+  "id": 2008,
+  "es": "La Comisión de Derechos Humanos del Condado de Cuyahoga recibe quejas conforme a la ley del condado.",
+  "status": "ok"
+ },
+ {
+  "id": 2009,
+  "es": "La legislatura de Ohio puede anular algunas leyes de la ciudad, y los tribunales de Ohio resuelven las disputas sobre la autonomía local.",
+  "status": "ok"
+ },
+ {
+  "id": 2010,
+  "es": "Reglas hechas a la medida de Cleveland, o un solo conjunto de reglas para todo el estado.",
+  "status": "ok"
+ },
+ {
+  "id": 2011,
+  "es": "Una aplicación firme de las leyes de igualdad de trato, o menos costos y trámites para arrendadores y negocios.",
+  "status": "ok"
+ },
+ {
+  "id": 2012,
+  "es": "Protecciones superpuestas de la ciudad, el condado y el estado, o un solo lugar claro para presentar una queja.",
+  "status": "ok"
+ },
+ {
+  "id": 2013,
+  "es": "¿Cuántas quejas de vivienda justa recibe la ciudad cada año y cómo se resuelven?",
+  "status": "ok"
+ },
+ {
+  "id": 2014,
+  "es": "¿Qué leyes estatales limitan actualmente lo que Cleveland puede hacer en los temas que les importan a los residentes?",
+  "status": "ok"
+ },
+ {
+  "id": 2015,
+  "es": "¿Cómo pueden los residentes comunicarse hoy con la Junta de Relaciones Comunitarias?",
+  "status": "ok"
+ },
+ {
+  "id": 2016,
+  "es": "Elegir esto significa que a usted le importan los empleos, los negocios locales y si los acuerdos públicos traen oportunidades reales a las personas que viven aquí.",
+  "status": "ok"
+ },
+ {
+  "id": 2017,
+  "es": "Piense en plantar un jardín con dinero público: usted quiere saber qué crece, cuánto tarda y quién llega a comer de él.",
+  "status": "ok"
+ },
+ {
+  "id": 2018,
+  "es": "La Ley Fannie Lewis de Cleveland, de 2003, exigía que los residentes trabajaran el 20% de las horas de construcción en los grandes proyectos de la ciudad. Una ley estatal de 2016 prohibió las cuotas de contratación por residencia, y la Corte Suprema de Ohio confirmó esa ley estatal en 2019.",
+  "status": "ok"
+ },
+ {
+  "id": 2019,
+  "es": "Court News Ohio",
+  "status": "keep"
+ },
+ {
+  "id": 2020,
+  "es": "En 2024, el Concejo Municipal creó un distrito de financiamiento por incremento de impuestos (TIF) en el centro de la ciudad que reserva el nuevo crecimiento de los impuestos a la propiedad para proyectos públicos. La ciudad proyectó unos $3.4 mil millones hasta 2065.",
+  "status": "ok"
+ },
+ {
+  "id": 2021,
+  "es": "Los Browns planean mudarse a un nuevo estadio con cúpula en Brook Park. En 2025, la ciudad llegó a un acuerdo con los dueños del equipo por $100 millones más la demolición del estadio junto al lago. El estado aprobó $600 millones para el nuevo estadio.",
+  "status": "ok"
+ },
+ {
+  "id": 2022,
+  "es": "El Concejo Municipal aprueba incentivos fiscales, distritos TIF y acuerdos de desarrollo, que negocia la administración del alcalde.",
+  "status": "ok"
+ },
+ {
+  "id": 2023,
+  "es": "La legislatura de Ohio puede limitar las reglas locales de contratación y financia algunos proyectos grandes.",
+  "status": "ok"
+ },
+ {
+  "id": 2024,
+  "es": "Los tribunales resuelven las disputas entre la ciudad, el estado y partes privadas.",
+  "status": "ok"
+ },
+ {
+  "id": 2025,
+  "es": "Incentivos fiscales que atraen el desarrollo, o más dinero ahora para escuelas y servicios.",
+  "status": "ok"
+ },
+ {
+  "id": 2026,
+  "es": "Grandes proyectos en el centro y junto al lago, o inversión repartida entre los vecindarios.",
+  "status": "ok"
+ },
+ {
+  "id": 2027,
+  "es": "Metas de contratación local, o reglas estatales y flexibilidad para los contratistas.",
+  "status": "ok"
+ },
+ {
+  "id": 2028,
+  "es": "¿Cuánto dinero del TIF del centro llegará a proyectos de vecindario en nuestro distrito?",
+  "status": "ok"
+ },
+ {
+  "id": 2029,
+  "es": "¿Cómo se gastará el dinero del acuerdo con los Browns y cuándo?",
+  "status": "ok"
+ },
+ {
+  "id": 2030,
+  "es": "¿Qué hace la ciudad ahora para ayudar a los residentes a conseguir empleo en proyectos financiados por la ciudad?",
+  "status": "ok"
+ },
+ {
+  "id": 2031,
+  "es": "Elegir esto significa que a usted le importan el aire y el agua limpios, las viviendas seguras en cuanto al plomo y quién carga con el riesgo para la salud o con la factura de la limpieza.",
+  "status": "ok"
+ },
+ {
+  "id": 2032,
+  "es": "Piense en una cocina compartida: quien haga el desorden, alguien tiene que limpiarlo, y todos respiran el mismo aire.",
+  "status": "ok"
+ },
+ {
+  "id": 2033,
+  "es": "El plomo sigue siendo un problema grave para los niños de Cleveland. En 2025, el 15.8% de los niños menores de 6 años que se hicieron la prueba tenía niveles elevados de plomo en la sangre, muy por encima de la estimación nacional de alrededor de 2.5%, aunque la tasa va bajando.",
+  "status": "ok"
+ },
+ {
+  "id": 2034,
+  "es": "Project Clean Lake es un proyecto de alcantarillado de 25 años, de 2011 a 2036, para reducir los desbordamientos de aguas residuales al lago Erie en unos 4 mil millones de galones al año, sobre todo con enormes túneles subterráneos.",
+  "status": "ok"
+ },
+ {
+  "id": 2035,
+  "es": "Se habían gastado o comprometido unos $2.4 mil millones en Project Clean Lake hasta marzo de 2026. Los clientes del alcantarillado lo pagan con sus facturas.",
+  "status": "ok"
+ },
+ {
+  "id": 2036,
+  "es": "Cleveland actualizó su Plan de Acción Climática en abril de 2025, con el objetivo de llegar a cero emisiones netas en 2050 y señalando la mala calidad del aire, el calor extremo y las tormentas fuertes como sus principales peligros climáticos.",
+  "status": "ok"
+ },
+ {
+  "id": 2037,
+  "es": "El Concejo Municipal y el alcalde fijan las reglas sobre el plomo y las metas climáticas; el Departamento de Salud Pública hace cumplir las reglas sobre el plomo.",
+  "status": "ok"
+ },
+ {
+  "id": 2038,
+  "es": "La junta de NEORSD dirige Project Clean Lake conforme a un acuerdo federal.",
+  "status": "ok"
+ },
+ {
+  "id": 2039,
+  "es": "Las agencias ambientales federales y estatales fijan los estándares del aire y del agua.",
+  "status": "ok"
+ },
+ {
+  "id": 2040,
+  "es": "Una limpieza más rápida del plomo, o costos más bajos para los arrendadores y menos presión sobre los alquileres.",
+  "status": "ok"
+ },
+ {
+  "id": 2041,
+  "es": "Agua más limpia en el lago ahora, o facturas de alcantarillado más bajas durante décadas.",
+  "status": "ok"
+ },
+ {
+  "id": 2042,
+  "es": "Metas climáticas, o costos más bajos a corto plazo para hogares y negocios.",
+  "status": "ok"
+ },
+ {
+  "id": 2043,
+  "es": "¿Cuántos niños de nuestro distrito tuvieron resultados altos de plomo el año pasado y qué se está haciendo en esos hogares?",
+  "status": "ok"
+ },
+ {
+  "id": 2044,
+  "es": "¿Qué proyectos del Plan de Acción Climática están planeados para nuestro vecindario?",
+  "status": "ok"
+ },
+ {
+  "id": 2045,
+  "es": "¿Qué ayuda pueden recibir los residentes para las reparaciones relacionadas con el plomo?",
+  "status": "ok"
+ },
+ {
+  "id": 2046,
+  "es": "Elegir esto significa que usted quiere ver adónde va el dinero público, quién lo aprobó y si se cumplió lo prometido.",
+  "status": "ok"
+ },
+ {
+  "id": 2047,
+  "es": "Piense en un presupuesto familiar con comprobantes: el plan dice lo que usted pensaba gastar, y los comprobantes muestran lo que realmente gastó.",
+  "status": "ok"
+ },
+ {
+  "id": 2048,
+  "es": "El presupuesto de 2026 de Cleveland es de unos $2.3 mil millones en total. El fondo general, que paga la policía, los bomberos, los servicios médicos de emergencia y la recolección de basura, es de unos $920 millones, y la seguridad pública es el 46% de ese fondo.",
+  "status": "ok"
+ },
+ {
+  "id": 2049,
+  "es": "El Concejo Municipal aprueba el presupuesto y autoriza los gastos. Luego la Junta de Control, formada por el alcalde y los directores de los departamentos, adjudica contratos dentro de esos límites.",
+  "status": "ok"
+ },
+ {
+  "id": 2050,
+  "es": "Cleveland recibió $512 millones en fondos federales de recuperación por el COVID (ARPA). Deben gastarse a más tardar el 31 de diciembre de 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 2051,
+  "es": "En 2023, los votantes rechazaron por un margen estrecho el Asunto 38, que habría reservado el 2% del presupuesto de la ciudad para proyectos elegidos directamente por los residentes.",
+  "status": "ok"
+ },
+ {
+  "id": 2052,
+  "es": "Axios Cleveland",
+  "status": "keep"
+ },
+ {
+  "id": 2053,
+  "es": "El alcalde propone el presupuesto; el Concejo Municipal lo enmienda y lo aprueba.",
+  "status": "ok"
+ },
+ {
+  "id": 2054,
+  "es": "La Junta de Control aprueba contratos dentro de los límites que fijó el Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2055,
+  "es": "Los votantes deciden los cambios a la carta de la ciudad, como el Asunto 38.",
+  "status": "ok"
+ },
+ {
+  "id": 2056,
+  "es": "Gastar más en servicios ahora, o guardar reservas para tiempos difíciles.",
+  "status": "ok"
+ },
+ {
+  "id": 2057,
+  "es": "Aprobaciones rápidas de contratos, o más revisión y debate público.",
+  "status": "ok"
+ },
+ {
+  "id": 2058,
+  "es": "Que los residentes elijan los proyectos directamente, o dejar las decisiones del presupuesto a los funcionarios electos.",
+  "status": "ok"
+ },
+ {
+  "id": 2059,
+  "es": "¿Cuánto dinero de ARPA queda sin gastar, y se usará todo antes de la fecha límite del 31 de diciembre de 2026?",
+  "status": "ok"
+ },
+ {
+  "id": 2060,
+  "es": "¿Dónde puedo ver los contratos aprobados para proyectos en nuestro distrito?",
+  "status": "ok"
+ },
+ {
+  "id": 2061,
+  "es": "¿Qué resultados se prometieron para el presupuesto de este año y cómo sabremos si se lograron?",
+  "status": "ok"
+ },
+ {
+  "id": 2062,
+  "es": "Por solicitud departamental",
+  "status": "ok"
+ },
+ {
+  "id": 2063,
+  "es": "Administración del alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 2064,
+  "es": "Justin M. Bibb",
+  "status": "keep"
+ },
+ {
+  "id": 2065,
+  "es": "Ordenanza de emergencia",
+  "status": "ok"
+ },
+ {
+  "id": 2066,
+  "es": "Resolución de emergencia",
+  "status": "ok"
+ },
+ {
+  "id": 2067,
+  "es": "Se pronunció sobre permisos de licor en el distrito",
+  "status": "ok"
+ },
+ {
+  "id": 2068,
+  "es": "Los miembros del Concejo pueden presentar una objeción a un permiso estatal de licor para un bar o una tienda, por lo general después de que los vecinos expresan inquietudes. El estado toma la decisión final, pero la objeción deja constancia de las inquietudes del vecindario. Retirar una objeción por lo general significa que la inquietud se resolvió.",
+  "status": "ok"
+ },
+ {
+  "id": 2069,
+  "es": "Aprobó eventos en calles de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2070,
+  "es": "Las carreras, los festivales y los desfiles que usan calles públicas necesitan la aprobación del Concejo.",
+  "status": "ok"
+ },
+ {
+  "id": 2071,
+  "es": "Designó monumentos históricos de Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 2072,
+  "es": "Una designación de monumento histórico significa que los cambios futuros al exterior de un edificio los revisa la Comisión de Monumentos Históricos de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 2073,
+  "es": "Dio nombres honorarios a calles",
+  "status": "ok"
+ },
+ {
+  "id": 2074,
+  "es": "Un nombre honorario de calle reconoce a una persona o un grupo. No cambia la dirección de nadie.",
+  "status": "ok"
+ },
+ {
+  "id": 2075,
+  "es": "Tomó posiciones públicas",
+  "status": "ok"
+ },
+ {
+  "id": 2076,
+  "es": "Una resolución expresa la opinión del Concejo o pide a otro grupo que actúe. No es una ley y no gasta dinero.",
+  "status": "ok"
+ },
+ {
+  "id": 2077,
+  "es": "Propuso cambios a las leyes de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2078,
+  "es": "Estas añaden o cambian el código de la ciudad: las reglas que deben seguir las personas, los arrendadores y los negocios.",
+  "status": "ok"
+ },
+ {
+  "id": 2079,
+  "es": "Movió gastos, subvenciones o acuerdos de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 2080,
+  "es": "Otras acciones",
+  "status": "ok"
+ },
+ {
+  "id": 2081,
+  "es": "Medidas que no encajan en los grupos anteriores. Abra cada una para leerla.",
+  "status": "ok"
+ },
+ {
+  "id": 2082,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 2083,
+  "es": "Administración del alcalde",
+  "status": "ok"
+ },
+ {
+  "id": 2084,
+  "es": "Qué significa elegir esto en Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 2085,
+  "es": "Qué significa esto en Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 2086,
+  "es": "En Cleveland",
+  "status": "ok"
+ },
+ {
+  "id": 2087,
+  "es": "Quién decide",
+  "status": "ok"
+ },
+ {
+  "id": 2088,
+  "es": "Qué sopesan las personas",
+  "status": "ok"
+ },
+ {
+  "id": 2089,
+  "es": "Preguntas para hacer",
+  "status": "ok"
+ },
+ {
+  "id": 2090,
+  "es": "Ver lo que hicieron los miembros del Concejo sobre esto",
+  "status": "ok"
+ }
+]

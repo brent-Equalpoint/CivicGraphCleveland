@@ -1,0 +1,952 @@
+[
+ {
+  "id": 3223,
+  "es": "Leer la propuesta original",
+  "status": "ok"
+ },
+ {
+  "id": 3224,
+  "es": "Sin respuesta",
+  "status": "ok"
+ },
+ {
+  "id": 3225,
+  "es": "Registro del candidato",
+  "status": "ok"
+ },
+ {
+  "id": 3226,
+  "es": "Lo que puede hacer este cargo",
+  "status": "ok"
+ },
+ {
+  "id": 3227,
+  "es": "Referencia de autoridad",
+  "status": "ok"
+ },
+ {
+  "id": 3228,
+  "es": "Primero la evidencia, luego las posibilidades",
+  "status": "ok"
+ },
+ {
+  "id": 3229,
+  "es": "Estos son ejemplos seleccionados. Un voto pasado registra una acción; una declaración de campaña registra una promesa. Se muestran por separado.",
+  "status": "ok"
+ },
+ {
+  "id": 3230,
+  "es": "<1>Aún no se ha cargado ningún registro de políticas revisado.</1> Este candidato figura en la lista oficial, pero aquí no se han revisado sus votos individuales ni sus declaraciones sobre políticas. No se infiere ninguna coincidencia ni ningún resultado específico del candidato.",
+  "status": "ok"
+ },
+ {
+  "id": 3231,
+  "es": "Aún no se ha cargado ningún registro de políticas revisado.",
+  "status": "ok"
+ },
+ {
+  "id": 3232,
+  "es": "Este candidato figura en la lista oficial, pero aquí no se han revisado sus votos individuales ni sus declaraciones sobre políticas. No se infiere ninguna coincidencia ni ningún resultado específico del candidato.",
+  "status": "ok"
+ },
+ {
+  "id": 3233,
+  "es": "VOTO PASADO",
+  "status": "ok"
+ },
+ {
+  "id": 3234,
+  "es": "DECLARACIÓN DE CAMPAÑA",
+  "status": "ok"
+ },
+ {
+  "id": 3235,
+  "es": "Su respuesta:",
+  "status": "ok"
+ },
+ {
+  "id": 3236,
+  "es": "· Posición registrada:",
+  "status": "ok"
+ },
+ {
+  "id": 3237,
+  "es": "Leer la evidencia",
+  "status": "ok"
+ },
+ {
+  "id": 3238,
+  "es": "¿Qué podría cambiar?",
+  "status": "ok"
+ },
+ {
+  "id": 3239,
+  "es": "Análisis de escenarios, no un pronóstico",
+  "status": "ok"
+ },
+ {
+  "id": 3240,
+  "es": "Preguntas y contrapartidas",
+  "status": "ok"
+ },
+ {
+  "id": 3241,
+  "es": "Registro oficial del candidato, página",
+  "status": "ok"
+ },
+ {
+  "id": 3242,
+  "es": "CLEVELAND CIVIC ATLAS · SOLO PRÁCTICA",
+  "status": "ok"
+ },
+ {
+  "id": 3243,
+  "es": "3 de noviembre de 2026 · Distrito configurado manualmente; precinto no verificado.",
+  "status": "ok"
+ },
+ {
+  "id": 3244,
+  "es": "Esta no es una boleta oficial y no se ha enviado.",
+  "status": "ok"
+ },
+ {
+  "id": 3245,
+  "es": "Instantánea de las fuentes revisada el 22 de septiembre de 2026.",
+  "status": "ok"
+ },
+ {
+  "id": 3246,
+  "es": "En blanco",
+  "status": "ok"
+ },
+ {
+  "id": 3247,
+  "es": "MIS RESPUESTAS EXPLÍCITAS SOBRE POLÍTICAS",
+  "status": "ok"
+ },
+ {
+  "id": 3248,
+  "es": "Boletas de muestra oficiales: https://boe.cuyahogacounty.gov/voters/Get-a-Sample-Ballot",
+  "status": "ok"
+ },
+ {
+  "id": 3249,
+  "es": "Lista de candidatos:",
+  "status": "ok"
+ },
+ {
+  "id": 3250,
+  "es": "Lista de asuntos:",
+  "status": "ok"
+ },
+ {
+  "id": 3251,
+  "es": "Revisar",
+  "status": "ok"
+ },
+ {
+  "id": 3252,
+  "es": "Su revisión de práctica",
+  "status": "ok"
+ },
+ {
+  "id": 3253,
+  "es": "hechas. Esta es su hoja de práctica, no una boleta verificada de su precinto ni un envío de voto.",
+  "status": "ok"
+ },
+ {
+  "id": 3254,
+  "es": "Descargar mi hoja de trabajo privada",
+  "status": "ok"
+ },
+ {
+  "id": 3255,
+  "es": "El archivo descargado incluye sus elecciones políticas. Guárdelo en un lugar donde le parezca bien almacenar esa información.",
+  "status": "ok"
+ },
+ {
+  "id": 3256,
+  "es": "Antes de votar de verdad",
+  "status": "ok"
+ },
+ {
+  "id": 3257,
+  "es": "Revise su boleta de muestra oficial, su registro, su lugar de votación y las instrucciones de votación vigentes. Este sitio no puede registrarle como votante, solicitar una boleta por correo ni enviar un voto.",
+  "status": "ok"
+ },
+ {
+  "id": 3258,
+  "es": "Revisar la boleta de muestra oficial",
+  "status": "ok"
+ },
+ {
+  "id": 3259,
+  "es": "El Civic Graph",
+  "status": "ok"
+ },
+ {
+  "id": 3260,
+  "es": "Fecha límite de registro",
+  "status": "ok"
+ },
+ {
+  "id": 3261,
+  "es": "Comienza la votación anticipada",
+  "status": "ok"
+ },
+ {
+  "id": 3262,
+  "es": "La solicitud de boleta por correo vence a las 8:30 p. m.",
+  "status": "ok"
+ },
+ {
+  "id": 3263,
+  "es": "La votación anticipada en persona termina a las 5 p. m.",
+  "status": "ok"
+ },
+ {
+  "id": 3264,
+  "es": "Alcalde y departamentos de la ciudad",
+  "status": "ok"
+ },
+ {
+  "id": 3265,
+  "es": "Dirigen los servicios de la ciudad. Piense en calles, edificios y la administración diaria. El Concejo Municipal hace las leyes locales y aprueba muchas decisiones de gasto.",
+  "status": "ok"
+ },
+ {
+  "id": 3266,
+  "es": "Concejo Municipal, legislatura estatal, Congreso",
+  "status": "ok"
+ },
+ {
+  "id": 3267,
+  "es": "Son cuerpos legislativos distintos. Una ordenanza es una ley local. Un proyecto de ley es una propuesta; no es una ley solo porque alguien lo presentó.",
+  "status": "ok"
+ },
+ {
+  "id": 3268,
+  "es": "Tribunales y jueces",
+  "status": "ok"
+ },
+ {
+  "id": 3269,
+  "es": "Los tribunales aplican la ley a los casos y resuelven disputas. Los jueces no trabajan como un departamento del alcalde. Distintos tribunales atienden distintos tipos de casos.",
+  "status": "ok"
+ },
+ {
+  "id": 3270,
+  "es": "Juntas y distritos escolares",
+  "status": "ok"
+ },
+ {
+  "id": 3271,
+  "es": "Las juntas dirigen servicios u organizaciones específicos. Algunos miembros son elegidos y otros son designados. Revise las reglas de selección de cada junta.",
+  "status": "ok"
+ },
+ {
+  "id": 3272,
+  "es": "Distrito de la ciudad, distrito y precinto",
+  "status": "ok"
+ },
+ {
+  "id": 3273,
+  "es": "Un distrito de la ciudad es un área de representación municipal. Otros cargos usan sus propios distritos. Un precinto es una zona pequeña de votación que ayuda a determinar su boleta y su lugar de votación.",
+  "status": "ok"
+ },
+ {
+  "id": 3274,
+  "es": "Votos, declaraciones y partido",
+  "status": "ok"
+ },
+ {
+  "id": 3275,
+  "es": "Un voto registrado muestra una elección en una decisión. Una declaración muestra lo que alguien dijo. La etiqueta de un partido indica una afiliación. Ninguna de las tres, por sí sola, le dice todo lo que una persona cree.",
+  "status": "ok"
+ },
+ {
+  "id": 3276,
+  "es": "Sí, no y no votar",
+  "status": "ok"
+ },
+ {
+  "id": 3277,
+  "es": "Sí y no describen la pregunta que realmente se está votando. No votar no es un no. Lea la propuesta y la etapa de la votación antes de comparar.",
+  "status": "ok"
+ },
+ {
+  "id": 3278,
+  "es": "Depende",
+  "status": "ok"
+ },
+ {
+  "id": 3279,
+  "es": "Sigo aprendiendo",
+  "status": "ok"
+ },
+ {
+  "id": 3280,
+  "es": "Idas y vueltas: el {*} recomendó rechazarla el {*}{*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3281,
+  "es": ", luego la aprobación el {*}",
+  "status": "ok"
+ },
+ {
+  "id": 3282,
+  "es": "Retirada",
+  "status": "ok"
+ },
+ {
+  "id": 3283,
+  "es": "Retirada en el {*} el {*}. No avanza.",
+  "status": "ok"
+ },
+ {
+  "id": 3284,
+  "es": "Aprobada, con algunas condiciones",
+  "status": "ok"
+ },
+ {
+  "id": 3285,
+  "es": "Aprobada según fue enmendada: el Concejo la modificó antes de decir que sí.",
+  "status": "ok"
+ },
+ {
+  "id": 3286,
+  "es": "Aprobada",
+  "status": "ok"
+ },
+ {
+  "id": 3287,
+  "es": "Aprobada por el Concejo Municipal.",
+  "status": "ok"
+ },
+ {
+  "id": 3288,
+  "es": "Puesta sobre la mesa",
+  "status": "ok"
+ },
+ {
+  "id": 3289,
+  "es": "Puesta sobre la mesa por el Concejo Municipal. Puede volver, pero no ha vuelto.",
+  "status": "ok"
+ },
+ {
+  "id": 3290,
+  "es": "En pausa",
+  "status": "ok"
+ },
+ {
+  "id": 3291,
+  "es": "Retenida por el Concejo. Nada es definitivo.",
+  "status": "ok"
+ },
+ {
+  "id": 3292,
+  "es": "En revisión",
+  "status": "ok"
+ },
+ {
+  "id": 3293,
+  "es": "Todavía avanza en el Concejo (estado: {*}). Nada es definitivo.",
+  "status": "ok"
+ },
+ {
+  "id": 3294,
+  "es": "Este navegador no pudo guardar sus elecciones. Siguen disponibles durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 3295,
+  "es": "Elija hasta cinco prioridades. Cambie u omita una antes de agregar otra.",
+  "status": "ok"
+ },
+ {
+  "id": 3296,
+  "es": "Sus elecciones se quedarán en este dispositivo.",
+  "status": "ok"
+ },
+ {
+  "id": 3297,
+  "es": "La función de recordar está desactivada. Sus elecciones solo se conservan durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 3298,
+  "es": "El almacenamiento del navegador no está disponible. Sus elecciones se conservan durante esta visita.",
+  "status": "ok"
+ },
+ {
+  "id": 3299,
+  "es": "Se borraron sus prioridades y sus elecciones sobre políticas.",
+  "status": "ok"
+ },
+ {
+  "id": 3300,
+  "es": "No pudimos encontrar esa página, así que aquí está el inicio.",
+  "status": "ok"
+ },
+ {
+  "id": 3301,
+  "es": "No pudimos encontrar ese registro, así que aquí está la sala.",
+  "status": "ok"
+ },
+ {
+  "id": 3302,
+  "es": "Mi lugar",
+  "status": "ok"
+ },
+ {
+  "id": 3303,
+  "es": "Saltar al contenido",
+  "status": "ok"
+ },
+ {
+  "id": 3304,
+  "es": "Civic Graph",
+  "status": "keep"
+ },
+ {
+  "id": 3305,
+  "es": "Buscar",
+  "status": "ok"
+ },
+ {
+  "id": 3306,
+  "es": "Diccionario",
+  "status": "ok"
+ },
+ {
+  "id": 3307,
+  "es": "Ajustes",
+  "status": "ok"
+ },
+ {
+  "id": 3308,
+  "es": "Fuentes públicas. Vacíos visibles. Sin puntajes. Registros del Concejo obtenidos",
+  "status": "ok"
+ },
+ {
+  "id": 3309,
+  "es": "(hora del Este), revisados todas las noches.",
+  "status": "ok"
+ },
+ {
+  "id": 3310,
+  "es": "Secciones",
+  "status": "ok"
+ },
+ {
+  "id": 3311,
+  "es": "Esta pantalla",
+  "status": "ok"
+ },
+ {
+  "id": 3312,
+  "es": "Volver a la historia",
+  "status": "ok"
+ },
+ {
+  "id": 3313,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 3314,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 3315,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 3316,
+  "es": "",
+  "status": "skip"
+ },
+ {
+  "id": 3317,
+  "es": "Cerrar panel",
+  "status": "ok"
+ },
+ {
+  "id": 3318,
+  "es": "Detalles",
+  "status": "ok"
+ },
+ {
+  "id": 3319,
+  "es": "Este panel",
+  "status": "ok"
+ },
+ {
+  "id": 3320,
+  "es": "Erie, una gaviota del lago Erie",
+  "status": "ok"
+ },
+ {
+  "id": 3321,
+  "es": "Terry, una pequeña Terminal Tower",
+  "status": "ok"
+ },
+ {
+  "id": 3322,
+  "es": "Cuy, una gota del Cuyahoga",
+  "status": "ok"
+ },
+ {
+  "id": 3323,
+  "es": "Su lugar",
+  "status": "ok"
+ },
+ {
+  "id": 3324,
+  "es": "¿Dónde está su hogar?",
+  "status": "ok"
+ },
+ {
+  "id": 3325,
+  "es": "Elija su vecindario. Solo se usa durante esta visita y nunca se envía a ningún lugar. Su dirección exacta determina su distrito; la búsqueda de la Junta Electoral lo confirma.",
+  "status": "ok"
+ },
+ {
+  "id": 3326,
+  "es": "Buscar un vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 3327,
+  "es": "Hough, Ohio City, Kamm's…",
+  "status": "keep"
+ },
+ {
+  "id": 3328,
+  "es": "O elija su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3329,
+  "es": "Distrito {*}<1> · {*}</1>",
+  "status": "ok"
+ },
+ {
+  "id": 3330,
+  "es": "¿No sabe cuál es su distrito? Elija \"No estoy seguro\" y use la búsqueda oficial. Privado durante esta visita: su elección queda en la memoria de esta página y no se guarda, no se comparte ni se agrega a los enlaces. Al recargar la página se borra.",
+  "status": "ok"
+ },
+ {
+  "id": 3331,
+  "es": "Buscar mi distrito por dirección",
+  "status": "ok"
+ },
+ {
+  "id": 3332,
+  "es": "Borrar mi lugar",
+  "status": "ok"
+ },
+ {
+  "id": 3333,
+  "es": "Este navegador no está guardando los ajustes, así que su estilo y su elección del Modo fácil se reinician cada vez que abre la página. La navegación privada puede causar esto.",
+  "status": "ok"
+ },
+ {
+  "id": 3334,
+  "es": "Entendido",
+  "status": "ok"
+ },
+ {
+  "id": 3335,
+  "es": "¿Quién me representa?",
+  "status": "ok"
+ },
+ {
+  "id": 3336,
+  "es": "Conozca a su miembro del Concejo y vea lo que hizo este año.",
+  "status": "ok"
+ },
+ {
+  "id": 3337,
+  "es": "¿Qué hay en mi boleta?",
+  "status": "ok"
+ },
+ {
+  "id": 3338,
+  "es": "Fechas, plazos y los asuntos de la boleta de noviembre.",
+  "status": "ok"
+ },
+ {
+  "id": 3339,
+  "es": "¿Qué hizo el Concejo Municipal este año?",
+  "status": "ok"
+ },
+ {
+  "id": 3340,
+  "es": "El panorama general, en unos pocos pasos breves.",
+  "status": "ok"
+ },
+ {
+  "id": 3341,
+  "es": "Sus dos senadores y su representante en el Congreso.",
+  "status": "ok"
+ },
+ {
+  "id": 3342,
+  "es": "Miembro del Concejo, Distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3343,
+  "es": "El trabajo",
+  "status": "ok"
+ },
+ {
+  "id": 3344,
+  "es": "Una persona aún no ha revisado esta descripción, así que consulte la fuente.",
+  "status": "ok"
+ },
+ {
+  "id": 3345,
+  "es": "Este año",
+  "status": "ok"
+ },
+ {
+  "id": 3346,
+  "es": ", y firmó por un departamento de la ciudad en",
+  "status": "ok"
+ },
+ {
+  "id": 3347,
+  "es": "El distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3348,
+  "es": "El Distrito {*} abarca todo o parte de {*}.",
+  "status": "ok"
+ },
+ {
+  "id": 3349,
+  "es": "El Distrito {*} es uno de los 15 distritos de Cleveland.",
+  "status": "ok"
+ },
+ {
+  "id": 3350,
+  "es": "El City Record publica cómo votó cada miembro. En lo que va de este año, {*} votó a favor {*}, en contra {*} y figuró como ausente {*}. Eso suma {*} votos. Son conteos, no calificaciones. Ausente no significa en contra. El perfil completo enumera cada voto.",
+  "status": "ok"
+ },
+ {
+  "id": 3351,
+  "es": "El City Record no tiene un voto registrado por nombre para este cargo. La falta de un registro no significa que la respuesta sea no.",
+  "status": "ok"
+ },
+ {
+  "id": 3352,
+  "es": "<1>De dónde viene esto: </1><2>Concejo Municipal de Cleveland</2> y <3>su registro legislativo</3>",
+  "status": "ok"
+ },
+ {
+  "id": 3353,
+  "es": "Leer el perfil completo",
+  "status": "ok"
+ },
+ {
+  "id": 3354,
+  "es": "Sitio completo",
+  "status": "ok"
+ },
+ {
+  "id": 3355,
+  "es": "Aplicación completa",
+  "status": "ok"
+ },
+ {
+  "id": 3356,
+  "es": "Hola. ¿Qué le gustaría saber?",
+  "status": "ok"
+ },
+ {
+  "id": 3357,
+  "es": "Elija una. Cada una toma alrededor de un minuto. Nada de lo que elija se envía a ningún lugar.",
+  "status": "ok"
+ },
+ {
+  "id": 3358,
+  "es": "¿Quiere explorar por su cuenta? Elija",
+  "status": "ok"
+ },
+ {
+  "id": 3359,
+  "es": "en la parte de arriba.",
+  "status": "ok"
+ },
+ {
+  "id": 3360,
+  "es": "Elija su vecindario. Esto se queda en su teléfono durante esta visita y no se guarda ni se envía.",
+  "status": "ok"
+ },
+ {
+  "id": 3361,
+  "es": "Elija su vecindario",
+  "status": "ok"
+ },
+ {
+  "id": 3362,
+  "es": "O elija su distrito, si lo sabe",
+  "status": "ok"
+ },
+ {
+  "id": 3363,
+  "es": "Elija su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3364,
+  "es": "¿No lo sabe? Su dirección determina su distrito. La búsqueda del condado se lo dirá.",
+  "status": "ok"
+ },
+ {
+  "id": 3365,
+  "es": "Buscar mi distrito por dirección (se abre en una pestaña nueva)",
+  "status": "ok"
+ },
+ {
+  "id": 3366,
+  "es": "Omitir esto y ver lo que hizo el Concejo Municipal",
+  "status": "ok"
+ },
+ {
+  "id": 3367,
+  "es": "Aquí termina esta.",
+  "status": "ok"
+ },
+ {
+  "id": 3368,
+  "es": "Leer el perfil breve de",
+  "status": "ok"
+ },
+ {
+  "id": 3369,
+  "es": "Abrir la aplicación completa",
+  "status": "ok"
+ },
+ {
+  "id": 3370,
+  "es": "Verlos en el gráfico de Estados Unidos",
+  "status": "ok"
+ },
+ {
+  "id": 3371,
+  "es": "Ver los comprobantes del Ayuntamiento",
+  "status": "ok"
+ },
+ {
+  "id": 3372,
+  "es": "Elegir otra pregunta",
+  "status": "ok"
+ },
+ {
+  "id": 3373,
+  "es": "¿Quién lo representa en Washington?",
+  "status": "ok"
+ },
+ {
+  "id": 3374,
+  "es": "Esta pregunta necesita el sitio en línea, porque carga un archivo de datos. Inténtelo de nuevo en línea.",
+  "status": "ok"
+ },
+ {
+  "id": 3375,
+  "es": "Cargando la lista de miembros del Congreso...",
+  "status": "ok"
+ },
+ {
+  "id": 3376,
+  "es": "Elija su estado. Si su estado tiene más de un distrito, elija también el suyo. Esto se queda en su dispositivo y no se guarda ni se envía.",
+  "status": "ok"
+ },
+ {
+  "id": 3377,
+  "es": "Elija su estado",
+  "status": "ok"
+ },
+ {
+  "id": 3378,
+  "es": "Elija su distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3379,
+  "es": "Todo el estado (a nivel estatal)",
+  "status": "ok"
+ },
+ {
+  "id": 3380,
+  "es": "¿No sabe cuál es su distrito? Su dirección lo determina. La búsqueda de la Cámara se lo dirá.",
+  "status": "ok"
+ },
+ {
+  "id": 3381,
+  "es": "Buscar mi distrito (se abre en una pestaña nueva)",
+  "status": "ok"
+ },
+ {
+  "id": 3382,
+  "es": "Mostrarme",
+  "status": "ok"
+ },
+ {
+  "id": 3383,
+  "es": "Primero necesitamos su distrito.",
+  "status": "ok"
+ },
+ {
+  "id": 3384,
+  "es": "Elegir dónde vivo",
+  "status": "ok"
+ },
+ {
+  "id": 3385,
+  "es": "Pasos",
+  "status": "ok"
+ },
+ {
+  "id": 3386,
+  "es": "Dejar de leer",
+  "status": "ok"
+ },
+ {
+  "id": 3387,
+  "es": "Escuchar",
+  "status": "ok"
+ },
+ {
+  "id": 3388,
+  "es": "Guardar o imprimir esta página",
+  "status": "ok"
+ },
+ {
+  "id": 3389,
+  "es": "SU CUADRA",
+  "status": "ok"
+ },
+ {
+  "id": 3390,
+  "es": "Donde las decisiones llegan primero",
+  "status": "ok"
+ },
+ {
+  "id": 3391,
+  "es": "Esta es su cuadra. La vivienda, las calles y la seguridad empiezan aquí.",
+  "status": "ok"
+ },
+ {
+  "id": 3392,
+  "es": "SU DISTRITO",
+  "status": "ok"
+ },
+ {
+  "id": 3393,
+  "es": "Un miembro del Concejo por distrito",
+  "status": "ok"
+ },
+ {
+  "id": 3394,
+  "es": "Su distrito. Un miembro del Concejo habla en su nombre.",
+  "status": "ok"
+ },
+ {
+  "id": 3395,
+  "es": "SU CIUDAD",
+  "status": "ok"
+ },
+ {
+  "id": 3396,
+  "es": "Alcalde, presupuesto, servicios públicos, escuelas",
+  "status": "ok"
+ },
+ {
+  "id": 3397,
+  "es": "Ahora, toda la ciudad. Aquí están la oficina del alcalde y el presupuesto.",
+  "status": "ok"
+ },
+ {
+  "id": 3398,
+  "es": "CONDADO Y TRIBUNALES",
+  "status": "ok"
+ },
+ {
+  "id": 3399,
+  "es": "Jueces y elecciones",
+  "status": "ok"
+ },
+ {
+  "id": 3400,
+  "es": "Nos alejamos hacia el condado. Aquí arriba están sus jueces.",
+  "status": "ok"
+ },
+ {
+  "id": 3401,
+  "es": "OHIO Y LA NACIÓN",
+  "status": "ok"
+ },
+ {
+  "id": 3402,
+  "es": "Columbus y Washington",
+  "status": "ok"
+ },
+ {
+  "id": 3403,
+  "es": "Ohio y Washington. Grandes decisiones, más lejos de su porche.",
+  "status": "ok"
+ },
+ {
+  "id": 3404,
+  "es": "EL PANORAMA GENERAL",
+  "status": "ok"
+ },
+ {
+  "id": 3405,
+  "es": "Cómo se conecta todo",
+  "status": "ok"
+ },
+ {
+  "id": 3406,
+  "es": "El panorama general. Cómo encaja cada pieza.",
+  "status": "ok"
+ },
+ {
+  "id": 3407,
+  "es": "{*} · {*} fuente oficial{*}{*}",
+  "status": "ok"
+ },
+ {
+  "id": 3408,
+  "es": "Explorar",
+  "status": "ok"
+ },
+ {
+  "id": 3409,
+  "es": "Desplácese hacia abajo para alejarse, desde su cuadra hasta Washington.",
+  "status": "ok"
+ },
+ {
+  "id": 3410,
+  "es": "salas, cada una responde una pregunta.",
+  "status": "ok"
+ },
+ {
+  "id": 3411,
+  "es": "Buscar registros, personas, leyes, términos",
+  "status": "ok"
+ },
+ {
+  "id": 3412,
+  "es": "Póngase a prueba",
+  "status": "ok"
+ }
+]
