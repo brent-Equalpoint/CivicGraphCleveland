@@ -303,12 +303,12 @@ function CX_UsMine({ data, g, onSee }) {
   );
 }
 
-function CX_UsGraph() {
+function CX_UsGraph({ phone }) {
   const [data, setData] = u.useState(CX_US.v);
   const [state, setState] = u.useState(CX_US.p ? `ready` : `loading`);
   u.useEffect(() => { let live = !0; cxUsLoad().then((d) => { if (live) { setData(d); setState(d ? `ready` : `none`); } }); return () => { live = !1; }; }, []);
   const g = CX_US.graph;
-  const [view, setView] = u.useState(`sky`);
+  const [view, setView] = u.useState(phone ? `mine` : `sky`);
   const [sel, setSel] = u.useState(null);
   const [q, setQ] = u.useState(``);
   const [show, setShow] = u.useState({ member: !0, committee: !0, agency: !0 });
@@ -408,19 +408,29 @@ function CX_UsGraph() {
   return (
     <section className="us" ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">
-        <div><h1 id="us-h">United States</h1><p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
+        <div>{phone ? <h2 id="us-h">United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
       </header>
-      <p className="us-preview" role="note">Preview. This is built from public-domain and Federal Register records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>
+      {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain and Federal Register records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain and Federal Register records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}
+      {view !== `mine` && view !== `topics` && <>
       <div className="us-tools">
         <label className="us-search"><span>Find a person, committee, or agency</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Husted, Agriculture, Treasury" /></label>
+        {phone ? <details className="us-filters"><summary>Filters</summary><div className="us-tools">
         <fieldset className="us-show"><legend>Show</legend>
           {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
         </fieldset>
         <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
         <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        </div></details> : <>
+        <fieldset className="us-show"><legend>Show</legend>
+          {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
+        </fieldset>
+        <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
+        <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        </>}
       </div>
       {results.length > 0 && <ul className="us-results" aria-label="Search results">{results.map((n) => <li key={n.id}>{pickBtn(n)}</li>)}</ul>}
+      </>}
       <div className="us-body">
         <div className="us-main">
           {view === `topics` && <CX_UsTopics data={data} />}

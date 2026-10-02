@@ -173,7 +173,7 @@ function cxmFromUrl() {
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`today`, `you`], profiles: [`people`, null, `profiles`] };
+    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`] };
   if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: mode || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
@@ -181,8 +181,7 @@ function cxmFromUrl() {
   } else if (r && node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) {
     out.tab = `explore`; out.sheet = { type: `record`, room: r.id, node };
   }
-  if (panel === `us`) CXM_NOTICE.v = `The United States graph is on the desktop site for now. Open this link on a computer, or choose Desktop view in the You sheet.`;
-  else if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
+  if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
   else if (r && node && !r.nodes.some((n) => n.id === node)) CXM_NOTICE.v = `We could not find that record, so here is the room.`;
   return out;
 }
@@ -195,7 +194,7 @@ function cxmToUrl(tab, room, top, peopleMode) {
   else if (top && [`ledger`, `bench`, `news`].includes(top.type)) p.set(`panel`, top.type);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
-  else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : `leaders`);
+  else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : peopleMode === `us` ? `us` : `leaders`);
   else if (tab === `ballot`) p.set(`panel`, `ballot`);
   if (url.href !== globalThis.location.href) globalThis.history.replaceState(globalThis.history.state, ``, url.href);
 }

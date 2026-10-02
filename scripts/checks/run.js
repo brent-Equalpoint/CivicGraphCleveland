@@ -359,6 +359,23 @@ const CHECKS = {
     const senateRows = await count(p, '.us-index tbody tr'); expect(senateRows < rows && senateRows > 150, `the Senate filter left ${senateRows} rows`);
     await clickText(p, 'Tree', '.us-tabs button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
     await done(p);
+    // the phone layout: the same page inside the People tab, opening on Your members
+    const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
+    expect(await has(ph, '.cxm-seg') && /Washington/.test((await txt(ph, '.cxm-seg')) || ''), 'the phone People tab has no Washington view');
+    expect((await count(ph, 'h1')) === 1, `the phone page has ${await count(ph, 'h1')} h1 headings`);
+    expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone United States page scrolls sideways');
+    await ph.select('.us-mine select', 'OH'); await wait(300);
+    await ph.select('.us-mine label:nth-of-type(2) select', '11'); await wait(500);
+    expect((await count(ph, '.us-mine-card')) === 3 && (await count(ph, '.us-vote')) >= 1, 'the phone Your members view lacks the three cards or the votes');
+    await clickText(ph, 'Sky', '.us-tabs button'); await wait(500);
+    const box = await ph.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
+    expect(box[0] >= 300 && box[1] >= 300, `the phone map is ${box}`);
+    expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone map scrolls sideways');
+    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-index tbody tr')) > 800, 'the phone Index is short');
+    { const small = await ph.evaluate(() => [...document.querySelectorAll('.us button, .us a[href], .us select, .us input, .us summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || el.tagName === 'INPUT' && el.type === 'checkbox') return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
+      expect(small.length === 0, `phone United States: controls under 44px: ${small.slice(0, 5)}`); }
+    { const bad = await axeBad(ph); expect(bad.length === 0, `axe on the phone United States page: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(ph);
     const off = await open('/#phone', { mobile: true, easy: false });
     await done(off);
     // Easy mode: a fourth question, in the same one-step-at-a-time shape

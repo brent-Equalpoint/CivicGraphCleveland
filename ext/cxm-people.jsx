@@ -23,8 +23,8 @@ function CxmPeople() {
   return (
     <div className="cxm-page cxm-rise">
       <CxmH1>People</CxmH1>
-      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`]]} value={people.mode} onChange={(m) => setPeople((p) => ({ ...p, mode: m }))} />
-      {people.mode === `profiles` ? <CxmProfiles /> : <CxmConstellation />}
+      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`], [`us`, `Washington`]]} value={people.mode} onChange={(m) => setPeople((p) => ({ ...p, mode: m }))} />
+      {people.mode === `profiles` ? <CxmProfiles /> : people.mode === `us` ? <CX_UsGraph phone /> : <CxmConstellation />}
     </div>
   );
 }

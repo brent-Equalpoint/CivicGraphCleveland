@@ -908,3 +908,20 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 @media (forced-colors: active) { .us-cast { border: 1px solid CanvasText; } .us-dot { background: CanvasText !important; } }
 .us-sub { list-style: none; margin: 6px 0 0; padding: 0; display: grid; gap: 6px; }
 .us-yours { margin: 2px 0 6px; font-size: 15px; font-weight: 600; }
+
+/* United States on the phone: the same page inside the People tab */
+.us-filters { margin: 0 0 12px; }
+.us-filters summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.us-filters .us-tools { margin-top: 6px; }
+@media (max-width: 700px) {
+  .us-canvas { height: 62vh; min-height: 320px; }
+  .us-tabs { display: flex; overflow-x: auto; width: 100%; flex-wrap: nowrap; padding-bottom: 4px; }
+  .us-tabs button { flex: 0 0 auto; padding: 0 14px; }
+  .us-tools label, .us-search { min-width: 0; width: 100%; }
+  .us-tools select, .us-tools input[type="search"] { width: 100%; }
+  .us-show { flex-wrap: wrap; }
+  .us-index { overflow-x: auto; }
+  .us-index button, .us-linked button, .us-tree button { min-height: 44px; }
+}
+.us-preview-d summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.us-preview-d p { margin: 4px 0 8px; }
