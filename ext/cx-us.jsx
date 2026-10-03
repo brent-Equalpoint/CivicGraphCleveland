@@ -499,12 +499,12 @@ function CX_UsTree({ data, g, onOpen }) {
   return <div className="us-tree"><ul>{tree.map((t, i) => <CX_UsTreeNode key={i} t={t} g={g} onOpen={onOpen} depth={0} />)}</ul></div>;
 }
 
-function CX_UsGraph({ phone }) {
+function CX_UsGraph({ phone, start }) {
   const [data, setData] = u.useState(CX_US.v);
   const [state, setState] = u.useState(CX_US.p ? `ready` : `loading`);
   u.useEffect(() => { let live = !0; cxUsLoad().then((d) => { if (live) { setData(d); setState(d ? `ready` : `none`); } }); return () => { live = !1; }; }, []);
   const g = CX_US.graph;
-  const [view, setView] = u.useState(phone ? `mine` : `sky`);
+  const [view, setView] = u.useState(start || (phone ? `mine` : `sky`));
   const [sel, setSel] = u.useState(null);
   const [q, setQ] = u.useState(``);
   const [show, setShow] = u.useState({ member: !0, committee: !0, agency: !0, court: !0 });
@@ -550,8 +550,9 @@ function CX_UsGraph({ phone }) {
       if (px + r < 0 || py + r < 0 || px - r > w || py - r > h) return;
       x.fillStyle = `rgba(255,255,255,.035)`; x.strokeStyle = `rgba(255,255,255,.12)`; x.lineWidth = 1;
       if (r > 0) { x.beginPath(); x.arc(px, py, r, 0, 6.2832); x.fill(); x.stroke(); }
-      x.font = `600 14px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`;
-      x.fillText(`${cl.label} · ${cl.count}`, px, py - r - 14);
+      const narrow = w < 520;   // on a phone the names are short so they do not run into each other
+      x.font = `600 ${narrow ? 12 : 14}px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`;
+      x.fillText(`${narrow ? cl.short : cl.label} · ${cl.count}`, px, py - r - (narrow ? 8 : 14));
     });
     if (lit) {  // the connections of the chosen node
       x.lineWidth = 1; x.strokeStyle = `rgba(255,255,255,.28)`;
@@ -694,7 +695,7 @@ function CX_UsGraph({ phone }) {
   return (
     <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${view === `sky` ? `us-skyview` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">
-        <div>{phone ? <h2 id="us-h">United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
+        <div>{phone ? <h2 id="us-h" className={start ? `us-sr` : ``}>United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
       </header>
       {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}

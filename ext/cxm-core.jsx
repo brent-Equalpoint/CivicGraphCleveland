@@ -175,7 +175,7 @@ function cxmFromUrl() {
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
     ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
-  if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: mode || null }; }
+  if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && q.get(`view`) === `graph` ? `graph` : (mode || null) }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
     if (node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) out.sheet = { type: `record`, room: r.id, node };
@@ -195,6 +195,7 @@ function cxmToUrl(tab, room, top, peopleMode) {
   else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
+  else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); }
   else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : peopleMode === `us` ? `us` : `leaders`);
   else if (tab === `ballot`) p.set(`panel`, `ballot`);
   if (url.href !== globalThis.location.href) globalThis.history.replaceState(globalThis.history.state, ``, url.href);

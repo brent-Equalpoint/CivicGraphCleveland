@@ -457,7 +457,8 @@
   "Cabinet": "Gabinete",
   "Cabinet member": "Integrante del gabinete",
   "Serves in this President's cabinet.": "Sirve en el gabinete de este presidente.",
-  "The President, the Vice President, the cabinet as the White House cabinet page lists it, and the federal agencies in the Federal Register. Which agency each cabinet title leads is not linked yet; that needs a person's review.": "El presidente, el vicepresidente, el gabinete tal como lo enumera la página del gabinete de la Casa Blanca, y las agencias federales del Federal Register. Todavía no se vincula qué agencia dirige cada cargo del gabinete; eso necesita la revisión de una persona."
+  "The President, the Vice President, the cabinet as the White House cabinet page lists it, and the federal agencies in the Federal Register. Which agency each cabinet title leads is not linked yet; that needs a person's review.": "El presidente, el vicepresidente, el gabinete tal como lo enumera la página del gabinete de la Casa Blanca, y las agencias federales del Federal Register. Todavía no se vincula qué agencia dirige cada cargo del gabinete; eso necesita la revisión de una persona.",
+  "Graph": "Gráfica"
  },
  "masked": {
   "{n} days": "{n} días",

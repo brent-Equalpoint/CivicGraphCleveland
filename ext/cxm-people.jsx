@@ -103,12 +103,12 @@ function CxmFolders({ items, value, onChange, label }) {
 function CxmPeople() {
   const { people, setPeople } = useCxm();
   const set = (m) => setPeople((p) => ({ ...p, mode: m }));
-  const view = people.mode === `const` ? `const` : `profiles`;
+  const view = people.mode === `const` ? `const` : people.mode === `graph` ? `graph` : `profiles`;
   return (
     <div className="cxm-page cxm-rise">
       <CxmH1>People</CxmH1>
-      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`]]} value={view} onChange={(m) => set(m === `profiles` ? (people.mode === `us` ? `us` : `profiles`) : `const`)} />
-      {view === `const` ? <CxmConstellation /> : (
+      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`], [`graph`, `Graph`]]} value={view} onChange={(m) => set(m === `profiles` ? (people.mode === `us` ? `us` : `profiles`) : m)} />
+      {view === `graph` ? <CX_UsGraph phone start="sky" /> : view === `const` ? <CxmConstellation /> : (
         <>
           <CxmFolders label="Whose profiles" items={[[`profiles`, `Cleveland`], [`us`, `Federal`]]} value={people.mode === `us` ? `us` : `profiles`} onChange={set} />
           <div id="cxm-folder-panel" role="tabpanel" aria-labelledby={`cxm-folder-${people.mode === `us` ? `us` : `profiles`}`} className="cxm-folder-panel">

@@ -213,12 +213,12 @@ function cxUsPlace(g) {
   }
   const count = (f) => g.nodes.filter(f).length;
   g.clusters = [
-    { id: `senate`, label: `Senate`, x: L.senate.x, y: L.senate.y, r: L.senate.r + 40, count: count((n) => n.kind === `member` && n.group === `senate`), noun: `members` },
-    { id: `house`, label: `House`, x: L.house.x, y: L.house.y, r: L.house.r + 40, count: count((n) => n.kind === `member` && n.group === `house`), noun: `members` },
-    { id: `exec`, label: `Executive agencies`, x: L.exec.x, y: L.exec.y, r: L.exec.r, count: count((n) => n.kind === `agency`), noun: `agencies` },
-    { id: `joint`, label: `Joint committees`, x: mid, y: L.joint.y, r: 0, count: joint.length, noun: `committees` },   // a row, not a disc: only its label is drawn
+    { id: `senate`, label: `Senate`, short: `Senate`, x: L.senate.x, y: L.senate.y, r: L.senate.r + 40, count: count((n) => n.kind === `member` && n.group === `senate`), noun: `members` },
+    { id: `house`, label: `House`, short: `House`, x: L.house.x, y: L.house.y, r: L.house.r + 40, count: count((n) => n.kind === `member` && n.group === `house`), noun: `members` },
+    { id: `exec`, label: `Executive agencies`, short: `Agencies`, x: L.exec.x, y: L.exec.y, r: L.exec.r, count: count((n) => n.kind === `agency`), noun: `agencies` },
+    { id: `joint`, label: `Joint committees`, short: `Joint`, x: mid, y: L.joint.y, r: 0, count: joint.length, noun: `committees` },   // a row, not a disc: only its label is drawn
   ];
-  if (courts.length) g.clusters.push({ id: `judicial`, label: `Federal judges`, x: jc.x, y: jc.y, r: jc.r + 40, count: count((n) => n.kind === `judge`), noun: `judges` });
+  if (courts.length) g.clusters.push({ id: `judicial`, label: `Federal judges`, short: `Judges`, x: jc.x, y: jc.y, r: jc.r + 40, count: count((n) => n.kind === `judge`), noun: `judges` });
   g.nodes.forEach((n) => { n.hx = n.x; n.hy = n.y; });   // home: where motion always returns to
   return g;
 }

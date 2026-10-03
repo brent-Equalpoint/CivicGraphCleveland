@@ -606,6 +606,13 @@ const CHECKS = {
     expect(/^Full Story Profile Write [A-Z][a-z]+$/.test(await acts(p)), `the council profile actions are "${await acts(p)}"`);
     expect(!/Read the/.test(await p.evaluate(() => document.querySelector('.cxm-profile').innerText)), 'a long "Read the..." button label is back');
     expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-folders button, .cxm-prof-actions > *')].every((b) => b.getBoundingClientRect().height >= 44)), 'a folder tab or profile action is under 44px tall');
+    // Graph is the third choice next to Profiles and Constellation, and it opens on the Sky
+    expect(((await txt(p, '.cxm-seg')) || '').replace(/\s+/g, ' ').trim() === 'Profiles Constellation Graph', 'People does not offer Profiles, Constellation, and Graph');
+    await clickText(p, 'Graph', '.cxm-seg button'); await wait(1200);
+    expect(!(await has(p, '.cxm-folders')) && (await has(p, '.us-canvas')) && (await txt(p, '.us-tabs button.on')) === 'Sky', 'Graph does not open on the Sky');
+    expect(/panel=us/.test(await p.evaluate(() => location.search)) && /view=graph/.test(await p.evaluate(() => location.search)), 'the Graph view is not in the link');
+    await clickText(p, 'Profiles', '.cxm-seg button'); await wait(500);
+    expect(await has(p, '.cxm-folders'), 'Profiles did not bring the folders back after Graph');
     // keyboard: arrow keys move between folders
     await p.focus('.cxm-folders button.on'); await p.keyboard.press('ArrowRight'); await wait(500);
     expect((await txt(p, '.cxm-folders button.on')) === 'Federal' && /panel=us/.test(await p.evaluate(() => location.search)), 'the right arrow did not open the Federal folder');
@@ -939,6 +946,9 @@ const CHECKS = {
     expect((await count(ph, '.cxm-profile')) === 1 && /Senate/.test((await txt(ph, '.cxm-profile .cxm-kicker')) || ''), 'the Federal tab does not open on a senator profile');
     expect(((await txt(ph, '.cxm-prof-actions')) || '').replace(/\s+/g, ' ').trim().startsWith('Full Story Profile'), 'the Federal profile does not offer Full Story and Profile');
     await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(900);
+    expect((await txt(ph, '.cxm-seg button.on')) === 'Graph' && (await has(ph, '.us-canvas')), 'Explore Congress as a graph did not open the Graph view on the Sky');
+    expect(/view=graph/.test(await ph.evaluate(() => location.search)), 'the Graph view is not in the link');
+    await clickText(ph, 'Your members', '.us-tabs button'); await wait(500);
     await ph.select('.us-mine select', 'OH'); await wait(300);
     await ph.select('.us-mine label:nth-of-type(2) select', '11'); await wait(500);
     expect((await count(ph, '.us-mine-card')) === 3 && (await count(ph, '.us-vote')) >= 1, 'the phone Your members view lacks the three cards or the votes');
