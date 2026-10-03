@@ -43,7 +43,7 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **Spanish pattern rules.** A pattern needs at least 3 fixed words (`test_i18n.py`). Dynamic text is split into separate text nodes or masked ({n} number, {d} date, {t} time, {*} anything).
 - **The Updated chip and similar must wrap**, not ellipsize, or Spanish fails `no-bleed`.
 - **Release step 5 needs everything committed.** Commit first. A full pass is saved per exact input and day, so the rerun after committing is quick (`--fresh` forces all).
-- **Chrome "Session with given id not found"** is a browser hiccup, not the app. `run.js` retries opening a page once for that message; `changed.js` reruns a check that failed only that way. Any other error is real.
+- **Chrome "Session with given id not found"** is a browser hiccup, not the app. `run.js` retries opening a page once for that message; `changed.js` reruns a check that failed only that way. A check that ends only in a crash is run once more; an assertion that failed is never retried. Any other error is real.
 - **Run the right checks while working.** `node scripts/checks/changed.js` runs only the checks your changed files can affect (`--plan` shows them, `--thorough` adds light and Spanish). A shared file, or one it does not know, runs everything. It never replaces `release.py`.
 - **Sheets and overlays are registered by name** (`CXM_SHEETS`, `overlay.type` in `cxm-core.jsx`); the URL map `P` there must keep old `?panel=` links working.
 - **A backtick path that starts `/portraits/` is rewritten by the build** (`asset paths`, expected 18). Build a new portrait path by joining strings, as `CxFace` does.

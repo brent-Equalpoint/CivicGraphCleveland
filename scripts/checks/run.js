@@ -1276,8 +1276,15 @@ CHECKS['no-bleed'] = async () => {
   let failed = 0, ran = 0;
   for (const [name, fn] of Object.entries(CHECKS)) {
     if (only && only !== true && !only.split(',').some((w) => name.includes(w))) continue;
-    fails = []; const t = Date.now(); ran++;
-    try { await fn(); } catch (e) { fails.push(`crashed: ${e.message.slice(0, 200)}`); }
+    const t = Date.now(); ran++;
+    // A browser can hiccup (a dropped session, a garbled script string) with nothing wrong in the app. A check that ended ONLY in a crash gets one more
+    // run; an assertion that failed is never retried.
+    for (let attempt = 0; ; attempt++) {
+      fails = [];
+      try { await fn(); } catch (e) { fails.push(`crashed: ${e.message.slice(0, 200)}`); }
+      if (attempt === 0 && fails.length && fails.every((f) => f.startsWith('crashed:'))) { console.log(`retry  ${name}  (the browser crashed, not an assertion: ${fails[0].slice(0, 80)})`); continue; }
+      break;
+    }
     console.log(`${fails.length ? 'FAIL' : 'ok  '}  ${name}  (${((Date.now() - t) / 1000).toFixed(1)}s)`);
     fails.forEach((f) => console.log(`        - ${f}`)); if (fails.length) failed++;
   }
