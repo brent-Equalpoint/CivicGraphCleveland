@@ -170,6 +170,8 @@ Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. 
 | header-action | `.cxm-top-actions button, .atlas-header-actions button` | ext/cxm-core.jsx, build.py |
 | profile-page | `.sp` | ext/cx-seat.jsx |
 | district-finder | `.dist-body, .dist-card, .cxm-story-districts` | ext/cx-districts.jsx, ext/cxm-ballot.jsx. blue like the stories; big rows; the address is matched on the device and never saved or sent |
+| profile-card | `.cxm-profile, .cxm-prof-head, .cxm-prof-actions, .cxm-prof-nav, .cxm-strip` | ext/cxm-people.jsx (CxmProfileCard, CxmProfileActions, CxmProfileNav, CxmProfileStrip), ext/cxm-federal.jsx. every person's profile has one shape: face, kicker, name, role line, tiles, then Full Story, Profile, Write {first name}, then a one-line note. Cleveland and Federal both use it; a new tab reuses it |
+| folder-tabs | `.cxm-folders` | ext/cxm-people.jsx (CxmFolders). tabs at the top of People (Cleveland, Federal); arrow keys move between them; room for more |
 
 <!-- GENERATED-END -->
 

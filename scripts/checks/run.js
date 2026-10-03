@@ -590,6 +590,43 @@ const CHECKS = {
     expect(/Ohio Senate District 23/.test(t) && /Ward 8/.test(t), `the offline file did not answer with no network: ${t.slice(0, 200)}`);
     await f.close();
   },
+  async 'people-tabs'() {
+    // People on the phone: Profiles | Constellation, and under Profiles a folder tab for Cleveland and one for Federal. Every profile
+    // has the same shape and the same three actions, and the old blurb under the council profile is gone.
+    const p = await open('/?panel=leaders#phone', { mobile: true, easy: false, settle: 1500 });
+    expect(await has(p, '.cxm-folders[role="tablist"]'), 'People has no folder tabs');
+    expect((await txt(p, '.cxm-folders button.on')) === 'Cleveland', 'the Cleveland folder is not the one open');
+    expect(!(await has(p, '.cxm-summary')), 'the council profile still has the summary blurb');
+    const acts = async (q) => ((await txt(q, '.cxm-prof-actions')) || '').replace(/\s+/g, ' ').trim();
+    expect(/^Full Story Profile Write [A-Z][a-z]+$/.test(await acts(p)), `the council profile actions are "${await acts(p)}"`);
+    expect(!/Read the/.test(await p.evaluate(() => document.querySelector('.cxm-profile').innerText)), 'a long "Read the..." button label is back');
+    expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-folders button, .cxm-prof-actions > *')].every((b) => b.getBoundingClientRect().height >= 44)), 'a folder tab or profile action is under 44px tall');
+    // keyboard: arrow keys move between folders
+    await p.focus('.cxm-folders button.on'); await p.keyboard.press('ArrowRight'); await wait(500);
+    expect((await txt(p, '.cxm-folders button.on')) === 'Federal' && /panel=us/.test(await p.evaluate(() => location.search)), 'the right arrow did not open the Federal folder');
+    // Constellation hides the folders, Profiles brings back the folder that was open
+    await clickText(p, 'Constellation', '.cxm-seg button'); await wait(400);
+    expect(!(await has(p, '.cxm-folders')) && (await has(p, '.cxm-const')), 'Constellation still shows the folders');
+    await clickText(p, 'Profiles', '.cxm-seg button'); await wait(400);
+    expect(await has(p, '.cxm-folders'), 'Profiles did not bring the folders back');
+    await clickText(p, 'Federal', '.cxm-folders button'); await wait(1200);
+    // Federal: two senators, then a district adds the representative; same card shape as Cleveland
+    expect((await count(p, '.cxm-profile')) === 1 && (await count(p, '.cxm-strip button')) === 2, 'Federal does not open on the two Ohio senators');
+    expect(/^Full Story Profile( \(opens in a new tab\))?$/.test(await acts(p)), `the senator actions are "${await acts(p)}"`);
+    for (const need of ['.cxm-prof-head .cxm-fed-av', '.cxm-prof-name', '.cxm-tile-acc', '.cxm-prof-nav', '.cxm-fine']) expect(await has(p, need), `the Federal profile lacks ${need}`);
+    await clickText(p, 'Your place in Washington', '.cxm-drop-head'); await wait(300);
+    await p.select('.cxm-drop-body label:nth-of-type(2) select', '11'); await wait(600);
+    expect((await count(p, '.cxm-strip button')) === 3, 'choosing District 11 did not add the representative');
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
+    expect(/U\.S\. House/.test((await txt(p, '.cxm-profile .cxm-kicker')) || '') && /3 of 3/.test((await txt(p, '.cxm-prof-nav')) || ''), 'stepping twice did not reach the representative');
+    expect(!/lakeside|district=|place=/i.test(await p.evaluate(() => location.href)), 'the place reached the link');
+    await clickText(p, 'Full Story', '.cxm-prof-actions button'); await wait(1200);
+    expect((await count(p, '.cxm-sheet .us-vote')) >= 1, 'Full Story did not open the member\'s recorded votes');
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'People scrolls sideways');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(p);
+  },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
     const m = await open('/#phone', { mobile: true, easy: false });
@@ -816,11 +853,14 @@ const CHECKS = {
     const senateRows = await count(p, '.us-index tbody tr'); expect(senateRows < rows && senateRows > 150, `the Senate filter left ${senateRows} rows`);
     await clickText(p, 'Tree', '.us-tabs button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
     await done(p);
-    // the phone layout: the same page inside the People tab, opening on Your members
+    // the phone layout: Federal is a folder tab in People, shown as profiles; the whole graph opens from it in a sheet
     const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
-    expect(await has(ph, '.cxm-seg') && /Washington/.test((await txt(ph, '.cxm-seg')) || ''), 'the phone People tab has no Washington view');
+    expect(await has(ph, '.cxm-folders') && (await txt(ph, '.cxm-folders button.on')) === 'Federal', 'the phone People tab has no Federal folder, or it is not the one open');
     expect((await count(ph, 'h1')) === 1, `the phone page has ${await count(ph, 'h1')} h1 headings`);
     expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone United States page scrolls sideways');
+    expect((await count(ph, '.cxm-profile')) === 1 && /Senate/.test((await txt(ph, '.cxm-profile .cxm-kicker')) || ''), 'the Federal tab does not open on a senator profile');
+    expect(((await txt(ph, '.cxm-prof-actions')) || '').replace(/\s+/g, ' ').trim().startsWith('Full Story Profile'), 'the Federal profile does not offer Full Story and Profile');
+    await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(900);
     await ph.select('.us-mine select', 'OH'); await wait(300);
     await ph.select('.us-mine label:nth-of-type(2) select', '11'); await wait(500);
     expect((await count(ph, '.us-mine-card')) === 3 && (await count(ph, '.us-vote')) >= 1, 'the phone Your members view lacks the three cards or the votes');

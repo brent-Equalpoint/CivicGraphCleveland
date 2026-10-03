@@ -356,6 +356,8 @@ const CXM_SHEETS = {
   review: () => <CxmReview />,
   news: () => <CxmNews />,
   levies: () => <CxmLevies />,
+  us: () => <div className="cxm-pad"><CX_UsGraph phone /></div>,
+  usvotes: (s) => <CxmUsVotes id={s.id} />,
   profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,
 };
 /* Pull a sheet down to close it, the way phones do. The sheet follows the finger, the dimmed screen behind it fades as it goes, and on

@@ -18,13 +18,104 @@ function cxmSharedYes(cand, answers) {
   return Gm.filter((g) => g.candidate === cand && g.answer === `yes` && answers[g.question] === `yes`).map((g) => Wm.find((w) => w.id === g.question)).filter(Boolean);
 }
 
+/* ---------- one shape for every profile (Cleveland, Washington, and any tab added later) ----------
+   A profile is: a face, a kicker, a name, a role line, a few tiles, then the same three actions, then a one-line note.
+   Stepping through people (previous and next, "3 of 17", a strip to jump) is the same for every deck. */
+function CxmProfileCard({ avatar, kicker, name, sub, label, onStep, actions, note, children }) {
+  const startX = u.useRef(null);
+  return (
+    <div className="cxm-profile cxm-rise" role="region" aria-roledescription="profile" aria-label={label}
+      onPointerDown={(e) => { startX.current = e.target.closest(`button,a,select`) ? null : e.clientX; }}
+      onPointerUp={(e) => { if (startX.current == null) return; const dx = e.clientX - startX.current; startX.current = null; if (dx > 60) onStep(-1); if (dx < -60) onStep(1); }}>
+      <div className="cxm-prof-head">
+        {avatar}
+        <span>
+          <span className="cxm-kicker">{kicker}</span>
+          <h2 className="cxm-prof-name">{name}<span className="cxm-dot">.</span></h2>
+          <small>{sub}</small>
+        </span>
+      </div>
+      {children}
+      {actions}
+      {note && <p className="cxm-fine">{note}</p>}
+    </div>
+  );
+}
+/* The three actions on every profile, always in this order and always these words: Full Story, Profile, Write {first name}.
+   Each is { label, onClick } or { label, href } and is left out when a profile has nothing behind it. */
+function CxmProfileActions({ story, profile, write }) {
+  const one = (a, cls) => (a.href
+    ? <a key={a.label} className={cls} href={a.href} target="_blank" rel="noreferrer">{a.label}<span className="sp-ext"> (opens in a new tab)</span></a>
+    : <button key={a.label} type="button" className={cls} onClick={a.onClick}>{a.label}</button>);
+  return (
+    <div className="cxm-row2 cxm-prof-actions">
+      {story && one(story, `cxm-btn`)}
+      {profile && one(profile, `cxm-btn2`)}
+      {write && one(write, `cxm-btn2`)}
+    </div>
+  );
+}
+function CxmProfileNav({ i, n, onStep }) {
+  if (n < 2) return null;
+  return (
+    <div className="cxm-prof-nav">
+      <button type="button" aria-label="Previous profile" onClick={() => onStep(-1)}><CXI.Back size={18} /></button>
+      <span>{i + 1} of {n}</span>
+      <button type="button" aria-label="Next profile" onClick={() => onStep(1)}><CXI.Arrow size={18} /></button>
+    </div>
+  );
+}
+/* items: [{ id, title, label, face }]. face is an <img> source, or initials when there is no photo. */
+function CxmProfileStrip({ items, activeId, onPick, label }) {
+  if (items.length < 2) return null;
+  return (
+    <div className="cxm-strip" role="group" aria-label={label}>
+      {items.map((s) => (
+        <button key={s.id} type="button" aria-pressed={s.id === activeId} className={s.id === activeId ? `on` : ``} onClick={() => onPick(s.id)} title={s.title}>
+          {s.img ? <img src={s.img} alt="" /> : <span className="cxm-fed-av" aria-hidden="true">{s.ini}</span>}
+          <span>{s.label}</span>
+        </button>
+      ))}
+    </div>
+  );
+}
+
+/* the folder tabs at the top of People: Cleveland, Federal, and room for a third */
+function CxmFolders({ items, value, onChange, label }) {
+  const keys = (e) => {
+    const i = items.findIndex((x) => x[0] === value);
+    const n = e.key === `ArrowRight` ? i + 1 : e.key === `ArrowLeft` ? i - 1 : null;
+    if (n === null) return;
+    e.preventDefault();
+    const bar = e.currentTarget;
+    onChange(items[(n + items.length) % items.length][0]);
+    setTimeout(() => { const b = bar.querySelector(`[aria-selected="true"]`); if (b) b.focus(); }, 0);
+  };
+  return (
+    <div className="cxm-folders" role="tablist" aria-label={label} onKeyDown={keys}>
+      {items.map(([id, text]) => (
+        <button key={id} type="button" role="tab" id={`cxm-folder-${id}`} aria-selected={value === id} aria-controls="cxm-folder-panel" tabIndex={value === id ? 0 : -1} className={value === id ? `on` : ``} onClick={() => onChange(id)}>{text}</button>
+      ))}
+    </div>
+  );
+}
+
 function CxmPeople() {
   const { people, setPeople } = useCxm();
+  const set = (m) => setPeople((p) => ({ ...p, mode: m }));
+  const view = people.mode === `const` ? `const` : `profiles`;
   return (
     <div className="cxm-page cxm-rise">
       <CxmH1>People</CxmH1>
-      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`], [`us`, `Washington`]]} value={people.mode} onChange={(m) => setPeople((p) => ({ ...p, mode: m }))} />
-      {people.mode === `profiles` ? <CxmProfiles /> : people.mode === `us` ? <CX_UsGraph phone /> : <CxmConstellation />}
+      <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`]]} value={view} onChange={(m) => set(m === `profiles` ? (people.mode === `us` ? `us` : `profiles`) : `const`)} />
+      {view === `const` ? <CxmConstellation /> : (
+        <>
+          <CxmFolders label="Whose profiles" items={[[`profiles`, `Cleveland`], [`us`, `Federal`]]} value={people.mode === `us` ? `us` : `profiles`} onChange={set} />
+          <div id="cxm-folder-panel" role="tabpanel" aria-labelledby={`cxm-folder-${people.mode === `us` ? `us` : `profiles`}`} className="cxm-folder-panel">
+            {people.mode === `us` ? <CxmFederal /> : <CxmProfiles />}
+          </div>
+        </>
+      )}
     </div>
   );
 }
@@ -34,7 +125,6 @@ function CxmProfiles() {
   const idx = cxLegIndex();
   const [order, setOrder] = u.useState(`ward`);
   const chosen = prio.chosen;
-  const startX = u.useRef(null);
   const commonCount = (s) => { const p = cxmSplit(s); const mine = s.ward ? [...p.own, ...p.joined] : p.dept; return chosen.filter((k) => mine.some((x) => x.m.topics[k])).length; };
   const deck = order === `common` ? [...idx.seats].sort((a, b) => commonCount(b) - commonCount(a) || a.ward - b.ward).concat(idx.admin) : [...idx.seats, idx.admin];
   const curId = people.seat || (home?.ward ? `ward-${home.ward}` : `ward-1`);
@@ -65,17 +155,11 @@ function CxmProfiles() {
         </dl>
         <p className="cxm-fine">This is not a vote record and not a score. Sponsoring a proposal is not voting for it. How each member voted, where the City Record prints it, is on the full profile. Everything comes from Cleveland's official legislative record, retrieved {CX_LEG.retrieved_at.slice(0, 10)}.</p>
       </CxmDrop>
-      <div key={seat.id} className="cxm-profile cxm-rise" role="region" aria-roledescription="profile" aria-label={`${seat.name}, profile ${i + 1} of ${deck.length}`}
-        onPointerDown={(e) => { startX.current = e.target.closest(`button,a`) ? null : e.clientX; }}
-        onPointerUp={(e) => { if (startX.current == null) return; const dx = e.clientX - startX.current; startX.current = null; if (dx > 60) step(-1); if (dx < -60) step(1); }}>
-        <div className="cxm-prof-head">
-          <CxmPortrait seat={seat} size={84} />
-          <span>
-            <span className="cxm-kicker">{isAdmin ? `CITY DEPARTMENTS` : `WARD ${seat.ward}`}{seat.id === (home?.ward ? `ward-${home.ward}` : ``) && <b className="cxm-yours"> · YOUR WARD</b>}</span>
-            <h2 className="cxm-prof-name">{seat.name}<span className="cxm-dot">.</span></h2>
-            <small>{role} · Cleveland</small>
-          </span>
-        </div>
+      <CxmProfileCard key={seat.id} avatar={<CxmPortrait seat={seat} size={84} />} onStep={step} label={`${seat.name}, profile ${i + 1} of ${deck.length}`}
+        kicker={<>{isAdmin ? `CITY DEPARTMENTS` : `WARD ${seat.ward}`}{seat.id === (home?.ward ? `ward-${home.ward}` : ``) && <b className="cxm-yours"> · YOUR WARD</b>}</>}
+        name={seat.name} sub={`${role} · Cleveland`}
+        actions={<CxmProfileActions story={{ label: `Full Story`, onClick: () => openSheet(`seat`, { seat: seat.id }) }} profile={{ label: `Profile`, onClick: () => openSheet(`profile`, { seat: seat.id }) }} write={{ label: isAdmin ? `Write the mayor` : `Write ${first}`, onClick: () => openSheet(`letter`, { seat: seat.id }) }} />}
+        note="Receipts, not scores. Sponsorship is not a vote. 2026 council records.">
         <div className="cxm-tile cxm-tile-acc">
           <span className="cxm-kicker">Common ground</span>
           {chosen.length ? (
@@ -123,26 +207,9 @@ function CxmProfiles() {
           ) : <p className="cxm-mut">No proposal to show yet.</p>}
         </div>
         <CxmLatest seat={seat} limit={2} />
-        <p className="cxm-summary">{cxSummary(seat, parts.own, parts.joined, parts.dept)}</p>
-        <div className="cxm-row2">
-          <button type="button" className="cxm-btn" onClick={() => openSheet(`seat`, { seat: seat.id })}>Read the full story</button>
-          <button type="button" className="cxm-btn2" onClick={() => openSheet(`profile`, { seat: seat.id })}>Read the formal profile</button>
-          <button type="button" className="cxm-btn2" onClick={() => openSheet(`letter`, { seat: seat.id })}>Write to {isAdmin ? `the mayor` : first}</button>
-        </div>
-        <p className="cxm-fine">Receipts, not scores. Sponsorship is not a vote. 2026 council records.</p>
-      </div>
-      <div className="cxm-prof-nav">
-        <button type="button" aria-label="Previous profile" onClick={() => step(-1)}><CXI.Back size={18} /></button>
-        <span>{i + 1} of {deck.length}</span>
-        <button type="button" aria-label="Next profile" onClick={() => step(1)}><CXI.Arrow size={18} /></button>
-      </div>
-      <div className="cxm-strip" role="group" aria-label="Jump to a council member">
-        {deck.map((s) => (
-          <button key={s.id} type="button" aria-pressed={s.id === seat.id} className={s.id === seat.id ? `on` : ``} onClick={() => setPeople((p) => ({ ...p, seat: s.id }))} title={s.name}>
-            <img src={cxmAsset(s.portrait)} alt="" /><span>{s.ward ? `W${s.ward}` : `City`}</span>
-          </button>
-        ))}
-      </div>
+      </CxmProfileCard>
+      <CxmProfileNav i={i} n={deck.length} onStep={step} />
+      <CxmProfileStrip label="Jump to a council member" items={deck.map((s) => ({ id: s.id, title: s.name, img: cxmAsset(s.portrait), label: s.ward ? `W${s.ward}` : `City` }))} activeId={seat.id} onPick={(id) => setPeople((p) => ({ ...p, seat: id }))} />
       {liked.length > 0 && <p className="cxm-fine">{cxmPl(liked.length, `proposal`, `proposals`)} saved to your letters. They stay on this device for this visit.</p>}
     </div>
   );
