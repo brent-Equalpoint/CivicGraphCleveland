@@ -22,7 +22,7 @@ DARK_ISLAND = re.compile(r"\.atlas-visual-panel|\.atlas-visual-toolbar|\.atlas-v
 ON_ACCENT = re.compile(
     r"\.cxm-story\b|\.cxm-story-|\.cxm-bars|\.cxm-tap|\.cxm-keypad|\.cxm-kdisp|\.cxm-kres|\.cxm-kseg|\.cxm-keys|\.cxm-keycard|\.cxm-btn-light|\.cxm-crush|\.cxm-burst|\.cxm-pair|\.cxm-moment|"
     r"\.lv-tile|\.lv-more-story|\.lv-pad-keys|\.cx-story-|\.cxm-storyback|\.cx-notice|\.cxm-toast|\.cxm-scrim|\.cxm-card-acc|\.cxm-setplace|\.cxm-fresh i|"
-    r"\.cxm-step\.on|\.cxm-ring-you|\.cxm-rd\b|\.cxm-sdot|\.cxm-av-|\.cxm-s-|\.cxm-cring|\.cxm-star-|\.cx-mode-dot|\.cx-theme-dot|\.sp-ward")
+    r"\.cxm-step\.on|\.cxm-ring-you|\.cxm-rd\b|\.cxm-sdot|\.cxm-av-|\.cxm-s-|\.cxm-cring|\.cxm-star-|\.dist-|\.cx-mode-dot|\.cx-theme-dot|\.sp-ward")
 
 # Exact light counterparts, where inverting the lightness would not give the right color.
 EXACT = {

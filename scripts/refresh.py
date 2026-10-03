@@ -3,6 +3,7 @@
 
   python scripts/refresh.py          fetch all three sources, check them, log the changes
   python scripts/refresh.py --check  only run the safety checks on data/ as it stands
+  python scripts/refresh.py --districts  rebuild data/districts-2026.json (street address ranges and districts; run by hand when maps change)
 
 Steps:
   1. keep a copy of today's data/*.json
@@ -77,6 +78,10 @@ def check(old_dir, new_dir):
 
 
 def main():
+    if "--districts" in sys.argv:   # the street-address index for "Find my districts"; changes only when district maps are redrawn, so it is not part of the nightly run
+        import fetch_districts
+        fetch_districts.main()
+        return
     if "--check" in sys.argv:
         bad = check(None, DATA)
         print("\n".join(bad) or "data/ passes the safety checks")

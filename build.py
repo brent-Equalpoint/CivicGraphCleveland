@@ -202,7 +202,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/i18n/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -396,7 +396,7 @@ def main():
          "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-levies.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-levies.jsx", "cx-districts.jsx",
                  "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -602,6 +602,19 @@ def main():
                 "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n"
                 "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n",
                 label="aux page: levies")
+    # v5.17 Find my districts (the address is matched in the page and never saved or sent): sidebar entry under Levies and taxes, address panel, page
+    src = patch(src, "`news`, `stories`, `profiles`, `us`, `levies`]", "`news`, `stories`, `profiles`, `us`, `levies`, `districts`]", count=2, label="url panels: districts")
+    src = patch(src,
+                "                    onClick: () => cxPanel(`levies`),\n                    children: [(0, W.jsx)(CXI.Wallet, { size: 18 }), (0, W.jsx)(`span`, { children: `Levies and taxes` })],\n                  }),\n",
+                "                    onClick: () => cxPanel(`levies`),\n                    children: [(0, W.jsx)(CXI.Wallet, { size: 18 }), (0, W.jsx)(`span`, { children: `Levies and taxes` })],\n                  }),\n"
+                "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `Find my districts`,\n                    className: F === `districts` ? `active` : ``,\n"
+                "                    onClick: () => cxPanel(`districts`),\n                    children: [(0, W.jsx)(CXI.Pin, { size: 18 }), (0, W.jsx)(`span`, { children: `Find my districts` })],\n                  }),\n",
+                label="sidebar: districts")
+    src = patch(src,
+                "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n",
+                "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n"
+                "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n",
+                label="aux page: districts")
     # v5.16 drawer: a way from a council member's or the Mayor's map record to their formal profile
     src = patch(src,
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n",
@@ -872,7 +885,16 @@ def main():
     i18n_min = json.dumps(i18n, ensure_ascii=False, separators=(",", ":"))
     log(f"data   {sha(i18n_path)}  i18n/es.json  ({len(i18n['exact'])} exact, {len(i18n['masked'])} patterns, {len(i18n['keep'])} kept in English)")
 
+    # Districts by address: the street index (data/districts-2026.json). The hosted site serves it as a file fetched only when someone
+    # uses the finder; the single file carries it compressed inside the page and opens it with the browser's own decompressor.
+    dist_path = os.path.join(ROOT, "data", "districts-2026.json")
+    dist_min = json.dumps(json.load(open(dist_path, encoding="utf-8")), ensure_ascii=False, separators=(",", ":"))
+    import gzip as _gzip, base64 as _b64
+    dist_gz = _b64.b64encode(_gzip.compress(dist_min.encode("utf-8"), 9, mtime=0)).decode("ascii")
+    log(f"data   {sha(dist_path)}  data/districts-2026.json  ({len(dist_min)} bytes; {len(dist_gz)} as base64 gzip inside the single file)")
+
     def page(inline_assets, fonts):
+        dist_tag = ('<script type="application/octet-stream" id="cx-districts-gz">' + dist_gz + '</script>\n') if inline_assets else ""
         i18n_tag = ('<script type="application/json" id="cx-i18n-es">' + i18n_min.replace("</", "<\\/") + '</script>\n') if inline_assets else ""
         icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else '<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n'
         offline = "" if inline_assets else OFFLINE_NOTICE
@@ -895,7 +917,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 {css}
 </style>
 <script>{preamble(inline_assets)}</script>
-{i18n_tag}<script>{js}</script>
+{i18n_tag}{dist_tag}<script>{js}</script>
 </body>
 </html>
 """
@@ -951,6 +973,9 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
         log(f"SITE   {sha(body.encode())}  site/bench/{name}")
     os.makedirs(os.path.join(SITE, "i18n"), exist_ok=True)
     write(os.path.join(SITE, "i18n", "es.json"), i18n_min + "\n")
+    os.makedirs(os.path.join(SITE, "districts"), exist_ok=True)
+    write(os.path.join(SITE, "districts", "districts-2026.json"), dist_min + "\n")
+    log(f"SITE   {sha((dist_min + chr(10)).encode())}  site/districts/districts-2026.json")
     log(f"SITE   {sha((i18n_min + chr(10)).encode())}  site/i18n/es.json")
     write(os.path.join(SITE, "favicon.svg"), FAVICON_SVG + "\n")
     log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")

@@ -1,0 +1,162 @@
+[
+ {
+  "in": "East 116th Street",
+  "norm": "e 116th st",
+  "core": "116th"
+ },
+ {
+  "in": "E. 116 St.",
+  "norm": "e 116th st",
+  "core": "116th"
+ },
+ {
+  "in": "W 25th St",
+  "norm": "w 25th st",
+  "core": "25th"
+ },
+ {
+  "in": "West 25th Street",
+  "norm": "w 25th st",
+  "core": "25th"
+ },
+ {
+  "in": "Lakeside Avenue East",
+  "norm": "lakeside ave e",
+  "core": "lakeside"
+ },
+ {
+  "in": "Lakeside Ave E",
+  "norm": "lakeside ave e",
+  "core": "lakeside"
+ },
+ {
+  "in": "St. Clair Ave",
+  "norm": "st clair ave",
+  "core": "st clair"
+ },
+ {
+  "in": "O'Brien Ave",
+  "norm": "o brien ave",
+  "core": "o brien"
+ },
+ {
+  "in": "Martin Luther King Jr Dr",
+  "norm": "martin luther king jr dr",
+  "core": "martin luther king jr"
+ },
+ {
+  "in": "Euclid Ave",
+  "norm": "euclid ave",
+  "core": "euclid"
+ },
+ {
+  "in": "I-90",
+  "norm": "i 90th",
+  "core": "i 90th"
+ },
+ {
+  "in": "Ohio Turnpike",
+  "norm": "ohio tpke",
+  "core": "ohio"
+ },
+ {
+  "in": "N Marks Rd",
+  "norm": "n marks rd",
+  "core": "marks"
+ },
+ {
+  "in": "North Marks Road",
+  "norm": "n marks rd",
+  "core": "marks"
+ },
+ {
+  "in": "Detroit Ave",
+  "norm": "detroit ave",
+  "core": "detroit"
+ },
+ {
+  "in": "Chester Ave",
+  "norm": "chester ave",
+  "core": "chester"
+ },
+ {
+  "in": "E 9th St",
+  "norm": "e 9th st",
+  "core": "9th"
+ },
+ {
+  "in": "East 9 Street",
+  "norm": "e 9th st",
+  "core": "9th"
+ },
+ {
+  "in": "Bridge Ave",
+  "norm": "bridge ave",
+  "core": "bridge"
+ },
+ {
+  "in": "Carnegie Ave NE",
+  "norm": "carnegie ave ne",
+  "core": "carnegie"
+ },
+ {
+  "in": "Park Dr",
+  "norm": "park dr",
+  "core": "park"
+ },
+ {
+  "in": "Center Ridge Rd",
+  "norm": "ctr ridge rd",
+  "core": "ctr ridge"
+ },
+ {
+  "in": "Euclid Heights Blvd",
+  "norm": "euclid hts blvd",
+  "core": "euclid hts"
+ },
+ {
+  "in": "State Route 10",
+  "norm": "state rte 10th",
+  "core": "state rte 10th"
+ },
+ {
+  "in": "1st Ave",
+  "norm": "1st ave",
+  "core": "1st"
+ },
+ {
+  "in": "2nd Ave",
+  "norm": "2nd ave",
+  "core": "2nd"
+ },
+ {
+  "in": "3rd St",
+  "norm": "3rd st",
+  "core": "3rd"
+ },
+ {
+  "in": "11th St",
+  "norm": "11th st",
+  "core": "11th"
+ },
+ {
+  "in": "12th St",
+  "norm": "12th st",
+  "core": "12th"
+ },
+ {
+  "in": "21st St",
+  "norm": "21st st",
+  "core": "21st"
+ },
+ {
+  "in": "22 Street",
+  "norm": "22nd st",
+  "core": "22nd"
+ },
+ {
+  "in": "33rd Pl",
+  "norm": "33rd pl",
+  "core": "33rd"
+ }
+]

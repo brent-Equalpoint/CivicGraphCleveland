@@ -169,6 +169,7 @@ Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. 
 | chip | `.lv-chip, .sp-chip` | ext/cx-levies.jsx, ext/cx-seat.jsx |
 | header-action | `.cxm-top-actions button, .atlas-header-actions button` | ext/cxm-core.jsx, build.py |
 | profile-page | `.sp` | ext/cx-seat.jsx |
+| district-finder | `.dist-body, .dist-card, .cxm-story-districts` | ext/cx-districts.jsx, ext/cxm-ballot.jsx. blue like the stories; big rows; the address is matched on the device and never saved or sent |
 
 <!-- GENERATED-END -->
 

@@ -180,8 +180,12 @@ function cxI18nRich(el) {
       CX_I18N.mine.set(c, val); c.nodeValue = val; runStart = !1;
     } else if (c.nodeType === 1) {
       const idx = parsed.tags.indexOf(c);
-      CX_I18N.orig.set(c.firstChild, cxI18nOrigOf(c.firstChild));
-      CX_I18N.mine.set(c.firstChild, inner[idx + 1]); c.firstChild.nodeValue = inner[idx + 1];
+      const was = cxI18nOrigOf(c.firstChild);
+      CX_I18N.orig.set(c.firstChild, was);
+      // a broad pattern such as "District {*}" can carry a tag's English through unchanged; the tag's own text is then translated by itself
+      let inside = inner[idx + 1];
+      if (inside === was) { const t = cxI18nText(was); if (t != null) inside = t; }
+      CX_I18N.mine.set(c.firstChild, inside); c.firstChild.nodeValue = inside;
       g = idx + 1; runStart = !0;
     }
   }

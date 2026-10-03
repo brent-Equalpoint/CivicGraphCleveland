@@ -35,3 +35,5 @@ html[data-cx-mode="light"] .atlas-shell [class*="ledger-domain-"] { background: 
 html[data-cx-mode="light"] .civic-action, html[data-cx-mode="light"] .atlas-shell .civic-action { color: #ffffff !important; }
 html[data-cx-mode="light"] .atlas-shell .cx-k-passed > b { color: #0f6b3f; }
 html[data-cx-mode="light"][data-cx-theme="original"] .atlas-shell [data-slot="tabs-trigger"][data-state="active"] { background: #1f1814 !important; color: #ffffff !important; }
+html[data-cx-mode="light"] .atlas-shell .dist-card p, html[data-cx-mode="light"] .atlas-shell .dist-card :is(span, dt, dd, small, a, label) { color: #ffffff !important; }
+html[data-cx-mode="light"] .cxm-btn-dark { background: #14161d !important; color: #ffffff !important; }

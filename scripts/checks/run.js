@@ -528,6 +528,68 @@ const CHECKS = {
     expect(seq.join(' | ') === 'Mode: Light / light|light | Mode: Dark / dark|dark | Mode: System / dark|system', `the header button sequence is wrong: ${seq.join(' | ')}`);
     await done(d);
   },
+  async districts() {
+    // "Find my districts": the address is matched in the page and is never saved or sent. The answers match the Census Bureau's own
+    // geocoder for the same address; a block on a district line says so and does not offer to fill the ballot.
+    const D = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'data', 'districts-2026.json'), 'utf8'));
+    const typeAndFind = async (p, text) => {
+      await p.evaluate(() => { const i = document.querySelector('.dist-field input'); const set = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set; set.call(i, ''); i.dispatchEvent(new Event('input', { bubbles: true })); });
+      await (await p.$('.dist-field input')).type(text);
+      await p.evaluate(() => document.querySelector('.dist-actions .cxm-btn').click()); await wait(1500);
+      return p.evaluate(() => document.querySelector('.dist-body').innerText.replace(/\s+/g, ' '));
+    };
+    const m = await open('/?panel=ballot#phone', { mobile: true, easy: false });
+    const seen = [];
+    m.on('request', (r) => seen.push(r.url() + ' ' + (r.postData() || '')));
+    await clickText(m, 'Find my districts by address', 'button'); await wait(400);
+    let t = await m.evaluate(() => document.querySelector('.dist-body').innerText.replace(/\s+/g, ' '));
+    expect(/Type your address\./.test(t) && /Nothing is saved or sent/.test(t), `the finder does not say the address stays on the device: ${t.slice(0, 120)}`);
+    t = await typeAndFind(m, '601 Lakeside Ave 44114');
+    for (const w of ['601 Lakeside Ave E', 'U.S. House District 11', 'Ohio Senate District 23', 'Ohio House District 20', 'County Council District 7', 'On the ballot this year', 'Ward 8', 'Council member', 'Cleveland Municipal School District', 'Use these on my ballot', 'Not saved'])
+      expect(t.includes(w), `the result for 601 Lakeside Ave lacks "${w}": ${t.slice(0, 260)}`);
+    expect(!/Cleveland city/.test(t), 'the city still ends in "city"');
+    expect(!seen.some((u) => /lakeside|601/i.test(u)), `the address was sent in a request: ${seen.filter((u) => /lakeside|601/i.test(u)).join(' | ')}`);
+    expect(/\/districts\/districts-2026\.json/.test(seen.join(' ')), 'the street list was not fetched from the site');
+    expect(!(await m.evaluate(() => /lakeside/i.test(location.href + document.cookie + JSON.stringify(localStorage) + JSON.stringify(sessionStorage)))), 'the address reached the link, a cookie, or storage');
+    await m.evaluate(() => [...document.querySelectorAll('.dist-actions button')].find((b) => /Use these on my ballot/.test(b.innerText)).click()); await wait(500);
+    const sel = await m.evaluate(() => [...document.querySelectorAll('.cxm-dgrid select')].map((s) => s.value));
+    expect(sel.join(',') === '11,23,20,07', `"Use these on my ballot" did not fill the four districts: ${sel.join(',')}`);
+    // bad input, not found, and a block on a district line
+    await m.evaluate(() => document.querySelector('.cxm-tile-acc button.cxm-btn-dark').click()); await wait(400);
+    t = await typeAndFind(m, 'Lakeside Ave');
+    expect(/Start with the house number/.test(t), `no house number is not explained: ${t.slice(0, 120)}`);
+    t = await typeAndFind(m, '99999 Nowhere Rd');
+    expect(/could not find that address/.test(t), `an unknown address is not explained: ${t.slice(0, 120)}`);
+    let edge = null;
+    for (const [key, rs] of Object.entries(D.streets)) { const r = rs.find((x) => x[4] < 0 && x[1] - x[0] >= 2 && x[3] && (x[1] - x[0]) < 400); if (r) { edge = [key, r]; break; } }
+    expect(!!edge, 'the street list has no block on a district line to test');
+    if (edge) {
+      const [key, r] = edge; let n = r[0]; if (r[2] === 'E' && n % 2) n++; if (r[2] === 'O' && n % 2 === 0) n++;
+      const title = key.split(' ').map((w) => (['n', 's', 'e', 'w', 'ne', 'nw', 'se', 'sw'].includes(w) ? w.toUpperCase() : w.charAt(0).toUpperCase() + w.slice(1))).join(' ');
+      t = await typeAndFind(m, `${n} ${title} ${r[3]}`);
+      if (/Which street/.test(t)) { await m.evaluate(() => document.querySelector('.dist-picks button').click()); await wait(1200); t = await m.evaluate(() => document.querySelector('.dist-body').innerText.replace(/\s+/g, ' ')); }
+      expect(/district line/.test(t) && / or /.test(t) && !/Use these on my ballot/.test(t), `a block on a district line should say so and not offer to fill the ballot: ${t.slice(0, 260)}`);
+    }
+    await done(m);
+    // the desktop page
+    const d = await open('/?panel=districts#desktop', {});
+    expect(/Find my districts/.test(await txt(d, '.dist-page h1')), 'the desktop page is missing');
+    t = await typeAndFind(d, '601 Lakeside Ave 44114');
+    expect(/Ohio Senate District 23/.test(t) && /Ward 8/.test(t), `the desktop result is wrong: ${t.slice(0, 200)}`);
+    expect(!(await has(d, '.dist-actions .cxm-btn')) || !/Use these on my ballot/.test(t), 'the desktop page offers a ballot fill it cannot do');
+    await done(d);
+    // the single offline file: the street list is inside the page, compressed, and opens without the network
+    const f = await B.createBrowserContext(); const q = await f.newPage();
+    await q.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    await q.setOfflineMode(true);
+    await q.evaluateOnNewDocument(() => { try { localStorage.setItem('cx-easy', 'off'); localStorage.setItem('cx-mode', 'dark'); } catch (e) {} });
+    await q.goto('file:///' + path.join(__dirname, '..', '..', 'dist', 'Cleveland-Civic-Graph-v5.html').split(path.sep).join('/') + '#phone', { waitUntil: 'load' }); await wait(2500);
+    await q.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')].find((b) => /Ballot/.test(b.innerText)).click()); await wait(800);
+    await q.evaluate(() => [...document.querySelectorAll('button')].find((b) => /Find my districts by address/.test(b.innerText)).click()); await wait(500);
+    t = await typeAndFind(q, '601 Lakeside Ave 44114');
+    expect(/Ohio Senate District 23/.test(t) && /Ward 8/.test(t), `the offline file did not answer with no network: ${t.slice(0, 200)}`);
+    await f.close();
+  },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
     const m = await open('/#phone', { mobile: true, easy: false });
@@ -820,10 +882,17 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
+  districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
+  districtResult: async () => {   // open the finder (on the phone), type City Hall's address, and look for the districts
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) { b.click(); await w(400); }
+    const i = document.querySelector('.dist-field input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, '601 Lakeside Ave 44114'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(100);
+    document.querySelector('.dist-actions .cxm-btn').click(); await w(1500);
+  },
   levyStory: async () => {   // open the Issue 11 story, go to its last frame, and open Read more and the official wording
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     [...document.querySelectorAll('.cxm-story-btn')].find((b) => /(Issue|Asunto) 11/.test(b.getAttribute('aria-label') || '')).click(); await w(400);

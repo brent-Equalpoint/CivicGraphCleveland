@@ -320,6 +320,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `story` && <CxmStory />}
             {overlay && overlay.type === `moment` && <CxmMoment />}
             {overlay && overlay.type === `keypad` && <CxmKeypad />}
+            {overlay && overlay.type === `districts` && <CxmDistricts />}
             {overlay && overlay.type === `crush` && <CxmCrush />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}

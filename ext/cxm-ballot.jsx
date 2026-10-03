@@ -44,7 +44,8 @@ function CxmBallot() {
       <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}Times are Eastern. An application requests a ballot; it is not your completed ballot.</p>
       <div className="cxm-tile cxm-tile-acc">
         <strong>Set my districts</strong>
-        <p className="cxm-mut">Your address, not your ward, decides your full ballot. Pick your districts and only your races show. We never ask for your address.</p>
+        <p className="cxm-mut">Your address, not your ward, decides your full ballot. Type your address and your districts are found on this phone, or pick them yourself. Nothing is saved or sent.</p>
+        <button type="button" className="cxm-btn cxm-btn-dark" onClick={() => setOverlay({ type: `districts` })}>Find my districts by address</button>
         <div className="cxm-dgrid">
           {CXM_DISTRICTS.map(([k, label]) => (
             <label key={k} className="cxm-field"><span>{label}</span>
@@ -56,7 +57,7 @@ function CxmBallot() {
           ))}
         </div>
         <p className="cxm-fine">Only odd-numbered County Council districts are on the ballot this year. Countywide races and issues are included. Add your districts and local issues from the official ballot. We do not infer them from a city ward.</p>
-        <CxmSrc href={ah}>Find my districts by address</CxmSrc>
+        <CxmSrc href={ah}>Check with the Board of Elections</CxmSrc>
       </div>
       <div className="cxm-tile">
         <span className="cxm-kicker">Make room for a question</span>
@@ -226,6 +227,23 @@ function CxmLocalIssues() {
       })}
       {list.length > 60 && <p className="cxm-fine">Showing 60 of {list.length}. Search to narrow the list.</p>}
       <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Get-a-Sample-Ballot">Get your sample ballot</CxmSrc>
+    </div>
+  );
+}
+
+/* ---------- find my districts: the address is matched on this phone and never saved or sent ---------- */
+function CxmDistricts() {
+  const { setOverlay, practice } = useCxm();
+  const use = (rows) => {
+    const pad = (v) => String(v).padStart(2, `0`);
+    const pick = (k, list) => (list.length === 1 && $m[k].includes(pad(list[0])) ? pad(list[0]) : ``);
+    practice.update((s) => ({ ...s, districts: { ...s.districts, congress: pick(`congress`, rows.congress), senate: pick(`senate`, rows.senate), house: pick(`house`, rows.house), council: pick(`council`, rows.council) } }));
+    setOverlay(null);
+  };
+  return (
+    <div className="cxm-overlay cxm-story cxm-story-districts" role="dialog" aria-modal="true" aria-label="Find my districts">
+      <div className="cxm-story-head"><span /><button type="button" aria-label="Close" onClick={() => setOverlay(null)}><CXI.X size={22} /></button></div>
+      <CX_DistrictFinder phone onUse={use} />
     </div>
   );
 }
