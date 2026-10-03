@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-03T17:49:52+00:00",
+"retrieved_at": "2026-10-03T18:03:10+00:00",
 "congress": 119,
 "sources": {
 "members": "https://unitedstates.github.io/congress-legislators/legislators-current.json",
@@ -8,7 +8,8 @@
 "agencies": "https://www.federalregister.gov/api/v1/agencies.json",
 "policy_areas": "https://www.congress.gov/help/field-values/policy-area (written out by hand; not checked against the API)",
 "executive": "https://unitedstates.github.io/congress-legislators/executive.json",
-"judges": "https://www.fjc.gov/sites/default/files/history/judges.csv"
+"judges": "https://www.fjc.gov/sites/default/files/history/judges.csv",
+"cabinet": "https://www.whitehouse.gov/administration/cabinet/"
 },
 "about": "The federal landscape. Party is the party on each member's current term, a sourced and dated field, never inferred from votes. Agencies are those with Federal Register documents since the cutoff; older ones are counted, not shown.",
 "agency_cutoff": "2024-10-13",
@@ -19,6 +20,7 @@
 "house": 439,
 "committees": 49,
 "agencies": 260,
+"cabinet": 21,
 "courts": 106,
 "judges": 845,
 "justices": 9
@@ -27992,7 +27994,115 @@
 ],
 "current": true
 }
-]
+],
+"cabinet": [
+{
+"id": "secretary-of-the-treasury",
+"name": "Scott Bessent",
+"title": "Secretary of the Treasury"
+},
+{
+"id": "attorney-general",
+"name": "Todd Blanche",
+"title": "Attorney General"
+},
+{
+"id": "secretary-of-the-interior",
+"name": "Doug Burgum",
+"title": "Secretary of the Interior"
+},
+{
+"id": "director-of-national-intelligence",
+"name": "Jay Clayton",
+"title": "Director of National Intelligence"
+},
+{
+"id": "secretary-of-veterans-affairs",
+"name": "Doug Collins",
+"title": "Secretary of Veterans Affairs"
+},
+{
+"id": "secretary-of-transportation",
+"name": "Sean Duffy",
+"title": "Secretary of Transportation"
+},
+{
+"id": "united-states-trade-representative",
+"name": "Jamieson Greer",
+"title": "United States Trade Representative"
+},
+{
+"id": "secretary-of-war",
+"name": "Pete Hegseth",
+"title": "Secretary of War"
+},
+{
+"id": "secretary-of-health-and-human-services",
+"name": "Robert F. Kennedy, Jr.",
+"title": "Secretary of Health and Human Services"
+},
+{
+"id": "administrator-of-the-small-business-administration",
+"name": "Kelly Loeffler",
+"title": "Administrator of the Small Business Administration"
+},
+{
+"id": "secretary-of-commerce",
+"name": "Howard Lutnick",
+"title": "Secretary of Commerce"
+},
+{
+"id": "secretary-of-education",
+"name": "Linda McMahon",
+"title": "Secretary of Education"
+},
+{
+"id": "secretary-of-homeland-security",
+"name": "Markwayne Mullin",
+"title": "Secretary of Homeland Security"
+},
+{
+"id": "director-of-the-central-intelligence-agency",
+"name": "John Ratcliffe",
+"title": "Director of the Central Intelligence Agency"
+},
+{
+"id": "secretary-of-agriculture",
+"name": "Brooke Rollins",
+"title": "Secretary of Agriculture"
+},
+{
+"id": "secretary-of-state",
+"name": "Marco Rubio",
+"title": "Secretary of State"
+},
+{
+"id": "secretary-of-labor",
+"name": "Keith Sonderling",
+"title": "Secretary of Labor"
+},
+{
+"id": "secretary-of-housing-and-urban-development",
+"name": "Scott Turner",
+"title": "Secretary of Housing and Urban Development"
+},
+{
+"id": "director-of-the-office-of-management-and-budget",
+"name": "Russ Vought",
+"title": "Director of the Office of Management and Budget"
+},
+{
+"id": "secretary-of-energy",
+"name": "Chris Wright",
+"title": "Secretary of Energy"
+},
+{
+"id": "administrator-of-the-environmental-protection-agency",
+"name": "Lee Zeldin",
+"title": "Administrator of the Environmental Protection Agency"
+}
+],
+"cabinet_source": "https://www.whitehouse.gov/administration/cabinet/"
 },
 "judiciary": {
 "courts": [

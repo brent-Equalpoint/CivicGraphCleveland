@@ -24,8 +24,8 @@ eq(doors.map((d) => d.id), ['members', 'committees', 'executive', 'courts', 'are
 eq(by.members.count, data.counts.members, 'members door adds up to the record');
 eq(by.members.groups.map((x) => x.count), [data.counts.senate, data.counts.house], 'Senate and House members');
 eq(by.committees.count, data.committees.length, 'committees door adds up to the record');
-eq(by.executive.count, data.counts.agencies + data.executive.presidents.length + 1, 'the executive door adds up to the agencies, the Presidents, and the Vice President');
-eq(by.executive.groups.map((x) => x.id), ['current', 'former', 'top', 'sub'], 'the executive door groups');
+eq(by.executive.count, data.counts.agencies + data.executive.presidents.length + 1 + (data.executive.cabinet || []).length, 'the executive door adds up to the agencies, the Presidents, the Vice President, and the cabinet');
+eq(by.executive.groups.map((x) => x.id), (data.executive.cabinet || []).length ? ['current', 'cabinet', 'former', 'top', 'sub'] : ['current', 'former', 'top', 'sub'], 'the executive door groups');
 eq(by.executive.groups[0].count, 2, 'the current President and Vice President');
 eq(by.courts.count, data.judiciary.courts.length + data.judiciary.judges.length, 'the courts door adds up to the courts and the sitting judges');
 eq(by.courts.groups.map((x) => x.id), ['supreme', 'appeals', 'district', 'other', 'judges'], 'the courts door groups');
@@ -66,7 +66,7 @@ eq(oh[0].chamber, 'senate', 'senators are listed first');
 const tree = A.cxUsTree(data, g);
 eq(tree.map((t) => t.label), ['Legislative branch', 'Executive branch', 'Judicial branch'], 'three branches');
 if (!/not in our record yet/i.test(tree[2].note)) fail('the judicial branch does not say it is missing');
-if (!/cabinet/.test(tree[1].note)) fail('the executive branch does not say the cabinet is missing');
+if (!/cabinet/.test(tree[1].note) || !/person/.test(tree[1].note)) fail('the executive branch does not say the cabinet-to-agency link waits for a person');
 const count = (n) => 1 + n.children.reduce((t, c) => t + count(c), 0);
 const leaves = tree[0].children.reduce((t, c) => t + c.children.length, 0);
 eq(leaves, data.committees.length, 'every committee appears once in the tree');
@@ -110,6 +110,23 @@ eq(g.nodes.filter((n) => n.kind === 'agency').length, data.agencies.length, 'eve
   if (md < 6) fail(`two judges are ${md.toFixed(1)} apart`);
   const far = jn.filter((n) => Math.hypot(n.hx - g.byId.get('k:' + n.j.court_id).hx, n.hy - g.byId.get('k:' + n.j.court_id).hy) > 140).length;
   if (far > jn.length * 0.05) fail(`${far} judges sit far from their own court`);
+}
+
+// the cabinet: every member is tied to the President and to nothing else, and sits inside the executive cluster
+{
+  const cab = g.nodes.filter((n) => n.kind === 'cabinet'), prez = g.nodes.find((n) => n.kind === 'president' && n.p.current && n.p.role === 'President');
+  eq(cab.length, (data.executive.cabinet || []).length, 'the graph holds every cabinet member');
+  if (cab.length) {
+    if (!cab.every((n) => g.adj[n.i].map((ei) => g.edges[ei]).every((e) => (g.nodes[e.a] === n ? g.nodes[e.b] : g.nodes[e.a]) === prez))) fail('a cabinet member is tied to something other than the President');
+    if (!cab.every((n) => g.adj[n.i].length === 1)) fail('a cabinet member has more than one tie');
+    if (!A.cxUsLinks(g, prez.i).some((l) => l.kind === 'cabinet' && /^Secretary of State\./.test(l.text))) fail('the President does not list the Secretary of State');
+    const ec = g.clusters.find((c) => c.id === 'exec');
+    if (cab.some((n) => Math.hypot(n.hx - ec.x, n.hy - ec.y) > ec.r)) fail('a cabinet member sits outside the executive cluster');
+    eq(A.cxUsFaceId(cab[0]), null, 'a cabinet member has no portrait file');
+    const t = A.cxUsTree(data, g)[1];
+    const names = []; const walk = (x) => { if (x.node !== null && x.node !== undefined && g.nodes[x.node].kind === 'cabinet') names.push(x.label); x.children.forEach(walk); }; walk(t);
+    eq(names.length, cab.length, 'every cabinet member appears once in the tree');
+  }
 }
 
 // Sky layout: same data, same picture; nobody overlaps; everyone is inside their cluster; committees sit on the rim

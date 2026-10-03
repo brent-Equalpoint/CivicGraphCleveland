@@ -86,6 +86,9 @@ function cxUsGraph(d) {
     add({ id: `h:court`, kind: `hub`, label: `Federal courts`, name: `The federal courts`, x: J.x, y: J.y, r: 16, shape: `circle`, group: `judicial` });
     const leaders = [...(ex.presidents || []).map((p) => ({ ...p, ...(ex.president && ex.president.id === p.id ? ex.president : {}), role: p.current ? `President` : `Former President` })), ...(ex.vice_president ? [{ ...ex.vice_president, role: `Vice President`, current: !0, terms: [{ start: ex.vice_president.term_start, end: ex.vice_president.term_end }] }] : [])];
     leaders.forEach((p) => { add({ id: `p:${p.id}`, kind: `president`, label: p.name, name: p.name, x: 0, y: 0, r: p.current ? 6.5 : 4.5, shape: `circle`, group: `exec`, p }); edge(`p:${p.id}`, `h:exec`, `leader`); });
+    // the cabinet, as the White House cabinet page lists it: each member is tied to the President, and to nothing else (which agency a title leads waits for a person)
+    const cp = ex.president && byId.get(`p:${ex.president.id}`);
+    (ex.cabinet || []).forEach((c) => { add({ id: `cab:${c.id}`, kind: `cabinet`, label: c.name, name: c.name, x: 0, y: 0, r: 4.6, shape: `circle`, group: `exec`, cab: c }); if (cp) edge(`cab:${c.id}`, `p:${ex.president.id}`, `cabinet`); });
     d.judiciary.courts.forEach((c) => { add({ id: `k:${c.id}`, kind: `court`, label: c.name.replace(/^U\.S\. (Court of Appeals for the |District Court for the )?/, ``).replace(/^Supreme Court of the United States$/, `Supreme Court`), name: c.name, x: 0, y: 0, r: c.type === `supreme` ? 9 : c.type === `appeals` ? 7 : 5, shape: `diamond`, group: `judicial`, c }); edge(`k:${c.id}`, `h:court`, `court of`); });
     d.judiciary.courts.forEach((c) => { if (c.circuit && byId.has(`k:${c.circuit}`)) edge(`k:${c.id}`, `k:${c.circuit}`, `appeals to`); });
     const sup = d.judiciary.courts.find((c) => c.type === `supreme`);
@@ -127,6 +130,9 @@ function cxUsFacts(g, n) {
     if (a.blurb) f.push(a.blurb);
     const subs = g.nodes.filter((x) => x.a && x.a.parent_id === a.id);
     if (subs.length) f.push(`Sub-agencies listed: ${subs.slice(0, 12).map((s) => s.name).join(`, `)}${subs.length > 12 ? `, and ${subs.length - 12} more` : ``}.`);
+  } else if (n.kind === `cabinet`) {
+    f.push(`${n.name} is ${n.cab.title} in the President's cabinet.`);
+    f.push(`Listed on the White House cabinet page, pulled with the rest of this record. Which agency a cabinet title leads is not linked here yet.`);
   } else if (n.kind === `judge`) {
     const j = n.j, co = g.byId.get(`k:${j.court_id}`), who = g.nodes.find((x) => x.kind === `president` && x.p.id === j.appointed_by_id);
     f.push(`${j.name} is ${j.title === `Judge` ? `a judge` : j.title === `Chief Justice` ? `the Chief Justice` : `an Associate Justice`} of the ${co ? co.name : `federal courts`}${j.chief ? `, and its chief judge` : ``}.`);
@@ -151,6 +157,7 @@ function cxUsLink(n) {
   if (n.kind === `member`) return n.m.url ? [`${n.m.name}'s official website`, n.m.url] : null;
   if (n.kind === `committee`) return n.c.url ? [`${n.name}'s official website`, n.c.url] : null;
   if (n.kind === `agency`) return n.a.url ? [`${n.name}`, n.a.url] : null;
+  if (n.kind === `cabinet`) return [`The White House cabinet page`, `https://www.whitehouse.gov/administration/cabinet/`];
   if (n.kind === `judge`) return [`${n.name} at the Federal Judicial Center`, `https://www.fjc.gov/node/${n.j.id.slice(1)}`];
   if (n.kind === `president`) return n.p.id && !n.p.id.startsWith(`P-`) ? [`${n.name} in the Biographical Directory`, `https://bioguide.congress.gov/search/bio/${n.p.id}`] : null;
   return null;
@@ -407,6 +414,7 @@ function CX_UsAreaCounts({ vd, members, onTopics }) {
 const CX_US_PICK = { area: `` };
 function cxUsWhere(n) {
   if (n.kind === `judge`) return <><span>{n.j.title}</span>{`, `}<span>{n.where}</span></>;
+  if (n.kind === `cabinet`) return n.cab.title;
   if (n.kind === `court`) return n.c.type === `supreme` ? `The highest federal court` : n.c.type === `appeals` ? `Court of appeals` : n.c.type === `district` ? `District court` : `Federal court`;
   if (n.kind === `president`) return n.p.role === `Vice President` ? `Vice President of the United States` : n.p.current ? `President of the United States` : `Former President`;
   if (n.kind === `member`) { const m = n.m; return m.chamber === `senate` ? `Senator, ${cxStateName(m.state)}` : m.district ? `Representative, ${cxStateName(m.state)}, district ${m.district}` : `Delegate or representative, ${cxStateName(m.state)}`; }
@@ -521,7 +529,7 @@ function CX_UsGraph({ phone }) {
     if (n.kind === `hub`) return !0;
     if (n.kind === `member` && !show.member) return !1;
     if (n.kind === `committee` && !show.committee) return !1;
-    if ((n.kind === `agency` || n.kind === `president`) && !show.agency) return !1;
+    if ((n.kind === `agency` || n.kind === `president` || n.kind === `cabinet`) && !show.agency) return !1;
     if ((n.kind === `court` || n.kind === `judge`) && !show.court) return !1;
     if (chamber !== `all` && n.group !== chamber && n.group !== `joint` && n.group !== `exec` && n.group !== `judicial`) return !1;
     return !0;
@@ -668,7 +676,7 @@ function CX_UsGraph({ phone }) {
   const rows = g.nodes.filter((n) => n.kind !== `hub` && visible(n) && !dim(n));
   const links = cur ? cxUsLinks(g, cur.i) : [];
   const connected = links;
-  const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, judge: `Federal judge`, court: `Federal court`, president: `President or Vice President`, hub: `Group` };
+  const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, judge: `Federal judge`, court: `Federal court`, president: `President or Vice President`, cabinet: `Cabinet member`, hub: `Group` };
   const soloVal = !solo ? `` : solo.state ? `s:${solo.state}` : `n:${solo.node}`;
   const soloPicker = (
     <label>Solo <select className="us-solo" value={soloVal} onChange={(e) => { const v = e.target.value; setSolo(!v ? null : v.startsWith(`s:`) ? { state: v.slice(2) } : { node: +v.slice(2) }); if (v) setView(`sky`); }}>
@@ -682,7 +690,7 @@ function CX_UsGraph({ phone }) {
   );
   const compact = view === `sky` && !phone;
   const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
-  const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{n.kind === `judge` || n.kind === `president` ? cxUsWhere(n) : kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
+  const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{n.kind === `judge` || n.kind === `president` || n.kind === `cabinet` ? cxUsWhere(n) : kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
     <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${view === `sky` ? `us-skyview` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">

@@ -65,6 +65,43 @@ PEOPLE = [
 ]
 
 
+CABINET_HTML = """<main>
+<h2 class="wp-block-heading has-text-align-center"><strong><strong>Ann Alpha</strong></strong></h2> <hr class="wp-block-separator" /> <h3 class="wp-block-heading has-text-align-center"><strong>Secretary of State</strong></h3>
+<p>A long biography with <h2>not a person</h2> headings that have no title heading after them.</p>
+<h2 class="wp-block-heading has-text-align-center">Bo B&eacute;ta, Jr.</h2>
+<hr class="wp-block-separator has-alpha-channel-opacity" />
+<h3 class="wp-block-heading has-text-align-center"><strong>Attorney General</strong></h3>
+<h2 class="wp-block-heading">Cy Gamma</h2><hr><h3 class="wp-block-heading">Secretary of the Treasury</h3>
+</main>"""
+
+
+class Cabinet(unittest.TestCase):
+    def test_each_person_is_a_name_heading_then_a_title_heading(self):
+        got = us.parse_cabinet(CABINET_HTML)
+        self.assertEqual([(g["name"], g["title"]) for g in got], [("Ann Alpha", "Secretary of State"), ("Bo B\u00e9ta, Jr.", "Attorney General"), ("Cy Gamma", "Secretary of the Treasury")])
+        self.assertEqual(got[0]["id"], "secretary-of-state")
+
+    def test_a_page_that_changed_shape_is_not_trusted(self):
+        self.assertTrue(us.cabinet_problems([]))   # nothing parsed
+        three = us.parse_cabinet(CABINET_HTML)
+        self.assertTrue(any("expected 12" in p for p in us.cabinet_problems(three)))   # a real cabinet is not three people
+        many = [{"id": f"t{i}", "name": f"First{i} Last{i}", "title": "Secretary of State | Attorney General | Secretary of the Treasury" if i == 0 else f"Role {i}"} for i in range(15)]
+        self.assertEqual(us.cabinet_problems(many), [])
+        many[1]["name"] = many[0]["name"]
+        self.assertTrue(any("twice" in p for p in us.cabinet_problems(many)))
+        many[1]["name"] = "Oneword"
+        self.assertTrue(any("name" in p for p in us.cabinet_problems(many)))
+
+    def test_the_cabinet_rides_in_the_executive_part_and_is_not_linked_to_agencies(self):
+        cab = [{"id": "secretary-of-state", "name": "Ann Alpha", "title": "Secretary of State"}]
+        s = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01", PEOPLE, JUDGES, "2026-10-03", cab)
+        self.assertEqual(s["executive"]["cabinet"], cab)
+        self.assertEqual(s["counts"]["cabinet"], 1)
+        self.assertEqual(sorted(s["executive"]["cabinet"][0]), ["id", "name", "title"])   # no agency, no party, no rating
+        s2 = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01", PEOPLE, JUDGES, "2026-10-03")
+        self.assertNotIn("cabinet", s2["executive"])
+
+
 class Judiciary(unittest.TestCase):
     def test_a_judge_sits_on_the_court_of_their_latest_service_and_retired_judges_are_left_out(self):
         courts, judges = us.build_judiciary(JUDGES)

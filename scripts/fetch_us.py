@@ -8,6 +8,9 @@ Sources (all registered in scripts/us_sources.py, all still marked "terms not ye
     subcommittees, and current committee membership with roles (public domain data on GitHub).
   * The Office of the Federal Register's agency list, and a count of each agency's published documents since a cutoff.
   * The unitedstates project's executive.json: the President and Vice President on today's date, and every President's terms.
+  * The White House cabinet page: each cabinet member's name and title. It has no data file, so the page is read by script (a name heading and a title
+    heading per person) and checked hard; if the page changes shape the last good list is kept and a warning is printed, so this one source can never stop
+    the refresh. Cabinet members are NOT linked to agencies: which agency a cabinet title leads is interpretive and waits for a person.
   * The Federal Judicial Center's Biographical Directory of Article III Federal Judges (judges.csv): the Supreme Court, the courts
     of appeals, the district courts, and who sits on them now, with the President who appointed each judge. A judge counts as
     sitting when their latest service has no termination date; senior status is counted separately.
@@ -23,7 +26,7 @@ What it does not do, on purpose:
 
 refresh.py runs this nightly and checks the result (counts within a sane range); a bad result keeps the old file.
 """
-import concurrent.futures as cf, datetime, json, os, re, sys, urllib.parse
+import concurrent.futures as cf, datetime, html as htmllib, json, os, re, sys, urllib.parse
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import net
@@ -31,6 +34,8 @@ import net
 LEG = "https://unitedstates.github.io/congress-legislators/"
 EXEC = LEG + "executive.json"
 FJC = "https://www.fjc.gov/sites/default/files/history/judges.csv"
+CABINET = "https://www.whitehouse.gov/administration/cabinet/"
+CABINET_PAIR = re.compile(r"<h2[^>]*wp-block-heading[^>]*>(.*?)</h2>\s*<hr[^>]*>\s*<h3[^>]*wp-block-heading[^>]*>(.*?)</h3>", re.S)
 FR = "https://www.federalregister.gov/api/v1"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "us-landscape-2026.json")
 CONGRESS = 119
@@ -66,8 +71,12 @@ def blurb(text):
     return (cut[:end + 1] if end > BLURB_MAX // 2 else cut.rsplit(" ", 1)[0] + "...")
 
 
-# Which states each court of appeals covers (28 U.S.C. 41), written out by hand (Oct 3, 2026). A person should compare it to the statute
-# before anything shows a district court's circuit as official. The test makes sure every district court lands in exactly one circuit.
+# Which states each court of appeals covers (28 U.S.C. 41), written out by hand (Oct 3, 2026). Compared by script with the text of section 41 on the
+# same day (law.cornell.edu/uscode/text/28/41): every circuit matches except two lines. The statute also lists the "District of the Canal Zone" under the
+# Fifth Circuit (that district no longer exists, so it is left out here), and it does not list the Northern Mariana Islands, which are added to the Ninth
+# here because 48 U.S.C. 1821 has the Ninth Circuit's chief judge assign judges there. Whether appeals from that court go to the Ninth Circuit is not
+# stated in the text read, so that is the line for a person to confirm.
+# A person should still confirm those two lines. The test makes sure every district court lands in exactly one circuit.
 CIRCUIT_STATES = {
     "First": ["Maine", "Massachusetts", "New Hampshire", "Rhode Island", "Puerto Rico"],
     "Second": ["Connecticut", "New York", "Vermont"],
@@ -163,6 +172,36 @@ def president_keys(n):
     return keys
 
 
+def parse_cabinet(page):
+    """Pure: the cabinet page's HTML in, [{id, name, title}] out, in page order. Each person is a name heading, a rule, then a title heading."""
+    def clean(text):
+        return re.sub(r"\s+", " ", htmllib.unescape(re.sub(r"<[^>]+>", "", text))).strip()
+    out = []
+    for name, title in CABINET_PAIR.findall(page):
+        name, title = clean(name), clean(title)
+        if name and title:
+            out.append({"id": slug(title), "name": name, "title": title})
+    return out
+
+
+def cabinet_problems(items):
+    """Pure: why a parsed cabinet should not be trusted. Empty list: safe to use."""
+    bad = []
+    if not (12 <= len(items) <= 40):
+        bad.append(f"{len(items)} cabinet entries, expected 12 to 40")
+    titles = " | ".join(i["title"] for i in items)
+    for need in ("Secretary of State", "Attorney General", "Secretary of the Treasury"):
+        if need not in titles:
+            bad.append(f"no {need}")
+    if len({i["name"] for i in items}) != len(items):
+        bad.append("a name is listed twice")
+    if len({i["id"] for i in items}) != len(items):
+        bad.append("a title is listed twice")
+    if any(len(i["name"].split()) < 2 or len(i["name"]) > 60 for i in items):
+        bad.append("a name does not look like a name")
+    return bad
+
+
 def build_executive(people, today, appointer_names):
     """Pure: the President and Vice President on `today`, and the Presidents who appointed a sitting judge (or who serve now), with their terms.
     Each President carries "keys", the spellings other sources may use; the caller matches on them and drops them."""
@@ -186,7 +225,7 @@ def build_executive(people, today, appointer_names):
     return {"president": cur.get("prez"), "vice_president": cur.get("viceprez"), "presidents": presidents}
 
 
-def build(legislators, committees, membership, agencies, doc_counts, retrieved_at, cutoff, executive_people=None, judge_rows=None, today=None):
+def build(legislators, committees, membership, agencies, doc_counts, retrieved_at, cutoff, executive_people=None, judge_rows=None, today=None, cabinet=None):
     """Pure: turns the raw records into the snapshot. No network, so it can be tested."""
     roles = {}  # bioguide -> [(committee id, role)]
     chairs = {}
@@ -227,6 +266,9 @@ def build(legislators, committees, membership, agencies, doc_counts, retrieved_a
     if judge_rows is not None and executive_people is not None:
         courts, judges = build_judiciary(judge_rows)
         ex = build_executive(executive_people, today or retrieved_at[:10], [j["appointed_by"] for j in judges])
+        if cabinet:
+            ex["cabinet"] = cabinet
+            ex["cabinet_source"] = CABINET
         seen = {}
         for p in ex["presidents"]:
             for k in p["keys"]:
@@ -254,7 +296,8 @@ def build(legislators, committees, membership, agencies, doc_counts, retrieved_a
         out.update(extra)
         out["sources"]["executive"] = EXEC
         out["sources"]["judges"] = FJC
-        out["counts"].update({"courts": len(extra["judiciary"]["courts"]), "judges": len(extra["judiciary"]["judges"]),
+        out["sources"]["cabinet"] = CABINET
+        out["counts"].update({"cabinet": len((extra["executive"].get("cabinet") or [])), "courts": len(extra["judiciary"]["courts"]), "judges": len(extra["judiciary"]["judges"]),
                               "justices": sum(1 for j in extra["judiciary"]["judges"] if j["title"] in ("Chief Justice", "Associate Justice"))})
     return out
 
@@ -298,6 +341,18 @@ def main():
     executive_people = get_json(EXEC)
     import csv, io
     judge_rows = list(csv.DictReader(io.StringIO(net.get(FJC, timeout=180).decode("utf-8-sig"))))
+    cabinet = None
+    try:   # this page has no data file, so any trouble keeps the last good list instead of stopping the refresh
+        cabinet = parse_cabinet(net.get(CABINET, timeout=60).decode("utf-8", "replace"))
+        why = cabinet_problems(cabinet)
+        if why:
+            raise ValueError("; ".join(why))
+    except Exception as e:
+        try:
+            cabinet = (json.load(open(OUT, encoding="utf-8")).get("executive") or {}).get("cabinet")
+        except Exception:
+            cabinet = None
+        print(f"  WARNING: the cabinet page was not read ({type(e).__name__}: {e}); " + (f"kept the {len(cabinet)} from the last good snapshot" if cabinet else "no cabinet in this snapshot"))
     now = datetime.datetime.now(datetime.timezone.utc)
     cutoff = (now - datetime.timedelta(days=30 * ACTIVE_MONTHS)).date().isoformat()
 
@@ -310,7 +365,7 @@ def main():
 
     with cf.ThreadPoolExecutor(5) as ex:
         counts = dict(ex.map(count, agencies))
-    snap = build(legislators, committees, membership, agencies, counts, now.isoformat(timespec="seconds"), cutoff, executive_people, judge_rows, now.date().isoformat())
+    snap = build(legislators, committees, membership, agencies, counts, now.isoformat(timespec="seconds"), cutoff, executive_people, judge_rows, now.date().isoformat(), cabinet)
     os.makedirs(os.path.dirname(OUT), exist_ok=True)
     json.dump(snap, open(OUT, "w", encoding="utf-8", newline="\n"), indent=0, ensure_ascii=False)
     print("us landscape:", snap["counts"], "agencies left out:", snap["agencies_left_out"], "->", os.path.normpath(OUT))

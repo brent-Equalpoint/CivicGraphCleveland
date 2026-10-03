@@ -453,7 +453,11 @@
   "Sources: congress-legislators (public domain), the Federal Register, the Federal Judicial Center. Pulled": "Fuentes: congress-legislators (dominio público), el Federal Register, el Federal Judicial Center. Obtenido",
   "The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.": "El gráfico de Estados Unidos necesita el sitio alojado. No es parte del archivo sin conexión, porque carga un archivo de datos de menos de un megabyte.",
   "Photos of members of Congress: the U.S. Government Publishing Office's Member Guide (public domain).": "Fotos de miembros del Congreso: la Guía de Miembros de la Oficina de Publicaciones del Gobierno de EE. UU. (dominio público).",
-  "Photos: the U.S. Government Publishing Office's Member Guide (public domain).": "Fotos: la Guía de Miembros de la Oficina de Publicaciones del Gobierno de EE. UU. (dominio público)."
+  "Photos: the U.S. Government Publishing Office's Member Guide (public domain).": "Fotos: la Guía de Miembros de la Oficina de Publicaciones del Gobierno de EE. UU. (dominio público).",
+  "Cabinet": "Gabinete",
+  "Cabinet member": "Integrante del gabinete",
+  "Serves in this President's cabinet.": "Sirve en el gabinete de este presidente.",
+  "The President, the Vice President, the cabinet as the White House cabinet page lists it, and the federal agencies in the Federal Register. Which agency each cabinet title leads is not linked yet; that needs a person's review.": "El presidente, el vicepresidente, el gabinete tal como lo enumera la página del gabinete de la Casa Blanca, y las agencias federales del Federal Register. Todavía no se vincula qué agencia dirige cada cargo del gabinete; eso necesita la revisión de una persona."
  },
  "masked": {
   "{n} days": "{n} días",

@@ -24,12 +24,12 @@ function cxUsAreaOf(vd, v) {
    vd (recorded votes) is optional: without it the policy-area door says so and shows no counts. */
 function cxUsDoors(data, g, vd) {
   const byKind = (k, f = () => !0) => g.nodes.filter((n) => n.kind === k && f(n));
-  const members = byKind(`member`), committees = byKind(`committee`), agencies = byKind(`agency`), leaders = byKind(`president`), courts = byKind(`court`), judges = byKind(`judge`);
+  const members = byKind(`member`), committees = byKind(`committee`), agencies = byKind(`agency`), leaders = byKind(`president`), cabinet = byKind(`cabinet`), courts = byKind(`court`), judges = byKind(`judge`);
   const mk = (id, label, nodes) => ({ id, label, count: nodes.length, nodes: nodes.map((n) => n.i) });
   const doors = {
     members: [mk(`senate`, `Senate`, members.filter((n) => n.m.chamber === `senate`)), mk(`house`, `House`, members.filter((n) => n.m.chamber === `house`))],
     committees: [mk(`senate`, `Senate committees`, committees.filter((n) => n.c.chamber === `senate`)), mk(`house`, `House committees`, committees.filter((n) => n.c.chamber === `house`)), mk(`joint`, `Joint committees`, committees.filter((n) => n.c.chamber === `joint`))],
-    executive: [mk(`current`, `President and Vice President`, leaders.filter((n) => n.p.current)), mk(`former`, `Former Presidents`, leaders.filter((n) => !n.p.current)), mk(`top`, `Top-level agencies`, agencies.filter((n) => !n.a.parent_id)), mk(`sub`, `Sub-agencies`, agencies.filter((n) => n.a.parent_id))].filter((x) => x.count),
+    executive: [mk(`current`, `President and Vice President`, leaders.filter((n) => n.p.current)), mk(`cabinet`, `Cabinet`, cabinet), mk(`former`, `Former Presidents`, leaders.filter((n) => !n.p.current)), mk(`top`, `Top-level agencies`, agencies.filter((n) => !n.a.parent_id)), mk(`sub`, `Sub-agencies`, agencies.filter((n) => n.a.parent_id))].filter((x) => x.count),
     courts: [mk(`supreme`, `Supreme Court`, courts.filter((n) => n.c.type === `supreme`)), mk(`appeals`, `Courts of appeals`, courts.filter((n) => n.c.type === `appeals`)), mk(`district`, `District courts`, courts.filter((n) => n.c.type === `district`)), mk(`other`, `Other courts`, courts.filter((n) => n.c.type === `other`)), mk(`judges`, `Judges`, judges)].filter((x) => x.count),
   };
   const sc = new Map();
@@ -62,6 +62,8 @@ function cxUsEdgeSentence(g, e, from) {
     return `${r}.`;
   }
   if (me.kind === `agency` && other.kind === `agency`) return e.a === from ? `Larger agency it belongs to.` : `Part of this agency.`;
+  if (me.kind === `cabinet` && other.kind === `president`) return `Serves in this President's cabinet.`;
+  if (me.kind === `president` && other.kind === `cabinet`) return `${other.cab.title}.`;
   if (me.kind === `judge` && other.kind === `court`) return `${seat(me)}.`;
   if (me.kind === `court` && other.kind === `judge`) return `${seat(other)}.`;
   if (me.kind === `judge` && other.kind === `president`) return `Appointed by this President.`;
@@ -100,6 +102,8 @@ function cxUsTree(data, g) {
   const leaders = [];
   if (ex && ex.president) leaders.push({ label: ex.president.name, node: idx(`p:${ex.president.id}`), children: [], note: `President` });
   if (ex && ex.vice_president) leaders.push({ label: ex.vice_president.name, node: idx(`p:${ex.vice_president.id}`), children: [], note: `Vice President` });
+  const cab = ex && ex.cabinet ? ex.cabinet.map((c) => ({ label: c.name, node: idx(`cab:${c.id}`), children: [], note: c.title })) : [];
+  if (cab.length) leaders.push({ label: `Cabinet`, node: null, children: cab });
   const former = ex ? ex.presidents.filter((p) => !p.current).map((p) => ({ label: p.name, node: idx(`p:${p.id}`), children: [] })) : [];
   if (former.length) leaders.push({ label: `Former Presidents who appointed sitting judges`, node: null, children: former });
   const executive = [...leaders, ...agencies];
@@ -115,7 +119,7 @@ function cxUsTree(data, g) {
   }
   return [
     { label: `Legislative branch`, children: legislative },
-    { label: `Executive branch`, count: agencies.length, children: executive, note: ex ? `The President, the Vice President, and the federal agencies in the Federal Register. The cabinet secretaries are not in our record yet.` : `Federal agencies from the Federal Register. The President and the cabinet are not in our record yet.` },
+    { label: `Executive branch`, count: agencies.length, children: executive, note: ex ? `The President, the Vice President, the cabinet as the White House cabinet page lists it, and the federal agencies in the Federal Register. Which agency each cabinet title leads is not linked yet; that needs a person's review.` : `Federal agencies from the Federal Register. The President and the cabinet are not in our record yet.` },
     { label: `Judicial branch`, children: judicial, note: jud ? `Article III judges who sit now, from the Federal Judicial Center. Senior judges are counted on each court, not listed. Bankruptcy, magistrate, and other courts are not in our record yet.` : `Not in our record yet.` },
   ];
 }
@@ -177,6 +181,9 @@ function cxUsPlace(g) {
   // the executive: the President, the Vice President, and the Presidents who appointed sitting judges sit in a small ring at the middle of the agencies
   const leaders = g.nodes.filter((n) => n.kind === `president`).sort((a, b) => (b.p.current ? 1 : 0) - (a.p.current ? 1 : 0) || a.name.localeCompare(b.name));
   leaders.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * k) / Math.max(1, leaders.length); n.x = L.exec.x + 42 * Math.cos(a); n.y = L.exec.y + 42 * Math.sin(a); });
+  // the cabinet: a ring between the President's ring and the agencies
+  const cab = g.nodes.filter((n) => n.kind === `cabinet`);
+  cab.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * k) / Math.max(1, cab.length); n.x = L.exec.x + 82 * Math.cos(a); n.y = L.exec.y + 82 * Math.sin(a); });
   // the courts: districts on the rim in circuit order, each circuit court at the middle of its districts, the Supreme Court at the center
   const jc = L.judicial, courts = g.nodes.filter((n) => n.kind === `court`);
   if (courts.length) {
