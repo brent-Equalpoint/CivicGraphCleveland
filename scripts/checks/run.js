@@ -644,6 +644,41 @@ const CHECKS = {
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await done(p);
   },
+  async 'city-hall'() {
+    // At City Hall: the Clerk's meeting record as a front page. A card on Today, a story first in the row, and a page whose lead is the next Council meeting,
+    // whose first items are real legislation (ceremonial resolutions come last), and which says what it does not hold.
+    const rec = JSON.parse(fs.readFileSync(path.join(SITE, 'meetings', 'meetings-2026.json'), 'utf8'));
+    const today = new Date().toISOString().slice(0, 10);
+    const upcoming = rec.meetings.filter((m) => m.date >= today).length > 0;
+    const p = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
+    if (!upcoming && !rec.meetings.some((m) => m.items.some((i) => i[1]))) { await done(p); return; }
+    expect(await has(p, '.mt-card'), 'Today has no At City Hall card');
+    expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText)))[0] === 'City Hall', 'the City Hall story is not first in the row');
+    await p.evaluate(() => document.querySelector('.cxm-story-btn').click()); await wait(600);
+    expect(/City Hall/.test((await txt(p, '.cxm-story-head')) || ''), 'the City Hall story did not open');
+    for (let i = 0; i < 8 && !(await has(p, '.cxm-story .cxm-btn-light')); i++) { await p.mouse.click(300, 420); await wait(350); }
+    expect(await has(p, '.cxm-story .cxm-btn-light'), 'the City Hall story has no button to open the page');
+    await p.evaluate(() => document.querySelector('.cxm-story .cxm-btn-light').click()); await wait(1200);
+    expect(await has(p, '.mt-lead') || !upcoming, 'the City Hall page has no lead story');
+    if (upcoming) {
+      expect(/meets/.test((await txt(p, '.mt-head')) || ''), `the lead does not say who meets when: ${await txt(p, '.mt-head')}`);
+      expect((await count(p, '.mt-lead .mt-item')) <= 3, 'the lead shows more than three items before "Show all"');
+      const mixOk = await p.evaluate(() => [...document.querySelectorAll('.mt-lead .mt-chip')].map((c) => c.innerText).join(' | '));
+      expect(/ordinance|resolution|item/.test(mixOk), `the lead does not say what the agenda is made of: ${mixOk}`);
+      const firstTitles = await p.$$eval('.mt-lead .mt-item strong', (els) => els.map((e) => e.innerText));
+      expect(!firstTitles.some((t) => /^(Condolence|Congratulations|Recognition)/.test(t)), `a ceremonial resolution leads the agenda: ${firstTitles}`);
+      expect(!/https?:|www\./.test((await txt(p, '.mt-lead')) || ''), 'web addresses from the Clerk are shown in the lead');
+      expect((await count(p, '.mt-lead .mt-links a')) >= 1, 'the lead has no agenda link');
+    }
+    expect(/not include testimony or public comment/.test((await txt(p, '.mt')) || ''), 'the page does not say it holds no testimony or public comment');
+    expect((await count(p, '.mt-strip .mt-small')) >= 0 && (await has(p, '.cxm-drop')), 'the earlier meetings are not folded away');
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the City Hall page scrolls sideways');
+    // an item opens its legislation record, which says where else it was on an agenda
+    await p.evaluate(() => document.querySelector('.mt-item').click()); await wait(900);
+    expect(await has(p, '.cxm-sheet .mt-heard') || !(await has(p, '.cxm-sheet')), 'a legislation record does not list its meetings');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on At City Hall: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(p);
+  },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
     const m = await open('/#phone', { mobile: true, easy: false });
@@ -1022,7 +1057,7 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
@@ -1058,6 +1093,7 @@ const LOOK_PAGES = [
   ['phone story figure', '/#phone', { mobile: true, easy: false }, 'figure', ['.cxm-story-fig', '.cxm-story-big']],
   ['phone number pad', '/#phone', { mobile: true, easy: false }, 'pad', ['.cxm-keys button', '.cxm-story .cxm-btn', '.cxm-story-fig']],
   ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.lv-tile', '.lv-tile-fig', '.lv-tile-per', '.lv-field input', '.lv-h2']],
+  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.mt-lead', '.mt-head', '.mt-sub', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.mt-small', '.mt-note', '.cxm-kicker']],
   ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
   ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],

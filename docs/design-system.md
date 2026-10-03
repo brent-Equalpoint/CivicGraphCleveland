@@ -175,6 +175,7 @@ Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. 
 | federal-index | `.us-doors, .us-door, .us-ring, .us-groups, .us-list` | ext/cx-us.jsx (CX_UsDoors), ext/cx-us-model.jsx. five ways into the federal government; the ring holds a count, never a score |
 | federal-sky | `.us-sky, .us-tabs, .us-motion, .us-actions, .us-solo` | ext/cx-us.jsx (CX_UsGraph), ext/cx-us-model.jsx (cxUsPlace, cxUsSolo, cxUsStep). folder-tab views; the big map fills the page; Still, Calm, Live motion with a home position for every node |
 | person-face | `.cxm-fed-av, .us-who` | ext/cx-us.jsx (CxFace). a round portrait over the person's initials; a missing photo leaves the initials; used on Federal profiles, the strip, the Index, and the Sky side panel |
+| city-hall-front-page | `.mt, .mt-lead, .mt-item, .mt-strip, .mt-small, .mt-chip, .mt-card` | ext/cx-meetings.jsx. a lead tile (the next Council meeting), a short strip for the rest of the week, what was just decided, and earlier meetings folded by month; every item opens its legislation record |
 
 <!-- GENERATED-END -->
 

@@ -174,7 +174,7 @@ function cxmFromUrl() {
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
+    ledger: [`today`, `ledger`], meetings: [`today`, `meetings`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
   if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && q.get(`view`) === `graph` ? `graph` : (mode || null) }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
@@ -192,7 +192,7 @@ function cxmToUrl(tab, room, top, peopleMode) {
   url.search = ``;
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
-  else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
+  else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`, `meetings`].includes(top.type)) p.set(`panel`, top.type);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); }
@@ -357,6 +357,7 @@ const CXM_SHEETS = {
   review: () => <CxmReview />,
   news: () => <CxmNews />,
   levies: () => <CxmLevies />,
+  meetings: () => <CxmMeetings />,
   us: () => <div className="cxm-pad"><CX_UsGraph phone /></div>,
   usvotes: (s) => <CxmUsVotes id={s.id} />,
   profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,

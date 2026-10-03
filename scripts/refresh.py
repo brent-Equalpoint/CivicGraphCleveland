@@ -115,6 +115,11 @@ def main():
         fetch_portraits.main()
     except Exception as e:
         print(f"::warning title=Portraits were not updated::{type(e).__name__}: {e}")
+    try:  # the Clerk's meeting record (At City Hall): best effort, and it only replaces its file when the new one passes its own checks
+        import fetch_meetings
+        fetch_meetings.main()
+    except Exception as e:
+        print(f"::warning title=Council meetings were not updated::{type(e).__name__}: {e}")
     bad = check(keep, DATA)
     if bad:
         restore("; ".join(bad))

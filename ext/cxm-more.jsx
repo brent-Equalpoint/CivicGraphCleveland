@@ -12,6 +12,7 @@ function CxmLegHistory({ m }) {
       {cxVoteRecord(m.file)
         ? <CX_RollCall file={m.file} />
         : <p className="cxm-note">{m.passed ? `The City Record snapshot has no member-by-member vote for this file. Council's own record shows the outcome only. A missing record is not a no.` : `This file has no passed date in Council's record, so there is no final vote to show.`}</p>}
+      <CxmHeardAt file={m.file} />
     </div>
   );
 }

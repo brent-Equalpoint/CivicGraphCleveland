@@ -129,7 +129,10 @@ function cxmMoments(home) {
 function CxmToday() {
   const { home, openSheet, setOverlay, practice, seen, go, setEasy } = useCxm();
   const answers = practice.state.answers;
-  const stories = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
+  const base = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
+  const hallData = useCxMtg();
+  const hall = u.useMemo(() => cxMtgStory(hallData, cxTodayET()), [hallData]);
+  const stories = hall ? [hall, ...base] : base;
   const moments = u.useMemo(() => cxmMoments(home), [home?.ward]);
   const [note, setNote] = u.useState(CXM_NOTICE.v);
   const days = cxmDaysTo(CXM_ELECTION);
@@ -159,6 +162,7 @@ function CxmToday() {
         {nextDate && nextDate.iso !== CXM_ELECTION && <small className="cxm-next">{nextDate.state === `today` ? `Today: ` : `Next: `}{nextDate.label}, {nextDate.text.replace(/ by .*| ends at .*/, ``).toLowerCase()}{nextDate.state === `next` ? ` (${nextDate.days === 1 ? `tomorrow` : `in ${nextDate.days} days`})` : ``}</small>}
       </button>
       <CxmWhatsNew />
+      <CxmHallCard />
       <CxmReceipts />
       <section className="cxm-section">
         <h2 className="cxm-h2">Close to home<span className="cxm-dot">.</span></h2>
@@ -259,7 +263,7 @@ function CxmStory() {
         </div>
       )}
       {fr.type === `cta` && (
-        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
+        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else if (fr.go === `hall`) { setOverlay(null); openSheet(`meetings`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
       {!asText && (!fr.type || fr.type === `more`) && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
       {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}
