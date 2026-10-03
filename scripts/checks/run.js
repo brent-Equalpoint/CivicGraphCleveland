@@ -808,12 +808,18 @@ const CHECKS = {
     expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
     await clickText(p, 'Index', '.us-tabs button');
     // the Index is five doors: members, committees, agencies, policy areas, states. Each adds up to the record.
-    expect((await count(p, '.us-door')) === 5, `the Index offers ${await count(p, '.us-door')} ways in, not five`);
+    expect((await count(p, '.us-door')) === 6, `the Index offers ${await count(p, '.us-door')} ways in, not six`);
     expect(/^100 shown/.test((await txt(p, '.us-count')) || ''), `the Senate group does not show 100: ${await txt(p, '.us-count')}`);
     await clickText(p, 'House', '.us-groups button'); expect(/^439 shown/.test((await txt(p, '.us-count')) || ''), 'the House group does not show 439');
     expect((await count(p, '.us-list > li')) === 25, 'the member list is not paged by 25');
     await clickText(p, 'Committees', '.us-door'); await wait(300); expect(/^21 shown/.test((await txt(p, '.us-count')) || ''), `Senate committees: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'Agencies', '.us-door'); await wait(300); expect(/^124 shown/.test((await txt(p, '.us-count')) || ''), `top-level agencies: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'Executive branch', '.us-door'); await wait(300); expect(/^2 shown/.test((await txt(p, '.us-count')) || ''), `the President and Vice President: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'Top-level agencies', '.us-groups button'); await wait(300); expect(/^124 shown/.test((await txt(p, '.us-count')) || ''), `top-level agencies: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'Courts and judges', '.us-door'); await wait(300); expect(/^1 shown/.test((await txt(p, '.us-count')) || ''), `the Supreme Court: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'Judges', '.us-groups button'); await wait(300); expect(/^8\d\d shown/.test((await txt(p, '.us-count')) || ''), `the sitting judges: ${await txt(p, '.us-count')}`);
+    await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /Chief Justice/.test(b.innerText)).click()); await wait(400);
+    expect(/Chief Justice/.test((await txt(p, '.us-linked')) || '') && /Appointed by this President/.test((await txt(p, '.us-linked')) || ''), 'a judge in the Linked view does not say who appointed them');
+    await clickText(p, 'Index', '.us-tabs button'); await wait(300);
     await clickText(p, 'States', '.us-door'); await wait(300);
     expect((await count(p, '.us-list > li')) === 56, 'the States door does not list 56 states and territories');
     await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /^Ohio/.test(b.innerText)).click()); await wait(250);
@@ -928,7 +934,7 @@ const CHECKS = {
     const box = await ph.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
     expect(box[0] >= 300 && box[1] >= 300, `the phone map is ${box}`);
     expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone map scrolls sideways');
-    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-door')) === 5 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the five doors or the first 25 names');
+    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-door')) === 6 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the five doors or the first 25 names');
     { const small = await ph.evaluate(() => [...document.querySelectorAll('.us button, .us a[href], .us select, .us input, .us summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || el.tagName === 'INPUT' && el.type === 'checkbox') return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
       expect(small.length === 0, `phone United States: controls under 44px: ${small.slice(0, 5)}`); }
     { const bad = await axeBad(ph); expect(bad.length === 0, `axe on the phone United States page: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }

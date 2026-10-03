@@ -20,11 +20,15 @@ const fail = (m) => { bad++; console.log('FAIL ' + m); };
 const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) fail(`${m}: got ${JSON.stringify(a)}, wanted ${JSON.stringify(b)}`); };
 
 const doors = A.cxUsDoors(data, g, vd), by = Object.fromEntries(doors.map((d) => [d.id, d]));
-eq(doors.map((d) => d.id), ['members', 'committees', 'agencies', 'areas', 'states'], 'the five doors, in order');
+eq(doors.map((d) => d.id), ['members', 'committees', 'executive', 'courts', 'areas', 'states'], 'the six doors, in order');
 eq(by.members.count, data.counts.members, 'members door adds up to the record');
 eq(by.members.groups.map((x) => x.count), [data.counts.senate, data.counts.house], 'Senate and House members');
 eq(by.committees.count, data.committees.length, 'committees door adds up to the record');
-eq(by.agencies.count, data.counts.agencies, 'agencies door adds up to the record');
+eq(by.executive.count, data.counts.agencies + data.executive.presidents.length + 1, 'the executive door adds up to the agencies, the Presidents, and the Vice President');
+eq(by.executive.groups.map((x) => x.id), ['current', 'former', 'top', 'sub'], 'the executive door groups');
+eq(by.executive.groups[0].count, 2, 'the current President and Vice President');
+eq(by.courts.count, data.judiciary.courts.length + data.judiciary.judges.length, 'the courts door adds up to the courts and the sitting judges');
+eq(by.courts.groups.map((x) => x.id), ['supreme', 'appeals', 'district', 'other', 'judges'], 'the courts door groups');
 eq(by.states.groups[0].states.length, new Set(data.members.map((m) => m.state)).size, 'one row per state');
 eq(by.states.groups[0].states.reduce((t, s) => t + s.senators + s.representatives, 0), data.counts.members, 'state rows hold every member once');
 const finals = vd.votes.filter((v) => v.final).length;
@@ -62,18 +66,56 @@ eq(oh[0].chamber, 'senate', 'senators are listed first');
 const tree = A.cxUsTree(data, g);
 eq(tree.map((t) => t.label), ['Legislative branch', 'Executive branch', 'Judicial branch'], 'three branches');
 if (!/not in our record yet/i.test(tree[2].note)) fail('the judicial branch does not say it is missing');
-if (!/President/.test(tree[1].note)) fail('the executive branch does not say the President is missing');
+if (!/cabinet/.test(tree[1].note)) fail('the executive branch does not say the cabinet is missing');
 const count = (n) => 1 + n.children.reduce((t, c) => t + count(c), 0);
 const leaves = tree[0].children.reduce((t, c) => t + c.children.length, 0);
 eq(leaves, data.committees.length, 'every committee appears once in the tree');
-const agencyCount = (n) => n.children.reduce((t, c) => t + 1 + agencyCount(c), 0);
-eq(agencyCount(tree[1]), data.agencies.length, 'every agency appears once in the tree, at any depth');
+const kindCount = (t, kind) => (t.node !== null && t.node !== undefined && g.nodes[t.node].kind === kind ? 1 : 0) + t.children.reduce((x, c) => x + kindCount(c, kind), 0);
+eq(kindCount(tree[1], 'agency'), data.agencies.length, 'every agency appears once in the tree, at any depth');
+eq(kindCount(tree[1], 'president'), data.executive.presidents.length + 1, 'every President and the Vice President appear once in the tree');
+eq(kindCount(tree[2], 'court'), data.judiciary.courts.length, 'every court appears once in the tree');
+eq(kindCount(tree[2], 'judge'), data.judiciary.judges.length, 'every sitting judge appears once in the tree');
 eq(g.nodes.filter((n) => n.kind === 'agency').length, data.agencies.length, 'every agency is a node in the picture');
+
+// the President, the courts, and the judges
+{
+  const jn = g.nodes.filter((n) => n.kind === 'judge'), cn2 = g.nodes.filter((n) => n.kind === 'court'), pn = g.nodes.filter((n) => n.kind === 'president');
+  eq([jn.length, cn2.length, pn.length], [data.judiciary.judges.length, data.judiciary.courts.length, data.executive.presidents.length + 1], 'the graph holds every judge, court, and leader');
+  const edgesOf = (n) => g.adj[n.i].map((ei) => g.edges[ei]);
+  if (!jn.every((n) => edgesOf(n).filter((e) => e.rel === 'appointed by').length === 1)) fail('a judge lacks exactly one appointing President');
+  if (!jn.every((n) => edgesOf(n).some((e) => (g.nodes[e.a] === n ? g.nodes[e.b] : g.nodes[e.a]).kind === 'court'))) fail('a judge is not tied to a court');
+  const sup = cn2.find((n) => n.c.type === 'supreme');
+  eq(edgesOf(sup).filter((e) => e.rel === 'appeals to').length, 13, 'the Supreme Court takes appeals from the 13 courts of appeals');
+  if (!cn2.filter((n) => n.c.type === 'district').every((n) => edgesOf(n).some((e) => e.rel === 'appeals to'))) fail('a district court has no court of appeals');
+  const just = jn.find((n) => n.j.title === 'Chief Justice');
+  const note = (n) => A.cxUsLinks(g, n.i).map((l) => l.text).join(' | ');
+  if (!/Chief Justice\./.test(note(just))) fail(`the Chief Justice's court note: ${note(just)}`);
+  if (!/Appointed by this President\./.test(note(just))) fail('a judge does not say who appointed them');
+  const prez = g.nodes.find((n) => n.kind === 'president' && n.p.current && n.p.role === 'President');
+  if (!/Appointed this judge\./.test(note(prez))) fail('a President does not list the judges they appointed');
+  if (A.cxUsLinks(g, prez.i).filter((l) => l.kind === 'judge').length < 100) fail('the President is tied to too few judges');
+  const noParty = jn.every((n) => !('party' in n.j));
+  if (!noParty) fail('a judge carries a party');
+  const ids = new Set(jn.map((n) => n.id)); eq(ids.size, jn.length, 'judge ids are unique');
+  // solo
+  const some = cn2.find((n) => n.c.type === 'district' && n.c.active_judges >= 3);
+  const soloCourt = A.cxUsSolo(g, { node: some.i });
+  if (!jn.filter((n) => n.j.court_id === some.c.id).every((n) => soloCourt.has(n.i))) fail('Solo on a court dropped one of its judges');
+  const soloPrez = A.cxUsSolo(g, { node: prez.i });
+  if (!jn.filter((n) => n.j.appointed_by_id === prez.p.id).every((n) => soloPrez.has(n.i))) fail('Solo on a President dropped a judge they appointed');
+  // layout: judges inside the judicial cluster, spaced out, near their court
+  const jc = g.clusters.find((c) => c.id === 'judicial');
+  if (jn.some((n) => Math.hypot(n.hx - jc.x, n.hy - jc.y) > jc.r)) fail('a judge sits outside the judicial cluster');
+  let md = 1e9; for (let i = 0; i < jn.length; i++) for (let k = i + 1; k < jn.length; k++) md = Math.min(md, Math.hypot(jn[i].hx - jn[k].hx, jn[i].hy - jn[k].hy));
+  if (md < 6) fail(`two judges are ${md.toFixed(1)} apart`);
+  const far = jn.filter((n) => Math.hypot(n.hx - g.byId.get('k:' + n.j.court_id).hx, n.hy - g.byId.get('k:' + n.j.court_id).hy) > 140).length;
+  if (far > jn.length * 0.05) fail(`${far} judges sit far from their own court`);
+}
 
 // Sky layout: same data, same picture; nobody overlaps; everyone is inside their cluster; committees sit on the rim
 const g2 = A.cxUsGraph(data);
 eq(g.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), g2.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), 'two builds give the same positions');
-eq(g.clusters.map((c) => [c.id, c.count]), [['senate', 100], ['house', 439], ['exec', 260], ['joint', 5]], 'the clusters and their counts');
+eq(g.clusters.map((c) => [c.id, c.count]), [['senate', 100], ['house', 439], ['exec', 260], ['joint', 5], ['judicial', data.judiciary.judges.length]], 'the clusters and their counts');
 for (const ch of ['senate', 'house']) {
   const c = g.clusters.find((k) => k.id === ch), ms = g.nodes.filter((n) => n.kind === 'member' && n.group === ch);
   let min = 1e9; for (let i = 0; i < ms.length; i++) for (let j = i + 1; j < ms.length; j++) min = Math.min(min, Math.hypot(ms[i].x - ms[j].x, ms[i].y - ms[j].y));

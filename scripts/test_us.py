@@ -32,6 +32,106 @@ AGS = [{"id": 1, "slug": "dept-of-a", "name": "Department of A", "short_name": "
 COUNTS = {"dept-of-a": 12, "bureau-b": 3, "old-agency": 0, "orphan-child": 2}
 
 
+def svc(k, ctype, court, title="Judge", pres="Patrick Q. Prez", senior="", end="", chief_begin="", chief_end=""):
+    return {f"Court Type ({k})": ctype, f"Court Name ({k})": court, f"Appointment Title ({k})": title, f"Appointing President ({k})": pres, f"Commission Date ({k})": "2010-05-01",
+            f"Senior Status Date ({k})": senior, f"Termination Date ({k})": end, f"Service as Chief Judge, Begin ({k})": chief_begin, f"Service as Chief Judge, End ({k})": chief_end}
+
+
+def judge(nid, first, last, *services, middle="", suffix=""):
+    row = {"nid": str(nid), "First Name": first, "Middle Name": middle, "Last Name": last, "Suffix": suffix}
+    for i, sv in enumerate(services, 1):
+        row.update(sv(i))
+    return row
+
+
+S6 = "U.S. Court of Appeals for the Sixth Circuit"
+SC = "Supreme Court of the United States"
+NOH = "U.S. District Court for the Northern District of Ohio"
+JUDGES = [
+    judge(1, "Una", "Upper", lambda k: svc(k, "U.S. Court of Appeals", S6, pres="Patrick Q. Prez", end="2012-01-01"), lambda k: svc(k, "Supreme Court", SC, "Associate Justice", "Patrick Q. Prez")),
+    judge(2, "Cora", "Circuit", lambda k: svc(k, "U.S. Court of Appeals", S6, "Chief Judge", "Patrick Q. Prez", chief_begin="2020-01-01")),
+    judge(3, "Dana", "District", lambda k: svc(k, "U.S. District Court", NOH, pres="Quinn Prez")),
+    judge(4, "Sol", "Senior", lambda k: svc(k, "U.S. District Court", NOH, senior="2020-01-01")),
+    judge(5, "Rae", "Retired", lambda k: svc(k, "U.S. District Court", NOH, end="2015-01-01")),
+    judge(6, "Dee", "Capital", lambda k: svc(k, "U.S. District Court", "U.S. District Court for the District of Columbia", pres="Quinn Prez")),
+    judge(7, "Gus", "Guam", lambda k: svc(k, "U.S. District Court", "U.S. District Court for the District of the Northern Mariana Islands")),
+    judge(8, "Tracy", "Trade", lambda k: svc(k, "Other", "U.S. Court of International Trade")),
+]
+PEOPLE = [
+    {"id": {"bioguide": "P1"}, "name": {"first": "Patrick", "middle": "Q.", "last": "Prez"}, "terms": [{"type": "prez", "start": "2009-01-20", "end": "2017-01-20", "party": "Old"}]},
+    {"id": {}, "name": {"first": "Quinn", "middle": "Arthur", "last": "Prez"}, "terms": [{"type": "prez", "start": "2025-01-20", "end": "2029-01-20", "party": "New"}]},
+    {"id": {"bioguide": "V1"}, "name": {"first": "Vic", "last": "Vice"}, "terms": [{"type": "viceprez", "start": "2025-01-20", "end": "2029-01-20", "party": "New"}]},
+    {"id": {"bioguide": "X1"}, "name": {"first": "Xan", "last": "Unrelated"}, "terms": [{"type": "prez", "start": "1901-01-01", "end": "1905-01-01", "party": "Gone"}]},
+]
+
+
+class Judiciary(unittest.TestCase):
+    def test_a_judge_sits_on_the_court_of_their_latest_service_and_retired_judges_are_left_out(self):
+        courts, judges = us.build_judiciary(JUDGES)
+        by = {j["last"]: j for j in judges}
+        self.assertEqual(sorted(by), ["Capital", "Circuit", "District", "Guam", "Trade", "Upper"])   # senior and retired are not listed
+        self.assertEqual(by["Upper"]["court_id"], "supreme-court-of-the-united-states")   # not the circuit court they left
+        self.assertEqual(by["Upper"]["title"], "Associate Justice")
+
+    def test_courts_count_active_and_senior_judges_apart(self):
+        courts, _ = us.build_judiciary(JUDGES)
+        oh = next(c for c in courts if c["name"] == NOH)
+        self.assertEqual((oh["active_judges"], oh["senior_judges"]), (1, 1))
+        self.assertEqual(courts[0]["type"], "supreme")   # the Supreme Court first, then appeals, then district, then the rest
+        self.assertEqual(courts[-1]["type"], "other")
+
+    def test_a_district_court_belongs_to_the_circuit_for_its_state(self):
+        courts, _ = us.build_judiciary(JUDGES)
+        by = {c["name"]: c for c in courts}
+        self.assertEqual(by[NOH]["circuit"], us.slug(S6))
+        self.assertIsNone(by["U.S. Court of International Trade"]["circuit"])
+        self.assertIsNone(by["U.S. District Court for the District of Columbia"]["circuit"])   # this sample has no D.C. Circuit judge, so there is no court to point at
+        self.assertEqual(us.circuit_of("U.S. District Court for the District of the Northern Mariana Islands", "district"), "Ninth")
+        self.assertEqual(us.circuit_of("U.S. District Court for the Eastern District of North Carolina", "district"), "Fourth")
+        self.assertEqual(us.circuit_of("U.S. District Court for the District of Columbia", "district"), "District of Columbia")
+
+    def test_every_state_is_in_exactly_one_circuit(self):
+        states = [x for v in us.CIRCUIT_STATES.values() for x in v]
+        self.assertEqual(len(states), len(set(states)))
+        self.assertEqual(len(us.CIRCUIT_STATES), 12)   # eleven numbered circuits and the D.C. Circuit; the Federal Circuit has no districts
+
+    def test_chief_judges_are_the_ones_with_an_open_chief_service(self):
+        _, judges = us.build_judiciary(JUDGES)
+        self.assertEqual([j["last"] for j in judges if j["chief"]], ["Circuit"])
+
+    def test_names_join_first_middle_last_and_suffix(self):
+        _, judges = us.build_judiciary([judge(9, "Ann", "Bee", lambda k: svc(k, "U.S. District Court", "U.S. District Court for the District of Maine"), middle="C.", suffix="Jr.")])
+        self.assertEqual(judges[0]["name"], "Ann C. Bee Jr.")
+
+    def test_the_president_is_found_by_date_and_the_old_ones_are_kept_only_if_they_appointed_a_sitting_judge(self):
+        _, judges = us.build_judiciary(JUDGES)
+        ex = us.build_executive(PEOPLE, "2026-10-03", [j["appointed_by"] for j in judges])
+        self.assertEqual((ex["president"]["name"], ex["vice_president"]["name"]), ("Quinn Arthur Prez", "Vic Vice"))
+        self.assertEqual(sorted(p["name"] for p in ex["presidents"]), ["Patrick Q. Prez", "Quinn Arthur Prez"])   # the unrelated old President is not carried
+        self.assertTrue(next(p for p in ex["presidents"] if p["name"].startswith("Quinn"))["current"])
+        self.assertTrue(ex["president"]["id"].startswith("P-"))   # no Bioguide ID in the file: a stable one is made from the name
+        self.assertEqual(us.build_executive(PEOPLE, "2012-06-01", [])["president"]["name"], "Patrick Q. Prez")   # the same file answers for another day
+
+    def test_the_snapshot_links_each_judge_to_the_president_who_appointed_them(self):
+        s = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01", PEOPLE, JUDGES, "2026-10-03")
+        ids = {p["id"] for p in s["executive"]["presidents"]}
+        self.assertTrue(all(j["appointed_by_id"] in ids for j in s["judiciary"]["judges"]))
+        self.assertEqual((s["counts"]["justices"], s["counts"]["judges"]), (1, 6))
+        for j in s["judiciary"]["judges"]:
+            self.assertEqual(sorted(j), ["appointed_by", "appointed_by_id", "chief", "commissioned", "court_id", "id", "last", "name", "title"])   # no party, no rating, no score
+        self.assertTrue(any("justices" in p for p in us.check(s)))   # one justice is not a Supreme Court
+
+    def test_a_president_name_that_fits_two_people_is_left_unmatched(self):
+        both = PEOPLE + [{"id": {"bioguide": "P2"}, "name": {"first": "Patrick", "middle": "R.", "last": "Prez"}, "terms": [{"type": "prez", "start": "1990-01-01", "end": "1994-01-01", "party": "Old"}]}]
+        rows = [judge(1, "A", "A", lambda k: svc(k, "U.S. District Court", "U.S. District Court for the District of Maine", pres="Patrick Prez"))]
+        s = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01", both, rows, "2026-10-03")
+        self.assertIsNone(s["judiciary"]["judges"][0]["appointed_by_id"])   # two Presidents fit "Patrick Prez": match neither, and the safety check will say so
+
+    def test_the_old_snapshot_shape_still_builds_without_the_new_sources(self):
+        s = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01")
+        self.assertNotIn("judiciary", s)
+
+
 class Landscape(unittest.TestCase):
     def snap(self):
         return us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-01T00:00:00+00:00", "2024-10-01")

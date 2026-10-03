@@ -80,6 +80,22 @@ function cxUsGraph(d) {
   tops.forEach((p) => { const pn = byId.get(`a:${p.id}`), ks = kids(p.id); ks.forEach((a, k) => { const ang = Math.atan2(pn.y - hubs.exec[1], pn.x - hubs.exec[0]) + (k - ks.length / 2) * 0.16, rad = 175 + (k % 2) * 22; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: hubs.exec[0] + rad * Math.cos(ang), y: hubs.exec[1] + rad * Math.sin(ang), r: 3.4, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `a:${p.id}`, `part of`); }); });
   // an agency under a sub-agency (any depth) sits just beyond its parent, so none is left out of the picture
   for (let again = 0; again < 4; again++) d.agencies.filter((a) => !byId.has(`a:${a.id}`) && byId.has(`a:${a.parent_id}`)).forEach((a, k) => { const pn = byId.get(`a:${a.parent_id}`), ang = Math.atan2(pn.y - hubs.exec[1], pn.x - hubs.exec[0]) + (k % 5 - 2) * 0.12; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: pn.x + 26 * Math.cos(ang), y: pn.y + 26 * Math.sin(ang), r: 3.2, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `a:${a.parent_id}`, `part of`); });
+  // the executive's leaders, the federal courts, and the sitting judges (data/us-landscape: executive and judiciary)
+  if (d.judiciary) {
+    const ex = d.executive || {}, J = CX_US_LAYOUT.judicial;
+    add({ id: `h:court`, kind: `hub`, label: `Federal courts`, name: `The federal courts`, x: J.x, y: J.y, r: 16, shape: `circle`, group: `judicial` });
+    const leaders = [...(ex.presidents || []).map((p) => ({ ...p, ...(ex.president && ex.president.id === p.id ? ex.president : {}), role: p.current ? `President` : `Former President` })), ...(ex.vice_president ? [{ ...ex.vice_president, role: `Vice President`, current: !0, terms: [{ start: ex.vice_president.term_start, end: ex.vice_president.term_end }] }] : [])];
+    leaders.forEach((p) => { add({ id: `p:${p.id}`, kind: `president`, label: p.name, name: p.name, x: 0, y: 0, r: p.current ? 6.5 : 4.5, shape: `circle`, group: `exec`, p }); edge(`p:${p.id}`, `h:exec`, `leader`); });
+    d.judiciary.courts.forEach((c) => { add({ id: `k:${c.id}`, kind: `court`, label: c.name.replace(/^U\.S\. (Court of Appeals for the |District Court for the )?/, ``).replace(/^Supreme Court of the United States$/, `Supreme Court`), name: c.name, x: 0, y: 0, r: c.type === `supreme` ? 9 : c.type === `appeals` ? 7 : 5, shape: `diamond`, group: `judicial`, c }); edge(`k:${c.id}`, `h:court`, `court of`); });
+    d.judiciary.courts.forEach((c) => { if (c.circuit && byId.has(`k:${c.circuit}`)) edge(`k:${c.id}`, `k:${c.circuit}`, `appeals to`); });
+    const sup = d.judiciary.courts.find((c) => c.type === `supreme`);
+    if (sup) d.judiciary.courts.filter((c) => c.type === `appeals`).forEach((c) => edge(`k:${c.id}`, `k:${sup.id}`, `appeals to`));
+    d.judiciary.judges.forEach((j) => {
+      add({ id: `j:${j.id}`, kind: `judge`, label: j.name, name: j.name, x: 0, y: 0, r: 3.4, shape: `circle`, group: `judicial`, j, where: (byId.get(`k:${j.court_id}`) || {}).label || `` });
+      if (byId.has(`k:${j.court_id}`)) edge(`j:${j.id}`, `k:${j.court_id}`, j.title);
+      if (j.appointed_by_id && byId.has(`p:${j.appointed_by_id}`)) edge(`j:${j.id}`, `p:${j.appointed_by_id}`, `appointed by`);
+    });
+  }
   const adj = nodes.map(() => []);
   edges.forEach((e, k) => { adj[e.a].push(k); adj[e.b].push(k); });
   return cxUsPlace({ nodes, byId, edges, adj });
@@ -111,6 +127,21 @@ function cxUsFacts(g, n) {
     if (a.blurb) f.push(a.blurb);
     const subs = g.nodes.filter((x) => x.a && x.a.parent_id === a.id);
     if (subs.length) f.push(`Sub-agencies listed: ${subs.slice(0, 12).map((s) => s.name).join(`, `)}${subs.length > 12 ? `, and ${subs.length - 12} more` : ``}.`);
+  } else if (n.kind === `judge`) {
+    const j = n.j, co = g.byId.get(`k:${j.court_id}`), who = g.nodes.find((x) => x.kind === `president` && x.p.id === j.appointed_by_id);
+    f.push(`${j.name} is ${j.title === `Judge` ? `a judge` : j.title === `Chief Justice` ? `the Chief Justice` : `an Associate Justice`} of the ${co ? co.name : `federal courts`}${j.chief ? `, and its chief judge` : ``}.`);
+    f.push(`${who ? `Appointed by President ${who.name}` : `Appointed by ${j.appointed_by}`}${j.commissioned ? `, commissioned ${j.commissioned}` : ``}.`);
+  } else if (n.kind === `court`) {
+    const c = n.c, kind = c.type === `supreme` ? `the highest court in the federal courts` : c.type === `appeals` ? `a federal court of appeals` : c.type === `district` ? `a federal district court` : `a federal court`;
+    f.push(`${c.name} is ${kind}.`);
+    f.push(`${c.active_judges} ${c.active_judges === 1 ? `judge sits` : `judges sit`} on it now${c.senior_judges ? `, and ${c.senior_judges} ${c.senior_judges === 1 ? `has` : `have`} taken senior status` : ``}.`);
+    if (c.circuit && g.byId.has(`k:${c.circuit}`)) f.push(`Its appeals go to the ${g.byId.get(`k:${c.circuit}`).name}.`);
+  } else if (n.kind === `president`) {
+    const p = n.p;
+    f.push(p.role === `Vice President` ? `${p.name} is the Vice President of the United States.` : p.current ? `${p.name} is the President of the United States.` : `${p.name} served as President of the United States.`);
+    f.push(p.current && p.party ? `Current term: ${p.term_start || p.terms[0].start} to ${p.term_end || p.terms[p.terms.length - 1].end}. Party on this term: ${p.party}, as of ${p.term_start || p.terms[p.terms.length - 1].start} (a sourced field, not a judgment).` : `${p.terms.map((t) => `${t.start} to ${t.end}`).join(`; `)}.`);
+    const nj = g.edges.filter((e) => (g.nodes[e.a] === n || g.nodes[e.b] === n) && e.rel === `appointed by`).length;
+    if (nj) f.push(`${nj} of the judges who sit now were appointed by ${p.name}.`);
   } else {
     f.push(n.id === `h:exec` ? `These are federal agencies that have published in the Federal Register in the last two years. Some well-known bodies are listed under a parent.` : `${n.name}.`);
   }
@@ -120,9 +151,11 @@ function cxUsLink(n) {
   if (n.kind === `member`) return n.m.url ? [`${n.m.name}'s official website`, n.m.url] : null;
   if (n.kind === `committee`) return n.c.url ? [`${n.name}'s official website`, n.c.url] : null;
   if (n.kind === `agency`) return n.a.url ? [`${n.name}`, n.a.url] : null;
+  if (n.kind === `judge`) return [`${n.name} at the Federal Judicial Center`, `https://www.fjc.gov/node/${n.j.id.slice(1)}`];
+  if (n.kind === `president`) return n.p.id && !n.p.id.startsWith(`P-`) ? [`${n.name} in the Biographical Directory`, `https://bioguide.congress.gov/search/bio/${n.p.id}`] : null;
   return null;
 }
-const CX_US_COLORS = { senate: `#7aa2ff`, house: `#5fd6c4`, joint: `#d6a3ff`, exec: `#ffc66b` };
+const CX_US_COLORS = { senate: `#7aa2ff`, house: `#5fd6c4`, joint: `#d6a3ff`, exec: `#ffc66b`, judicial: `#ff9db8` };
 
 
 /* ---------- Your members (D5): a state and a district, kept in memory only, never in a link ---------- */
@@ -361,6 +394,9 @@ function CX_UsAreaCounts({ vd, members, onTopics }) {
 /* The Index: five ways into the federal government. Pick a door, then a group, then anyone, and open them in the Linked view. */
 const CX_US_PICK = { area: `` };
 function cxUsWhere(n) {
+  if (n.kind === `judge`) return <><span>{n.j.title}</span>{`, `}<span>{n.where}</span></>;
+  if (n.kind === `court`) return n.c.type === `supreme` ? `The highest federal court` : n.c.type === `appeals` ? `Court of appeals` : n.c.type === `district` ? `District court` : `Federal court`;
+  if (n.kind === `president`) return n.p.role === `Vice President` ? `Vice President of the United States` : n.p.current ? `President of the United States` : `Former President`;
   if (n.kind === `member`) { const m = n.m; return m.chamber === `senate` ? `Senator, ${cxStateName(m.state)}` : m.district ? `Representative, ${cxStateName(m.state)}, district ${m.district}` : `Delegate or representative, ${cxStateName(m.state)}`; }
   if (n.kind === `committee`) return n.c.chamber === `joint` ? `Joint committee` : `${n.c.chamber === `senate` ? `Senate` : `House`} committee`;
   return n.a && n.a.parent_id ? `Part of a larger agency` : `Federal agency`;
@@ -377,7 +413,7 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
   if (gr.nodes) { items = gr.nodes.map((i) => g.nodes[i]).filter((n) => visible(n) && !dim(n) && (!needle || n.name.toLowerCase().includes(needle))); total = items.length; }
   return (
     <div className="us-index">
-      <p>Five ways into the federal government. Pick one, then pick anyone to see who they are connected to, in words.</p>
+      <p>Six ways into the federal government. Pick one, then pick anyone to see who they are connected to, in words.</p>
       <div className="us-doors" role="group" aria-label="Ways in">
         {doors.map((d) => (
           <button key={d.id} type="button" aria-pressed={door === d.id} className={`us-door ${door === d.id ? `on` : ``}`} onClick={() => pickDoor(d.id)}>
@@ -451,7 +487,7 @@ function CX_UsGraph({ phone }) {
   const [view, setView] = u.useState(phone ? `mine` : `sky`);
   const [sel, setSel] = u.useState(null);
   const [q, setQ] = u.useState(``);
-  const [show, setShow] = u.useState({ member: !0, committee: !0, agency: !0 });
+  const [show, setShow] = u.useState({ member: !0, committee: !0, agency: !0, court: !0 });
   const [chamber, setChamber] = u.useState(`all`);
   const [stateF, setStateF] = u.useState(``);
   const [tick, setTick] = u.useState(0);
@@ -473,8 +509,9 @@ function CX_UsGraph({ phone }) {
     if (n.kind === `hub`) return !0;
     if (n.kind === `member` && !show.member) return !1;
     if (n.kind === `committee` && !show.committee) return !1;
-    if (n.kind === `agency` && !show.agency) return !1;
-    if (chamber !== `all` && n.group !== chamber && n.group !== `joint` && n.group !== `exec`) return !1;
+    if ((n.kind === `agency` || n.kind === `president`) && !show.agency) return !1;
+    if ((n.kind === `court` || n.kind === `judge`) && !show.court) return !1;
+    if (chamber !== `all` && n.group !== chamber && n.group !== `joint` && n.group !== `exec` && n.group !== `judicial`) return !1;
     return !0;
   }, [show, chamber, soloSet]);
   const dim = u.useCallback((n) => !!stateF && n.kind === `member` && n.m.state !== stateF, [stateF]);
@@ -569,9 +606,9 @@ function CX_UsGraph({ phone }) {
     // the soft discs and their labels count too, so nothing is cut off at the edge
     const x0 = Math.min(...xs, ...cl.map((c) => c.x - c.r)) - 40, x1 = Math.max(...xs, ...cl.map((c) => c.x + c.r)) + 40, y0 = Math.min(...ys, ...cl.map((c) => c.y - c.r - 26)) - 40, y1 = Math.max(...ys, ...cl.map((c) => c.y + c.r)) + 40;
     // on the big desktop map the side panel sits over the right edge and the key over the bottom, so the picture is fitted into what is left
-    const rx = !phone && view === `sky` ? 360 : 0, by = !phone && view === `sky` ? 56 : 0;
-    const k = Math.max(0.08, Math.min(2, Math.min((c.clientWidth - rx) / (x1 - x0), (c.clientHeight - by) / (y1 - y0))));
-    cam.current = { x: -(x0 + x1) / 2 - rx / (2 * k), y: -(y0 + y1) / 2 - by / (2 * k), k };
+    const big = !phone && view === `sky`, rx = big ? 360 : 0, by = big ? 56 : 0, ty = big ? 64 : 0;   // the side panel (right), the key (bottom), and the Motion control (top)
+    const k = Math.max(0.08, Math.min(2, Math.min((c.clientWidth - rx) / (x1 - x0), (c.clientHeight - by - ty) / (y1 - y0))));
+    cam.current = { x: -(x0 + x1) / 2 - rx / (2 * k), y: -(y0 + y1) / 2 + (ty - by) / (2 * k), k };
     setTick((t) => t + 1);
   };
   fitRef.current = fit;
@@ -610,7 +647,7 @@ function CX_UsGraph({ phone }) {
   u.useEffect(() => { const c = cvs.current; if (!c) return; const w = (e) => { e.preventDefault(); zoomAt(e.deltaY < 0 ? 1.15 : 1 / 1.15, e); }; c.addEventListener(`wheel`, w, { passive: !1 }); return () => c.removeEventListener(`wheel`, w); });
 
   if (state === `loading`) return <section className="us"><h1>United States</h1><p role="status">Loading the federal record...</p></section>;
-  if (!data || !g) return <section className="us"><h1>United States</h1><p role="status">The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of about half a megabyte.</p></section>;
+  if (!data || !g) return <section className="us"><h1>United States</h1><p role="status">The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.</p></section>;
   const results = q.trim().length >= 2 ? g.nodes.filter((n) => n.kind !== `hub` && (n.name + ` ` + (n.m ? cxStateName(n.m.state) : ``)).toLowerCase().includes(q.trim().toLowerCase())).slice(0, 40) : [];
   const states = [...new Set(data.members.map((m) => m.state))].sort();
   const cur = sel !== null ? g.nodes[sel] : null;
@@ -619,40 +656,42 @@ function CX_UsGraph({ phone }) {
   const rows = g.nodes.filter((n) => n.kind !== `hub` && visible(n) && !dim(n));
   const links = cur ? cxUsLinks(g, cur.i) : [];
   const connected = links;
-  const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, hub: `Group` };
+  const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, judge: `Federal judge`, court: `Federal court`, president: `President or Vice President`, hub: `Group` };
   const soloVal = !solo ? `` : solo.state ? `s:${solo.state}` : `n:${solo.node}`;
   const soloPicker = (
     <label>Solo <select className="us-solo" value={soloVal} onChange={(e) => { const v = e.target.value; setSolo(!v ? null : v.startsWith(`s:`) ? { state: v.slice(2) } : { node: +v.slice(2) }); if (v) setView(`sky`); }}>
       <option value="">Everything</option>
       <optgroup label="A committee">{g.nodes.filter((n) => n.kind === `committee`).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
       <optgroup label="An agency">{g.nodes.filter((n) => n.kind === `agency` && !n.a.parent_id).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
+      <optgroup label="A court">{g.nodes.filter((n) => n.kind === `court`).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
+      <optgroup label="A President">{g.nodes.filter((n) => n.kind === `president`).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
       <optgroup label="A state">{states.map((c) => <option key={c} value={`s:${c}`}>{cxStateName(c)}</option>)}</optgroup>
     </select></label>
   );
   const compact = view === `sky` && !phone;
   const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
-  const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
+  const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{n.kind === `judge` || n.kind === `president` ? cxUsWhere(n) : kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
     <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${view === `sky` ? `us-skyview` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">
         <div>{phone ? <h2 id="us-h">United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
       </header>
-      {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain and Federal Register records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain and Federal Register records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}
+      {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}
       {view !== `mine` && view !== `topics` && <>
       <div className="us-tools">
         <label className="us-search"><span>Find a person, committee, or agency</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Husted, Agriculture, Treasury" /></label>
         {compact && soloPicker}
         {phone || compact ? <details className="us-filters"><summary>Filters</summary><div className="us-tools">
         <fieldset className="us-show"><legend>Show</legend>
-          {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
+          {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Executive`], [`court`, `Courts`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
         </fieldset>
         <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
         <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
         {!compact && soloPicker}
         </div></details> : <>
         <fieldset className="us-show"><legend>Show</legend>
-          {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
+          {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Executive`], [`court`, `Courts`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
         </fieldset>
         <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
         <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
@@ -671,7 +710,7 @@ function CX_UsGraph({ phone }) {
               <canvas ref={cvs} className="us-canvas" tabIndex={0} role="img" aria-label={`Map of ${order.length} federal nodes: members of Congress, committees, and agencies. Use the Index, Linked, or Tree view for the same information as text. Keys: right and left bracket move between nodes, arrows pan, plus and minus zoom, Escape clears, slash searches.`}
                 onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
               <div className="us-zoom"><button type="button" aria-label="Zoom in" onClick={() => zoomAt(1.3)}>+</button><button type="button" aria-label="Zoom out" onClick={() => zoomAt(1 / 1.3)}>−</button><button type="button" aria-label="Fit everything" onClick={fit}>Fit</button>{!phone && <button type="button" aria-label={full ? `Leave full screen` : `Full screen`} aria-pressed={full} onClick={toggleFull}>{full ? `Exit` : `Full`}</button>}</div>
-              <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies. Circles are people, diamonds are committees, squares are agencies. <span>A moving light on a line shows a recorded connection.</span></p>
+              <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies <i style={{ background: CX_US_COLORS.judicial }} /> Courts. Circles are people, diamonds are committees and courts, squares are agencies. <span>A moving light on a line shows a recorded connection.</span></p>
             </div>
           )}
           {view === `index` && <CX_UsDoors data={data} g={g} visible={visible} dim={dim} q={q} onOpen={(i) => { setSel(i); setView(`linked`); }} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} />}
@@ -695,8 +734,8 @@ function CX_UsGraph({ phone }) {
             </div>
             {cur.kind === `member` && <><CX_UsAreaPicker vd={vdAll} /><CX_UsAreaCounts vd={vdAll} members={[cur.m]} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} /></>}
             <p><button type="button" className="cx-link-button" onClick={() => setSel(null)}>Clear</button></p>
-          </> : cur ? (link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>) : <p className="us-hint">Select anyone or anything. A selected node lights its connections. {data.counts.members} members, {data.counts.committees} committees, {data.counts.agencies} agencies.</p>}
-          <p className="us-src">Sources: congress-legislators (public domain), the Federal Register. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control.</p>
+          </> : cur ? (link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>) : <p className="us-hint">Select anyone or anything. A selected node lights its connections. {data.counts.members} members, {data.counts.committees} committees, {data.counts.agencies} agencies{data.counts.judges ? <>, {data.counts.courts} courts, and {data.counts.judges} judges</> : null}.</p>}
+          <p className="us-src">Sources: congress-legislators (public domain), the Federal Register, the Federal Judicial Center. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control.</p>
         </aside>
       </div>
     </section>

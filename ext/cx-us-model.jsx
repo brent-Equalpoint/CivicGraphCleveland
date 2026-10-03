@@ -8,7 +8,8 @@
 const CX_US_DOORS = [
   { id: `members`, label: `Members of Congress`, one: `member`, many: `members` },
   { id: `committees`, label: `Committees`, one: `committee`, many: `committees` },
-  { id: `agencies`, label: `Agencies`, one: `agency`, many: `agencies` },
+  { id: `executive`, label: `Executive branch`, one: `leader or agency`, many: `leaders and agencies` },
+  { id: `courts`, label: `Courts and judges`, one: `court or judge`, many: `courts and judges` },
   { id: `areas`, label: `Policy areas`, one: `policy area`, many: `policy areas` },
   { id: `states`, label: `States`, one: `state`, many: `states` },
 ];
@@ -23,12 +24,13 @@ function cxUsAreaOf(vd, v) {
    vd (recorded votes) is optional: without it the policy-area door says so and shows no counts. */
 function cxUsDoors(data, g, vd) {
   const byKind = (k, f = () => !0) => g.nodes.filter((n) => n.kind === k && f(n));
-  const members = byKind(`member`), committees = byKind(`committee`), agencies = byKind(`agency`);
+  const members = byKind(`member`), committees = byKind(`committee`), agencies = byKind(`agency`), leaders = byKind(`president`), courts = byKind(`court`), judges = byKind(`judge`);
   const mk = (id, label, nodes) => ({ id, label, count: nodes.length, nodes: nodes.map((n) => n.i) });
   const doors = {
     members: [mk(`senate`, `Senate`, members.filter((n) => n.m.chamber === `senate`)), mk(`house`, `House`, members.filter((n) => n.m.chamber === `house`))],
     committees: [mk(`senate`, `Senate committees`, committees.filter((n) => n.c.chamber === `senate`)), mk(`house`, `House committees`, committees.filter((n) => n.c.chamber === `house`)), mk(`joint`, `Joint committees`, committees.filter((n) => n.c.chamber === `joint`))],
-    agencies: [mk(`top`, `Top-level agencies`, agencies.filter((n) => !n.a.parent_id)), mk(`sub`, `Sub-agencies`, agencies.filter((n) => n.a.parent_id))],
+    executive: [mk(`current`, `President and Vice President`, leaders.filter((n) => n.p.current)), mk(`former`, `Former Presidents`, leaders.filter((n) => !n.p.current)), mk(`top`, `Top-level agencies`, agencies.filter((n) => !n.a.parent_id)), mk(`sub`, `Sub-agencies`, agencies.filter((n) => n.a.parent_id))].filter((x) => x.count),
+    courts: [mk(`supreme`, `Supreme Court`, courts.filter((n) => n.c.type === `supreme`)), mk(`appeals`, `Courts of appeals`, courts.filter((n) => n.c.type === `appeals`)), mk(`district`, `District courts`, courts.filter((n) => n.c.type === `district`)), mk(`other`, `Other courts`, courts.filter((n) => n.c.type === `other`)), mk(`judges`, `Judges`, judges)].filter((x) => x.count),
   };
   const sc = new Map();
   data.members.forEach((m) => { const s = sc.get(m.state) || { senate: 0, house: 0 }; s[m.chamber] += 1; sc.set(m.state, s); });
@@ -39,26 +41,44 @@ function cxUsDoors(data, g, vd) {
     const list = [...per].sort((a, b) => (a[0] === CX_NO_AREA) - (b[0] === CX_NO_AREA) || a[0].localeCompare(b[0])).map(([area, n]) => ({ area, votes: n }));
     doors.areas = [{ id: `all`, label: `Policy areas with a vote that decided something`, count: list.length, areas: list }];
   } else doors.areas = [{ id: `all`, label: `Policy areas`, count: null, areas: [] }];
-  return CX_US_DOORS.map((d) => ({ ...d, groups: doors[d.id], count: doors[d.id].reduce((t, x) => t + (x.count || 0), 0), ready: d.id !== `areas` || !!vd }));
+  return CX_US_DOORS.filter((d) => doors[d.id] && doors[d.id].length).map((d) => ({ ...d, groups: doors[d.id], count: doors[d.id].reduce((t, x) => t + (x.count || 0), 0), ready: d.id !== `areas` || !!vd }));
 }
 
 /* what one connection is, said next to the other node's name ("Senate Committee on Finance" then "Chair."). e is an edge of the graph (a, b, rel). */
 function cxUsEdgeSentence(g, e, from) {
   const me = g.nodes[from], other = g.nodes[e.a === from ? e.b : e.a];
-  const chamberWord = (n) => (n.group === `senate` ? `the Senate` : n.group === `house` ? `the House` : n.group === `exec` ? `the federal executive branch` : n.name);
-  if (other.kind === `hub`) return me.kind === `committee` ? `A ${me.c.chamber === `joint` ? `joint` : me.c.chamber === `senate` ? `Senate` : `House`} committee of Congress.` : me.kind === `member` ? `Sits in ${chamberWord(other)}.` : `A federal executive agency.`;
-  if (me.kind === `hub`) return `${other.kind === `member` ? `Member` : other.kind === `committee` ? `Committee` : `Agency`}.`;
+  const chamberWord = (n) => (n.group === `senate` ? `the Senate` : n.group === `house` ? `the House` : n.group === `exec` ? `the federal executive branch` : n.group === `judicial` ? `the federal courts` : n.name);
+  const seat = (n) => (n.j.title === `Judge` ? `Judge` : n.j.title) + (n.j.chief ? `, chief` : ``);   // "Judge", "Chief Justice", "Associate Justice", "Judge, chief"
+  if (other.kind === `hub`) {
+    if (me.kind === `committee`) return `A ${me.c.chamber === `joint` ? `joint` : me.c.chamber === `senate` ? `Senate` : `House`} committee of Congress.`;
+    if (me.kind === `member`) return `Sits in ${chamberWord(other)}.`;
+    if (me.kind === `court`) return `A federal court.`;
+    if (me.kind === `president`) return me.p.current ? `Serves in ${chamberWord(other)}.` : `Served as President.`;
+    return `A federal executive agency.`;
+  }
+  if (me.kind === `hub`) return `${other.kind === `member` ? `Member` : other.kind === `committee` ? `Committee` : other.kind === `court` ? `Court` : other.kind === `president` ? `Leader` : `Agency`}.`;
   if ((me.kind === `member` && other.kind === `committee`) || (me.kind === `committee` && other.kind === `member`)) {
     const r = e.rel === `member` ? `Member` : e.rel === `ex officio` ? `Member, ex officio` : e.rel.charAt(0).toUpperCase() + e.rel.slice(1);
     return `${r}.`;
   }
   if (me.kind === `agency` && other.kind === `agency`) return e.a === from ? `Larger agency it belongs to.` : `Part of this agency.`;
+  if (me.kind === `judge` && other.kind === `court`) return `${seat(me)}.`;
+  if (me.kind === `court` && other.kind === `judge`) return `${seat(other)}.`;
+  if (me.kind === `judge` && other.kind === `president`) return `Appointed by this President.`;
+  if (me.kind === `president` && other.kind === `judge`) return `Appointed this judge.`;
+  if (me.kind === `court` && other.kind === `court`) {
+    const t = (n) => n.c.type;
+    if (t(me) === `district` && t(other) === `appeals`) return `Its appeals go to this court.`;
+    if (t(me) === `appeals` && t(other) === `district`) return `Hears appeals from this court.`;
+    if (t(me) === `appeals` && t(other) === `supreme`) return `Its decisions can be appealed to this court.`;
+    if (t(me) === `supreme` && t(other) === `appeals`) return `Can hear appeals from this court.`;
+  }
   return `Connected.`;
 }
 /* every connection of a node, in sentences. Hubs are folded into the first sentence; the rest are people, committees, and agencies. */
 function cxUsLinks(g, nodeIndex) {
   return g.adj[nodeIndex].map((ei) => { const e = g.edges[ei], o = e.a === nodeIndex ? e.b : e.a; return { to: o, name: g.nodes[o].name, kind: g.nodes[o].kind, text: cxUsEdgeSentence(g, e, nodeIndex), rel: e.rel }; })
-    .sort((x, y) => (x.kind === `hub`) - (y.kind === `hub`) || (x.kind === `committee` ? 0 : 1) - (y.kind === `committee` ? 0 : 1) || x.name.localeCompare(y.name));
+    .sort((x, y) => (x.kind === `hub`) - (y.kind === `hub`) || ((x.kind === `committee` || x.kind === `court`) ? 0 : 1) - ((y.kind === `committee` || y.kind === `court`) ? 0 : 1) || x.name.localeCompare(y.name));
 }
 /* the members of a state (two senators and each district's representative), for the States door */
 function cxUsStateMembers(data, code) {
@@ -75,14 +95,30 @@ function cxUsTree(data, g) {
     { label: `House of Representatives`, node: idx(`h:house`), children: comm(`house`) },
     { label: `Joint committees`, node: null, children: comm(`joint`) },
   ];
-  const executive = data.agencies.filter((a) => !a.parent_id).map((a) => ({ label: a.name, node: idx(`a:${a.id}`), children: kids(a.id) }));
+  const agencies = data.agencies.filter((a) => !a.parent_id).map((a) => ({ label: a.name, node: idx(`a:${a.id}`), children: kids(a.id) }));
+  const ex = data.executive, jud = data.judiciary;
+  const leaders = [];
+  if (ex && ex.president) leaders.push({ label: ex.president.name, node: idx(`p:${ex.president.id}`), children: [], note: `President` });
+  if (ex && ex.vice_president) leaders.push({ label: ex.vice_president.name, node: idx(`p:${ex.vice_president.id}`), children: [], note: `Vice President` });
+  const former = ex ? ex.presidents.filter((p) => !p.current).map((p) => ({ label: p.name, node: idx(`p:${p.id}`), children: [] })) : [];
+  if (former.length) leaders.push({ label: `Former Presidents who appointed sitting judges`, node: null, children: former });
+  const executive = [...leaders, ...agencies];
+  const judgesOf = (courtId) => (jud ? jud.judges.filter((j) => j.court_id === courtId).map((j) => ({ label: j.name, node: idx(`j:${j.id}`), children: [], note: j.title === `Judge` ? `` : j.title })) : []);
+  const judicial = [];
+  if (jud) {
+    const of = (type) => jud.courts.filter((c) => c.type === type);
+    of(`supreme`).forEach((c) => judicial.push({ label: c.name, node: idx(`k:${c.id}`), children: judgesOf(c.id) }));
+    judicial.push({ label: `Courts of appeals`, node: null, children: of(`appeals`).map((c) => ({
+      label: c.name, node: idx(`k:${c.id}`), children: [...judgesOf(c.id), ...(of(`district`).some((d) => d.circuit === c.id) ? [{ label: `District courts in this circuit`, node: null, children: of(`district`).filter((d) => d.circuit === c.id).map((d) => ({ label: d.name, node: idx(`k:${d.id}`), children: judgesOf(d.id) })) }] : [])] })) });
+    const other = of(`other`).concat(of(`district`).filter((d) => !d.circuit));
+    if (other.length) judicial.push({ label: `Other courts`, node: null, children: other.map((c) => ({ label: c.name, node: idx(`k:${c.id}`), children: judgesOf(c.id) })) });
+  }
   return [
     { label: `Legislative branch`, children: legislative },
-    { label: `Executive branch`, count: executive.length, children: executive, note: `Federal agencies from the Federal Register. The President and the cabinet are not in our record yet.` },
-    { label: `Judicial branch`, children: [], note: `Not in our record yet.` },
+    { label: `Executive branch`, count: agencies.length, children: executive, note: ex ? `The President, the Vice President, and the federal agencies in the Federal Register. The cabinet secretaries are not in our record yet.` : `Federal agencies from the Federal Register. The President and the cabinet are not in our record yet.` },
+    { label: `Judicial branch`, children: judicial, note: jud ? `Article III judges who sit now, from the Federal Judicial Center. Senior judges are counted on each court, not listed. Bankruptcy, magistrate, and other courts are not in our record yet.` : `Not in our record yet.` },
   ];
 }
-
 
 /* ---------- Sky layout (plan-federal-map.md, phase 3) ----------
    Fixed and computed from the record, with no randomness and no timing, so the same data always gives the same picture and a test can pin it.
@@ -90,31 +126,20 @@ function cxUsTree(data, g) {
    sit in their own cluster. A member is placed toward the committees they sit on (the middle of those seats, pushed outward so the cluster
    is used), then nudged apart so no two overlap. Position says "near the committees they sit on", nothing more: it is not a rank or a
    measure of influence. Joint committees sit in a row between the two chambers. */
-const CX_US_LAYOUT = { senate: { x: -560, y: 0, r: 270 }, house: { x: 190, y: -30, r: 420 }, exec: { x: 1010, y: 60, r: 250 }, joint: { y: 500, gap: 130 } };
+const CX_US_LAYOUT = { senate: { x: -560, y: 0, r: 270 }, house: { x: 190, y: -30, r: 420 }, exec: { x: 1010, y: 60, r: 250 }, joint: { y: 500, gap: 130 }, judicial: { x: 1800, y: 20, r: 430 } };
 function cxUsHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
 function cxUsPlace(g) {
   const L = CX_US_LAYOUT, byName = (a, b) => a.name.localeCompare(b.name);
-  const hub = (id, c) => { const n = g.byId.get(id); n.x = c.x; n.y = c.y; };
-  hub(`h:senate`, L.senate); hub(`h:house`, L.house); hub(`h:exec`, L.exec);
+  const hub = (id, c) => { const n = g.byId.get(id); if (n) { n.x = c.x; n.y = c.y; } };
+  hub(`h:senate`, L.senate); hub(`h:house`, L.house); hub(`h:exec`, L.exec); hub(`h:court`, L.judicial);
   [`senate`, `house`].forEach((ch) => {
     const c = L[ch], list = g.nodes.filter((n) => n.kind === `committee` && n.group === ch).sort(byName);
     list.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * (k + 0.5)) / list.length; n.x = c.x + c.r * Math.cos(a); n.y = c.y + c.r * Math.sin(a); n.ring = ch; });
   });
   const joint = g.nodes.filter((n) => n.kind === `committee` && n.group === `joint`).sort(byName), mid = (L.senate.x + L.house.x) / 2;
   joint.forEach((n, k) => { n.x = mid + (k - (joint.length - 1) / 2) * L.joint.gap; n.y = L.joint.y; n.ring = `joint`; });
-  // members: toward the middle of the committees of their own chamber that they sit on
-  [`senate`, `house`].forEach((ch) => {
-    const c = L[ch], people = g.nodes.filter((n) => n.kind === `member` && n.group === ch);
-    people.forEach((n) => {
-      const seats = [...new Set(g.adj[n.i].map((ei) => { const e = g.edges[ei]; return g.nodes[e.a === n.i ? e.b : e.a]; }).filter((o) => o.kind === `committee` && o.group === ch).map((o) => o.i))];
-      let bx = c.x, by = c.y;
-      if (seats.length) { bx = seats.reduce((t, i) => t + g.nodes[i].x, 0) / seats.length; by = seats.reduce((t, i) => t + g.nodes[i].y, 0) / seats.length; }
-      let dx = (bx - c.x) * 1.6, dy = (by - c.y) * 1.6; const d = Math.hypot(dx, dy), cap = c.r * 0.86;
-      if (d > cap) { dx *= cap / d; dy *= cap / d; }
-      const a = cxUsHash(n.id + `a`) * 2 * Math.PI, rr = 4 + cxUsHash(n.id + `r`) * 12;
-      n.x = c.x + dx + rr * Math.cos(a); n.y = c.y + dy + rr * Math.sin(a);
-    });
-    // nudge apart, in a fixed order, until nobody overlaps; stay inside the cluster
+  // nudge a list of people apart, in a fixed order, until nobody overlaps; keep them inside their cluster
+  const relax = (people, c, capFrac) => {
     const D = 9;
     for (let pass = 0; pass < 60; pass++) {
       const cell = new Map();
@@ -131,10 +156,54 @@ function cxUsPlace(g) {
           n.x -= ex; n.y -= ey; m.x += ex; m.y += ey; moved++;
         });
       });
-      people.forEach((n) => { const dx = n.x - c.x, dy = n.y - c.y, d = Math.hypot(dx, dy), cap = c.r * 0.9; if (d > cap) { n.x = c.x + (dx * cap) / d; n.y = c.y + (dy * cap) / d; } });
+      people.forEach((n) => { const dx = n.x - c.x, dy = n.y - c.y, d = Math.hypot(dx, dy), cap = c.r * capFrac; if (d > cap) { n.x = c.x + (dx * cap) / d; n.y = c.y + (dy * cap) / d; } });
       if (!moved) break;
     }
+  };
+  // members: toward the middle of the committees of their own chamber that they sit on
+  [`senate`, `house`].forEach((ch) => {
+    const c = L[ch], people = g.nodes.filter((n) => n.kind === `member` && n.group === ch);
+    people.forEach((n) => {
+      const seats = [...new Set(g.adj[n.i].map((ei) => { const e = g.edges[ei]; return g.nodes[e.a === n.i ? e.b : e.a]; }).filter((o) => o.kind === `committee` && o.group === ch).map((o) => o.i))];
+      let bx = c.x, by = c.y;
+      if (seats.length) { bx = seats.reduce((t, i) => t + g.nodes[i].x, 0) / seats.length; by = seats.reduce((t, i) => t + g.nodes[i].y, 0) / seats.length; }
+      let dx = (bx - c.x) * 1.6, dy = (by - c.y) * 1.6; const d = Math.hypot(dx, dy), cap = c.r * 0.86;
+      if (d > cap) { dx *= cap / d; dy *= cap / d; }
+      const a = cxUsHash(n.id + `a`) * 2 * Math.PI, rr = 4 + cxUsHash(n.id + `r`) * 12;
+      n.x = c.x + dx + rr * Math.cos(a); n.y = c.y + dy + rr * Math.sin(a);
+    });
+    relax(people, c, 0.9);
   });
+  // the executive: the President, the Vice President, and the Presidents who appointed sitting judges sit in a small ring at the middle of the agencies
+  const leaders = g.nodes.filter((n) => n.kind === `president`).sort((a, b) => (b.p.current ? 1 : 0) - (a.p.current ? 1 : 0) || a.name.localeCompare(b.name));
+  leaders.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * k) / Math.max(1, leaders.length); n.x = L.exec.x + 42 * Math.cos(a); n.y = L.exec.y + 42 * Math.sin(a); });
+  // the courts: districts on the rim in circuit order, each circuit court at the middle of its districts, the Supreme Court at the center
+  const jc = L.judicial, courts = g.nodes.filter((n) => n.kind === `court`);
+  if (courts.length) {
+    const sup = courts.filter((n) => n.c.type === `supreme`), app = courts.filter((n) => n.c.type === `appeals`).sort(byName), oth = courts.filter((n) => n.c.type === `other`);
+    const dis = courts.filter((n) => n.c.type === `district`);
+    const rim = [];
+    app.forEach((ap) => { dis.filter((d) => d.c.circuit === ap.c.id).sort(byName).forEach((d) => rim.push(d)); });
+    dis.filter((d) => !app.some((ap) => ap.c.id === d.c.circuit)).sort(byName).forEach((d) => rim.push(d));
+    oth.forEach((o) => rim.push(o));
+    rim.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * (k + 0.5)) / rim.length; n.x = jc.x + jc.r * Math.cos(a); n.y = jc.y + jc.r * Math.sin(a); n.ring = `judicial`; });
+    app.forEach((ap, k) => {
+      const mine = dis.filter((d) => d.c.circuit === ap.c.id);
+      if (mine.length) { const mx = mine.reduce((t, d) => t + d.x, 0) / mine.length, my = mine.reduce((t, d) => t + d.y, 0) / mine.length; ap.x = jc.x + (mx - jc.x) * 0.62; ap.y = jc.y + (my - jc.y) * 0.62; }
+      else { const a = -Math.PI / 2 + (2 * Math.PI * k) / app.length; ap.x = jc.x + 0.5 * jc.r * Math.cos(a); ap.y = jc.y + 0.5 * jc.r * Math.sin(a); }
+      ap.ring = `judicial`;
+    });
+    sup.forEach((n, k) => { n.x = jc.x; n.y = jc.y - 24 * k; n.ring = `judicial`; });
+    // judges: beside their court, on the side toward the middle of the cluster, then nudged apart
+    const judges = g.nodes.filter((n) => n.kind === `judge`);
+    judges.forEach((n) => {
+      const co = g.byId.get(`k:${n.j.court_id}`) || courts[0];
+      const dx = jc.x - co.x, dy = jc.y - co.y, d = Math.hypot(dx, dy) || 1, back = co.c.type === `district` ? 14 + cxUsHash(n.id + `r`) * 26 : co.c.type === `supreme` ? 30 + cxUsHash(n.id + `r`) * 30 : 20 + cxUsHash(n.id + `r`) * 40;
+      const a = cxUsHash(n.id + `a`) * 2 * Math.PI, rr = 3 + cxUsHash(n.id + `s`) * 10;
+      n.x = co.x + (dx / d) * back + rr * Math.cos(a); n.y = co.y + (dy / d) * back + rr * Math.sin(a);
+    });
+    relax(judges, jc, 0.97);
+  }
   const count = (f) => g.nodes.filter(f).length;
   g.clusters = [
     { id: `senate`, label: `Senate`, x: L.senate.x, y: L.senate.y, r: L.senate.r + 40, count: count((n) => n.kind === `member` && n.group === `senate`), noun: `members` },
@@ -142,6 +211,7 @@ function cxUsPlace(g) {
     { id: `exec`, label: `Executive agencies`, x: L.exec.x, y: L.exec.y, r: L.exec.r, count: count((n) => n.kind === `agency`), noun: `agencies` },
     { id: `joint`, label: `Joint committees`, x: mid, y: L.joint.y, r: 0, count: joint.length, noun: `committees` },   // a row, not a disc: only its label is drawn
   ];
+  if (courts.length) g.clusters.push({ id: `judicial`, label: `Federal judges`, x: jc.x, y: jc.y, r: jc.r + 40, count: count((n) => n.kind === `judge`), noun: `judges` });
   g.nodes.forEach((n) => { n.hx = n.x; n.hy = n.y; });   // home: where motion always returns to
   return g;
 }
@@ -159,7 +229,7 @@ function cxUsSolo(g, spec) {
   const n = g.nodes[spec.node];
   if (!n) return keep;
   keep.add(n.i);
-  if (n.kind === `committee` || n.kind === `member`) nbrs(n.i).forEach((o) => { if (g.nodes[o].kind !== `hub`) keep.add(o); });
+  if (n.kind !== `agency`) nbrs(n.i).forEach((o) => { if (g.nodes[o].kind !== `hub`) keep.add(o); });
   else if (n.kind === `agency`) {
     let top = n; while (top.a.parent_id && g.byId.has(`a:${top.a.parent_id}`)) top = g.byId.get(`a:${top.a.parent_id}`);
     const down = (i) => { keep.add(i); g.adj[i].forEach((ei) => { const e = g.edges[ei], o = e.a === i ? e.b : e.a; if (g.nodes[o].kind === `agency` && g.nodes[o].a.parent_id === g.nodes[i].a.id && !keep.has(o)) down(o); }); };
