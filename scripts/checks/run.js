@@ -45,7 +45,12 @@ function chromePath() {
 let B, BASE, fails;
 async function open(url, o = {}) {
   if (process.env.CHECK_THEME === 'original' && !o.theme) o = { ...o, theme: 'original' };   // CHECK_THEME=original: run in the Original style
-  const ctx = await B.createBrowserContext();
+  // Chrome sometimes answers "Session with given id not found" for a moment (it is the browser, not the page, and not our code).
+  // The same call works half a second later, so that one message is retried; any other error is raised at once.
+  let ctx;
+  for (let tries = 0; ; tries++) {
+    try { ctx = await B.createBrowserContext(); break; } catch (e) { if (tries >= 2 || !/Session with given id not found/.test(e.message)) throw e; await wait(500); }
+  }
   const p = await ctx.newPage();
   if (o.scheme) await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: o.scheme }]);
   await p.setViewport(o.mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
