@@ -5,7 +5,7 @@
 
 No network. Every person, committee, and agency below is made up.
 """
-import io, os, sys, unittest
+import importlib.util, io, os, sys, unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch_us as us
@@ -152,7 +152,7 @@ class Portraits(unittest.TestCase):
                 open(os.path.join(d, f"{i}.webp"), "wb").close()
             self.assertEqual(fp.check(snap, d), [])
 
-    @unittest.skipUnless(__import__("importlib").util.find_spec("PIL"), "Pillow is not installed")
+    @unittest.skipUnless(importlib.util.find_spec("PIL"), "Pillow is not installed")
     def test_a_photo_shrinks_to_a_small_webp_of_the_set_size(self):
         from PIL import Image
         src = io.BytesIO()
