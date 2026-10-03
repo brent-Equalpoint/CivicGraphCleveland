@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-01T19:45:33+00:00",
+"retrieved_at": "2026-10-03T17:49:15+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -5482,7 +5482,14 @@
 "1199-2026": [],
 "1203-2026": [],
 "1204-2026": [],
-"1205-2026": []
+"1205-2026": [],
+"1229-2026": [],
+"1230-2026": [],
+"1231-2026": [],
+"1232-2026": [],
+"1233-2026": [],
+"1234-2026": [],
+"1235-2026": []
 },
 "addresses": {
 "4025 East 131st Street": {
@@ -6126,6 +6133,17 @@
 "ward2026": 13,
 "ward2014": 16,
 "hood": "Bellaire-Puritas"
+},
+"3870 West 25th Street": {
+"files": [
+"1232-2026"
+],
+"matched": null,
+"lon": null,
+"lat": null,
+"ward2026": null,
+"ward2014": null,
+"hood": null
 }
 },
 "funds": {
@@ -6597,6 +6615,17 @@
 "limit": 20000.0,
 "wards": [
 3
+]
+},
+"1234-2026": {
+"file": "1234-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/e0825753-1267-4102-ae94-c25397335da1.doc",
+"amounts": [
+35000.0
+],
+"limit": 35000.0,
+"wards": [
+6
 ]
 }
 }

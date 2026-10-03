@@ -1,12 +1,12 @@
 {
  "about": "Where each Bench packet stands. Written by scripts/packets.py. Approved means a named publisher approved this exact version.",
- "as_of": "2026-10-01T19:45:18+00:00",
+ "as_of": "2026-10-03T17:48:40+00:00",
  "counts": {
   "approved_current": 0,
   "approved_stale": 0,
-  "awaiting_review": 511,
+  "awaiting_review": 519,
   "blocked": 0,
-  "human_required": 1,
+  "human_required": 0,
   "quarantined": 0,
   "rejected": 0,
   "revision_requested": 0
@@ -14,13 +14,11 @@
  "files": {
   "approved_stale": [],
   "blocked": [],
-  "human_required": [
-   "683-2026"
-  ],
+  "human_required": [],
   "quarantined": [],
   "rejected": [],
   "revision_requested": []
  },
- "packets": 512,
+ "packets": 519,
  "with_skeptic_veto": []
 }
