@@ -635,20 +635,53 @@ function CX_UsGraph({ phone, start }) {
   fitRef.current = fit;
   u.useEffect(() => { if (state === `ready` && view === `sky`) fit(); }, [state, view, show, chamber, solo]);
   const focus = (n) => { setSel(n.i); cam.current = { ...cam.current, x: -n.x, y: -n.y, k: Math.max(cam.current.k, 1.6) }; setTick((t) => t + 1); };
+  // Fingers: one finger pans (or pulls a node in Calm and Live), two fingers pinch to zoom and pan together. The point between the fingers stays under them.
+  const ptrs = u.useRef(new Map()), pinch = u.useRef(null);
+  const mid2 = () => { const [a, b] = [...ptrs.current.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) || 1 }; };
+  const startPan = (ev, pull) => { drag.current = { sx: ev.clientX, sy: ev.clientY, cx: cam.current.x, cy: cam.current.y, moved: !1, pull }; };
   const onDown = (ev) => {
+    ptrs.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    cvs.current.setPointerCapture?.(ev.pointerId);
+    if (ptrs.current.size >= 2) {   // a second finger: stop any pull or pan and start a pinch
+      if (physRef.current) physRef.current.pulled = null;
+      drag.current = null;
+      const m = mid2(), [wx, wy] = toWorld({ clientX: m.x, clientY: m.y });
+      pinch.current = { d: m.d, k: cam.current.k, wx, wy, moved: !1 };
+      return;
+    }
     let pull = null;
     if (motion !== `still`) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); if (n && n.kind !== `hub`) pull = n.i; }
-    drag.current = { sx: ev.clientX, sy: ev.clientY, cx: cam.current.x, cy: cam.current.y, moved: !1, pull };
-    cvs.current.setPointerCapture?.(ev.pointerId);
+    startPan(ev, pull);
   };
   const onMove = (ev) => {
+    if (ptrs.current.has(ev.pointerId)) ptrs.current.set(ev.pointerId, { x: ev.clientX, y: ev.clientY });
+    if (pinch.current && ptrs.current.size >= 2) {
+      const m = mid2(), pc = pinch.current, r = cvs.current.getBoundingClientRect();
+      const k1 = Math.max(0.08, Math.min(9, pc.k * (m.d / pc.d)));
+      cam.current = { k: k1, x: (m.x - r.left - r.width / 2) / k1 - pc.wx, y: (m.y - r.top - r.height / 2) / k1 - pc.wy };
+      pc.moved = !0; setTick((t) => t + 1);
+      return;
+    }
     const d0 = drag.current; if (!d0) return;
     const dx = ev.clientX - d0.sx, dy = ev.clientY - d0.sy;
     if (Math.abs(dx) + Math.abs(dy) > 4) d0.moved = !0;
     if (d0.pull !== null && d0.moved) { const [wx, wy] = toWorld(ev); if (physRef.current) physRef.current.pulled = { i: d0.pull, x: wx, y: wy }; if (sel !== d0.pull) setSel(d0.pull); return; }
     if (d0.moved) { cam.current = { ...cam.current, x: d0.cx + dx / cam.current.k, y: d0.cy + dy / cam.current.k }; setTick((t) => t + 1); }
   };
-  const onUp = (ev) => { const d0 = drag.current; drag.current = null; if (physRef.current) physRef.current.pulled = null; if (d0 && !d0.moved) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); setSel(n ? n.i : null); } };
+  const onUp = (ev) => {
+    ptrs.current.delete(ev.pointerId);
+    if (pinch.current) {   // a pinch never selects anything; when one finger is left it carries on as a pan from where it is, without a jump
+      if (ptrs.current.size < 2) {
+        const left = [...ptrs.current.values()][0];
+        pinch.current = null;
+        if (left) { startPan({ clientX: left.x, clientY: left.y }, null); drag.current.moved = !0; } else drag.current = null;
+      }
+      return;
+    }
+    const d0 = drag.current; drag.current = null; if (physRef.current) physRef.current.pulled = null;
+    if (d0 && !d0.moved) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); setSel(n ? n.i : null); }
+  };
+  const onCancel = (ev) => { ptrs.current.delete(ev.pointerId); if (ptrs.current.size < 2) pinch.current = null; drag.current = null; if (physRef.current) physRef.current.pulled = null; };
   const order = u.useMemo(() => (g ? g.nodes.filter(visible).filter((n) => !dim(n)).map((n) => n.i) : []), [g, visible, dim]);
   visRef.current = u.useMemo(() => (g ? g.nodes.filter((n) => visible(n)) : []), [g, visible]);
   const move = (dir) => { if (!order.length) return; const at = order.indexOf(sel); focus(g.nodes[order[(at + dir + order.length) % order.length]]); };
@@ -729,7 +762,7 @@ function CX_UsGraph({ phone, start }) {
             <div className="us-stage">
               <div className="us-motion" role="group" aria-label="Motion"><span aria-hidden="true">Motion</span>{[[`still`, `Still`], [`calm`, `Calm`], [`live`, `Live`]].map(([id, t]) => <button key={id} type="button" aria-pressed={motion === id} className={motion === id ? `on` : ``} onClick={() => chooseMotion(id)}>{t}</button>)}</div>
               <canvas ref={cvs} className="us-canvas" tabIndex={0} role="img" aria-label={`Map of ${order.length} federal nodes: members of Congress, committees, and agencies. Use the Index, Linked, or Tree view for the same information as text. Keys: right and left bracket move between nodes, arrows pan, plus and minus zoom, Escape clears, slash searches.`}
-                onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
+                data-zoom={cam.current.k.toFixed(3)} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onCancel} />
               <div className="us-zoom"><button type="button" aria-label="Zoom in" onClick={() => zoomAt(1.3)}>+</button><button type="button" aria-label="Zoom out" onClick={() => zoomAt(1 / 1.3)}>−</button><button type="button" aria-label="Fit everything" onClick={fit}>Fit</button>{!phone && <button type="button" aria-label={full ? `Leave full screen` : `Full screen`} aria-pressed={full} onClick={toggleFull}>{full ? `Exit` : `Full`}</button>}</div>
               <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies <i style={{ background: CX_US_COLORS.judicial }} /> Courts. Circles are people, diamonds are committees and courts, squares are agencies. <span>A moving light on a line shows a recorded connection.</span></p>
             </div>

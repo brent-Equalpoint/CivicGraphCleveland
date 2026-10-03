@@ -948,6 +948,18 @@ const CHECKS = {
     await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(900);
     expect((await txt(ph, '.cxm-seg button.on')) === 'Graph' && (await has(ph, '.us-canvas')), 'Explore Congress as a graph did not open the Graph view on the Sky');
     expect(/view=graph/.test(await ph.evaluate(() => location.search)), 'the Graph view is not in the link');
+    // pinch to zoom: two fingers moving apart zoom in, moving together zoom out, and the page itself does not scroll sideways
+    { await ph.$eval('.us-canvas', (c) => c.scrollIntoView({ block: 'center' })); await wait(300);
+      const cdp = await ph.createCDPSession(); const r = await ph.$eval('.us-canvas', (c) => { const b = c.getBoundingClientRect(); return [b.left + b.width / 2, Math.max(b.top, 0) + Math.min(b.height / 2, 200)]; });
+      const zoom = () => ph.$eval('.us-canvas', (c) => +c.getAttribute('data-zoom'));
+      const touch = async (type, pts) => { await cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) }); };
+      const pinch = async (from, to) => { await touch('touchStart', [[r[0] - from, r[1]], [r[0] + from, r[1]]]); for (let i = 1; i <= 6; i++) { const f = from + ((to - from) * i) / 6; await touch('touchMove', [[r[0] - f, r[1]], [r[0] + f, r[1]]]); await wait(30); } await touch('touchEnd', []); await wait(250); };
+      const z0 = await zoom(); await pinch(20, 90); const z1 = await zoom();
+      expect(z1 > z0 * 2.5, `spreading two fingers did not zoom in enough: ${z0} to ${z1}`);
+      await pinch(90, 20); const z2 = await zoom();
+      expect(z2 < z1 * 0.6, `bringing two fingers together did not zoom out: ${z1} to ${z2}`);
+      expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'pinching made the page scroll sideways');
+      await cdp.detach(); }
     await clickText(ph, 'Your members', '.us-tabs button'); await wait(500);
     await ph.select('.us-mine select', 'OH'); await wait(300);
     await ph.select('.us-mine label:nth-of-type(2) select', '11'); await wait(500);
