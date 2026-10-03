@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  9d7fbd64c122c324635bb64251b71048d6f7a7f80b360856fbf9a082ab256373
-Size     4,060,222 bytes
+SHA-256  d6c4c56546cf100485d7c870b02956130e032d434a3e3139a20d2c21a420be89
+Size     4,073,094 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `d16724bce65c39b32bb670633027db953d640ba98a3c303deab59e19fa87929c`, 2,499,840 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `fe1b1c60a8a45814d715ba82c56ed38c43967f67b2b62f46cbde22b36173017b`, 2,509,152 bytes, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
