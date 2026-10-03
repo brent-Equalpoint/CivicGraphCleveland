@@ -376,7 +376,25 @@
   "About it": "Acerca de esto",
   "Federal agencies from the Federal Register. The President and the cabinet are not in our record yet.": "Agencias federales del Federal Register. El presidente y el gabinete todavía no están en nuestro registro.",
   "Not in our record yet.": "Todavía no está en nuestro registro.",
-  "States": "Estados"
+  "States": "Estados",
+  "Motion": "Movimiento",
+  "Still": "Quieto",
+  "Calm": "Calmo",
+  "Live": "En vivo",
+  "Full": "Pantalla completa",
+  "Exit": "Salir",
+  "Full screen": "Pantalla completa",
+  "Leave full screen": "Salir de pantalla completa",
+  "Solo": "Solo",
+  "Everything": "Todo",
+  "A committee": "Un comité",
+  "An agency": "Una agencia",
+  "A state": "Un estado",
+  "Filters": "Filtros",
+  "Profile": "Perfil",
+  "In words": "Con palabras",
+  "Show everything": "Mostrar todo",
+  "About these sources (a preview)": "Acerca de estas fuentes (una vista previa)"
  },
  "masked": {
   "{n} days": "{n} días",
@@ -527,7 +545,8 @@
   "Representative, {*}, district {n}": "Representante, {*}, distrito {n}",
   "Delegate or representative, {*}": "Delegado o representante, {*}",
   "Senators: {n}. Representatives: {n}.": "Senadores: {n}. Representantes: {n}.",
-  "Votes that decided something: {n}": "Votos que decidieron algo: {n}"
+  "Votes that decided something: {n}": "Votos que decidieron algo: {n}",
+  "In words ({n})": "Con palabras ({n})"
  },
  "keep": [
   "1234 E 116th St, Cleveland",

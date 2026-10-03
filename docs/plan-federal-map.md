@@ -22,7 +22,8 @@ tree are the others, so nobody has to use the picture.
 
 - **Phase 2 done (Oct 3, 2026).** `ext/cx-us-model.jsx` holds the model: the five doors with counts, one short note for each of the 4,376 connections, and the structure as a tree. The Index is now the five doors (members, committees, agencies, policy areas, states); Linked reads its notes from the model; Tree reads the model and says on screen that the President, the cabinet, and the courts are not in our record yet. `scripts/test_us_model.js` checks that every door adds up to the record, that no note reads as a score, and that every committee and agency appears once in the tree.
 - It also fixed a drop: an agency under a sub-agency (the First Responder Network Authority) was missing from the Sky picture and the tree, because both only handled two levels.
-- Next: phase 3 (Sky rebuilt on the model). Phase 1 (executive and judicial data) waits on the scope decision.
+- **Phases 3 and 4 done (Oct 3, 2026).** The Sky is rebuilt on the model: three clusters (Senate and House with their committees on the rim and members inside, placed toward the committees they sit on; the executive agencies in their own disc; the joint committees as a labeled row), a Solo picker (a committee, an agency family, or a state), a side panel with Profile, Solo, and In words, and folder tabs for the views. On desktop the map fills the page, and a Full button uses the browser's full screen. Motion is our own small engine (`cxUsStep`, in the model): Still, Calm (slow drift, and a pulled node brings its connections along on springs), and Live (looser, with a push between nodes that get too close). Everything has a home and returns to it. A phone, or anyone who asked their device for less motion, starts on Still. The loop pauses when the tab is hidden or the map is off screen. `scripts/test_us_model.js` pins the layout, Solo, and the motion (still holds, calm stays within a few pixels, live settles back after a pull, nothing becomes a bad number).
+- Next: phase 5 is mostly done by the Index, Linked, and Tree work; what remains is the edge pulse and a pass on the phone Sky. Phase 1 (executive and judicial data) waits on the scope decision. The alignment mode (below) gets its own methodology plan first.
 
 ## About the aicanvas component
 
@@ -61,6 +62,17 @@ the same facts as text, and every node is reachable by keyboard.
 | 5 | **Linked and Tree.** Linked shows the selected node and every neighbor with its sentence; Tree is the structure as nested, keyboard-friendly lists (Federal government, then Legislative, Executive, Judicial). Both open and close with the same motion | every node in Sky is reachable in both; expand and collapse by keyboard | a session |
 | 6 | **Phone.** The Federal tab already starts with profiles. The map opens in a sheet; tap selects, hold shows details, the panel becomes a bottom card | `us-map` check passes at 390px with no sideways scroll | a session |
 | 7 | **Checks, Spanish, color-vision.** A `us-map` browser check; the new text in Spanish; node and edge colors as meaning groups in `design/tokens.json`; axe, no-bleed, targets | all checks green, including `CHECK_LANG=es` and `CHECK_MODE=light` | half a session |
+
+## Later: an alignment mode ("how you line up with them, by policy")
+
+Asked for Oct 3, 2026. The methodology is not written; it gets its own plan before any code. What is already settled, because the project's rules decide it:
+
+- **It is the Constellation idea applied to Congress, so it keeps the Constellation's limits.** Show counts on documented records, per policy area ("you and this member answered the same on 6 of the 9 recorded votes in Energy that you answered"), never one overall number, never a percentage, a rank, a "best match", or an ideology label. Position or color never means "closer is better".
+- **Only recorded things.** Votes the member cast (Yea, Nay) and answers the resident gave. A vote the member did not cast is "not in the roll", and not voting is not a no. Procedural votes (rules, motions) are left out of agreement unless the question is the same as the resident's.
+- **Everyone stays visible.** A member with few comparable records is shown with that count, not hidden or sorted last.
+- **On the device only.** The resident's answers never go into a link or a request, like Place and priorities today.
+- **Party is not an input and not a color.**
+- **Open questions for the methodology plan:** which policy areas and which votes count as "the same question"; how a resident answers (their own yes or no on the bill, as the Constellation does); how to show the numbers on the map without implying a ranking (for example, a ring of counts in the side panel instead of recoloring the sky); how to word it so nobody reads a fraction as a rating; and who reviews the wording before it ships.
 
 ## Decisions to make first
 

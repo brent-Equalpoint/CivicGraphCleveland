@@ -173,6 +173,7 @@ Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. 
 | profile-card | `.cxm-profile, .cxm-prof-head, .cxm-prof-actions, .cxm-prof-nav, .cxm-strip` | ext/cxm-people.jsx (CxmProfileCard, CxmProfileActions, CxmProfileNav, CxmProfileStrip), ext/cxm-federal.jsx. every person's profile has one shape: face, kicker, name, role line, tiles, then Full Story, Profile, Write {first name}, then a one-line note. Cleveland and Federal both use it; a new tab reuses it |
 | folder-tabs | `.cxm-folders` | ext/cxm-people.jsx (CxmFolders). tabs at the top of People (Cleveland, Federal); arrow keys move between them; room for more |
 | federal-index | `.us-doors, .us-door, .us-ring, .us-groups, .us-list` | ext/cx-us.jsx (CX_UsDoors), ext/cx-us-model.jsx. five ways into the federal government; the ring holds a count, never a score |
+| federal-sky | `.us-sky, .us-tabs, .us-motion, .us-actions, .us-solo` | ext/cx-us.jsx (CX_UsGraph), ext/cx-us-model.jsx (cxUsPlace, cxUsSolo, cxUsStep). folder-tab views; the big map fills the page; Still, Calm, Live motion with a home position for every node |
 
 <!-- GENERATED-END -->
 

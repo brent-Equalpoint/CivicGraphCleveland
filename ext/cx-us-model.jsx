@@ -82,3 +82,155 @@ function cxUsTree(data, g) {
     { label: `Judicial branch`, children: [], note: `Not in our record yet.` },
   ];
 }
+
+
+/* ---------- Sky layout (plan-federal-map.md, phase 3) ----------
+   Fixed and computed from the record, with no randomness and no timing, so the same data always gives the same picture and a test can pin it.
+   Three clusters: the Senate and the House each hold their committees on the rim (diamonds) and their members inside; the executive agencies
+   sit in their own cluster. A member is placed toward the committees they sit on (the middle of those seats, pushed outward so the cluster
+   is used), then nudged apart so no two overlap. Position says "near the committees they sit on", nothing more: it is not a rank or a
+   measure of influence. Joint committees sit in a row between the two chambers. */
+const CX_US_LAYOUT = { senate: { x: -560, y: 0, r: 270 }, house: { x: 190, y: -30, r: 420 }, exec: { x: 1010, y: 60, r: 250 }, joint: { y: 500, gap: 130 } };
+function cxUsHash(s) { let h = 2166136261; for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); } return (h >>> 0) / 4294967296; }
+function cxUsPlace(g) {
+  const L = CX_US_LAYOUT, byName = (a, b) => a.name.localeCompare(b.name);
+  const hub = (id, c) => { const n = g.byId.get(id); n.x = c.x; n.y = c.y; };
+  hub(`h:senate`, L.senate); hub(`h:house`, L.house); hub(`h:exec`, L.exec);
+  [`senate`, `house`].forEach((ch) => {
+    const c = L[ch], list = g.nodes.filter((n) => n.kind === `committee` && n.group === ch).sort(byName);
+    list.forEach((n, k) => { const a = -Math.PI / 2 + (2 * Math.PI * (k + 0.5)) / list.length; n.x = c.x + c.r * Math.cos(a); n.y = c.y + c.r * Math.sin(a); n.ring = ch; });
+  });
+  const joint = g.nodes.filter((n) => n.kind === `committee` && n.group === `joint`).sort(byName), mid = (L.senate.x + L.house.x) / 2;
+  joint.forEach((n, k) => { n.x = mid + (k - (joint.length - 1) / 2) * L.joint.gap; n.y = L.joint.y; n.ring = `joint`; });
+  // members: toward the middle of the committees of their own chamber that they sit on
+  [`senate`, `house`].forEach((ch) => {
+    const c = L[ch], people = g.nodes.filter((n) => n.kind === `member` && n.group === ch);
+    people.forEach((n) => {
+      const seats = [...new Set(g.adj[n.i].map((ei) => { const e = g.edges[ei]; return g.nodes[e.a === n.i ? e.b : e.a]; }).filter((o) => o.kind === `committee` && o.group === ch).map((o) => o.i))];
+      let bx = c.x, by = c.y;
+      if (seats.length) { bx = seats.reduce((t, i) => t + g.nodes[i].x, 0) / seats.length; by = seats.reduce((t, i) => t + g.nodes[i].y, 0) / seats.length; }
+      let dx = (bx - c.x) * 1.6, dy = (by - c.y) * 1.6; const d = Math.hypot(dx, dy), cap = c.r * 0.86;
+      if (d > cap) { dx *= cap / d; dy *= cap / d; }
+      const a = cxUsHash(n.id + `a`) * 2 * Math.PI, rr = 4 + cxUsHash(n.id + `r`) * 12;
+      n.x = c.x + dx + rr * Math.cos(a); n.y = c.y + dy + rr * Math.sin(a);
+    });
+    // nudge apart, in a fixed order, until nobody overlaps; stay inside the cluster
+    const D = 9;
+    for (let pass = 0; pass < 60; pass++) {
+      const cell = new Map();
+      people.forEach((n) => { const k = `${Math.floor(n.x / D)},${Math.floor(n.y / D)}`; (cell.get(k) || cell.set(k, []).get(k)).push(n); });
+      let moved = 0;
+      people.forEach((n) => {
+        const cx = Math.floor(n.x / D), cy = Math.floor(n.y / D);
+        for (let ix = cx - 1; ix <= cx + 1; ix++) for (let iy = cy - 1; iy <= cy + 1; iy++) (cell.get(`${ix},${iy}`) || []).forEach((m) => {
+          if (m.i <= n.i) return;
+          let ex = m.x - n.x, ey = m.y - n.y, dd = Math.hypot(ex, ey);
+          if (dd >= D) return;
+          if (dd < 0.01) { const a = cxUsHash(n.id + m.id) * 2 * Math.PI; ex = Math.cos(a); ey = Math.sin(a); dd = 1; }
+          const push = ((D - dd) / 2) * 0.8; ex = (ex / dd) * push; ey = (ey / dd) * push;
+          n.x -= ex; n.y -= ey; m.x += ex; m.y += ey; moved++;
+        });
+      });
+      people.forEach((n) => { const dx = n.x - c.x, dy = n.y - c.y, d = Math.hypot(dx, dy), cap = c.r * 0.9; if (d > cap) { n.x = c.x + (dx * cap) / d; n.y = c.y + (dy * cap) / d; } });
+      if (!moved) break;
+    }
+  });
+  const count = (f) => g.nodes.filter(f).length;
+  g.clusters = [
+    { id: `senate`, label: `Senate`, x: L.senate.x, y: L.senate.y, r: L.senate.r + 40, count: count((n) => n.kind === `member` && n.group === `senate`), noun: `members` },
+    { id: `house`, label: `House`, x: L.house.x, y: L.house.y, r: L.house.r + 40, count: count((n) => n.kind === `member` && n.group === `house`), noun: `members` },
+    { id: `exec`, label: `Executive agencies`, x: L.exec.x, y: L.exec.y, r: L.exec.r, count: count((n) => n.kind === `agency`), noun: `agencies` },
+    { id: `joint`, label: `Joint committees`, x: mid, y: L.joint.y, r: 0, count: joint.length, noun: `committees` },   // a row, not a disc: only its label is drawn
+  ];
+  g.nodes.forEach((n) => { n.hx = n.x; n.hy = n.y; });   // home: where motion always returns to
+  return g;
+}
+
+/* Solo: the set of node indexes to keep when one thing is picked. spec is { node: index } or { state: "OH" }. Everything else is hidden.
+   A committee keeps its members; a member keeps their committees; an agency keeps its whole family (the top agency above it and everything under it);
+   a state keeps its members and the committees they sit on. */
+function cxUsSolo(g, spec) {
+  const keep = new Set();
+  const nbrs = (i) => g.adj[i].map((ei) => { const e = g.edges[ei]; return e.a === i ? e.b : e.a; });
+  if (spec.state) {
+    g.nodes.forEach((n) => { if (n.kind === `member` && n.m.state === spec.state) { keep.add(n.i); nbrs(n.i).forEach((o) => { if (g.nodes[o].kind === `committee`) keep.add(o); }); } });
+    return keep;
+  }
+  const n = g.nodes[spec.node];
+  if (!n) return keep;
+  keep.add(n.i);
+  if (n.kind === `committee` || n.kind === `member`) nbrs(n.i).forEach((o) => { if (g.nodes[o].kind !== `hub`) keep.add(o); });
+  else if (n.kind === `agency`) {
+    let top = n; while (top.a.parent_id && g.byId.has(`a:${top.a.parent_id}`)) top = g.byId.get(`a:${top.a.parent_id}`);
+    const down = (i) => { keep.add(i); g.adj[i].forEach((ei) => { const e = g.edges[ei], o = e.a === i ? e.b : e.a; if (g.nodes[o].kind === `agency` && g.nodes[o].a.parent_id === g.nodes[i].a.id && !keep.has(o)) down(o); }); };
+    down(top.i);
+  }
+  return keep;
+}
+
+
+/* ---------- Sky motion (plan-federal-map.md, phase 4) ----------
+   A small physics step of our own, three modes. Every node has a home (its place in the fixed layout above) and a render position that
+   moves around it, so the picture can never drift away from the data: let go and everything settles back.
+     still  nothing moves; every node sits at home.
+     calm   a slow, small drift around home, and a pulled node brings the nodes it is connected to along on springs.
+     live   a looser home spring so things move more, a push between nodes that get too close, a stronger drift, and the same pull.
+   The drift is a formula of time and the node's id (no random numbers), so the same time gives the same picture and a test can pin it.
+   Motion never changes a connection or a count. It is decoration plus a way to feel which nodes are tied together. */
+const CX_US_MOTION = {
+  still: null,
+  calm: { drift: 3, home: 0.09, damp: 0.8, spring: 0.05, repel: 0 },
+  live: { drift: 8, home: 0.02, damp: 0.9, spring: 0.07, repel: 0.45 },
+};
+function cxUsMotionState(g) {
+  const n = g.nodes.length;
+  return { vx: new Float32Array(n), vy: new Float32Array(n), pulled: null, ph: g.nodes.map((nd) => [cxUsHash(nd.id + `p`) * 6.2832, cxUsHash(nd.id + `q`) * 6.2832, 0.35 + cxUsHash(nd.id + `f`) * 0.6, 0.35 + cxUsHash(nd.id + `g`) * 0.6]) };
+}
+/* One step. nodes: the ones to move (the visible ones); t: seconds; dt: frames of 1/60 s (kept small). Returns the largest speed, so a caller can tell when it is quiet. */
+function cxUsStep(g, S, mode, t, dt, nodes) {
+  const M = CX_US_MOTION[mode];
+  if (!M) { nodes.forEach((n) => { n.x = n.hx; n.y = n.hy; }); S.vx.fill(0); S.vy.fill(0); return 0; }
+  dt = Math.max(0.2, Math.min(2, dt || 1));
+  const fx = new Map(), fy = new Map(), add = (i, ax, ay) => { fx.set(i, (fx.get(i) || 0) + ax); fy.set(i, (fy.get(i) || 0) + ay); };
+  const pl = S.pulled;
+  // the nodes tied to a pulled one follow it on springs whose rest length is their distance at home
+  if (pl) {
+    const p = g.nodes[pl.i];
+    g.adj[pl.i].forEach((ei) => {
+      const e = g.edges[ei], o = g.nodes[e.a === pl.i ? e.b : e.a];
+      if (o.kind === `hub`) return;
+      const rest = Math.hypot(o.hx - p.hx, o.hy - p.hy), dx = pl.x - o.x, dy = pl.y - o.y, d = Math.hypot(dx, dy) || 1, pull = (d - rest) * M.spring;
+      add(o.i, (dx / d) * pull, (dy / d) * pull);
+    });
+  }
+  // nodes that get too close push apart (live only)
+  if (M.repel) {
+    const D = 9, cell = new Map();
+    nodes.forEach((n) => { const k = `${Math.floor(n.x / D)},${Math.floor(n.y / D)}`; (cell.get(k) || cell.set(k, []).get(k)).push(n); });
+    nodes.forEach((n) => {
+      const cx = Math.floor(n.x / D), cy = Math.floor(n.y / D);
+      for (let ix = cx - 1; ix <= cx + 1; ix++) for (let iy = cy - 1; iy <= cy + 1; iy++) (cell.get(`${ix},${iy}`) || []).forEach((m) => {
+        if (m.i <= n.i) return;
+        let ex = m.x - n.x, ey = m.y - n.y, dd = Math.hypot(ex, ey);
+        if (dd >= D) return;
+        if (dd < 0.01) { ex = 1; ey = 0; dd = 1; }
+        const push = ((D - dd) / D) * M.repel; ex = (ex / dd) * push; ey = (ey / dd) * push;
+        add(n.i, -ex, -ey); add(m.i, ex, ey);
+      });
+    });
+  }
+  let top = 0;
+  nodes.forEach((n) => {
+    if (pl && n.i === pl.i) { n.x = pl.x; n.y = pl.y; S.vx[n.i] = 0; S.vy[n.i] = 0; return; }
+    const ph = S.ph[n.i], tx = n.hx + M.drift * Math.sin(t * ph[2] + ph[0]), ty = n.hy + M.drift * Math.cos(t * ph[3] + ph[1]);
+    const ax = (tx - n.x) * M.home + (fx.get(n.i) || 0), ay = (ty - n.y) * M.home + (fy.get(n.i) || 0), k = Math.pow(M.damp, dt);
+    S.vx[n.i] = (S.vx[n.i] + ax * dt) * k; S.vy[n.i] = (S.vy[n.i] + ay * dt) * k;
+    n.x += S.vx[n.i] * dt; n.y += S.vy[n.i] * dt;
+    // never wander far from home, and never become a bad number
+    const ox = n.x - n.hx, oy = n.y - n.hy, od = Math.hypot(ox, oy);
+    if (!(od < 1e5)) { n.x = n.hx; n.y = n.hy; S.vx[n.i] = 0; S.vy[n.i] = 0; }
+    else if (od > 600 && !pl) { n.x = n.hx + (ox * 600) / od; n.y = n.hy + (oy * 600) / od; }
+    top = Math.max(top, Math.hypot(S.vx[n.i], S.vy[n.i]));
+  });
+  return top;
+}

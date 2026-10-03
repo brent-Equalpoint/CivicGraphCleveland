@@ -868,6 +868,36 @@ const CHECKS = {
     expect((await txt(p, '.us-side h2')) !== before, 'the ] key did not move to another node');
     await p.keyboard.press('Escape'); await wait(150);
     expect(/Select anyone or anything/.test((await txt(p, '.us-side')) || ''), 'Escape did not clear the selection');
+    // the Sky: three clusters, and Solo shows one committee, one state, or one agency family with what it touches
+    const mapCount = async () => +((/Map of (\d+)/.exec(await p.$eval('.us-canvas', (c) => c.getAttribute('aria-label'))) || [])[1] || 0);
+    const nAll = await mapCount(); expect(nAll > 800, `the Sky holds only ${nAll} nodes`);
+    const com = await p.$eval('.us-solo optgroup[label="A committee"] option', (o) => o.value);
+    await p.select('.us-solo', com); await wait(400);
+    const nCom = await mapCount(); expect(nCom >= 2 && nCom < 160, `Solo on a committee left ${nCom} nodes`);
+    await p.focus('.us-canvas'); await p.keyboard.press('Escape'); await wait(300);
+    expect((await mapCount()) === nAll, 'Escape did not bring everything back after Solo');
+    await p.select('.us-solo', 's:OH'); await wait(400);
+    const nOh = await mapCount(); expect(nOh > 15 && nOh < 120, `Solo on Ohio left ${nOh} nodes`);
+    await p.select('.us-solo', ''); await wait(300);
+    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Husted'); await wait(300);
+    await (await p.$('.us-results .us-pick')).click(); await wait(400);
+    expect(/Profile/.test((await txt(p, '.us-actions')) || '') && /Solo/.test((await txt(p, '.us-actions')) || '') && /In words/.test((await txt(p, '.us-actions')) || ''), 'the side panel lacks Profile, Solo, and In words');
+    await clickText(p, 'Solo', '.us-actions button'); await wait(400);
+    const nMember = await mapCount(); expect(nMember >= 2 && nMember < 40, `Solo on a senator left ${nMember} nodes`);
+    await p.select('.us-solo', ''); await wait(300);
+    await p.keyboard.press('Escape'); await wait(150);
+    // motion: Still holds still, Live moves, and Calm is the default for someone who has not asked for less
+    expect((await txt(p, '.us-motion button.on')) === 'Calm', 'the Sky does not open on Calm');
+    const frame = () => p.$eval('.us-canvas', (c) => c.toDataURL());
+    await clickText(p, 'Still', '.us-motion button'); await wait(400);
+    const s1 = await frame(); await wait(600); expect(s1 === (await frame()), 'Still moved');
+    await clickText(p, 'Live', '.us-motion button'); await wait(800);
+    const l1 = await frame(); await wait(600); expect(l1 !== (await frame()), 'Live did not move');
+    await p.select('.us-solo', 's:OH'); await wait(400);
+    const cb = await p.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; });
+    await p.mouse.move(cb[0] + cb[2] / 2, cb[1] + cb[3] / 2); await p.mouse.down(); await p.mouse.move(cb[0] + cb[2] / 2 + 60, cb[1] + cb[3] / 2 + 10, { steps: 5 }); await p.mouse.up(); await wait(300);
+    await p.select('.us-solo', ''); await wait(300);
+    await clickText(p, 'Still', '.us-motion button'); await wait(300);
     await p.select('.us-tools select:nth-of-type(1)', 'senate'); await wait(250);
     await clickText(p, 'Index', '.us-tabs button');
     await clickText(p, 'House', '.us-groups button'); expect(/^0 shown/.test((await txt(p, '.us-count')) || ''), 'the Senate filter still shows House members in the Index');

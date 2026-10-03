@@ -54,7 +54,7 @@ function cxUsGraph(d) {
   const add = (n) => { n.i = nodes.length; nodes.push(n); byId.set(n.id, n); return n; };
   const seen = new Set();
   const edge = (a, b, rel) => { const k = `${byId.get(a).i}|${byId.get(b).i}`; if (seen.has(k)) return; seen.add(k); edges.push({ a: byId.get(a).i, b: byId.get(b).i, rel }); };
-  const hubs = { senate: [-560, -40], house: [60, -430], exec: [560, 120] };
+  const hubs = { senate: [-560, 0], house: [190, -30], exec: [1010, 60] };
   add({ id: `h:senate`, kind: `hub`, label: `Senate`, name: `United States Senate`, x: hubs.senate[0], y: hubs.senate[1], r: 16, shape: `circle`, group: `senate` });
   add({ id: `h:house`, kind: `hub`, label: `House`, name: `United States House of Representatives`, x: hubs.house[0], y: hubs.house[1], r: 16, shape: `circle`, group: `house` });
   add({ id: `h:exec`, kind: `hub`, label: `Executive agencies`, name: `Federal executive agencies`, x: hubs.exec[0], y: hubs.exec[1], r: 16, shape: `circle`, group: `exec` });
@@ -82,7 +82,7 @@ function cxUsGraph(d) {
   for (let again = 0; again < 4; again++) d.agencies.filter((a) => !byId.has(`a:${a.id}`) && byId.has(`a:${a.parent_id}`)).forEach((a, k) => { const pn = byId.get(`a:${a.parent_id}`), ang = Math.atan2(pn.y - hubs.exec[1], pn.x - hubs.exec[0]) + (k % 5 - 2) * 0.12; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: pn.x + 26 * Math.cos(ang), y: pn.y + 26 * Math.sin(ang), r: 3.2, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `a:${a.parent_id}`, `part of`); });
   const adj = nodes.map(() => []);
   edges.forEach((e, k) => { adj[e.a].push(k); adj[e.b].push(k); });
-  return { nodes, byId, edges, adj };
+  return cxUsPlace({ nodes, byId, edges, adj });
 }
 
 /* what a node says about itself, and its connections, as plain sentences with names */
@@ -402,15 +402,26 @@ function CX_UsGraph({ phone }) {
   const [chamber, setChamber] = u.useState(`all`);
   const [stateF, setStateF] = u.useState(``);
   const [tick, setTick] = u.useState(0);
+  const [motion, setMotion] = u.useState(() => {   // still, calm, or live; a phone and anyone who asked the device for less motion start still
+    try { const v = globalThis.localStorage && globalThis.localStorage.getItem(`cx-us-motion`); if (v === `still` || v === `calm` || v === `live`) return v; } catch (e) { /* no storage: use the default */ }
+    const less = !!(globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches);
+    return less || phone ? `still` : `calm`;
+  });
+  const chooseMotion = (m) => { setMotion(m); try { globalThis.localStorage.setItem(`cx-us-motion`, m); } catch (e) { /* a private window keeps it for this visit only */ } };
+  const physRef = u.useRef(null), drawRef = u.useRef(null), visRef = u.useRef([]);
+  const [full, setFull] = u.useState(false);   // the browser's own full screen, for the whole section
+  const [solo, setSolo] = u.useState(null);   // null, { node: index }, or { state: "OH" }: show only that and what it touches
+  const soloSet = u.useMemo(() => (g && solo ? cxUsSolo(g, solo) : null), [g, solo]);
   const cvs = u.useRef(null), cam = u.useRef({ x: 0, y: 0, k: 0.55 }), wrap = u.useRef(null), drag = u.useRef(null);
   const visible = u.useCallback((n) => {
+    if (soloSet) return soloSet.has(n.i);
     if (n.kind === `hub`) return !0;
     if (n.kind === `member` && !show.member) return !1;
     if (n.kind === `committee` && !show.committee) return !1;
     if (n.kind === `agency` && !show.agency) return !1;
     if (chamber !== `all` && n.group !== chamber && n.group !== `joint` && n.group !== `exec`) return !1;
     return !0;
-  }, [show, chamber]);
+  }, [show, chamber, soloSet]);
   const dim = u.useCallback((n) => !!stateF && n.kind === `member` && n.m.state !== stateF, [stateF]);
   const nbr = u.useMemo(() => { if (!g || sel === null) return null; const s = new Set([sel]); g.adj[sel].forEach((k) => { s.add(g.edges[k].a); s.add(g.edges[k].b); }); return s; }, [g, sel]);
 
@@ -422,6 +433,14 @@ function CX_UsGraph({ phone }) {
     const x = c.getContext(`2d`); x.setTransform(dpr, 0, 0, dpr, 0, 0); x.clearRect(0, 0, w, h);
     const { x: cx, y: cy, k } = cam.current, X = (v) => w / 2 + (v + cx) * k, Y = (v) => h / 2 + (v + cy) * k;
     const lit = nbr;
+    if (!soloSet && g.clusters) g.clusters.forEach((cl) => {
+      const px = X(cl.x), py = Y(cl.y), r = cl.r * k;
+      if (px + r < 0 || py + r < 0 || px - r > w || py - r > h) return;
+      x.fillStyle = `rgba(255,255,255,.035)`; x.strokeStyle = `rgba(255,255,255,.12)`; x.lineWidth = 1;
+      if (r > 0) { x.beginPath(); x.arc(px, py, r, 0, 6.2832); x.fill(); x.stroke(); }
+      x.font = `600 14px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`;
+      x.fillText(`${cl.label} · ${cl.count}`, px, py - r - 14);
+    });
     if (lit) {  // the connections of the chosen node
       x.lineWidth = 1; x.strokeStyle = `rgba(255,255,255,.28)`;
       g.adj[sel].forEach((ei) => { const e = g.edges[ei], A = g.nodes[e.a], B = g.nodes[e.b]; if (!visible(A) || !visible(B)) return; x.beginPath(); x.moveTo(X(A.x), Y(A.y)); x.lineTo(X(B.x), Y(B.y)); x.stroke(); });
@@ -439,12 +458,40 @@ function CX_UsGraph({ phone }) {
       x.fill();
       if (isSel) { x.lineWidth = 2; x.strokeStyle = `#fff`; x.stroke(); }
       x.globalAlpha = 1;
-      const label = n.kind === `hub` || isSel || (k > 1.2 && n.kind === `committee`) || (k > 2.4 && n.kind !== `member`) || (k > 4 && n.kind === `member`) || (lit && on && n.kind !== `member`);
+      const label = (n.kind === `hub` && !soloSet && k > 0.9) || isSel || (soloSet && (soloSet.size <= 70 || n.kind !== `member`)) || (k > 0.75 && n.kind === `committee`) || (k > 2.4 && n.kind !== `member`) || (k > 4 && n.kind === `member`) || (lit && on && n.kind !== `member`);
       if (label && !faded) { x.font = `${n.kind === `hub` ? 700 : 500} ${n.kind === `hub` ? 15 : 12}px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`; x.fillText(n.label.length > 26 ? n.label.slice(0, 25) + `…` : n.label, px, py - r - 6); }
     });
-  }, [g, sel, nbr, visible, dim]);
+  }, [g, sel, nbr, visible, dim, soloSet]);
+  drawRef.current = draw;
   u.useEffect(() => { draw(); }, [draw, tick, view, state]);
+  // motion: one loop, only while the Sky is showing, the tab is visible, and the map is on screen
+  u.useEffect(() => {
+    if (!g || state !== `ready` || view !== `sky`) return undefined;
+    if (!physRef.current) physRef.current = cxUsMotionState(g);
+    const S = physRef.current;
+    if (motion === `still`) { cxUsStep(g, S, `still`, 0, 1, g.nodes); S.pulled = null; if (drawRef.current) drawRef.current(); return undefined; }
+    let raf = 0, last = 0, alive = true, onScreen = true;
+    const t0 = performance.now();
+    const io = globalThis.IntersectionObserver && cvs.current ? new globalThis.IntersectionObserver((es) => { onScreen = es[0].isIntersecting; }) : null;
+    if (io) io.observe(cvs.current);
+    const loop = (now) => {
+      if (!alive) return;
+      raf = requestAnimationFrame(loop);
+      if (document.hidden || !onScreen || now - last < 30) return;
+      const dt = last ? (now - last) / 16.7 : 1; last = now;
+      cxUsStep(g, S, motion, (now - t0) / 1000, dt, visRef.current);
+      if (drawRef.current) drawRef.current();
+    };
+    raf = requestAnimationFrame(loop);
+    return () => { alive = false; cancelAnimationFrame(raf); if (io) io.disconnect(); S.pulled = null; };
+  }, [g, state, view, motion]);
   u.useEffect(() => { const f = () => setTick((t) => t + 1); globalThis.addEventListener(`resize`, f); return () => globalThis.removeEventListener(`resize`, f); }, []);
+  u.useEffect(() => {
+    const f = () => { setFull(!!document.fullscreenElement); setTimeout(() => fitRef.current && fitRef.current(), 60); };
+    document.addEventListener(`fullscreenchange`, f); return () => document.removeEventListener(`fullscreenchange`, f);
+  }, []);
+  const fitRef = u.useRef(null);
+  const toggleFull = () => { try { if (document.fullscreenElement) document.exitFullscreen(); else if (wrap.current && wrap.current.requestFullscreen) wrap.current.requestFullscreen(); } catch (e) { /* a browser that refuses full screen keeps the page-sized map */ } };
 
   const toWorld = (ev) => { const c = cvs.current, r = c.getBoundingClientRect(), { x, y, k } = cam.current; return [(ev.clientX - r.left - r.width / 2) / k - x, (ev.clientY - r.top - r.height / 2) / k - y]; };
   const pick = (wx, wy) => { let best = null, bd = 1e9; g.nodes.forEach((n) => { if (!visible(n) || dim(n)) return; const dd = (n.x - wx) ** 2 + (n.y - wy) ** 2, rr = (Math.max(n.r, 6) + 4 / cam.current.k) ** 2; if (dd < rr && dd < bd) { bd = dd; best = n; } }); return best; };
@@ -454,23 +501,41 @@ function CX_UsGraph({ phone }) {
     const c = cvs.current; if (!c || !g) return;
     const vis = g.nodes.filter(visible);
     if (!vis.length) return;
-    const xs = vis.map((n) => n.x), ys = vis.map((n) => n.y), x0 = Math.min(...xs) - 40, x1 = Math.max(...xs) + 40, y0 = Math.min(...ys) - 40, y1 = Math.max(...ys) + 40;
-    const k = Math.max(0.2, Math.min(2, Math.min(c.clientWidth / (x1 - x0), c.clientHeight / (y1 - y0))));
-    cam.current = { x: -(x0 + x1) / 2, y: -(y0 + y1) / 2, k };
+    const xs = vis.map((n) => n.hx), ys = vis.map((n) => n.hy), cl = !soloSet && g.clusters ? g.clusters : [];
+    // the soft discs and their labels count too, so nothing is cut off at the edge
+    const x0 = Math.min(...xs, ...cl.map((c) => c.x - c.r)) - 40, x1 = Math.max(...xs, ...cl.map((c) => c.x + c.r)) + 40, y0 = Math.min(...ys, ...cl.map((c) => c.y - c.r - 26)) - 40, y1 = Math.max(...ys, ...cl.map((c) => c.y + c.r)) + 40;
+    // on the big desktop map the side panel sits over the right edge and the key over the bottom, so the picture is fitted into what is left
+    const rx = !phone && view === `sky` ? 360 : 0, by = !phone && view === `sky` ? 56 : 0;
+    const k = Math.max(0.2, Math.min(2, Math.min((c.clientWidth - rx) / (x1 - x0), (c.clientHeight - by) / (y1 - y0))));
+    cam.current = { x: -(x0 + x1) / 2 - rx / (2 * k), y: -(y0 + y1) / 2 - by / (2 * k), k };
     setTick((t) => t + 1);
   };
-  u.useEffect(() => { if (state === `ready` && view === `sky`) fit(); }, [state, view, show, chamber]);
+  fitRef.current = fit;
+  u.useEffect(() => { if (state === `ready` && view === `sky`) fit(); }, [state, view, show, chamber, solo]);
   const focus = (n) => { setSel(n.i); cam.current = { ...cam.current, x: -n.x, y: -n.y, k: Math.max(cam.current.k, 1.6) }; setTick((t) => t + 1); };
-  const onDown = (ev) => { drag.current = { sx: ev.clientX, sy: ev.clientY, cx: cam.current.x, cy: cam.current.y, moved: !1 }; cvs.current.setPointerCapture?.(ev.pointerId); };
-  const onMove = (ev) => { const d0 = drag.current; if (!d0) return; const dx = ev.clientX - d0.sx, dy = ev.clientY - d0.sy; if (Math.abs(dx) + Math.abs(dy) > 4) d0.moved = !0; if (d0.moved) { cam.current = { ...cam.current, x: d0.cx + dx / cam.current.k, y: d0.cy + dy / cam.current.k }; setTick((t) => t + 1); } };
-  const onUp = (ev) => { const d0 = drag.current; drag.current = null; if (d0 && !d0.moved) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); setSel(n ? n.i : null); } };
+  const onDown = (ev) => {
+    let pull = null;
+    if (motion !== `still`) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); if (n && n.kind !== `hub`) pull = n.i; }
+    drag.current = { sx: ev.clientX, sy: ev.clientY, cx: cam.current.x, cy: cam.current.y, moved: !1, pull };
+    cvs.current.setPointerCapture?.(ev.pointerId);
+  };
+  const onMove = (ev) => {
+    const d0 = drag.current; if (!d0) return;
+    const dx = ev.clientX - d0.sx, dy = ev.clientY - d0.sy;
+    if (Math.abs(dx) + Math.abs(dy) > 4) d0.moved = !0;
+    if (d0.pull !== null && d0.moved) { const [wx, wy] = toWorld(ev); if (physRef.current) physRef.current.pulled = { i: d0.pull, x: wx, y: wy }; if (sel !== d0.pull) setSel(d0.pull); return; }
+    if (d0.moved) { cam.current = { ...cam.current, x: d0.cx + dx / cam.current.k, y: d0.cy + dy / cam.current.k }; setTick((t) => t + 1); }
+  };
+  const onUp = (ev) => { const d0 = drag.current; drag.current = null; if (physRef.current) physRef.current.pulled = null; if (d0 && !d0.moved) { const [wx, wy] = toWorld(ev); const n = pick(wx, wy); setSel(n ? n.i : null); } };
   const order = u.useMemo(() => (g ? g.nodes.filter(visible).filter((n) => !dim(n)).map((n) => n.i) : []), [g, visible, dim]);
+  visRef.current = u.useMemo(() => (g ? g.nodes.filter((n) => visible(n)) : []), [g, visible]);
   const move = (dir) => { if (!order.length) return; const at = order.indexOf(sel); focus(g.nodes[order[(at + dir + order.length) % order.length]]); };
   const onKey = (ev) => {
     if (ev.target.closest && ev.target.closest(`input, select, textarea`)) { if (ev.key === `Escape`) ev.target.blur(); return; }
     const K = ev.key, pan = 60 / cam.current.k;
     if (K === `]`) { ev.preventDefault(); move(1); } else if (K === `[`) { ev.preventDefault(); move(-1); }
-    else if (K === `Escape`) setSel(null);
+    else if (K === `Escape`) { if (sel !== null) setSel(null); else setSolo(null); }
+    else if (K === `s` || K === `S`) { ev.preventDefault(); if (solo) setSolo(null); else if (sel !== null) setSolo({ node: sel }); }
     else if (K === `+` || K === `=`) zoomAt(1.3); else if (K === `-`) zoomAt(1 / 1.3);
     else if (K === `ArrowLeft`) { ev.preventDefault(); cam.current = { ...cam.current, x: cam.current.x + pan }; setTick((t) => t + 1); }
     else if (K === `ArrowRight`) { ev.preventDefault(); cam.current = { ...cam.current, x: cam.current.x - pan }; setTick((t) => t + 1); }
@@ -491,10 +556,20 @@ function CX_UsGraph({ phone }) {
   const links = cur ? cxUsLinks(g, cur.i) : [];
   const connected = links;
   const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, hub: `Group` };
+  const soloVal = !solo ? `` : solo.state ? `s:${solo.state}` : `n:${solo.node}`;
+  const soloPicker = (
+    <label>Solo <select className="us-solo" value={soloVal} onChange={(e) => { const v = e.target.value; setSolo(!v ? null : v.startsWith(`s:`) ? { state: v.slice(2) } : { node: +v.slice(2) }); if (v) setView(`sky`); }}>
+      <option value="">Everything</option>
+      <optgroup label="A committee">{g.nodes.filter((n) => n.kind === `committee`).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
+      <optgroup label="An agency">{g.nodes.filter((n) => n.kind === `agency` && !n.a.parent_id).sort((a, b) => a.name.localeCompare(b.name)).map((n) => <option key={n.id} value={`n:${n.i}`}>{n.name}</option>)}</optgroup>
+      <optgroup label="A state">{states.map((c) => <option key={c} value={`s:${c}`}>{cxStateName(c)}</option>)}</optgroup>
+    </select></label>
+  );
+  const compact = view === `sky` && !phone;
   const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
-    <section className="us" ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
+    <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">
         <div>{phone ? <h2 id="us-h">United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
@@ -503,18 +578,21 @@ function CX_UsGraph({ phone }) {
       {view !== `mine` && view !== `topics` && <>
       <div className="us-tools">
         <label className="us-search"><span>Find a person, committee, or agency</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Husted, Agriculture, Treasury" /></label>
-        {phone ? <details className="us-filters"><summary>Filters</summary><div className="us-tools">
+        {compact && soloPicker}
+        {phone || compact ? <details className="us-filters"><summary>Filters</summary><div className="us-tools">
         <fieldset className="us-show"><legend>Show</legend>
           {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
         </fieldset>
         <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
         <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        {!compact && soloPicker}
         </div></details> : <>
         <fieldset className="us-show"><legend>Show</legend>
           {[[`member`, `Members`], [`committee`, `Committees`], [`agency`, `Agencies`]].map(([k, t]) => <label key={k}><input type="checkbox" checked={show[k]} onChange={() => setShow({ ...show, [k]: !show[k] })} /> {t}</label>)}
         </fieldset>
         <label>Chamber <select value={chamber} onChange={(e) => setChamber(e.target.value)}><option value="all">Both</option><option value="senate">Senate</option><option value="house">House</option></select></label>
         <label>Highlight a state <select value={stateF} onChange={(e) => setStateF(e.target.value)}><option value="">None</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        {soloPicker}
         </>}
       </div>
       {results.length > 0 && <ul className="us-results" aria-label="Search results">{results.map((n) => <li key={n.id}>{pickBtn(n)}</li>)}</ul>}
@@ -525,9 +603,10 @@ function CX_UsGraph({ phone }) {
           {view === `mine` && <CX_UsMine data={data} g={g} onSee={(n) => { focus(n); setView(`sky`); }} />}
           {view === `sky` && (
             <div className="us-stage">
+              <div className="us-motion" role="group" aria-label="Motion"><span aria-hidden="true">Motion</span>{[[`still`, `Still`], [`calm`, `Calm`], [`live`, `Live`]].map(([id, t]) => <button key={id} type="button" aria-pressed={motion === id} className={motion === id ? `on` : ``} onClick={() => chooseMotion(id)}>{t}</button>)}</div>
               <canvas ref={cvs} className="us-canvas" tabIndex={0} role="img" aria-label={`Map of ${order.length} federal nodes: members of Congress, committees, and agencies. Use the Index, Linked, or Tree view for the same information as text. Keys: right and left bracket move between nodes, arrows pan, plus and minus zoom, Escape clears, slash searches.`}
                 onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
-              <div className="us-zoom"><button type="button" aria-label="Zoom in" onClick={() => zoomAt(1.3)}>+</button><button type="button" aria-label="Zoom out" onClick={() => zoomAt(1 / 1.3)}>−</button><button type="button" aria-label="Fit everything" onClick={fit}>Fit</button></div>
+              <div className="us-zoom"><button type="button" aria-label="Zoom in" onClick={() => zoomAt(1.3)}>+</button><button type="button" aria-label="Zoom out" onClick={() => zoomAt(1 / 1.3)}>−</button><button type="button" aria-label="Fit everything" onClick={fit}>Fit</button>{!phone && <button type="button" aria-label={full ? `Leave full screen` : `Full screen`} aria-pressed={full} onClick={toggleFull}>{full ? `Exit` : `Full`}</button>}</div>
               <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies. Circles are people, diamonds are committees, squares are agencies.</p>
             </div>
           )}
@@ -545,8 +624,11 @@ function CX_UsGraph({ phone }) {
           {cur && view !== `linked` ? <>
             <h2>{cur.name}</h2><p className="us-kind">{kindWord[cur.kind]}</p>
             <ul className="us-facts">{facts.slice(0, 4).map((f, i) => <li key={i}>{f}</li>)}</ul>
-            {link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>}
-            <p><button type="button" className="cx-link-button" onClick={() => setView(`linked`)}>See all {connected.length} connections in words</button></p>
+            <div className="us-actions">
+              {link && <a href={link[1]} target="_blank" rel="noreferrer">Profile<span className="sp-ext"> (opens in a new tab)</span></a>}
+              <button type="button" aria-pressed={!!solo} onClick={() => setSolo(solo ? null : { node: cur.i })}>{solo ? `Show everything` : `Solo`}</button>
+              <button type="button" onClick={() => setView(`linked`)}>In words ({connected.length})</button>
+            </div>
             <p><button type="button" className="cx-link-button" onClick={() => setSel(null)}>Clear</button></p>
           </> : cur ? (link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>) : <p className="us-hint">Select anyone or anything. A selected node lights its connections. {data.counts.members} members, {data.counts.committees} committees, {data.counts.agencies} agencies.</p>}
           <p className="us-src">Sources: congress-legislators (public domain), the Federal Register. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control.</p>
