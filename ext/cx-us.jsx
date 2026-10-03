@@ -262,7 +262,7 @@ function CX_UsTopics({ data }) {
     </div>
   );
 }
-function CX_UsMine({ data, g, onSee }) {
+function CX_UsMine({ data, g, onSee, onTopics }) {
   const [st, setSt] = u.useState(CX_US_PLACE.state);
   const [di, setDi] = u.useState(CX_US_PLACE.district);
   const [vd, setVd] = u.useState(CX_USV.v);
@@ -299,8 +299,61 @@ function CX_UsMine({ data, g, onSee }) {
         </ul>
       )}
       {mine && di === `` && mine.dists.length > 0 && <p className="us-hint">Choose a district to see your representative.</p>}
+      {mine && (mine.senators.length > 0 || mine.rep) && <><CX_UsAreaPicker vd={vd} /><CX_UsAreaCounts vd={vd} members={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} onTopics={onTopics} /></>}
       {mine && vd && (mine.senators.length > 0 || mine.rep) && <CX_UsVotes key={`${st}-${di}`} vd={vd} people={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} />}
       {!vd && <p className="us-hint">How they voted is not shown here. Roll call votes are public records, and a missing record is not a no.</p>}
+    </div>
+  );
+}
+
+/* My policy areas: up to five, kept in memory for this visit only (never in a link, a cookie, or a request). */
+const CX_US_AREAS = { list: [], subs: new Set() };
+function cxUsAreasSet(list) { CX_US_AREAS.list = list; CX_US_AREAS.subs.forEach((f) => f()); }
+function useCxUsAreas() {
+  const [, bump] = u.useState(0);
+  u.useEffect(() => { const f = () => bump((x) => x + 1); CX_US_AREAS.subs.add(f); return () => { CX_US_AREAS.subs.delete(f); }; }, []);
+  return CX_US_AREAS.list;
+}
+function CX_UsAreaPicker({ vd }) {
+  const chosen = useCxUsAreas();
+  const [open, setOpen] = u.useState(true);   // stays as the person leaves it while they pick
+  if (!vd) return <p className="us-hint" role="status">The votes are loading.</p>;
+  const list = cxUsAreaList(vd);
+  const toggle = (a) => cxUsAreasSet(chosen.includes(a) ? chosen.filter((x) => x !== a) : chosen.length < 5 ? [...chosen, a] : chosen);
+  return (
+    <details className="us-areas" open={open} onToggle={(e) => setOpen(e.currentTarget.open)}>
+      <summary>My policy areas{chosen.length ? <small>{` ${chosen.length} of 5 chosen`}</small> : null}</summary>
+      <p className="us-hint">Choose up to five. This stays on this page for this visit and is never saved or sent. Each number is how many votes that decided a bill or a nominee are in the area.</p>
+      <fieldset className="us-area-list">
+        <legend className="us-sr">Policy areas</legend>
+        {list.map((a) => <label key={a.area}><input type="checkbox" checked={chosen.includes(a.area)} disabled={!chosen.includes(a.area) && chosen.length >= 5} onChange={() => toggle(a.area)} /> {a.area} <small>{a.votes}</small></label>)}
+      </fieldset>
+    </details>
+  );
+}
+/* What each member voted on in the chosen areas: counts from the record, side by side, with no comparison to anyone. */
+function CX_UsAreaCounts({ vd, members, onTopics }) {
+  const chosen = useCxUsAreas();
+  if (!chosen.length) return <p className="us-hint">{members.length === 1 ? `Choose policy areas above to see what this member voted on in them.` : `Choose policy areas above to see what these members voted on in them.`}</p>;
+  if (!vd) return null;
+  return (
+    <div className="us-area-table">
+      <table>
+        <caption className="us-sr">What members voted on in your policy areas</caption>
+        <thead><tr><th scope="col">Policy area</th>{members.map((m) => <th scope="col" key={m.id}>{m.name}</th>)}</tr></thead>
+        <tbody>
+          {chosen.map((area) => (
+            <tr key={area}>
+              <th scope="row">{area}{onTopics && <><br /><button type="button" className="cx-link-button" onClick={() => onTopics(area)}>See these votes</button></>}</th>
+              {members.map((m) => {
+                const c = cxUsAreaCounts(vd, m, [area])[0];
+                return <td key={m.id}>{c.total ? <><span>{`Votes that decided something: ${c.total}`}</span><br /><span>{`Yea ${c.yea}, Nay ${c.nay}, Present ${c.present}, Not voting ${c.notVoting}`}</span></> : <span>None on record for them in this area.</span>}</td>;
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <p className="us-hint">These are counts of what the record says, not a rating of anyone. Not voting is not a no, and a missing record is not a no. A vote is on one question.</p>
     </div>
   );
 }
@@ -402,6 +455,8 @@ function CX_UsGraph({ phone }) {
   const [chamber, setChamber] = u.useState(`all`);
   const [stateF, setStateF] = u.useState(``);
   const [tick, setTick] = u.useState(0);
+  const [vdAll, setVdAll] = u.useState(CX_USV.v);
+  u.useEffect(() => { let live = !0; if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live && d) setVdAll(d); }); return () => { live = !1; }; }, []);
   const [motion, setMotion] = u.useState(() => {   // still, calm, or live; a phone and anyone who asked the device for less motion start still
     try { const v = globalThis.localStorage && globalThis.localStorage.getItem(`cx-us-motion`); if (v === `still` || v === `calm` || v === `live`) return v; } catch (e) { /* no storage: use the default */ }
     const less = !!(globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches);
@@ -609,7 +664,7 @@ function CX_UsGraph({ phone }) {
       <div className="us-body">
         <div className="us-main">
           {view === `topics` && <CX_UsTopics data={data} />}
-          {view === `mine` && <CX_UsMine data={data} g={g} onSee={(n) => { focus(n); setView(`sky`); }} />}
+          {view === `mine` && <CX_UsMine data={data} g={g} onSee={(n) => { focus(n); setView(`sky`); }} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} />}
           {view === `sky` && (
             <div className="us-stage">
               <div className="us-motion" role="group" aria-label="Motion"><span aria-hidden="true">Motion</span>{[[`still`, `Still`], [`calm`, `Calm`], [`live`, `Live`]].map(([id, t]) => <button key={id} type="button" aria-pressed={motion === id} className={motion === id ? `on` : ``} onClick={() => chooseMotion(id)}>{t}</button>)}</div>
@@ -638,6 +693,7 @@ function CX_UsGraph({ phone }) {
               <button type="button" aria-pressed={!!solo} onClick={() => setSolo(solo ? null : { node: cur.i })}>{solo ? `Show everything` : `Solo`}</button>
               <button type="button" onClick={() => setView(`linked`)}>In words ({connected.length})</button>
             </div>
+            {cur.kind === `member` && <><CX_UsAreaPicker vd={vdAll} /><CX_UsAreaCounts vd={vdAll} members={[cur.m]} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} /></>}
             <p><button type="button" className="cx-link-button" onClick={() => setSel(null)}>Clear</button></p>
           </> : cur ? (link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>) : <p className="us-hint">Select anyone or anything. A selected node lights its connections. {data.counts.members} members, {data.counts.committees} committees, {data.counts.agencies} agencies.</p>}
           <p className="us-src">Sources: congress-legislators (public domain), the Federal Register. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control.</p>

@@ -11,7 +11,7 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const us = read('ext/cx-us.jsx');
 const pure = us.slice(0, us.indexOf('/* ---------- Your members'));
 const ctx = vm.createContext({});
-vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION };', ctx);
+vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION, cxUsAreaList, cxUsAreaCounts, cxMemberVotes };', ctx);
 const A = ctx.api;
 const data = JSON.parse(read('data/us-landscape-2026.json')), vd = JSON.parse(read('data/us-votes-2026.json'));
 const g = A.cxUsGraph(data);
@@ -131,6 +131,21 @@ const run = (mode, frames, S, nodes = g.nodes) => { for (let f = 0; f < frames; 
   for (let i = 0; i < hm.length; i++) for (let j = i + 1; j < hm.length; j++) md = Math.min(md, Math.hypot(hm[i].x - hm[j].x, hm[i].y - hm[j].y));
   if (md < 2.5) fail(`live let two House members sit ${md.toFixed(1)} px apart`);
   run('still', 1, L);
+}
+
+// Step 1 of the alignment plan: per-area counts of what the record says, and nothing that grades anyone
+{
+  const list = A.cxUsAreaList(vd);
+  eq(list.reduce((t, a) => t + a.votes, 0), vd.votes.filter((v) => v.final).length, 'the area list holds every deciding vote once');
+  const husted = data.members.find((m) => m.name === 'Jon Husted');
+  const all = A.cxUsAreaCounts(vd, husted, list.map((a) => a.area));
+  eq(all.reduce((t, c) => t + c.total, 0), A.cxMemberVotes(vd, husted).filter((r) => r.v.final).length, "an area split holds all of a member's deciding votes once");
+  if (all.some((c) => c.yea + c.nay + c.present + c.notVoting + c.named !== c.total)) fail('an area row does not add up to its own total');
+  eq(A.cxUsAreaCounts(vd, husted, ['No such area'])[0].total, 0, 'an area with no votes counts zero');
+  // the part of the page that shows it uses no grade words
+  const us = read('ext/cx-us.jsx'), a = us.indexOf('function CX_UsAreaPicker'), b = us.indexOf('/* The Index: five ways');
+  const shown = us.slice(a, b).replace(/\/\*[\s\S]*?\*\//g, '');
+  if (/\b(scores?|match(es|ed)?|ranks?|ranked|grades?|percent|agree(s|ment)?)\b|%/i.test(shown)) fail('the policy-area part of the page uses a grading word');
 }
 
 console.log(bad ? `${bad} failed` : `ok  us model (${sentences} connection sentences)`);

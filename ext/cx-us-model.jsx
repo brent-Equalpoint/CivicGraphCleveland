@@ -234,3 +234,20 @@ function cxUsStep(g, S, mode, t, dt, nodes) {
   });
   return top;
 }
+
+
+/* ---------- Policy areas for a resident (docs/plan-alignment.md, Step 1) ----------
+   What the record says a member voted on, by policy area. Counts only. There is no comparison with the resident here, so nothing in
+   this part can be read as a match, a rank, or a grade. Only votes that decided a bill or a nominee are counted (the record marks them). */
+function cxUsAreaList(vd) {
+  const per = new Map();
+  vd.votes.forEach((v) => { if (!v.final) return; const a = cxUsAreaOf(vd, v); per.set(a, (per.get(a) || 0) + 1); });
+  return [...per].sort((a, b) => (a[0] === CX_NO_AREA) - (b[0] === CX_NO_AREA) || a[0].localeCompare(b[0])).map(([area, votes]) => ({ area, votes }));
+}
+function cxUsAreaCounts(vd, m, areas) {
+  const rows = cxMemberVotes(vd, m).filter((r) => r.v.final);
+  return areas.map((area) => {
+    const mine = rows.filter((r) => r.area === area), t = cxCastCounts(mine);
+    return { area, total: mine.length, yea: t.Y, nay: t.N, present: t.P, notVoting: t.X, named: t.O };
+  });
+}

@@ -843,6 +843,16 @@ const CHECKS = {
     await p.select('.us-votes label:nth-of-type(1) select', await p.$eval('.us-votes label:nth-of-type(1) select option:nth-of-type(2)', (o) => o.value)); await wait(300);
     expect(/recorded vote|No recorded votes/.test((await txt(p, '.us-count')) || ''), 'choosing a senator did not update the votes');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on Your members with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    // my policy areas: up to five, counts for the three people, nothing graded, nothing in the address
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.us-areas input')]; b[1].click(); b[2].click(); }); await wait(500);
+    expect((await count(p, '.us-area-table tbody tr')) === 2 && (await count(p, '.us-area-table thead th')) === 4, 'two chosen areas should give two rows and a column for each of the three members');
+    const at = ((await txt(p, '.us-area-table')) || '').replace(/Congressional Research Service/g, '');
+    expect(/Votes that decided something: \d+/.test(at) && /Yea \d+, Nay \d+, Present \d+, Not voting \d+/.test(at), `the area table lacks plain counts: ${at.slice(0, 160)}`);
+    expect(/Not voting is not a no/.test(at) && !/%|percent|score|rank|match|grade|agree/i.test(at), 'the area table lacks the not-a-no note, or grades someone');
+    await p.evaluate(() => { [...document.querySelectorAll('.us-areas input')].slice(0, 8).forEach((b) => { if (!b.disabled && !b.checked) b.click(); }); }); await wait(300);
+    expect((await count(p, '.us-area-table tbody tr')) === 5 && (await count(p, '.us-areas input:disabled')) > 20, 'the sixth policy area was not refused');
+    expect(!/area|Energy|Health/i.test(await p.evaluate(() => location.href)), 'a chosen policy area reached the address');
+    await p.evaluate(() => [...document.querySelectorAll('.us-areas input:checked')].forEach((b) => b.click())); await wait(200);
     // votes by topic: pick a topic, see its votes, and how the chosen place's members voted
     await clickText(p, 'Votes by topic', '.us-tabs button'); await wait(500);
     const tops = await p.$$eval('.us-topics select option', (os) => os.map((o) => o.value).filter(Boolean)); expect(tops.length > 15, `the topic list has only ${tops.length} topics`);

@@ -97,7 +97,19 @@ Nothing a resident answers goes into a link, a cookie, or a request. Answers sta
 - If a question cannot be written without leaning one way, it is dropped, not softened.
 - If a vote's direction is ambiguous (a bill with both good and bad parts to different people), it is not used.
 
-## Open decisions
+## Decisions taken (Oct 3, 2026)
+
+Asked to move through these in order, the recommendations below were adopted as the working defaults. They are not final until a named person confirms them in this file.
+
+1. Step 1 ships alone first. Step 2 waits for a reviewed question set.
+2. The question set will be written and reviewed by a named person, with sources, the way the Levies guide is handled. Not yet assigned.
+3. 3 to 5 questions per area, stated as a sample.
+4. The counts live in the side panel and in tables, never in the picture.
+5. No overall view.
+
+Status: Step 1 (phase A1) is built. Steps A2 and A3 wait on item 2.
+
+## Open decisions (as first asked)
 
 1. **Do we ship Step 1 alone first?** Recommendation: yes. It needs no new interpretive text and answers most of the need.
 2. **Who writes and reviews the question set?** A named person, with sources, the way the Levies guide is handled.
