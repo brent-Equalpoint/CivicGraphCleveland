@@ -107,6 +107,8 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 
 32. **Oct 2: a plan for making the app lighter and safer to change.** `docs/plan-optimization.md` (not built): measured the shipped page (2.5 MB, about 580 KB sent; 1.3 MB of the 1.9 MB of JavaScript is data written as code; 570 KB of CSS, about 170 KB of it generated copies for Bento and light) and lays out eight phases in order: a size-budget check, a name-clash check, data out of the code (so the nightly refresh stops changing the app), colors as variables, unused CSS, a phone and desktop split, checks in parallel, and retiring the compiled desktop app page by page.
 
+33. **Oct 2: a plan for idempotency.** `docs/plan-idempotency.md` (not built). Checked by re-running: the build, the Spanish merge, the light layer, the district street list (rebuilt from the live sources, byte-identical), the nightly change log, and the Bench commit step are already safe to run twice; the app sends nothing to a server. Not yet true: approving the same packet twice or recording the same correction twice appends a duplicate; a fetch that stamps today's date changes its file on another day; and no test runs anything twice. Five phases: write the rule, fix the three writers, a `test_idempotency` suite, retries that cannot double, and releases that can resume.
+
 ---
 
 ## 3. What is in the app right now
