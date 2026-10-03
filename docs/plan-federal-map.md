@@ -18,6 +18,12 @@ tree are the others, so nobody has to use the picture.
   needs a person's review first), who sponsored what. "How everyone is connected in the federal government" is larger than
   Congress, so the executive and judicial layers are a data question (phase 1), not a drawing question.
 
+## Status
+
+- **Phase 2 done (Oct 3, 2026).** `ext/cx-us-model.jsx` holds the model: the five doors with counts, one short note for each of the 4,376 connections, and the structure as a tree. The Index is now the five doors (members, committees, agencies, policy areas, states); Linked reads its notes from the model; Tree reads the model and says on screen that the President, the cabinet, and the courts are not in our record yet. `scripts/test_us_model.js` checks that every door adds up to the record, that no note reads as a score, and that every committee and agency appears once in the tree.
+- It also fixed a drop: an agency under a sub-agency (the First Responder Network Authority) was missing from the Sky picture and the tree, because both only handled two levels.
+- Next: phase 3 (Sky rebuilt on the model). Phase 1 (executive and judicial data) waits on the scope decision.
+
 ## About the aicanvas component
 
 The "AI Knowledge Map" on aicanvas.me is a Premium product: React, TypeScript, Framer Motion, Tailwind, an orb that sends light

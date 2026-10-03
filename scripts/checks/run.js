@@ -807,7 +807,22 @@ const CHECKS = {
     expect(/Preview/.test((await txt(p, '.us-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.us-preview')) || ''), 'the page does not say its source terms are unconfirmed');
     expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
     await clickText(p, 'Index', '.us-tabs button');
-    const rows = await count(p, '.us-index tbody tr'); expect(rows > 800, `the Index lists only ${rows} rows`);
+    // the Index is five doors: members, committees, agencies, policy areas, states. Each adds up to the record.
+    expect((await count(p, '.us-door')) === 5, `the Index offers ${await count(p, '.us-door')} ways in, not five`);
+    expect(/^100 shown/.test((await txt(p, '.us-count')) || ''), `the Senate group does not show 100: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'House', '.us-groups button'); expect(/^439 shown/.test((await txt(p, '.us-count')) || ''), 'the House group does not show 439');
+    expect((await count(p, '.us-list > li')) === 25, 'the member list is not paged by 25');
+    await clickText(p, 'Committees', '.us-door'); await wait(300); expect(/^21 shown/.test((await txt(p, '.us-count')) || ''), `Senate committees: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'Agencies', '.us-door'); await wait(300); expect(/^124 shown/.test((await txt(p, '.us-count')) || ''), `top-level agencies: ${await txt(p, '.us-count')}`);
+    await clickText(p, 'States', '.us-door'); await wait(300);
+    expect((await count(p, '.us-list > li')) === 56, 'the States door does not list 56 states and territories');
+    await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /^Ohio/.test(b.innerText)).click()); await wait(250);
+    expect(/Husted/.test((await txt(p, '.us-sub')) || '') && /Moreno/.test((await txt(p, '.us-sub')) || ''), 'Ohio does not list its two senators');
+    await clickText(p, 'Policy areas', '.us-door'); await wait(900);
+    expect((await count(p, '.us-list > li')) > 25, 'the Policy areas door lists too few areas');
+    await p.evaluate(() => document.querySelector('.us-list > li > button').click()); await wait(700);
+    expect(/Votes by topic/.test((await txt(p, '.us-topics h2')) || '') && (await p.evaluate(() => document.querySelector('.us-topics select').value)) !== '', 'a policy area did not open its votes');
+    await clickText(p, 'Index', '.us-tabs button'); await wait(300);
     // your members: a state and a district give two senators and a representative, kept off the address bar
     await clickText(p, 'Your members', '.us-tabs button');
     await p.select('.us-mine select', 'OH'); await wait(300);
@@ -855,7 +870,7 @@ const CHECKS = {
     expect(/Select anyone or anything/.test((await txt(p, '.us-side')) || ''), 'Escape did not clear the selection');
     await p.select('.us-tools select:nth-of-type(1)', 'senate'); await wait(250);
     await clickText(p, 'Index', '.us-tabs button');
-    const senateRows = await count(p, '.us-index tbody tr'); expect(senateRows < rows && senateRows > 150, `the Senate filter left ${senateRows} rows`);
+    await clickText(p, 'House', '.us-groups button'); expect(/^0 shown/.test((await txt(p, '.us-count')) || ''), 'the Senate filter still shows House members in the Index');
     await clickText(p, 'Tree', '.us-tabs button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
     await done(p);
     // the phone layout: Federal is a folder tab in People, shown as profiles; the whole graph opens from it in a sheet
@@ -873,7 +888,7 @@ const CHECKS = {
     const box = await ph.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
     expect(box[0] >= 300 && box[1] >= 300, `the phone map is ${box}`);
     expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone map scrolls sideways');
-    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-index tbody tr')) > 800, 'the phone Index is short');
+    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-door')) === 5 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the five doors or the first 25 names');
     { const small = await ph.evaluate(() => [...document.querySelectorAll('.us button, .us a[href], .us select, .us input, .us summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || el.tagName === 'INPUT' && el.type === 'checkbox') return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
       expect(small.length === 0, `phone United States: controls under 44px: ${small.slice(0, 5)}`); }
     { const bad = await axeBad(ph); expect(bad.length === 0, `axe on the phone United States page: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }

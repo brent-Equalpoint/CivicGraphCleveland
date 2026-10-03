@@ -78,6 +78,8 @@ function cxUsGraph(d) {
   const tops = d.agencies.filter((a) => !a.parent_id), kids = (id) => d.agencies.filter((a) => a.parent_id === id);
   tops.forEach((a, k) => { const ang = (k / tops.length) * Math.PI * 2, rad = 120 + (k % 3) * 26; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: hubs.exec[0] + rad * Math.cos(ang), y: hubs.exec[1] + rad * Math.sin(ang), r: 5.5, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `h:exec`, `agency of`); });
   tops.forEach((p) => { const pn = byId.get(`a:${p.id}`), ks = kids(p.id); ks.forEach((a, k) => { const ang = Math.atan2(pn.y - hubs.exec[1], pn.x - hubs.exec[0]) + (k - ks.length / 2) * 0.16, rad = 175 + (k % 2) * 22; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: hubs.exec[0] + rad * Math.cos(ang), y: hubs.exec[1] + rad * Math.sin(ang), r: 3.4, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `a:${p.id}`, `part of`); }); });
+  // an agency under a sub-agency (any depth) sits just beyond its parent, so none is left out of the picture
+  for (let again = 0; again < 4; again++) d.agencies.filter((a) => !byId.has(`a:${a.id}`) && byId.has(`a:${a.parent_id}`)).forEach((a, k) => { const pn = byId.get(`a:${a.parent_id}`), ang = Math.atan2(pn.y - hubs.exec[1], pn.x - hubs.exec[0]) + (k % 5 - 2) * 0.12; add({ id: `a:${a.id}`, kind: `agency`, label: a.short_name || a.name, name: a.name, x: pn.x + 26 * Math.cos(ang), y: pn.y + 26 * Math.sin(ang), r: 3.2, shape: `square`, group: `exec`, a }); edge(`a:${a.id}`, `a:${a.parent_id}`, `part of`); });
   const adj = nodes.map(() => []);
   edges.forEach((e, k) => { adj[e.a].push(k); adj[e.b].push(k); });
   return { nodes, byId, edges, adj };
@@ -213,7 +215,7 @@ function CX_UsTopics({ data }) {
   const [vd, setVd] = u.useState(CX_USV.v);
   const [load, setLoad] = u.useState(CX_USV.p ? `ready` : `loading`);
   u.useEffect(() => { let live = !0; cxUsVotesLoad().then((d) => { if (live) { setVd(d); setLoad(d ? `ready` : `none`); } }); return () => { live = !1; }; }, []);
-  const [area, setArea] = u.useState(``);
+  const [area, setArea] = u.useState(CX_US_PICK.area);
   const [fin, setFin] = u.useState(!0);
   const [more, setMore] = u.useState(15);
   if (!vd) return <div className="us-topics"><h2>Votes by topic</h2><p role="status">{load === `none` ? `The votes need the hosted site, because they load a data file. Try again online.` : `Loading the votes...`}</p></div>;
@@ -301,6 +303,91 @@ function CX_UsMine({ data, g, onSee }) {
       {!vd && <p className="us-hint">How they voted is not shown here. Roll call votes are public records, and a missing record is not a no.</p>}
     </div>
   );
+}
+
+/* The Index: five ways into the federal government. Pick a door, then a group, then anyone, and open them in the Linked view. */
+const CX_US_PICK = { area: `` };
+function cxUsWhere(n) {
+  if (n.kind === `member`) { const m = n.m; return m.chamber === `senate` ? `Senator, ${cxStateName(m.state)}` : m.district ? `Representative, ${cxStateName(m.state)}, district ${m.district}` : `Delegate or representative, ${cxStateName(m.state)}`; }
+  if (n.kind === `committee`) return n.c.chamber === `joint` ? `Joint committee` : `${n.c.chamber === `senate` ? `Senate` : `House`} committee`;
+  return n.a && n.a.parent_id ? `Part of a larger agency` : `Federal agency`;
+}
+function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
+  const [vd, setVd] = u.useState(CX_USV.v);
+  u.useEffect(() => { let live = !0; if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live && d) setVd(d); }); return () => { live = !1; }; }, []);
+  const doors = u.useMemo(() => cxUsDoors(data, g, vd), [data, g, vd]);
+  const [door, setDoor] = u.useState(`members`), [grp, setGrp] = u.useState(``), [more, setMore] = u.useState(25), [openState, setOpenState] = u.useState(``);
+  const cur = doors.find((d) => d.id === door), gr = cur.groups.find((x) => x.id === grp) || cur.groups[0];
+  const needle = q.trim().toLowerCase();
+  const pickDoor = (id) => { setDoor(id); setGrp(``); setMore(25); setOpenState(``); };
+  let items = null, total = 0;
+  if (gr.nodes) { items = gr.nodes.map((i) => g.nodes[i]).filter((n) => visible(n) && !dim(n) && (!needle || n.name.toLowerCase().includes(needle))); total = items.length; }
+  return (
+    <div className="us-index">
+      <p>Five ways into the federal government. Pick one, then pick anyone to see who they are connected to, in words.</p>
+      <div className="us-doors" role="group" aria-label="Ways in">
+        {doors.map((d) => (
+          <button key={d.id} type="button" aria-pressed={door === d.id} className={`us-door ${door === d.id ? `on` : ``}`} onClick={() => pickDoor(d.id)}>
+            <span><strong>{d.label}</strong><small>{d.ready ? `${d.count} ${d.count === 1 ? d.one : d.many}` : `Loading the votes`}</small></span>
+            <span className="us-ring" aria-hidden="true">{d.ready ? d.count : `...`}</span>
+          </button>
+        ))}
+      </div>
+      {cur.groups.length > 1 && (
+        <div className="us-groups" role="group" aria-label="Groups">
+          {cur.groups.map((x) => <button key={x.id} type="button" aria-pressed={x.id === gr.id} className={x.id === gr.id ? `on` : ``} onClick={() => { setGrp(x.id); setMore(25); }}>{x.label} <small>{x.count}</small></button>)}
+        </div>
+      )}
+      {items && (
+        <>
+          <p className="us-count" role="status">{total} shown. Choose one to see its connections.</p>
+          <ul className="us-list">
+            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" onClick={() => onOpen(n.i)}><strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
+          </ul>
+          {total > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {total - more}</button></p>}
+        </>
+      )}
+      {door === `states` && (
+        <ul className="us-list">
+          {gr.states.filter((s) => !needle || s.name.toLowerCase().includes(needle)).map((s) => (
+            <li key={s.code}>
+              <button type="button" aria-expanded={openState === s.code} onClick={() => setOpenState(openState === s.code ? `` : s.code)}><strong>{s.name}</strong><small>{`Senators: ${s.senators}. Representatives: ${s.representatives}.`}</small></button>
+              {openState === s.code && <ul className="us-sub">{cxUsStateMembers(data, s.code).map((m) => <li key={m.id}><button type="button" onClick={() => onOpen(g.byId.get(`m:${m.id}`).i)}>{m.name}</button> <small>{m.chamber === `senate` ? `Senator` : m.district ? `District ${m.district}` : `Delegate`}</small></li>)}</ul>}
+            </li>
+          ))}
+        </ul>
+      )}
+      {door === `areas` && !cur.ready && <p className="us-hint" role="status">The votes load from the hosted site. Policy areas appear when they do.</p>}
+      {door === `areas` && cur.ready && (
+        <>
+          <p className="us-hint">Each bill has one policy area, chosen by the Congressional Research Service. The number is how many recorded votes decided something in it.</p>
+          <ul className="us-list">
+            {gr.areas.filter((a) => !needle || a.area.toLowerCase().includes(needle)).map((a) => <li key={a.area}><button type="button" onClick={() => onTopics(a.area)}><strong>{a.area}</strong><small>{`Votes that decided something: ${a.votes}`}</small></button></li>)}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+/* The Tree: the structure as nested lists. Each committee and agency opens to what is inside; a name opens the Linked view. */
+function CX_UsTreeNode({ t, g, onOpen, depth }) {
+  const kids = t.children || [];
+  const open = (i) => <button type="button" onClick={() => onOpen(i)}>{t.label}</button>;
+  if (!kids.length) return <li>{t.node !== null && t.node !== undefined ? open(t.node) : <span>{t.label}</span>}{t.note && <small className="us-note"> {t.note}</small>}</li>;
+  return (
+    <li>
+      <details open={depth < 1}>
+        <summary>{t.label}{t.count !== undefined || kids.length ? <small> {t.count !== undefined ? t.count : kids.length}</small> : null}</summary>
+        {t.note && <p className="us-note">{t.note}</p>}
+        <ul>{t.node !== null && t.node !== undefined && depth > 0 && <li>{open(t.node)} <small>About it</small></li>}{kids.map((k, i) => <CX_UsTreeNode key={i} t={k} g={g} onOpen={onOpen} depth={depth + 1} />)}</ul>
+      </details>
+    </li>
+  );
+}
+function CX_UsTree({ data, g, onOpen }) {
+  const tree = u.useMemo(() => cxUsTree(data, g), [data, g]);
+  return <div className="us-tree"><ul>{tree.map((t, i) => <CX_UsTreeNode key={i} t={t} g={g} onOpen={onOpen} depth={0} />)}</ul></div>;
 }
 
 function CX_UsGraph({ phone }) {
@@ -401,7 +488,8 @@ function CX_UsGraph({ phone }) {
   const facts = cur ? cxUsFacts(g, cur) : [];
   const link = cur ? cxUsLink(cur) : null;
   const rows = g.nodes.filter((n) => n.kind !== `hub` && visible(n) && !dim(n));
-  const connected = cur ? g.adj[cur.i].map((ei) => { const e = g.edges[ei]; return { e, other: g.nodes[e.a === cur.i ? e.b : e.a], out: e.a === cur.i }; }) : [];
+  const links = cur ? cxUsLinks(g, cur.i) : [];
+  const connected = links;
   const kindWord = { member: `Member of Congress`, committee: `Committee`, agency: `Agency`, hub: `Group` };
   const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
@@ -443,30 +531,15 @@ function CX_UsGraph({ phone }) {
               <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies. Circles are people, diamonds are committees, squares are agencies.</p>
             </div>
           )}
-          {view === `index` && (
-            <div className="us-index"><p>{rows.length} shown. Choose one to see its connections.</p>
-              <table><caption className="us-sr">Federal members, committees, and agencies</caption><thead><tr><th scope="col">Name</th><th scope="col">What it is</th><th scope="col">Where</th></tr></thead>
-                <tbody>{rows.map((n) => <tr key={n.id} className={n.i === sel ? `on` : ``}><th scope="row"><button type="button" onClick={() => { setSel(n.i); setView(`linked`); }}>{n.name}</button></th><td>{kindWord[n.kind]}</td><td>{n.m ? `${cxStateName(n.m.state)}${n.m.district ? `, district ${n.m.district}` : ``}` : n.kind === `committee` ? n.c.chamber : n.a && n.a.parent_id ? `Part of an agency` : ``}</td></tr>)}</tbody></table>
-            </div>
-          )}
+          {view === `index` && <CX_UsDoors data={data} g={g} visible={visible} dim={dim} q={q} onOpen={(i) => { setSel(i); setView(`linked`); }} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} />}
           {view === `linked` && (
             <div className="us-linked">
               {!cur && <p>Choose a person, committee, or agency (search above, or in the Sky or Index views) to see everything it is connected to.</p>}
               {cur && <><h2>{cur.name}</h2><ul className="us-facts">{facts.map((f, i) => <li key={i}>{f}</li>)}</ul>
-                {connected.length > 0 && <><h3>Connected to {connected.length}</h3><ul className="us-conn">{connected.slice(0, 60).map(({ e, other }, i) => <li key={i}><button type="button" onClick={() => focus(other)}>{other.name}</button> <small>{e.rel}</small></li>)}</ul>{connected.length > 60 && <p>And {connected.length - 60} more.</p>}</>}</>}
+                {links.length > 0 && <><h3>Connected to {links.length}</h3><ul className="us-conn">{links.slice(0, 60).map((l, i) => <li key={i}><button type="button" onClick={() => focus(g.nodes[l.to])}>{l.name}</button> <small>{l.text}</small></li>)}</ul>{links.length > 60 && <p>And {links.length - 60} more.</p>}</>}</>}
             </div>
           )}
-          {view === `tree` && (
-            <div className="us-tree">
-              <details open><summary>Congress</summary>
-                {[[`senate`, `Senate`], [`house`, `House`], [`joint`, `Joint committees`]].map(([ch, t]) => (
-                  <details key={ch}><summary>{t}</summary>
-                    <ul>{d_committees(data, ch).map((c) => <li key={c.id}><details><summary>{c.name}{c.chair ? `, chair ${c.chair}` : ``}</summary><ul>{data.members.filter((m) => m.committees.some((x) => x.id === c.id || x.id.startsWith(c.id))).slice(0, 80).map((m) => <li key={m.id}><button type="button" onClick={() => { const n = g.byId.get(`m:${m.id}`); setSel(n.i); setView(`linked`); }}>{m.name}</button> <small>{cxStateName(m.state)}</small></li>)}</ul></details></li>)}</ul>
-                  </details>))}
-              </details>
-              <details><summary>Executive agencies</summary><ul>{data.agencies.filter((a) => !a.parent_id).map((a) => <li key={a.id}><details><summary>{a.name}</summary><ul>{data.agencies.filter((b) => b.parent_id === a.id).map((b) => <li key={b.id}><button type="button" onClick={() => { const n = g.byId.get(`a:${b.id}`); setSel(n.i); setView(`linked`); }}>{b.name}</button></li>)}<li><button type="button" onClick={() => { const n = g.byId.get(`a:${a.id}`); setSel(n.i); setView(`linked`); }}>About {a.short_name || a.name}</button></li></ul></details></li>)}</ul></details>
-            </div>
-          )}
+          {view === `tree` && <CX_UsTree data={data} g={g} onOpen={(i) => { setSel(i); setView(`linked`); }} />}
         </div>
         <aside className="us-side" aria-live="polite" aria-label="Selected">
           {cur && view !== `linked` ? <>

@@ -891,6 +891,19 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .us-index thead th { position: sticky; top: 0; background: #1e1a17; }
 .us-index tr.on { background: #ffffff14; }
 .us-index { max-height: 640px; overflow: auto; }
+.us-doors { display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); gap: 8px; margin: 10px 0; }
+.us-index .us-door { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 64px; padding: 10px 14px; border-radius: 14px; border: 1px solid #ffffff2e; background: #ffffff0d; color: #f4f2ee; font: inherit; text-align: left; cursor: pointer; text-decoration: none; }
+.us-index .us-door.on { background: #ffffff26; border-color: #ffd1a9; }
+.us-door strong { display: block; }
+.us-door small { color: #e1ded8; }
+.us-ring { flex: none; display: inline-grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 2px solid #ffd1a9; font-size: 13px; font-weight: 600; }
+.us-groups { display: flex; flex-wrap: wrap; gap: 6px; margin: 8px 0; }
+.us-index .us-groups button { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid #ffffff2e; background: #ffffff0d; color: #f4f2ee; font: inherit; text-decoration: none; cursor: pointer; }
+.us-index .us-groups button.on { background: #ffffff26; border-color: #ffd1a9; }
+.us-list { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 4px; }
+.us-index .us-list > li > button { display: grid; gap: 2px; width: 100%; min-height: 48px; padding: 8px 12px; border-radius: 10px; background: #ffffff0d; color: #f4f2ee; text-decoration: none; }
+.us-list small, .us-tree small { color: #e1ded8; }
+.us-note { color: #e1ded8; font-size: 14px; margin: 2px 0 6px; }
 .us-tree { max-height: 640px; overflow: auto; font-size: 16px; }
 .us-tree details { margin: 4px 0 4px 16px; }
 .us-tree summary { min-height: 36px; cursor: pointer; font-weight: 600; }
