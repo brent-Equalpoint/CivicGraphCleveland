@@ -25,7 +25,7 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
   publishes only signed decisions. Never hand-edit those folders, never type a name into `approvals.jsonl`, and never
   let a script approve. Reviewers live in `bench/reviewers.json`. Design docs: `docs/civic-agent/`; what runs:
   `bench/README.md`. Tests: `scripts/test_bench.py`, `test_bench_gate.py`, `test_links.py`, `test_cityrecord.py`; browser checks:
-  `node scripts/checks/run.js`. To ship: `python scripts/release.py`.
+  `node scripts/checks/run.js`. To ship: `python scripts/release.py` (a full pass is saved per exact input and day, so a rerun after committing skips the builds and checks; `--fresh` runs them again).
 - Levies and taxes guide (`ext/cx-levies.jsx`): figures come from the official ballot wording, never typed by hand. The hand-written text between the
   LEVY-TEXT markers is interpretive: it never says how to vote, shows both sides with names, dates and links, and says so when a side has no
   quoted voice. After a person reads it against its sources, run `python build.py --mark-levies-reviewed "Name"`. Until then the page says a person has not reviewed it.

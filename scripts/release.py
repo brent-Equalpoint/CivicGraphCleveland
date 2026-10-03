@@ -4,8 +4,10 @@
   python scripts/release.py              verify everything locally and say whether it is ready to push
   python scripts/release.py --push       verify, push, wait for Vercel, and confirm the live page matches
   python scripts/release.py --skip-checks   leave out the browser checks (they take about two minutes)
+  python scripts/release.py --fresh      ignore the saved pass and run every step again
 
 Steps, in this order. It stops at the first one that fails.
+Steps 2 to 4 are skipped when this exact input already passed them today (see "The saved pass" below).
   1. Pull first: fetch, and fast-forward if the nightly job committed. A diverged branch stops here.
   2. Build twice from clean and require the same hash both times.
   3. Run the unit tests and the data safety check.
@@ -15,6 +17,10 @@ Steps, in this order. It stops at the first one that fails.
 With --push:
   7. Push, wait for the Vercel Production deployment of this commit, then fetch the live page and
      require its hash to equal site/index.html, and require a wrong address to answer 404.
+The saved pass: when steps 2 to 4 pass in full (checks included), a stamp is saved inside .git (never committed). It holds a hash of
+everything the result depends on (source, data, dictionary, design, tests, checks) and today's date. The next run with the same hash
+on the same day, and the same built site on disk, skips the builds, tests, and browser checks, because nothing could have changed their
+answer. Any edit, any new nightly data, a new day, or --fresh runs everything. The push step is never skipped.
 It never commits for you: the commit message says what changed for a resident, so a person writes it.
 Needs git, python, node, and (for --push) the GitHub CLI signed in.
 """
@@ -61,6 +67,40 @@ def build_hashes():
     return {"single": one.group(1), "single_bytes": int(one.group(2)), "index": idx.group(1), "index_bytes": int(idx.group(2)), "404": nf.group(1)}
 
 
+# what steps 2 to 4 depend on. Built outputs (site, dist, build) and files the run itself rewrites are left out.
+STAMP_PATHS = ["ext", "build.py", "bento.py", "light.py", "data", "bench", "i18n", "design", "scripts", "package.json", "package-lock.json", "docs/design-system.md", "inputs"]
+STAMP_SKIP = ("i18n/work/crawl-es.json", "/__pycache__/", ".pyc")
+
+
+def inputs_key():
+    rc, out = run(["git", "ls-files", "-co", "--exclude-standard", "--"] + STAMP_PATHS)
+    h = hashlib.sha256()
+    for f in sorted(x for x in out.splitlines() if x and not any(k in "/" + x for k in STAMP_SKIP)):
+        fp = os.path.join(ROOT, f)
+        if not os.path.isfile(fp):
+            continue
+        h.update(f.encode() + b"\0" + hashlib.sha256(open(fp, "rb").read()).digest())
+    h.update(time.strftime("%Y-%m-%d").encode())
+    return h.hexdigest()
+
+
+def stamp_path():
+    rc, out = run(["git", "rev-parse", "--git-dir"])
+    return os.path.join(ROOT, out.strip(), "release-verified.json")
+
+
+def read_stamp(key):
+    try:
+        import json
+        d = json.load(open(stamp_path(), encoding="utf-8"))
+        site = hashlib.sha256(open(os.path.join(ROOT, "site", "index.html"), "rb").read()).hexdigest()
+        if d.get("key") == key and d.get("hashes", {}).get("index") == site and d.get("checks"):
+            return d
+    except Exception:
+        pass
+    return None
+
+
 def main():
     step(1, "Pull first")
     run(["git", "fetch", "-q"])
@@ -75,6 +115,25 @@ def main():
             fail("pull failed:\n" + out)
         print("  pulled the nightly commit")
 
+    key = inputs_key()
+    saved = None if "--fresh" in sys.argv or not CHECKS else read_stamp(key)
+    if saved:
+        a = saved["hashes"]
+        print(f"\n[2-4] Already verified: these exact inputs passed the builds, unit tests, and browser checks today ({saved['when']}).")
+        print(f"  site/index.html {a['index'][:16]}... Skipping to step 5. Use --fresh to run them again.")
+    else:
+        a = verify(key)
+
+    step(5, "The committed site is what the build produced")
+    rc, out = run(["git", "status", "--short", "--", "site", "ext", "build.py", "data", "bench"])
+    if out:
+        print("  uncommitted changes in the built inputs or outputs:\n    " + out.replace("\n", "\n    "))
+        fail("commit these (with a one-line message about what changed for a resident), then run this again. The passes above are saved, so the next run skips them.")
+    print("  clean")
+    finish(a)
+
+
+def verify(key):
     step(2, "Build twice from clean and compare")
     a = build_hashes()
     b = build_hashes()
@@ -102,16 +161,17 @@ def main():
             print(f"  light mode, {style}: " + (out.splitlines()[-1] if out else ""))
             if rc:
                 fail(out[-2500:])
+        import json
+        # saved only when everything ran, and only if the inputs did not change while it ran
+        if inputs_key() == key:
+            json.dump({"key": key, "hashes": a, "checks": True, "when": time.strftime("%Y-%m-%d %H:%M")}, open(stamp_path(), "w", encoding="utf-8"))
+            print("  saved this pass (inside .git). The next run on the same inputs today skips steps 2 to 4.")
     else:
         step(4, "Browser checks SKIPPED (--skip-checks)")
+    return a
 
-    step(5, "The committed site is what the build produced")
-    rc, out = run(["git", "status", "--short", "--", "site", "ext", "build.py", "data", "bench"])
-    if out:
-        print("  uncommitted changes in the built inputs or outputs:\n    " + out.replace("\n", "\n    "))
-        fail("commit these (with a one-line message about what changed for a resident), then run this again.")
-    print("  clean")
 
+def finish(a):
     step(6, "STATE-OF-BUILD.md hashes")
     p = os.path.join(ROOT, "STATE-OF-BUILD.md")
     s = open(p, encoding="utf-8").read()
