@@ -11,7 +11,7 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const us = read('ext/cx-us.jsx');
 const pure = us.slice(0, us.indexOf('/* ---------- Your members'));
 const ctx = vm.createContext({});
-vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION, cxUsAreaList, cxUsAreaCounts, cxMemberVotes };', ctx);
+vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION, cxUsAreaList, cxUsAreaCounts, cxMemberVotes, cxUsFaceId };', ctx);
 const A = ctx.api;
 const data = JSON.parse(read('data/us-landscape-2026.json')), vd = JSON.parse(read('data/us-votes-2026.json'));
 const g = A.cxUsGraph(data);
@@ -188,6 +188,22 @@ const run = (mode, frames, S, nodes = g.nodes) => { for (let f = 0; f < frames; 
   const us = read('ext/cx-us.jsx'), a = us.indexOf('function CX_UsAreaPicker'), b = us.indexOf('/* The Index: five ways');
   const shown = us.slice(a, b).replace(/\/\*[\s\S]*?\*\//g, '');
   if (/\b(scores?|match(es|ed)?|ranks?|ranked|grades?|percent|agree(s|ment)?)\b|%/i.test(shown)) fail('the policy-area part of the page uses a grading word');
+}
+
+// portraits: a member and a President who served in Congress have a file name; judges and a President with no Bioguide ID do not
+{
+  const mem = g.nodes.find((n) => n.kind === 'member'), jud = g.nodes.find((n) => n.kind === 'judge');
+  eq(A.cxUsFaceId(mem), mem.m.id, 'a member has a portrait file named by their Bioguide ID');
+  eq(A.cxUsFaceId(jud), null, 'a judge has no portrait');
+  const noId = g.nodes.find((n) => n.kind === 'president' && String(n.p.id).startsWith('P-'));
+  if (noId) eq(A.cxUsFaceId(noId), null, 'a President with no Bioguide ID has no portrait');
+  const withId = g.nodes.find((n) => n.kind === 'president' && !String(n.p.id).startsWith('P-'));
+  if (withId) eq(A.cxUsFaceId(withId), withId.p.id, 'a President who served in Congress has a portrait file');
+  const idx = JSON.parse(read('data/portraits-us/index.json'));
+  const present = new Set(idx.ids);
+  const miss = data.members.filter((m) => !present.has(m.id)).length;
+  if (miss > data.members.length * 0.1) fail(`${miss} of ${data.members.length} members have no portrait`);
+  if (idx.ids.some((i) => !fs.existsSync(path.join(ROOT, 'data', 'portraits-us', i + '.webp')))) fail('the portrait index names a file that is not there');
 }
 
 console.log(bad ? `${bad} failed` : `ok  us model (${sentences} connection sentences)`);

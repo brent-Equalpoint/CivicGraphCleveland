@@ -939,6 +939,17 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
         os.makedirs(os.path.join(SITE, folder))
     for k in assets:
         shutil.copy(os.path.join(client, k.lstrip("/")), os.path.join(SITE, k.lstrip("/")))
+    # portraits of the people in the federal record (data/portraits-us, written by scripts/fetch_portraits.py): hosted site only, a few KB each
+    pdir = os.path.join(ROOT, "data", "portraits-us")
+    if os.path.isdir(pdir):
+        os.makedirs(os.path.join(SITE, "portraits", "us"), exist_ok=True)
+        names = sorted(f for f in os.listdir(pdir) if f.endswith(".webp"))
+        h = hashlib.sha256()
+        for f in names:
+            raw = open(os.path.join(pdir, f), "rb").read()
+            h.update(f.encode() + raw)
+            open(os.path.join(SITE, "portraits", "us", f), "wb").write(raw)
+        log(f"SITE   {h.hexdigest()}  site/portraits/us/  ({len(names)} portraits of people in the federal record)")
     for fam, slug, w in font_files:
         shutil.copy(os.path.join(ROOT, "node_modules", "@fontsource", slug, "files", f"{slug}-latin-{w}-normal.woff2"), os.path.join(SITE, "fonts"))
     site_html = page(False, self_fonts)

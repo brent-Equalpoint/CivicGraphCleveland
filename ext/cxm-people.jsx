@@ -72,7 +72,7 @@ function CxmProfileStrip({ items, activeId, onPick, label }) {
     <div className="cxm-strip" role="group" aria-label={label}>
       {items.map((s) => (
         <button key={s.id} type="button" aria-pressed={s.id === activeId} className={s.id === activeId ? `on` : ``} onClick={() => onPick(s.id)} title={s.title}>
-          {s.img ? <img src={s.img} alt="" /> : <span className="cxm-fed-av" aria-hidden="true">{s.ini}</span>}
+          {s.faceId !== undefined ? <CxFace id={s.faceId} name={s.title} size={44} /> : s.img ? <img src={s.img} alt="" /> : <span className="cxm-fed-av" aria-hidden="true">{s.ini}</span>}
           <span>{s.label}</span>
         </button>
       ))}

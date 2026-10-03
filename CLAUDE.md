@@ -17,7 +17,7 @@ Outputs: `dist/Cleveland-Civic-Graph-v5.html` (offline, one file), `site/` (what
 
 - App code: `ext/*.jsx` and `ext/*.css`. Shared desktop and phone logic: `ext/cx-live.jsx`. Phone: `ext/cxm-*.jsx`.
 - Changes to the compiled app: an exact-match `patch()` in `build.py`. Never edit `inputs/` or `build/`.
-- Data: only `scripts/refresh.py` writes `data/`. Never hand-edit a snapshot. Council roll calls come from the City Record
+- Data: only `scripts/refresh.py` writes `data/` (including `data/portraits-us/`, official photos fetched by `scripts/fetch_portraits.py`, which needs Pillow). Never hand-edit a snapshot. Council roll calls come from the City Record
   (`scripts/fetch_cityrecord.py`, run by refresh.py, into `data/votes-2026.json`); a vote that does not add up is held back, never fixed by hand.
 - The Bench (agent pipeline, `bench/`): `scripts/packets.py` writes `bench/shadow/` and `bench/status-2026.json`
   from `data/`; a named person decides only in the "Approve Bench packets" workflow (the GitHub account is the

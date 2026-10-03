@@ -6,8 +6,8 @@
    Counts, not grades: a vote is on one question, and not voting is not a no. */
 
 /* federal members have no photo in our records, so a face is their initials */
-function CxmFedAvatar({ name }) {
-  return <span className="cxm-fed-av cxm-fed-av-lg" aria-hidden="true">{cxmInitials(name)}</span>;
+function CxmFedAvatar({ id, name }) {
+  return <CxFace id={id} name={name} size={84} className="cxm-fed-av-lg" />;
 }
 
 function CxmFederal() {
@@ -38,7 +38,7 @@ function CxmFederal() {
     const role = isSen ? `United States senator` : cur.district ? `U.S. representative` : `U.S. representative or delegate`;
     const yours = !isSen && mine.rep && cur.id === mine.rep.id;
     return (
-      <CxmProfileCard key={cur.id} avatar={<CxmFedAvatar name={cur.name} />} onStep={step} label={`${cur.name}, profile ${deck.indexOf(cur) + 1} of ${deck.length}`}
+      <CxmProfileCard key={cur.id} avatar={<CxmFedAvatar id={cur.id} name={cur.name} />} onStep={step} label={`${cur.name}, profile ${deck.indexOf(cur) + 1} of ${deck.length}`}
         kicker={<>{isSen ? `U.S. Senate` : cur.district ? `U.S. House · District ${cur.district}` : `U.S. House`}{yours && <b className="cxm-yours"> · YOUR DISTRICT</b>}</>} name={cur.name} sub={<><span>{role}</span>{` · `}<span>{cxStateName(cur.state)}</span></>}
         actions={<CxmProfileActions story={{ label: `Full Story`, onClick: () => openSheet(`usvotes`, { id: cur.id }) }} profile={cur.url ? { label: `Profile`, href: cur.url } : null} />}
         note="Receipts, not scores. A vote is on one question. Records from the current Congress.">
@@ -94,9 +94,9 @@ function CxmFederal() {
       {mine.dists.length > 0 && !mine.rep && <p className="cxm-status-line"><CxmStatusDot k="talk" />Choose your district to see your representative. Your senators are below.</p>}
       {body}
       <CxmProfileNav i={Math.min(i, deck.length - 1)} n={deck.length} onStep={step} />
-      <CxmProfileStrip label="Jump to a person" items={deck.map((m) => ({ id: m.id, title: m.name, ini: cxmInitials(m.name), label: m.chamber === `senate` ? `Senate` : `House` }))} activeId={cur ? cur.id : ``} onPick={(id) => setI(Math.max(0, deck.findIndex((m) => m.id === id)))} />
+      <CxmProfileStrip label="Jump to a person" items={deck.map((m) => ({ id: m.id, title: m.name, faceId: m.id, label: m.chamber === `senate` ? `Senate` : `House` }))} activeId={cur ? cur.id : ``} onPick={(id) => setI(Math.max(0, deck.findIndex((m) => m.id === id)))} />
       <button type="button" className="cxm-row" onClick={() => openSheet(`us`)}><span><strong>Explore Congress as a graph</strong><small>Every member, committee, and agency, and the topic explorer</small></span><CXI.Arrow size={16} /></button>
-      <p className="cxm-fine">Members and committees: the congress-legislators record of current members (public domain). Votes: the recorded roll calls of the current Congress.</p>
+      <p className="cxm-fine">Members and committees: the congress-legislators record of current members (public domain). Votes: the recorded roll calls of the current Congress. <span>Photos: the U.S. Government Publishing Office's Member Guide (public domain).</span></p>
     </div>
   );
 }

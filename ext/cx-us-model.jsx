@@ -306,6 +306,14 @@ function cxUsStep(g, S, mode, t, dt, nodes) {
 }
 
 
+/* The Bioguide ID that names a person's portrait file (data/portraits-us), or null. Members and any President who served in Congress have one;
+   judges, justices, and Presidents who never served in Congress do not, and show their initials. */
+function cxUsFaceId(n) {
+  if (n.kind === `member`) return n.m.id;
+  if (n.kind === `president` && n.p.id && !String(n.p.id).startsWith(`P-`)) return n.p.id;
+  return null;
+}
+
 /* ---------- Policy areas for a resident (docs/plan-alignment.md, Step 1) ----------
    What the record says a member voted on, by policy area. Counts only. There is no comparison with the resident here, so nothing in
    this part can be read as a match, a rank, or a grade. Only votes that decided a bill or a nominee are counted (the record marks them). */

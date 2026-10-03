@@ -41,7 +41,7 @@ jobs:
 
       - name: Python and Node packages
         run: |
-          pip install "shapely>=2,<3"
+          pip install "shapely>=2,<3" "pillow>=10"
           npm ci
 
       - name: Pull the official records and log what changed

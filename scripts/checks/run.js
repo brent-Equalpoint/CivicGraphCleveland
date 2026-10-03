@@ -617,6 +617,11 @@ const CHECKS = {
     await clickText(p, 'Federal', '.cxm-folders button'); await wait(1200);
     // Federal: two senators, then a district adds the representative; same card shape as Cleveland
     expect((await count(p, '.cxm-profile')) === 1 && (await count(p, '.cxm-strip button')) === 2, 'Federal does not open on the two Ohio senators');
+    expect(await has(p, '.cxm-prof-head .cxm-fed-ini') && !(await has(p, '.cxm-prof-head .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
+    { let ok = false; for (let t = 0; t < 20 && !ok; t++) { ok = await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth > 0; }); if (!ok) await wait(150); }
+      expect(ok, 'the senator with a photo has no loaded portrait on the Federal profile'); }
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Previous profile"]').click()); await wait(300);
     expect(/^Full Story Profile( \(opens in a new tab\))?$/.test(await acts(p)), `the senator actions are "${await acts(p)}"`);
     for (const need of ['.cxm-prof-head .cxm-fed-av', '.cxm-prof-name', '.cxm-tile-acc', '.cxm-prof-nav', '.cxm-fine']) expect(await has(p, need), `the Federal profile lacks ${need}`);
     await clickText(p, 'Your place in Washington', '.cxm-drop-head'); await wait(300);
@@ -874,6 +879,13 @@ const CHECKS = {
     await (await p.$('.us-results .us-pick')).click(); await wait(400);
     expect(/Jon Husted/.test((await txt(p, '.us-side h2')) || '') && /United States senator for Ohio/.test((await txt(p, '.us-side')) || ''), 'the chosen senator is not described');
     expect(/Party on this term: \w+, as of 20\d\d-\d\d-\d\d \(a sourced field, not a judgment\)/.test((await txt(p, '.us-side')) || ''), 'party is not shown as a dated, sourced field');
+    const faceLoaded = async (sel) => { for (let t = 0; t < 20; t++) { if (await p.evaluate((q) => { const i = document.querySelector(q); return !!i && i.complete && i.naturalWidth > 0; }, sel)) return true; await wait(150); } return false; };
+    // Jon Husted joined the Senate after the source's photos were made: his initials stay, and no broken picture shows
+    expect(await has(p, '.us-side .cxm-fed-ini') && !(await has(p, '.us-side .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
+    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Moreno'); await wait(300);
+    await (await p.$('.us-results .us-pick')).click(); await wait(500);
+    expect(await faceLoaded('.us-side .cxm-fed-av img'), 'a senator with a photo has no loaded portrait');
+    expect(/Photos of members of Congress/.test((await txt(p, '.us-src')) || '') || /Government Publishing Office/.test((await txt(p, '.us-side')) || ''), 'the portraits are not credited');
     await clickText(p, 'Linked', '.us-tabs button');
     const facts = (await txt(p, '.us-linked')) || '';
     expect(/serves on|is the (chair|ranking)/.test(facts) && /Connected to \d+/.test(facts), 'the Linked view lacks committee sentences or the connection count');

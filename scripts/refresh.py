@@ -110,6 +110,11 @@ def main():
     except Exception as e:
         shutil.copy(os.path.join(keep, "votes-2026.json"), DATA)
         print(f"::warning title=Council votes were not updated::{type(e).__name__}: {e}")
+    try:  # official portraits of the people in the federal record: best effort, so a missing Pillow or a slow source never stops the data refresh
+        import fetch_portraits
+        fetch_portraits.main()
+    except Exception as e:
+        print(f"::warning title=Portraits were not updated::{type(e).__name__}: {e}")
     bad = check(keep, DATA)
     if bad:
         restore("; ".join(bad))

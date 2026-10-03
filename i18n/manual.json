@@ -451,7 +451,9 @@
   "Article III judges who sit now, from the Federal Judicial Center. Senior judges are counted on each court, not listed. Bankruptcy, magistrate, and other courts are not in our record yet.": "Jueces del Artículo III en funciones, del Federal Judicial Center. Los jueces en estatus sénior se cuentan en cada tribunal, no se enumeran. Los tribunales de quiebras, los jueces magistrados y otros tribunales todavía no están en nuestro registro.",
   "Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled": "Vista previa. Esto se elabora con registros de dominio público, del Federal Register y del Federal Judicial Center obtenidos",
   "Sources: congress-legislators (public domain), the Federal Register, the Federal Judicial Center. Pulled": "Fuentes: congress-legislators (dominio público), el Federal Register, el Federal Judicial Center. Obtenido",
-  "The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.": "El gráfico de Estados Unidos necesita el sitio alojado. No es parte del archivo sin conexión, porque carga un archivo de datos de menos de un megabyte."
+  "The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.": "El gráfico de Estados Unidos necesita el sitio alojado. No es parte del archivo sin conexión, porque carga un archivo de datos de menos de un megabyte.",
+  "Photos of members of Congress: the U.S. Government Publishing Office's Member Guide (public domain).": "Fotos de miembros del Congreso: la Guía de Miembros de la Oficina de Publicaciones del Gobierno de EE. UU. (dominio público).",
+  "Photos: the U.S. Government Publishing Office's Member Guide (public domain).": "Fotos: la Guía de Miembros de la Oficina de Publicaciones del Gobierno de EE. UU. (dominio público)."
  },
  "masked": {
   "{n} days": "{n} días",

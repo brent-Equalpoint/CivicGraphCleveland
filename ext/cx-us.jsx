@@ -339,6 +339,18 @@ function CX_UsMine({ data, g, onSee, onTopics }) {
   );
 }
 
+/* A person's portrait, with their initials underneath: the photo covers the initials once it loads, and a missing photo (or the offline file, which has none) leaves them. */
+function CxFace({ id, name, size = 44, className = `` }) {
+  const [ok, setOk] = u.useState(true);
+  u.useEffect(() => { setOk(true); }, [id]);
+  return (
+    <span className={`cxm-fed-av ${className}`} style={{ width: size, height: size }} aria-hidden="true">
+      <span className="cxm-fed-ini" style={{ fontSize: Math.round(size * 0.34) }}>{cxmInitials(name)}</span>
+      {id && ok && <img src={"/" + "portraits/us/" + id + ".webp"} alt="" width={size} height={size} loading="lazy" onError={() => setOk(false)} />}
+    </span>
+  );
+}
+
 /* My policy areas: up to five, kept in memory for this visit only (never in a link, a cookie, or a request). */
 const CX_US_AREAS = { list: [], subs: new Set() };
 function cxUsAreasSet(list) { CX_US_AREAS.list = list; CX_US_AREAS.subs.forEach((f) => f()); }
@@ -431,7 +443,7 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
         <>
           <p className="us-count" role="status">{total} shown. Choose one to see its connections.</p>
           <ul className="us-list">
-            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" onClick={() => onOpen(n.i)}><strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
+            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" className={n.kind === `member` || n.kind === `president` ? `has-face` : ``} onClick={() => onOpen(n.i)}>{(n.kind === `member` || n.kind === `president`) && <CxFace id={cxUsFaceId(n)} name={n.name} size={44} />}<strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
           </ul>
           {total > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {total - more}</button></p>}
         </>
@@ -560,7 +572,7 @@ function CX_UsGraph({ phone }) {
       if (isSel) { x.lineWidth = 2; x.strokeStyle = `#fff`; x.stroke(); }
       x.globalAlpha = 1;
       const label = (n.kind === `hub` && !soloSet && k > 0.9) || isSel || (soloSet && (soloSet.size <= 70 || n.kind !== `member`)) || (k > 0.75 && n.kind === `committee`) || (k > 2.4 && n.kind !== `member`) || (k > 4 && n.kind === `member`) || (lit && on && n.kind !== `member`);
-      if (label && !faded) { x.font = `${n.kind === `hub` ? 700 : 500} ${n.kind === `hub` ? 15 : 12}px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`; x.fillText(n.label.length > 26 ? n.label.slice(0, 25) + `…` : n.label, px, py - r - 6); }
+      if (label && !faded) { x.font = `${n.kind === `hub` ? 700 : 500} ${n.kind === `hub` ? 15 : 12}px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`; x.fillText(n.label.length > 26 ? n.label.slice(0, 25) + `…` : n.label, px, n.kind === `hub` ? py + r + 18 : py - r - 6); }
     });
   }, [g, sel, nbr, visible, dim, soloSet, motion]);
   drawRef.current = draw;
@@ -717,7 +729,7 @@ function CX_UsGraph({ phone }) {
           {view === `linked` && (
             <div className="us-linked">
               {!cur && <p>Choose a person, committee, or agency (search above, or in the Sky or Index views) to see everything it is connected to.</p>}
-              {cur && <><h2>{cur.name}</h2><ul className="us-facts">{facts.map((f, i) => <li key={i}>{f}</li>)}</ul>
+              {cur && <><div className="us-who">{(cur.kind === `member` || cur.kind === `president`) && <CxFace id={cxUsFaceId(cur)} name={cur.name} size={64} />}<h2>{cur.name}</h2></div><ul className="us-facts">{facts.map((f, i) => <li key={i}>{f}</li>)}</ul>
                 {links.length > 0 && <><h3>Connected to {links.length}</h3><ul className="us-conn">{links.slice(0, 60).map((l, i) => <li key={i}><button type="button" onClick={() => focus(g.nodes[l.to])}>{l.name}</button> <small>{l.text}</small></li>)}</ul>{links.length > 60 && <p>And {links.length - 60} more.</p>}</>}</>}
             </div>
           )}
@@ -725,7 +737,7 @@ function CX_UsGraph({ phone }) {
         </div>
         <aside className="us-side" aria-live="polite" aria-label="Selected">
           {cur && view !== `linked` ? <>
-            <h2>{cur.name}</h2><p className="us-kind">{kindWord[cur.kind]}</p>
+            <div className="us-who">{(cur.kind === `member` || cur.kind === `president`) && <CxFace id={cxUsFaceId(cur)} name={cur.name} size={64} />}<div><h2>{cur.name}</h2><p className="us-kind">{kindWord[cur.kind]}</p></div></div>
             <ul className="us-facts">{facts.slice(0, 4).map((f, i) => <li key={i}>{f}</li>)}</ul>
             <div className="us-actions">
               {link && <a href={link[1]} target="_blank" rel="noreferrer">Profile<span className="sp-ext"> (opens in a new tab)</span></a>}
@@ -735,7 +747,7 @@ function CX_UsGraph({ phone }) {
             {cur.kind === `member` && <><CX_UsAreaPicker vd={vdAll} /><CX_UsAreaCounts vd={vdAll} members={[cur.m]} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} /></>}
             <p><button type="button" className="cx-link-button" onClick={() => setSel(null)}>Clear</button></p>
           </> : cur ? (link && <p><a href={link[1]} target="_blank" rel="noreferrer">{link[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>) : <p className="us-hint">Select anyone or anything. A selected node lights its connections. {data.counts.members} members, {data.counts.committees} committees, {data.counts.agencies} agencies{data.counts.judges ? <>, {data.counts.courts} courts, and {data.counts.judges} judges</> : null}.</p>}
-          <p className="us-src">Sources: congress-legislators (public domain), the Federal Register, the Federal Judicial Center. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control.</p>
+          <p className="us-src">Sources: congress-legislators (public domain), the Federal Register, the Federal Judicial Center. Pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. A connection is a recorded relationship, not control. <span>Photos of members of Congress: the U.S. Government Publishing Office's Member Guide (public domain).</span></p>
         </aside>
       </div>
     </section>

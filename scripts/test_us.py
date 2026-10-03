@@ -5,7 +5,7 @@
 
 No network. Every person, committee, and agency below is made up.
 """
-import os, sys, unittest
+import io, os, sys, unittest
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 import fetch_us as us
@@ -130,6 +130,37 @@ class Judiciary(unittest.TestCase):
     def test_the_old_snapshot_shape_still_builds_without_the_new_sources(self):
         s = us.build(LEGS, COMMS, MEMB, AGS, COUNTS, "2026-10-03T00:00:00+00:00", "2024-10-01")
         self.assertNotIn("judiciary", s)
+
+
+import fetch_portraits as fp
+
+
+class Portraits(unittest.TestCase):
+    def test_wanted_ids_are_members_and_presidents_with_a_bioguide_id_only(self):
+        snap = {"members": [{"id": "B1"}, {"id": "A1"}],
+                "executive": {"president": {"id": "P-donald-j-trump"}, "vice_president": {"id": "V1"}, "presidents": [{"id": "O1"}, {"id": "P-george-walker-bush"}, {"id": "A1"}]}}
+        self.assertEqual(fp.wanted_ids(snap), ["A1", "B1", "O1", "V1"])   # sorted, no repeats, and no stand-in ids made from a name
+        self.assertEqual(fp.wanted_ids({"members": [{"id": "Z"}]}), ["Z"])   # a snapshot with no executive still works
+
+    def test_a_missing_folder_is_not_a_problem_and_a_mostly_empty_one_is_a_warning(self):
+        snap = {"members": [{"id": str(i)} for i in range(20)]}
+        self.assertEqual(fp.check(snap, "no-such-folder"), [])
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self.assertTrue(any("no picture" in p for p in fp.check(snap, d)))
+            for i in range(19):
+                open(os.path.join(d, f"{i}.webp"), "wb").close()
+            self.assertEqual(fp.check(snap, d), [])
+
+    @unittest.skipUnless(__import__("importlib").util.find_spec("PIL"), "Pillow is not installed")
+    def test_a_photo_shrinks_to_a_small_webp_of_the_set_size(self):
+        from PIL import Image
+        src = io.BytesIO()
+        Image.new("RGB", (225, 275), (120, 90, 60)).save(src, "JPEG")
+        out = fp.shrink(src.getvalue(), Image)
+        im = Image.open(io.BytesIO(out))
+        self.assertEqual((im.format, im.size), ("WEBP", (fp.WIDTH, fp.HEIGHT)))
+        self.assertLess(len(out), 6000)
 
 
 class Landscape(unittest.TestCase):

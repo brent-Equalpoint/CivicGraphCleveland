@@ -46,4 +46,6 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **Chrome "Session with given id not found"** is a browser hiccup, not the app. `run.js` retries opening a page once for that message; `changed.js` reruns a check that failed only that way. Any other error is real.
 - **Run the right checks while working.** `node scripts/checks/changed.js` runs only the checks your changed files can affect (`--plan` shows them, `--thorough` adds light and Spanish). A shared file, or one it does not know, runs everything. It never replaces `release.py`.
 - **Sheets and overlays are registered by name** (`CXM_SHEETS`, `overlay.type` in `cxm-core.jsx`); the URL map `P` there must keep old `?panel=` links working.
+- **A backtick path that starts `/portraits/` is rewritten by the build** (`asset paths`, expected 18). Build a new portrait path by joining strings, as `CxFace` does.
+- **Photos need Pillow** (`pip install pillow`). `fetch_portraits.py` skips with a warning without it, and the nightly job installs it.
 - **Receipts, not scores.** No percentages, rankings, or labels. A missing record is not a no. Nothing personal in a link or request.
