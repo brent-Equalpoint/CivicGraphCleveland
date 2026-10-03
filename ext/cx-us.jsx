@@ -444,6 +444,15 @@ function CX_UsGraph({ phone }) {
     if (lit) {  // the connections of the chosen node
       x.lineWidth = 1; x.strokeStyle = `rgba(255,255,255,.28)`;
       g.adj[sel].forEach((ei) => { const e = g.edges[ei], A = g.nodes[e.a], B = g.nodes[e.b]; if (!visible(A) || !visible(B)) return; x.beginPath(); x.moveTo(X(A.x), Y(A.y)); x.lineTo(X(B.x), Y(B.y)); x.stroke(); });
+      if (motion !== `still`) {   // a small light travels each recorded connection of the chosen node, out and then around again
+        const T = performance.now() / 1000;
+        x.fillStyle = `rgba(255,255,255,.9)`;
+        g.adj[sel].slice(0, 150).forEach((ei) => {
+          const e = g.edges[ei], A = g.nodes[e.a], B = g.nodes[e.b]; if (!visible(A) || !visible(B)) return;
+          const from = e.a === sel ? A : B, to = e.a === sel ? B : A, ph = (T * 0.45 + cxUsHash(to.id)) % 1;
+          x.beginPath(); x.arc(X(from.x + (to.x - from.x) * ph), Y(from.y + (to.y - from.y) * ph), 2.4, 0, 6.2832); x.fill();
+        });
+      }
     }
     g.nodes.forEach((n) => {
       if (!visible(n)) return;
@@ -461,7 +470,7 @@ function CX_UsGraph({ phone }) {
       const label = (n.kind === `hub` && !soloSet && k > 0.9) || isSel || (soloSet && (soloSet.size <= 70 || n.kind !== `member`)) || (k > 0.75 && n.kind === `committee`) || (k > 2.4 && n.kind !== `member`) || (k > 4 && n.kind === `member`) || (lit && on && n.kind !== `member`);
       if (label && !faded) { x.font = `${n.kind === `hub` ? 700 : 500} ${n.kind === `hub` ? 15 : 12}px Inter, system-ui, sans-serif`; x.fillStyle = `#f4f2ee`; x.textAlign = `center`; x.fillText(n.label.length > 26 ? n.label.slice(0, 25) + `…` : n.label, px, py - r - 6); }
     });
-  }, [g, sel, nbr, visible, dim, soloSet]);
+  }, [g, sel, nbr, visible, dim, soloSet, motion]);
   drawRef.current = draw;
   u.useEffect(() => { draw(); }, [draw, tick, view, state]);
   // motion: one loop, only while the Sky is showing, the tab is visible, and the map is on screen
@@ -495,7 +504,7 @@ function CX_UsGraph({ phone }) {
 
   const toWorld = (ev) => { const c = cvs.current, r = c.getBoundingClientRect(), { x, y, k } = cam.current; return [(ev.clientX - r.left - r.width / 2) / k - x, (ev.clientY - r.top - r.height / 2) / k - y]; };
   const pick = (wx, wy) => { let best = null, bd = 1e9; g.nodes.forEach((n) => { if (!visible(n) || dim(n)) return; const dd = (n.x - wx) ** 2 + (n.y - wy) ** 2, rr = (Math.max(n.r, 6) + 4 / cam.current.k) ** 2; if (dd < rr && dd < bd) { bd = dd; best = n; } }); return best; };
-  const zoomAt = (f, ev) => { const k0 = cam.current.k, k1 = Math.max(0.2, Math.min(9, k0 * f)); if (ev) { const [wx, wy] = toWorld(ev); const r = cvs.current.getBoundingClientRect(); cam.current = { k: k1, x: (ev.clientX - r.left - r.width / 2) / k1 - wx, y: (ev.clientY - r.top - r.height / 2) / k1 - wy }; } else cam.current = { ...cam.current, k: k1 }; setTick((t) => t + 1); };
+  const zoomAt = (f, ev) => { const k0 = cam.current.k, k1 = Math.max(0.08, Math.min(9, k0 * f)); if (ev) { const [wx, wy] = toWorld(ev); const r = cvs.current.getBoundingClientRect(); cam.current = { k: k1, x: (ev.clientX - r.left - r.width / 2) / k1 - wx, y: (ev.clientY - r.top - r.height / 2) / k1 - wy }; } else cam.current = { ...cam.current, k: k1 }; setTick((t) => t + 1); };
   // fit everything that is shown into the canvas, with a margin
   const fit = () => {
     const c = cvs.current; if (!c || !g) return;
@@ -506,7 +515,7 @@ function CX_UsGraph({ phone }) {
     const x0 = Math.min(...xs, ...cl.map((c) => c.x - c.r)) - 40, x1 = Math.max(...xs, ...cl.map((c) => c.x + c.r)) + 40, y0 = Math.min(...ys, ...cl.map((c) => c.y - c.r - 26)) - 40, y1 = Math.max(...ys, ...cl.map((c) => c.y + c.r)) + 40;
     // on the big desktop map the side panel sits over the right edge and the key over the bottom, so the picture is fitted into what is left
     const rx = !phone && view === `sky` ? 360 : 0, by = !phone && view === `sky` ? 56 : 0;
-    const k = Math.max(0.2, Math.min(2, Math.min((c.clientWidth - rx) / (x1 - x0), (c.clientHeight - by) / (y1 - y0))));
+    const k = Math.max(0.08, Math.min(2, Math.min((c.clientWidth - rx) / (x1 - x0), (c.clientHeight - by) / (y1 - y0))));
     cam.current = { x: -(x0 + x1) / 2 - rx / (2 * k), y: -(y0 + y1) / 2 - by / (2 * k), k };
     setTick((t) => t + 1);
   };
@@ -569,7 +578,7 @@ function CX_UsGraph({ phone }) {
   const tabs = [[`mine`, `Your members`], [`topics`, `Votes by topic`], [`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pickBtn = (n) => <button type="button" className="us-pick" onClick={() => { focus(n); }}><strong>{n.name}</strong><small>{kindWord[n.kind]}{n.m ? `, ${cxStateName(n.m.state)}${n.m.district ? ` ${n.m.district}` : ``}` : ``}</small></button>;
   return (
-    <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
+    <section className={`us ${view === `sky` && !phone ? `us-sky` : ``} ${view === `sky` ? `us-skyview` : ``} ${full ? `us-full` : ``}`} ref={wrap} onKeyDown={onKey} aria-labelledby="us-h">
       <header className="us-head">
         <div>{phone ? <h2 id="us-h">United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
@@ -607,7 +616,7 @@ function CX_UsGraph({ phone }) {
               <canvas ref={cvs} className="us-canvas" tabIndex={0} role="img" aria-label={`Map of ${order.length} federal nodes: members of Congress, committees, and agencies. Use the Index, Linked, or Tree view for the same information as text. Keys: right and left bracket move between nodes, arrows pan, plus and minus zoom, Escape clears, slash searches.`}
                 onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={() => { drag.current = null; }} />
               <div className="us-zoom"><button type="button" aria-label="Zoom in" onClick={() => zoomAt(1.3)}>+</button><button type="button" aria-label="Zoom out" onClick={() => zoomAt(1 / 1.3)}>−</button><button type="button" aria-label="Fit everything" onClick={fit}>Fit</button>{!phone && <button type="button" aria-label={full ? `Leave full screen` : `Full screen`} aria-pressed={full} onClick={toggleFull}>{full ? `Exit` : `Full`}</button>}</div>
-              <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies. Circles are people, diamonds are committees, squares are agencies.</p>
+              <p className="us-key" aria-hidden="true"><i style={{ background: CX_US_COLORS.senate }} /> Senate <i style={{ background: CX_US_COLORS.house }} /> House <i style={{ background: CX_US_COLORS.joint }} /> Joint committees <i style={{ background: CX_US_COLORS.exec }} /> Agencies. Circles are people, diamonds are committees, squares are agencies. <span>A moving light on a line shows a recorded connection.</span></p>
             </div>
           )}
           {view === `index` && <CX_UsDoors data={data} g={g} visible={visible} dim={dim} q={q} onOpen={(i) => { setSel(i); setView(`linked`); }} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} />}

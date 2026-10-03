@@ -65,7 +65,7 @@ the same facts as text, and every node is reachable by keyboard.
 
 ## Later: an alignment mode ("how you line up with them, by policy")
 
-Asked for Oct 3, 2026. The methodology is not written; it gets its own plan before any code. What is already settled, because the project's rules decide it:
+Asked for Oct 3, 2026. The methodology plan is `docs/plan-alignment.md` (a draft, with decisions for a person to make); no code until those are answered. What is already settled, because the project's rules decide it:
 
 - **It is the Constellation idea applied to Congress, so it keeps the Constellation's limits.** Show counts on documented records, per policy area ("you and this member answered the same on 6 of the 9 recorded votes in Energy that you answered"), never one overall number, never a percentage, a rank, a "best match", or an ideology label. Position or color never means "closer is better".
 - **Only recorded things.** Votes the member cast (Yea, Nay) and answers the resident gave. A vote the member did not cast is "not in the roll", and not voting is not a no. Procedural votes (rules, motions) are left out of agreement unless the question is the same as the resident's.

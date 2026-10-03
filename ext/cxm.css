@@ -874,7 +874,7 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 @media (max-width: 1000px) { .us-body { grid-template-columns: 1fr; } }
 .us-stage { position: relative; }
 .us-sky { max-width: none; padding-bottom: 8px; }
-.us-sky .us-lede { display: none; }
+.us-skyview .us-lede { display: none; }
 .us-sky h1 { font-size: 22px; margin: 0 24px 8px 0; }
 .us-sky .us-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 0 24px; }
 .us-sky .us-tabs { margin-top: 0; flex: 1; }
