@@ -65,7 +65,7 @@ function CxmReceipts() {
           {list.length > 4 && <button type="button" className="cxm-link" onClick={() => setMore((m) => ({ ...m, [id]: !m[id] }))}>{more[id] ? `Show fewer` : `See all ${list.length}`}</button>}
         </div>
       ))}
-      <p className="cxm-fine">Relationship statuses are our plain-English labels for the record's status: Committed means passed, Talking stage means still in review, Left on read means tabled. Amounts are the limits written into each ordinance.</p>
+      <p className="cxm-fine">Our labels for a record's status: Committed is passed, Talking stage is still in review, Left on read is tabled. Amounts are the limits in each ordinance.</p>
     </section>
   );
 }

@@ -95,7 +95,53 @@ After:
 - In the fold, one sentence: "Only distance matters, not direction, and party and ballot choice never change it."
 - On the question card, the missing-record rule stays and gets shorter: "Skipped answers and missing records never count against anyone."
 
-## Order of work
+## Screen by screen (the whole app)
+
+Counts are words showing on a phone with nothing opened, after Pass 1. The recorded budget lives in `scripts/checks/text-budget.json` and the `text-budget` check fails if a screen grows past it.
+
+| Screen | Words | What is heavy | What we do | Target |
+|---|---|---|---|---|
+| Today | 474 | Stories row, countdown, What's new card, At City Hall card, receipts, Close to home each carry their own sentence of method | Keep the banners and the figures. Cut each section's "how to read" line to the one caution that matters. Move the status-label legend into a fold | 300 |
+| Explore | 462 | Door cards each have a title, a sentence, and a counter | One line per door; the sentence moves into the card's own screen | 300 |
+| My place | 371 | Seven folds, each with an intro; sources repeated at the bottom | Lead of two sentences; one "Where this comes from" fold | 250 |
+| People: Profiles | 213 | One fold of method, then the card | Fine. Shorten the fold | 190 |
+| People: Federal | 264 | Place picker prose, two caveats about votes | One caveat line under the vote counts; picker prose to one sentence | 200 |
+| People: Constellation | 200 | Done on Oct 4: two-sentence lead, one fold, a key | Keep | 200 |
+| Priorities | 388 | Each priority has "Choosing this means...", an analogy ("Think of it like a school bus route"), and several facts | Keep the facts (they are the content, with sources). Cut "Choosing this means" and the analogy to one line each, or keep one of the two | 280 |
+| Ballot | 882 | Race and issue pages: our plain summary plus official wording, both showing | Two-sentence plain summary first; official wording one tap down, kept verbatim | 500 |
+| Levies and taxes | 377 | Hand-written text between the LEVY-TEXT markers | Last phase; needs a person to re-read | 300 |
+| At City Hall | 722 | Nine folds of earlier meetings, long source footer | Keep the lead and the week; shorten the footer to two lines | 450 |
+| Decision ledger | 151 | Fine | Leave | 151 |
+| How this is built | 284 | Method for people who asked for method | Leave; it is the place the rules are explained in full | 284 |
+| Settings | 94 | Fine | Leave | 94 |
+| What's new | varies | A list of the record's own change lines | Out of scope | none |
+
+The desktop pages we own in `ext/` (federal, levies, meetings, the voter guide) follow the same pattern after the phone. The compiled Sep 23 desktop text (about 18,700 words) changes only through patches in `build.py`, so it is last and optional.
+
+## Pass 1: house cleaning (done 2026-10-04)
+
+Only edits that change no fact and no rule: sentences that describe what the eye can already see, instructions to tap or open, and the same caution said twice on one screen.
+
+- Constellation: the seven-sentence note became a key that shows only what is on the map (white ring, dotted halo, gold dot). The question card keeps the missing-record rule in one sentence. The fold keeps "only distance matters".
+- Federal map door page: "Pick one, then pick anyone to see who they are connected to, in words" became "Six ways into the federal government."
+- Federal map side panel: the empty-state instruction is shorter.
+- Where to start (desktop guide): "You do not need to understand the whole map first" and "These are suggested stops... Open one to see..." are shorter.
+- Learning cards: "If one does not, open a nearby record or the dictionary" is gone.
+- Ballot practice: "Choosing 'Still deciding' is okay" is gone.
+- Today status legend and the What's new footer: one shorter sentence each.
+- New check `text-budget` records every screen's word count and fails if one grows.
+- Spanish added for every changed line.
+
+## Pass 2 and after
+
+1. Front door: Today, Explore, My place, At City Hall (Phase 1 above).
+2. Ballot summaries and the one-tap official wording (needs your yes).
+3. Priorities: cut the lead-in and analogy. Interpretive text, so a person reads it.
+4. Levies, office text, supporter summaries: one batch, one human read.
+5. "Our rules" sheet (needs your choice of where it lives).
+6. Desktop pages we own, then the compiled text if wanted.
+
+## Order of work (first draft, kept for the phases)
 
 Phase 0 (a day): add a text-budget check. It counts words showing on each phone screen and fails if a screen grows past its recorded number. This is the ratchet: it stops things getting worse while we cut. Record today's numbers first.
 

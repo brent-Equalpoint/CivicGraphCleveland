@@ -62,7 +62,7 @@ function CxmBallot() {
       <div className="cxm-tile">
         <span className="cxm-kicker">Make room for a question</span>
         <strong>You don't have to know everything.</strong>
-        <p className="cxm-mut">Open a race to see what someone has said or voted on, and what their office controls. Missing evidence stays missing. Choosing "Still deciding" is okay.</p>
+        <p className="cxm-mut">Open a race to see what each person has said or voted on. Missing evidence stays missing.</p>
       </div>
       {lv.length > 0 && (
         <>

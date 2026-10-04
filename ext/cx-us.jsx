@@ -433,7 +433,7 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
   if (gr.nodes) { items = gr.nodes.map((i) => g.nodes[i]).filter((n) => visible(n) && !dim(n) && (!needle || n.name.toLowerCase().includes(needle))); total = items.length; }
   return (
     <div className="us-index">
-      <p>Six ways into the federal government. Pick one, then pick anyone to see who they are connected to, in words.</p>
+      <p>Six ways into the federal government.</p>
       <div className="us-doors" role="group" aria-label="Ways in">
         {doors.map((d) => (
           <button key={d.id} type="button" aria-pressed={door === d.id} className={`us-door ${door === d.id ? `on` : ``}`} onClick={() => pickDoor(d.id)}>
@@ -770,7 +770,7 @@ function CX_UsGraph({ phone, start }) {
           {view === `index` && <CX_UsDoors data={data} g={g} visible={visible} dim={dim} q={q} onOpen={(i) => { setSel(i); setView(`linked`); }} onTopics={(area) => { CX_US_PICK.area = area; setView(`topics`); }} />}
           {view === `linked` && (
             <div className="us-linked">
-              {!cur && <p>Choose a person, committee, or agency (search above, or in the Sky or Index views) to see everything it is connected to.</p>}
+              {!cur && <p>Choose a person, committee, or agency to see what it connects to.</p>}
               {cur && <><div className="us-who">{(cur.kind === `member` || cur.kind === `president`) && <CxFace id={cxUsFaceId(cur)} name={cur.name} size={64} />}<h2>{cur.name}</h2></div><ul className="us-facts">{facts.map((f, i) => <li key={i}>{f}</li>)}</ul>
                 {links.length > 0 && <><h3>Connected to {links.length}</h3><ul className="us-conn">{links.slice(0, 60).map((l, i) => <li key={i}><button type="button" onClick={() => focus(g.nodes[l.to])}>{l.name}</button> <small>{l.text}</small></li>)}</ul>{links.length > 60 && <p>And {links.length - 60} more.</p>}</>}</>}
             </div>

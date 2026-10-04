@@ -88,7 +88,7 @@ function CxmNews() {
         <p>News stories are not added automatically. A person checks each one before it appears.</p>
         <ul className="cxm-list">{checks.map((c) => <li key={c.at}>{cxShortDate(cxDayET(Date.parse(c.at)))}, {cxClockET(Date.parse(c.at))}: {c.changes.length ? `${c.changes.length} items changed since ${cxShortDate(cxDayET(Date.parse(c.from)))}` : `no changes`}</li>)}</ul>
       </CxmDrop>
-      <p className="cxm-fine">Sponsorship is not a vote. A missing record is not a no. Plain-English labels are ours; the official status is on each record.</p>
+      <p className="cxm-fine">Sponsorship is not a vote. A missing record is not a no. Labels are ours; the official status is on each record.</p>
     </div>
   );
 }

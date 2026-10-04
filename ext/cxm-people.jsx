@@ -360,7 +360,7 @@ function CxmConstellation() {
       <small className="cxm-mut">{q.explanation}</small>
       <CxmAnswers value={answers[q.id]} onPick={(v) => answer(q.id, v)} />
       <span className="cxm-row-links"><CxmSrc href={q.url}>Read the {kind === `sponsor` || kind === `mayor` ? `official record` : kind === `vote` ? `roll call` : `campaign source`}</CxmSrc><small className="cxm-mut">{q.date}</small></span>
-      <small className="cxm-fine">"It depends", "Still learning" and missing records are excluded, never counted as disagreement.</small>
+      <small className="cxm-fine">Skipped answers and missing records never count against anyone.</small>
     </div>
   );
   return (
@@ -404,10 +404,11 @@ function CxmConstellation() {
             </svg>
           </div>
           {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status">Answer yes or no to an idea with a documented record to place someone on the map.</p>}
+          {(hl.size > 0 || contest || (office === `council` && home?.ward)) && <p className="cxm-fine cxm-key">{hl.size > 0 && <span>White ring: on the record for this question.</span>}{contest && <span>Dotted halo: your practice pick.</span>}{office === `council` && home?.ward && <span>Gold dot: your ward's member.</span>}</p>}
           {qcard}
           <CxmDrop title="How to read this map" sub="Nearer, missing records, and everyone's record">
             <p className="cxm-mut">{intro}</p>
-            <p className="cxm-mut">{hl.size ? `White rings: who is on the record for this question. ` : ``}Nearer means more agreement on the answered records of this type. Direction has no meaning. {contest ? `A dotted halo marks your practice choice. ` : ``}Party and ballot selection do not affect distance. {office === `council` ? `Not sponsoring is no record, never a no. The gold dot is your ward's member. ` : ``}Tap a person to open them.</p>
+            <p className="cxm-mut">Only distance matters, not direction, and party and ballot choice never change it.</p>
             <p className="cxm-mut">A missing record is not a no. Different {office === `council` || office === `mayor` ? `people` : `candidates`} may have different evidence coverage; a fraction is not an overall {office === `council` || office === `mayor` ? `rating` : `candidate rating`}.</p>
             {stats.map((p) => {
               const chosen = contest && practice.state.selections[contest.id] === p.id;

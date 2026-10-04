@@ -18,7 +18,7 @@ const arg = (f) => { const i = process.argv.indexOf(f); return i < 0 ? null : (p
 
 const ALL = '*';
 // the slow ones that scan every page: run once for any change to the app's screens or styles
-const SWEEP = ['axe', 'no-bleed', 'targets'];
+const SWEEP = ['axe', 'no-bleed', 'targets', 'text-budget'];
 // [test on the path, checks to run]. First match wins. Order matters: shared files first.
 const RULES = [
   [(f) => f.startsWith('docs/') || f.startsWith('.claude/') || f.endsWith('.md') || f.endsWith('.txt') || f === '.gitignore', []],

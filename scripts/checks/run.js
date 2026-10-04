@@ -1189,6 +1189,35 @@ const CV_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}],
   ['desktop us', '/?panel=us#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop stories', '/?panel=stories#desktop', {}],
 ];
+/* Words on each phone screen, counted as a person sees them (nothing folded is opened). A screen may not grow past its recorded count plus a small allowance, so
+   the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
+     TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget
+   Screens that show a record's own words (What's new) are left out. See docs/plan-plain-text.md. */
+const TEXT_SCREENS = [
+  ['Today', '/#phone'], ['Explore', '/#phone', 'Explore'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
+  ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
+  ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['At City Hall', '/?panel=meetings#phone'],
+  ['Decision ledger', '/?panel=ledger#phone'], ['How this is built', '/?panel=bench#phone'], ['Settings', '/?panel=settings#phone'],
+];
+CHECKS['text-budget'] = async () => {
+  const file = path.join(__dirname, 'text-budget.json');
+  const have = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  const now = {};
+  for (const [name, url, tab] of TEXT_SCREENS) {
+    const p = await open(url, { mobile: true, easy: false, settle: 1500 });
+    if (tab) { await p.evaluate((t) => { const b = [...document.querySelectorAll('.cxm-tabs button, nav button, [role=tab]')].find((x) => (x.innerText || '').trim().startsWith(t)); if (b) b.click(); }, tab); await wait(900); }
+    now[name] = await p.evaluate(() => { const root = document.querySelector('.cxm-sheet') || document.querySelector('.cxm-main') || document.body; return (root.innerText || '').trim().split(/\s+/).filter(Boolean).length; });
+    await done(p);
+  }
+  if (process.env.TEXT_BUDGET_UPDATE) { fs.writeFileSync(file, JSON.stringify(now, null, 1) + String.fromCharCode(10)); console.log(`    wrote scripts/checks/text-budget.json (${Object.keys(now).length} screens)`); return; }
+  expect(Object.keys(have).length > 0, 'scripts/checks/text-budget.json is missing: run TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget');
+  for (const [name, words] of Object.entries(now)) {
+    const rec = have[name];
+    if (rec == null) { expect(false, `${name} has no recorded word count: run TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget`); continue; }
+    const room = Math.max(30, Math.round(rec * 0.08));
+    expect(words <= rec + room, `${name} grew to ${words} words (recorded ${rec}, room ${room}). Say it in fewer words, or record the new count on purpose with TEXT_BUDGET_UPDATE=1`);
+  }
+};
 CHECKS['color-vision'] = async () => {
   const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'design', 'tokens.json'), 'utf8'));
   const known = new Set();

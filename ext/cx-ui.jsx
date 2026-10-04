@@ -98,7 +98,7 @@ function CX_SimpleGuide({ room, onSelect, onTerm, onRegistry }) {
           <>
             <h3 aria-level="2">{room.question}</h3>
             <p><CX_Definable text={room.answer} onTerm={onTerm} limit={2} /></p>
-            <p className="simple-guide-note">You do not need to understand the whole map first. Choose one doorway, and we will keep the relevant path in view.</p>
+            <p className="simple-guide-note">Pick one doorway. We keep the relevant path in view.</p>
             <div className="simple-guide-actions">
               <button type="button" className="simple-guide-primary" onClick={next}>Guide me through it <CXI.Arrow size={15} /></button>
               <span>or choose a starting point below</span>
@@ -127,7 +127,7 @@ function CX_SimpleGuide({ room, onSelect, onTerm, onRegistry }) {
           <>
             <span className="simple-guide-kicker">WHO CAN ACT</span>
             <h3>Follow these stops in order</h3>
-            <p>These are suggested stops, not a chain of command. Open one to see what it can decide and how it connects.</p>
+            <p>Suggested stops, not a chain of command.</p>
             <div className="simple-guide-related">
               {pathNodes.map((n, i) => (
                 <button type="button" key={n.id} onClick={() => onSelect(n.id)}>
@@ -282,7 +282,7 @@ function CX_ResidentCheck({ open, onOpenChange, room, node, edges, nodes, onSele
           <div className="resident-check-intro">
             <span className="atlas-eyebrow">{room.label.toUpperCase()} · {node.label}</span>
             <h2>Can you answer these three questions?</h2>
-            <p>Read each card, then mark it when it makes sense to you. If one does not, open a nearby record or the dictionary. Nothing here is saved or sent anywhere.</p>
+            <p>Read each card and mark it when it makes sense. Nothing here is saved or sent.</p>
           </div>
           <div className="resident-check-progress" aria-live="polite">
             <span>{count} of 3 answered</span>
