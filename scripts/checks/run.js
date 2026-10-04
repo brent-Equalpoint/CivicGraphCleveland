@@ -698,6 +698,8 @@ const CHECKS = {
     expect(/not include testimony or public comment/.test((await txt(p, '.mt')) || ''), 'the page does not say it holds no testimony or public comment');
     expect((await count(p, '.mt-strip .mt-small')) >= 0 && (await has(p, '.cxm-drop')), 'the earlier meetings are not folded away');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the City Hall page scrolls sideways');
+    // the sheet itself must not be wider than the screen: a sr-only line inside the horizontal strip once made it 1624 px, and a phone then let the whole sheet slide sideways
+    expect(await p.evaluate(() => { const sh = document.querySelector('.cxm-sheet'); return !sh || sh.scrollWidth <= sh.clientWidth + 1; }), 'the City Hall sheet is wider than the screen (it slides sideways on a phone)');
     // an item opens its legislation record, which says where else it was on an agenda
     await p.evaluate(() => document.querySelector('.mt-item').click()); await wait(900);
     expect(await has(p, '.cxm-sheet .mt-heard') || !(await has(p, '.cxm-sheet')), 'a legislation record does not list its meetings');
