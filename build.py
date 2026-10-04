@@ -223,8 +223,36 @@ OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be of
 BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');if(!b)return;"
                 "b.innerHTML='This is taking longer than usual.<small>Your connection may be slow, or your browser may be out of date. "
                 "Try again, or open this page in a newer browser.</small>"
-                "<button type=\"button\" onclick=\"location.reload()\" style=\"margin-top:10px;min-height:48px;padding:0 22px;border:0;border-radius:12px;"
-                "background:#c2410c;color:#fff;font:600 17px system-ui,sans-serif;cursor:pointer\">Try again</button>';},12000);")
+                "<button type=\"button\" style=\"margin-top:10px;min-height:48px;padding:0 22px;border:0;border-radius:12px;"
+                "background:#c2410c;color:#fff;font:600 17px system-ui,sans-serif;cursor:pointer\">Try again</button>';"
+                "var t=b.querySelector('button');if(t)t.addEventListener('click',function(){location.reload();});},12000);")
+
+def with_csp(html):
+    """Content-Security-Policy for the hosted page, as a <meta> placed before any script. Every inline script is allowed by its SHA-256 hash (so nothing injected can run),
+    and the page may ask only its own site for anything: connect-src 'self' is what makes "nothing personal leaves the browser" something the browser enforces.
+    Styles may be inline (React sets style attributes). The offline single file is not given this, because it has no site to call back to."""
+    hashes = []
+    for m in re.finditer(r"<script(?P<attrs>[^>]*)>(?P<body>.*?)</script>", html, re.S):
+        attrs = m.group("attrs")
+        if "src=" in attrs or re.search(r'type="(?!text/javascript|module)', attrs):
+            continue   # a script file is covered by 'self'; a data block (type="application/json") never runs
+        hashes.append("'sha256-" + base64.b64encode(hashlib.sha256(m.group("body").encode("utf-8")).digest()).decode() + "'")
+    policy = "; ".join([
+        "default-src 'self'",
+        "script-src 'self' " + " ".join(sorted(set(hashes))),
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: blob:",
+        "font-src 'self'",
+        "connect-src 'self'",
+        "worker-src 'self'",
+        "manifest-src 'self'",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+    ])
+    assert "<meta charset=\"utf-8\">" in html
+    return html.replace("<meta charset=\"utf-8\">", "<meta charset=\"utf-8\">\n<meta http-equiv=\"Content-Security-Policy\" content=\"" + policy + "\">", 1)
+
 
 # v5.16: the page shown for an address that does not exist (Vercel serves site/404.html automatically)
 NOT_FOUND = """<!doctype html>
@@ -952,7 +980,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
         log(f"SITE   {h.hexdigest()}  site/portraits/us/  ({len(names)} portraits of people in the federal record)")
     for fam, slug, w in font_files:
         shutil.copy(os.path.join(ROOT, "node_modules", "@fontsource", slug, "files", f"{slug}-latin-{w}-normal.woff2"), os.path.join(SITE, "fonts"))
-    site_html = page(False, self_fonts)
+    site_html = with_csp(page(False, self_fonts))
     write(os.path.join(SITE, "index.html"), site_html)
     write(os.path.join(SITE, "sw.js"), SERVICE_WORKER.replace("__ID__", sha(site_html.encode())[:12]))
     log(f"SITE   {sha(os.path.join(SITE, 'sw.js'))}  site/sw.js  (service worker for the hosted site)")

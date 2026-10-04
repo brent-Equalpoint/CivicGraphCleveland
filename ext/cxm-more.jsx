@@ -313,6 +313,10 @@ function CxmBench() {
         <p className="cxm-mut">Research agents, source polling, the evidence store, the review console, and the publishing service are specified here, not live. The records in this atlas were gathered and reviewed by hand, with sources and gaps labeled.</p>
         <p className="cxm-fine">{CX_BUILD.version}. Base: {CX_BUILD.base}. Sources reviewed {CX_BUILD.sources}. Council records: Cleveland Legistar, {CX_LEG.count} items, retrieved {CX_LEG.retrieved_at.slice(0, 10)}. This phone app reads the same records as the desktop app.</p>
       </div>
+      <div className="cxm-tile">
+        <span className="cxm-kicker">Your privacy</span>
+        <p className="cxm-mut">This site sets no cookies and has no analytics. Your choices stay on your device, and the browser is told to talk only to this site.</p>
+      </div>
       <CxmSeg label="Architecture sections" items={[[`pipeline`, `Pipeline`], [`seats`, `Seats`], [`states`, `States & gates`], [`plan`, `Delivery plan`], [`contracts`, `Evidence rules`]]} value={tab} onChange={setTab} />
       {tab === `pipeline` && (
         <>

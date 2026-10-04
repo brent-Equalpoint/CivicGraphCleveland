@@ -56,6 +56,10 @@ async function open(url, o = {}) {
   await p.setViewport(o.mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
   p.errors = [];
   p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
+  // every page, in every check: it may ask only its own site for anything, and the browser may not report a Content-Security-Policy violation
+  p.outside = []; p.csp = [];
+  p.on('request', (r) => { try { const u = new URL(r.url()); if (!['data:', 'blob:', 'about:'].includes(u.protocol) && u.origin !== new URL(BASE).origin) p.outside.push(r.url().slice(0, 100)); } catch (e) { /* not a web address */ } });
+  p.on('console', (m) => { if (m.type() === 'error' && /Content Security Policy/i.test(m.text())) p.csp.push(m.text().slice(0, 200)); });
   if (o.mock) {  // { '/bench/public-2026.json': {...} }: answer these addresses with made-up JSON
     await p.setRequestInterception(true);
     p.on('request', (r) => { const u = new URL(r.url()); if (o.mock[u.pathname]) r.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(o.mock[u.pathname]) }); else r.continue(); });
@@ -81,7 +85,12 @@ async function clickText(p, label, sel = 'button, a') {
   await el.click(); await wait(350);
 }
 function expect(cond, msg) { if (!cond) fails.push(msg); }
-async function done(p) { expect(p.errors.length === 0, `console errors: ${JSON.stringify(p.errors)}`); await p.close2(); }
+async function done(p) {
+  expect(p.errors.length === 0, `console errors: ${JSON.stringify(p.errors)}`);
+  expect((p.outside || []).length === 0, `the page asked another site for something: ${JSON.stringify(p.outside)}`);   // pages a check opens itself are not tracked
+  expect((p.csp || []).length === 0, `the browser reported a Content-Security-Policy violation: ${JSON.stringify(p.csp)}`);
+  await p.close2();
+}
 const nextEnabled = (p) => p.evaluate(() => { const n = document.querySelector('.cxe-nav .cxe-btn:not(.alt)'); return !!n && !n.disabled; });
 async function walkEasy(p) { let n = 0; while (await nextEnabled(p) && n++ < 12) await clickText(p, 'Next'); return n; }
 
@@ -652,6 +661,44 @@ const CHECKS = {
     expect((await count(p, '.cxm-sheet .us-vote')) >= 1, 'Full Story did not open the member\'s recorded votes');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'People scrolls sideways');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(p);
+  },
+  async 'security-policy'() {
+    // "Nothing personal leaves the browser" as something the browser enforces. The hosted page carries a Content-Security-Policy: every inline script is allowed by its
+    // hash and nothing else, and the page may ask only its own site for anything. This reads the policy, then tries to break it.
+    const html = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8');
+    const m = /<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(html);
+    expect(!!m, 'the hosted page has no Content-Security-Policy');
+    if (m) {
+      const pol = Object.fromEntries(m[1].split(';').map((x) => x.trim()).filter(Boolean).map((x) => { const [k, ...v] = x.split(/\s+/); return [k, v]; }));
+      expect((pol['connect-src'] || []).join(' ') === "'self'", `connect-src is "${(pol['connect-src'] || []).join(' ')}", not 'self' only`);
+      expect(!/unsafe-inline|unsafe-eval/.test((pol['script-src'] || []).join(' ')), 'script-src allows unsafe-inline or unsafe-eval');
+      expect((pol['object-src'] || []).join(' ') === "'none'" && (pol['base-uri'] || []).join(' ') === "'self'", 'object-src or base-uri is open');
+      const crypto = require('crypto');
+      let n = 0;
+      for (const sm of html.matchAll(/<script(?<a>[^>]*)>(?<b>[\s\S]*?)<\/script>/g)) {
+        if (/src=/.test(sm.groups.a) || /type="(?!text\/javascript|module)/.test(sm.groups.a)) continue;
+        n++;
+        const h = `'sha256-${crypto.createHash('sha256').update(sm.groups.b, 'utf8').digest('base64')}'`;
+        expect((pol['script-src'] || []).includes(h), `an inline script (${sm.groups.b.slice(0, 40).replace(/\s+/g, ' ')}...) is not in the policy`);
+      }
+      expect(n >= 4, `only ${n} inline scripts were found to check`);
+      expect(!/\son[a-z]+="/.test(html.replace(/<script[\s\S]*?<\/script>/g, '')), 'the page has an inline event handler, which the policy blocks');
+    }
+    const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
+    const out = await p.evaluate(async () => {
+      const r = {};
+      r.fetch = await fetch('https://example.com/', { mode: 'no-cors' }).then(() => 'sent', () => 'blocked');
+      r.beacon = await new Promise((res) => { const i = new Image(); i.onload = () => res('loaded'); i.onerror = () => res('blocked'); i.src = 'https://example.com/x.png'; });
+      const s = document.createElement('script'); s.textContent = 'window.__injected = 1'; document.body.appendChild(s);
+      r.inline = window.__injected ? 'ran' : 'blocked';
+      return r;
+    });
+    expect(out.fetch === 'blocked', `a request to another site was not blocked (${out.fetch})`);
+    expect(out.beacon === 'blocked', `an image from another site was not blocked (${out.beacon})`);
+    expect(out.inline === 'blocked', 'an injected inline script ran');
+    expect(p.csp.length >= 2, 'the browser did not report the attempts it blocked, so the policy may not be active');
+    p.csp = []; p.outside = [];   // those attempts were on purpose
     await done(p);
   },
   async 'banners'() {
