@@ -76,6 +76,25 @@ Limits we would enforce:
 
 Create a short "Our rules" sheet: receipts not scores, sponsorship is not a vote, a missing record is not a no, official records update by themselves while news and interpretation wait for a person, nothing personal leaves your browser. Five lines, each with a plain example. Link to it from the "?" on the top bar and from the one-line footer. Screens then carry the one short reminder where it matters, not the whole explanation.
 
+## The four-question test (use it on every block of text)
+
+1. Does it describe what the eye can already see? Cut it.
+2. Does it explain a symbol? Make it a small key, shown only when the symbol appears.
+3. Does it stop a wrong reading? Keep it, once, in the shortest sentence.
+4. Does it explain the method? Put it in the fold.
+
+### Worked example: the note under the Constellation map
+
+Before, always showing, 49 words in seven sentences: "White rings: who is on the record for this question. Nearer means more agreement on the answered records of this type. Direction has no meaning. A dotted halo marks your practice choice. Party and ballot selection do not affect distance. Tap a person to open them."
+
+After:
+
+- On the map, a one-line key that appears only when it applies: "White ring: on the record for this question. Dotted halo: your practice pick."
+- Cut "Tap a person to open them". The faces look tappable and are announced as buttons.
+- "Nearer means more agreement" is already in the two-sentence lead.
+- In the fold, one sentence: "Only distance matters, not direction, and party and ballot choice never change it."
+- On the question card, the missing-record rule stays and gets shorter: "Skipped answers and missing records never count against anyone."
+
 ## Order of work
 
 Phase 0 (a day): add a text-budget check. It counts words showing on each phone screen and fails if a screen grows past its recorded number. This is the ratchet: it stops things getting worse while we cut. Record today's numbers first.
