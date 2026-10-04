@@ -52,7 +52,7 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
 
 **Color.** Use the tokens, never a one-off. The full system is in `docs/design-system.md` (generated from `design/tokens.json`) and is guarded by `audit.js` and the `design-look` check. Phone tokens live on `.cxm` in `ext/cxm.css`: surface `--bg #0c0c0e`, card `--tile #17171a`,
 text `--ink #ecebe7`, muted `--mut #b9bcc6`, accent `--acc #2f66f3` (blue, Bento) or `#c2410c` (Original). Story screens that are about
-money or the ballot sit on the accent. Cards use dots or tinted backgrounds. **Never a left accent stripe.** Both styles must work.
+money or the ballot sit on the accent. Cards use tinted backgrounds. **Never a left accent stripe.** A status (Committed, Talking stage, and the like) is written in words, with no colored status dot beside it; a dot stays only where it is the key to a chart or the data itself (a legend, a vote). Both styles must work.
 (`axe` for contrast; the Original run covers the other palette)
 
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)

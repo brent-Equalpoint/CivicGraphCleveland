@@ -149,7 +149,7 @@ function CxMtgItem({ i, onOpen }) {
   const x = cxmMatter(i[0]);
   return (
     <button type="button" className="mt-item" onClick={() => onOpen(i[0])}>
-      <i className={`cxm-sdot cxm-s-${cxMtgKind(i[1])}`} aria-hidden="true" />
+      
       <span><strong>{x ? cxHeadline(x.title) : `Legislation ${i[0]}`}</strong><small><span>{i[0]}</span>{` · `}<span>{cxMtgAction(i[1])}</span></small></span>
     </button>
   );
@@ -221,7 +221,7 @@ function CX_Meetings({ onOpen }) {
             <div key={m.id} className="cxm-tile mt-done">
               <span className="cxm-kicker"><span>{cxMtgWeekday(m.date)}</span>{`, `}<span>{cxMtgMonthDay(m.date)}</span></span>
               <strong className="mt-head2">{m.body}</strong>
-              <p className="mt-chips">{cxMtgOutcomes(m).map(([l, n, k]) => <span key={l} className="mt-chip"><i className={`cxm-sdot cxm-s-${k}`} aria-hidden="true" />{`${n} ${l.toLowerCase()}`}</span>)}</p>
+              <p className="mt-chips">{cxMtgOutcomes(m).map(([l, n, k]) => <span key={l} className="mt-chip">{`${n} ${l.toLowerCase()}`}</span>)}</p>
               <CxMtgItems m={m} onOpen={onOpen} />
               <CxMtgLinks m={m} past />
             </div>

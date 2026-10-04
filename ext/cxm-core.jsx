@@ -485,9 +485,6 @@ function CxmSrc({ href, children }) {
   if (!href) return null;
   return <a className="cxm-src" href={href} target="_blank" rel="noreferrer">{children} <CXI.Ext size={12} /></a>;
 }
-function CxmStatusDot({ k }) {
-  return <i className={`cxm-sdot cxm-s-${k}`} aria-hidden="true" />;
-}
 function CxmDrop({ title, children, open: startOpen = !1, sub }) {
   const [open, setOpen] = u.useState(startOpen);
   return (

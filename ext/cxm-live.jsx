@@ -67,7 +67,7 @@ function CxmNews() {
       <CxmKicker>Council's public record</CxmKicker>
       <h2 className="cxm-h2">What's new</h2>
       <p className="cxm-mut">What changed in City Council's 2026 record since {since ? cxShortDate(since) : `the last check`}, found by comparing two snapshots of the official record. Pulled {f.when} (Eastern).</p>
-      {f.stale && <p className="cxm-status-line"><CxmStatusDot k="hold" /><span>These records were pulled {f.ago}. Newer actions may be on the <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">Council site</a>.</span></p>}
+      {f.stale && <p className="cxm-status-line"><span>These records were pulled {f.ago}. Newer actions may be on the <a href="https://cityofcleveland.legistar.com/Legislation.aspx" target="_blank" rel="noreferrer">Council site</a>.</span></p>}
       <CxmSeg label="Whose changes" items={items} value={who} onChange={setWho} />
       <CxmSeg label="How far back" items={[[7, `Last 7 days`], [45, `Last 45 days`]]} value={days} onChange={setDays} />
       {!list.length && <p className="cxm-mut">No changes here in this period. The record did not change; that does not mean nothing happened.</p>}
@@ -113,7 +113,7 @@ function CxmDates() {
   const phase = cxElectionPhase();
   return (
     <>
-      {phase === `after` && <p className="cxm-status-line"><CxmStatusDot k="done" /><span><strong>The November 3 election is over.</strong> Your practice ballot stays here to look back on. <a href={CX_RESULTS_URL} target="_blank" rel="noreferrer">Official results</a></span></p>}
+      {phase === `after` && <p className="cxm-status-line"><span><strong>The November 3 election is over.</strong> Your practice ballot stays here to look back on. <a href={CX_RESULTS_URL} target="_blank" rel="noreferrer">Official results</a></span></p>}
       <div className="cxm-dates">
         {list.map((x) => (
           <div key={x.iso} className={`cxm-date-${x.state}`}>

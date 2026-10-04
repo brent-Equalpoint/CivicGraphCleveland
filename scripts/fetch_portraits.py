@@ -3,7 +3,7 @@
 
 Output: data/portraits-us/<bioguide>.webp (small) and data/portraits-us/index.json (which people have one). The build copies them to site/portraits/us/.
 
-Source: the unitedstates project's images repository (https://github.com/unitedstates/images). Its photographs come from the Government Publishing
+Sources: the Congress Biographical Directory (bioguide.congress.gov), the Member Guide itself, for anyone the archive below does not have yet (a member who joined recently); and the unitedstates project's images repository (https://github.com/unitedstates/images). Its photographs come from the Government Publishing
 Office's Member Guide; the project says the GPO assured it that all of them are public domain, and the repository is dedicated under CC0 1.0. The
 terms are registered in scripts/us_sources.py as "not yet read by a person", like every other source.
 
@@ -25,6 +25,7 @@ ROOT = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 LANDSCAPE = os.path.join(ROOT, "data", "us-landscape-2026.json")
 OUT = os.path.join(ROOT, "data", "portraits-us")
 BASE = "https://unitedstates.github.io/images/congress/225x275/"
+BIOGUIDE = "https://bioguide.congress.gov/photo/"   # the Congress directory's own photo, tried only when the archive has none
 WIDTH, HEIGHT, QUALITY = 168, 205, 72   # twice the largest size the app shows (84 px), so it stays sharp on a phone
 JPEG_START = bytes([0xFF, 0xD8])
 
@@ -41,7 +42,16 @@ def wanted_ids(snap):
 
 def shrink(jpeg, Image):
     """Pure given Pillow: a JPEG's bytes in, a small WebP's bytes out."""
-    im = Image.open(io.BytesIO(jpeg)).convert("RGB").resize((WIDTH, HEIGHT), Image.LANCZOS)
+    im = Image.open(io.BytesIO(jpeg)).convert("RGB")
+    w, h = im.size
+    want = WIDTH / HEIGHT
+    if w / h > want + 0.01:   # wider than ours: trim the sides evenly, so a different source's shape is cropped, not squeezed
+        cut = int((w - h * want) / 2)
+        im = im.crop((cut, 0, w - cut, h))
+    elif w / h < want - 0.01:
+        cut = int((h - w / want) / 2)
+        im = im.crop((0, 0, w, h - 2 * cut))   # keep the top: a face sits high in the frame
+    im = im.resize((WIDTH, HEIGHT), Image.LANCZOS)
     out = io.BytesIO()
     im.save(out, "WEBP", quality=QUALITY, method=6)
     return out.getvalue()
@@ -62,11 +72,14 @@ def main():
     todo = [i for i in ids if i not in have]
 
     def get(i):
-        try:
-            raw = net.get(BASE + i + ".jpg", timeout=60)
-        except Exception:
-            return i, None   # no picture in this source for that person
-        return i, (shrink(raw, Image) if raw[:2] == JPEG_START else None)
+        for url in (BASE + i + ".jpg", BIOGUIDE + i + ".jpg"):
+            try:
+                raw = net.get(url, timeout=60)
+            except Exception:
+                continue   # no picture in this source for that person; try the next
+            if raw[:2] == JPEG_START:
+                return i, shrink(raw, Image)
+        return i, None
 
     got = 0
     with cf.ThreadPoolExecutor(6) as ex:
@@ -75,7 +88,7 @@ def main():
                 open(os.path.join(OUT, i + ".webp"), "wb").write(data)
                 got += 1
     present = sorted(f[:-5] for f in os.listdir(OUT) if f.endswith(".webp"))
-    json.dump({"source": "https://github.com/unitedstates/images (U.S. Government Publishing Office Member Guide; public domain, CC0 1.0)",
+    json.dump({"source": "https://github.com/unitedstates/images and https://bioguide.congress.gov (U.S. Government Publishing Office Member Guide; the archive says public domain, CC0 1.0)",
                "size": [WIDTH, HEIGHT], "ids": present, "without": sorted(set(ids) - set(present))},
               open(os.path.join(OUT, "index.json"), "w", encoding="utf-8", newline="\n"), indent=0)
     print(f"portraits: {len(present)} of {len(ids)} people have one ({got} new)")

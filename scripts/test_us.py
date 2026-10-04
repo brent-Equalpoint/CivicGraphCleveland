@@ -199,6 +199,21 @@ class Portraits(unittest.TestCase):
         self.assertEqual((im.format, im.size), ("WEBP", (fp.WIDTH, fp.HEIGHT)))
         self.assertLess(len(out), 6000)
 
+    @unittest.skipUnless(importlib.util.find_spec("PIL"), "Pillow is not installed")
+    def test_a_photo_of_another_shape_is_cropped_not_squeezed(self):
+        from PIL import Image
+        for size in ((180, 225), (300, 200), (200, 400)):   # the Congress directory's shape, a wide one, and a tall one
+            src = io.BytesIO()
+            Image.new("RGB", size, (120, 90, 60)).save(src, "JPEG")
+            self.assertEqual(Image.open(io.BytesIO(fp.shrink(src.getvalue(), Image))).size, (fp.WIDTH, fp.HEIGHT))
+        # a left half red, right half blue wide picture keeps its middle after the sides are trimmed
+        wide = Image.new("RGB", (400, 200)); wide.paste((255, 0, 0), (0, 0, 200, 200)); wide.paste((0, 0, 255), (200, 0, 400, 200))
+        src = io.BytesIO(); wide.save(src, "JPEG")
+        out = Image.open(io.BytesIO(fp.shrink(src.getvalue(), Image))).convert("RGB")
+        self.assertGreater(out.getpixel((10, 100))[0], 200)                       # still red on the left
+        self.assertGreater(out.getpixel((fp.WIDTH - 10, 100))[2], 200)            # still blue on the right
+
+
 
 class Landscape(unittest.TestCase):
     def snap(self):

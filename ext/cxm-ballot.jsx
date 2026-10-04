@@ -39,7 +39,7 @@ function CxmBallot() {
       <CxmKicker>Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.</CxmKicker>
       <CxmH1>My ballot</CxmH1>
       <p className="cxm-lede">Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.</p>
-      <p className="cxm-status-line"><CxmStatusDot k="talk" /><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
+      <p className="cxm-status-line"><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
       <CxmDates />
       <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}Times are Eastern. An application requests a ballot; it is not your completed ballot.</p>
       <div className="cxm-tile cxm-tile-acc">
@@ -151,7 +151,7 @@ function CxmContest({ id }) {
       <p><strong>What this office can do.</strong> {info.can}</p>
       <p className="cxm-mut"><strong>Limits.</strong> {info.limits}</p>
       <CxmSrc href={info.url}>Official authority source</CxmSrc>
-      {!onBallot && <p className="cxm-status-line"><CxmStatusDot k="talk" />This race is not in the districts you set, so a choice here won't be kept. Set your districts on the Ballot tab.</p>}
+      {!onBallot && <p className="cxm-status-line">This race is not in the districts you set, so a choice here won't be kept. Set your districts on the Ballot tab.</p>}
       <h3 className="cxm-h3">Candidates <span>{cands.length}</span></h3>
       <p className="cxm-fine">Tap a name to practice your pick. Record opens what is on file for that candidate.</p>
       {cands.map((x) => (
@@ -160,7 +160,7 @@ function CxmContest({ id }) {
             <strong>{x.name}</strong><small>{x.party}{x.status === `write-in` ? ` · valid write-in` : ``} · filed {x.filed}</small>
           </button>
           <button type="button" className="cxm-cand-rec" aria-label={`${x.name}: candidate record`} onClick={() => openSheet(`cand`, { id: x.id })}>
-            {Gm.some((g) => g.candidate === x.id) && <i className="cxm-sdot cxm-s-rec" aria-hidden="true" />}Record<CXI.Arrow size={13} />
+            Record<CXI.Arrow size={13} />
           </button>
         </div>
       ))}
@@ -187,7 +187,7 @@ function CxmIssue({ id }) {
     <div className="cxm-pad">
       <CxmKicker>Issue {i.number} · {cxArea(i.area, g.title)}</CxmKicker>
       <h2 className="cxm-h2">{g.title}</h2>
-      {!Ym(i) && <p className="cxm-status-line"><CxmStatusDot k="talk" />A detailed plain-language review is not loaded for this issue. Read the official wording below.</p>}
+      {!Ym(i) && <p className="cxm-status-line">A detailed plain-language review is not loaded for this issue. Read the official wording below.</p>}
       <p className="cxm-fine">Tap yes or no to practice your pick. It stays in this browser.</p>
       <button type="button" className={`cxm-cand ${sel === `yes` ? `on` : ``}`} aria-pressed={sel === `yes`} onClick={() => pick(`yes`)}><strong>A yes vote means</strong><small>{g.yes}</small></button>
       <button type="button" className={`cxm-cand ${sel === `no` ? `on` : ``}`} aria-pressed={sel === `no`} onClick={() => pick(`no`)}><strong>A no vote means</strong><small>{g.no}</small></button>
@@ -297,7 +297,7 @@ function CxmOutcomes({ items }) {
       <CxmKicker>What could happen, with limits</CxmKicker>
       <h2 className="cxm-h2">What might your choices affect?</h2>
       <p className="cxm-mut">Start with the person or proposal you selected. A future outcome depends on other voters, other officials, laws, funding and implementation. We do not calculate winning odds or promise results.</p>
-      {!chosen.length && <p className="cxm-status-line"><CxmStatusDot k="talk" />Make a practice choice first. You can still open any candidate's record from a race above.</p>}
+      {!chosen.length && <p className="cxm-status-line">Make a practice choice first. You can still open any candidate's record from a race above.</p>}
       {chosen.map((it) => {
         const v = st.selections[it.id];
         const cand = it.contest?.candidates.find((c) => c.id === v);
@@ -349,7 +349,7 @@ function CxmCand({ id }) {
       <h3 className="cxm-h3">Evidence, then possibilities</h3>
       <p className="cxm-mut">These are selected examples. A past vote records an action; a campaign statement records a promise. They are shown separately.</p>
       {!recs.length && (
-        <div className="cxm-status-line"><CxmStatusDot k="talk" /><span><strong>No reviewed policy record loaded yet.</strong> This candidate is in the official list, but individual votes and policy statements have not been reviewed here. No alignment or candidate-specific outcome is inferred.</span></div>
+        <div className="cxm-status-line"><span><strong>No reviewed policy record loaded yet.</strong> This candidate is in the official list, but individual votes and policy statements have not been reviewed here. No alignment or candidate-specific outcome is inferred.</span></div>
       )}
       {recs.map((g) => {
         const w = Wm.find((x) => x.id === g.question);

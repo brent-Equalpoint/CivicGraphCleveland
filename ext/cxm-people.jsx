@@ -60,7 +60,7 @@ function CxmProfileNav({ i, n, onStep }) {
   return (
     <div className="cxm-prof-nav">
       <button type="button" aria-label="Previous profile" onClick={() => onStep(-1)}><CXI.Back size={18} /></button>
-      <span>{i + 1} of {n}</span>
+      <span className="cxm-sr" aria-live="polite">Profile {i + 1} of {n}</span>
       <button type="button" aria-label="Next profile" onClick={() => onStep(1)}><CXI.Arrow size={18} /></button>
     </div>
   );
@@ -155,6 +155,7 @@ function CxmProfiles() {
         </dl>
         <p className="cxm-fine">This is not a vote record and not a score. Sponsoring a proposal is not voting for it. How each member voted, where the City Record prints it, is on the full profile. Everything comes from Cleveland's official legislative record, retrieved {CX_LEG.retrieved_at.slice(0, 10)}.</p>
       </CxmDrop>
+      <CxmProfileStrip label="Jump to a council member" items={deck.map((s) => ({ id: s.id, title: s.name, img: cxmAsset(s.portrait), label: s.ward ? `W${s.ward}` : `City` }))} activeId={seat.id} onPick={(id) => setPeople((p) => ({ ...p, seat: id }))} />
       <CxmProfileCard key={seat.id} avatar={<CxmPortrait seat={seat} size={84} />} onStep={step} label={`${seat.name}, profile ${i + 1} of ${deck.length}`}
         kicker={<>{isAdmin ? `CITY DEPARTMENTS` : `WARD ${seat.ward}`}{seat.id === (home?.ward ? `ward-${home.ward}` : ``) && <b className="cxm-yours"> · YOUR WARD</b>}</>}
         name={seat.name} sub={`${role} · Cleveland`}
@@ -197,7 +198,7 @@ function CxmProfiles() {
               <small className="cxm-mut">{CX_ACTION_BY_ID[feature.m.action].label}</small>
               <button type="button" className="cxm-link-block" onClick={() => openSheet(`leg`, { file: feature.m.file })}>{cxWords(feature.m.short, 24)}</button>
               <div className="cxm-row2">
-                <span className="cxm-mut"><CxmStatusDot k={cxmStatus(feature.m).k} />{cxmStatus(feature.m).label} · {feature.m.file}</span>
+                <span className="cxm-mut">{cxmStatus(feature.m).label} · {feature.m.file}</span>
                 <button type="button" className={`cxm-heart ${liked.includes(feature.m.id) ? `on` : ``}`} aria-pressed={liked.includes(feature.m.id)} onClick={() => like(feature.m.id)}>
                   <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M12 20.5s-7.5-4.6-7.5-10.1A4.4 4.4 0 0 1 12 7.6a4.4 4.4 0 0 1 7.5 2.8c0 5.5-7.5 10.1-7.5 10.1z" /></svg>
                   {liked.includes(feature.m.id) ? `Saved to my letter` : `Ask about this`}
@@ -209,7 +210,6 @@ function CxmProfiles() {
         <CxmLatest seat={seat} limit={2} />
       </CxmProfileCard>
       <CxmProfileNav i={i} n={deck.length} onStep={step} />
-      <CxmProfileStrip label="Jump to a council member" items={deck.map((s) => ({ id: s.id, title: s.name, img: cxmAsset(s.portrait), label: s.ward ? `W${s.ward}` : `City` }))} activeId={seat.id} onPick={(id) => setPeople((p) => ({ ...p, seat: id }))} />
       {liked.length > 0 && <p className="cxm-fine">{cxmPl(liked.length, `proposal`, `proposals`)} saved to your letters. They stay on this device for this visit.</p>}
     </div>
   );
@@ -223,7 +223,7 @@ function CxmMeasures({ list, chosen, limit = 5 }) {
       {(all ? list : list.slice(0, limit)).map(({ m }) => (
         <button key={m.id} type="button" className="cxm-item" onClick={() => openSheet(`leg`, { file: m.file })}>
           <strong>{m.file} · {m.short}</strong>
-          <small><CxmStatusDot k={cxmStatus(m).k} />{cxmStatus(m).label}{chosen.filter((p) => m.topics[p]).map((p) => ` · Your priority: ${CX_SHORT[p]}`).join(``)}</small>
+          <small>{cxmStatus(m).label}{chosen.filter((p) => m.topics[p]).map((p) => ` · Your priority: ${CX_SHORT[p]}`).join(``)}</small>
         </button>
       ))}
       {list.length > limit && <button type="button" className="cxm-link" onClick={() => setAll(!all)}>{all ? `Show fewer` : `Show all ${list.length}`}</button>}
@@ -395,7 +395,7 @@ function CxmConstellation() {
               <circle cx="170" cy="140" r="17" className="cxm-you-dot" /><text x="170" y="144" className="cxm-you-t">You</text>
             </svg>
           </div>
-          {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status"><CxmStatusDot k="talk" />Answer yes or no to an idea with a documented record to place someone on the map.</p>}
+          {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status">Answer yes or no to an idea with a documented record to place someone on the map.</p>}
           <p className="cxm-fine">{hl.size ? `White rings: who is on the record for this question. ` : ``}Nearer means more agreement on the answered records of this type. Direction has no meaning. {contest ? `A dotted halo marks your practice choice. ` : ``}Party and ballot selection do not affect distance. {office === `council` ? `Not sponsoring is no record, never a no. The gold dot is your ward's member. ` : ``}Tap a person to open them.</p>
           <CxmDrop title="Everyone stays visible" sub="A missing record is not a no">
             <p className="cxm-mut">A missing record is not a no. Different {office === `council` || office === `mayor` ? `people` : `candidates`} may have different evidence coverage; a fraction is not an overall {office === `council` || office === `mayor` ? `rating` : `candidate rating`}.</p>

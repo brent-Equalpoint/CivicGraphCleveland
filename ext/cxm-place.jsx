@@ -67,7 +67,7 @@ function CxmPlace() {
         <CxmPlaceMap layer="wards2014" hood={hood} wards={D.before} title="2014 to 2025 (17 wards)" />
         <CxmPlaceMap layer="wards2026" hood={hood} wards={D.now} title="From 2026 (15 wards)" />
       </div>
-      {complicated && <p className="cxm-status-line"><CxmStatusDot k="talk" />Relationship status with Ward {before0.ward}: it's complicated. The 2026 map moved most of {hood} to Ward {now0.ward}.</p>}
+      {complicated && <p className="cxm-status-line">Relationship status with Ward {before0.ward}: it's complicated. The 2026 map moved most of {hood} to Ward {now0.ward}.</p>}
       {localCards.length > 0 && (
         <section className="cxm-section">
           <CxmKicker>Closest to you · {cxmHomeLabel(home)}</CxmKicker>

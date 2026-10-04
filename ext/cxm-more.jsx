@@ -34,7 +34,7 @@ function CxmLeg({ file }) {
     <div className="cxm-pad">
       <CxmKicker>{m.file} · {m.type}</CxmKicker>
       <h2 className={`cxm-h2 ${cxShortTitle(m.title).length > 110 ? `cxm-h2-long` : ``}`}>{cxShortTitle(m.title)}</h2>
-      <p className="cxm-status-line"><CxmStatusDot k={st.k} /><span><strong>Relationship status: {st.label}.</strong> {st.note}</span></p>
+      <p className="cxm-status-line"><span><strong>Relationship status: {st.label}.</strong> {st.note}</span></p>
       {st.flip && <p className="cxm-flip">{st.flip}</p>}
       {latest && <p className="cxm-latest-line"><span className="cxm-kicker">Latest</span> {latest.what} <small>Found in the {cxShortDate(cxDayET(Date.parse(latest.at)))} check of the record.</small></p>}
       {f && (
@@ -220,7 +220,7 @@ function CxmPriorities() {
         <CxmKicker>Letters</CxmKicker>
         <button type="button" className="cxm-row" onClick={() => openSheet(`letter`, { seat: home?.ward ? `ward-${home.ward}` : `mayor` })}><span><strong>{home?.ward ? `Write to ${cxmMember(home.ward)}` : `Write to the mayor`}</strong><small>{liked.length ? `${cxmPl(liked.length, `proposal`, `proposals`)} saved to ask about` : `No proposals saved yet`}</small></span><CXI.Arrow size={15} /></button>
       </section>
-      <p className="cxm-status-line"><CxmStatusDot k="rec" /><span><strong>Private to this browser.</strong> Ordinary shared map links do not include these choices.</span></p>
+      <p className="cxm-status-line"><span><strong>Private to this browser.</strong> Ordinary shared map links do not include these choices.</span></p>
       <button type="button" className={`cxm-switch ${prio.rem ? `on` : ``}`} aria-pressed={prio.rem} onClick={() => prio.setRemember(!prio.rem)}><span>Remember on this device</span><i><b /></i></button>
       <div className="cxm-row2">
         <button type="button" className="cxm-btn2" onClick={() => cxmExportChoices(prio)}>Export</button>
@@ -372,7 +372,7 @@ function CxmBench() {
             <div key={n0} className="cxm-tile">
               <strong>{n0}. {name}</strong>
               <dl className="cxm-dl"><div><dt>Deliverable</dt><dd>{del}</dd></div><div><dt>Acceptance check</dt><dd>{acc}</dd></div></dl>
-              <small className="cxm-status-inline"><i className={`cxm-sdot cxm-st-${st}`} aria-hidden="true" />{CX_STAGE_STATUS[st]}</small>
+              <small className="cxm-status-inline">{CX_STAGE_STATUS[st]}</small>
             </div>
           ))}
           <h3 className="cxm-h3">Acceptance cases</h3>
@@ -421,7 +421,7 @@ function CxmDecision({ id }) {
   const mine = wm.filter((w) => prio.v[w.id]);
   return (
     <div className="cxm-pad">
-      <p className="cxm-status-line"><CxmStatusDot k={d.reviewed ? `rec` : `talk`} />{d.status}</p>
+      <p className="cxm-status-line">{d.status}</p>
       <h2 className="cxm-h2">{d.question}</h2>
       <p>{d.summary}</p>
       {d.reviewed && (

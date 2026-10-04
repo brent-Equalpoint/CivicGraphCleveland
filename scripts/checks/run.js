@@ -624,7 +624,10 @@ const CHECKS = {
     await clickText(p, 'Federal', '.cxm-folders button'); await wait(1200);
     // Federal: two senators, then a district adds the representative; same card shape as Cleveland
     expect((await count(p, '.cxm-profile')) === 1 && (await count(p, '.cxm-strip button')) === 2, 'Federal does not open on the two Ohio senators');
-    expect(await has(p, '.cxm-prof-head .cxm-fed-ini') && !(await has(p, '.cxm-prof-head .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
+    { let ok = false; for (let t = 0; t < 20 && !ok; t++) { ok = await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth > 0; }); if (!ok) await wait(300); }
+      expect(ok, 'the first Ohio senator (Husted, photo from the Congress directory) has no loaded portrait'); }
+    expect(await p.evaluate(() => { const st = document.querySelector('.cxm-strip'), pr = document.querySelector('.cxm-profile'); return !!st && !!pr && !!(st.compareDocumentPosition(pr) & Node.DOCUMENT_POSITION_FOLLOWING); }), 'the people strip is not above the profile');
+    expect(await p.evaluate(() => { const sp = document.querySelector('.cxm-prof-nav span'); return !!sp && sp.classList.contains('cxm-sr'); }), 'the "n of N" text is on screen again beside the arrows');
     await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
     { let ok = false; for (let t = 0; t < 20 && !ok; t++) { ok = await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth > 0; }); if (!ok) await wait(150); }
       expect(ok, 'the senator with a photo has no loaded portrait on the Federal profile'); }
@@ -638,6 +641,12 @@ const CHECKS = {
     await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
     expect(/U\.S\. House/.test((await txt(p, '.cxm-profile .cxm-kicker')) || '') && /3 of 3/.test((await txt(p, '.cxm-prof-nav')) || ''), 'stepping twice did not reach the representative');
     expect(!/lakeside|district=|place=/i.test(await p.evaluate(() => location.href)), 'the place reached the link');
+    // a recently appointed senator still without a photo shows initials, never a broken image (Oklahoma has one)
+    await p.select('.cxm-drop-body label:nth-of-type(1) select', 'OK'); await wait(600);
+    { let ini = false, broken = false;
+      for (let k = 0; k < 2; k++) { await wait(500); ini = ini || await has(p, '.cxm-prof-head .cxm-fed-ini'); broken = broken || await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth === 0; }); await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); }
+      expect(ini && !broken, 'an Oklahoma senator without a photo should show initials and no broken image'); }
+    await p.select('.cxm-drop-body label:nth-of-type(1) select', 'OH'); await wait(600);
     await clickText(p, 'Full Story', '.cxm-prof-actions button'); await wait(1200);
     expect((await count(p, '.cxm-sheet .us-vote')) >= 1, 'Full Story did not open the member\'s recorded votes');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'People scrolls sideways');
@@ -937,7 +946,11 @@ const CHECKS = {
     expect(/Jon Husted/.test((await txt(p, '.us-side h2')) || '') && /United States senator for Ohio/.test((await txt(p, '.us-side')) || ''), 'the chosen senator is not described');
     expect(/Party on this term: \w+, as of 20\d\d-\d\d-\d\d \(a sourced field, not a judgment\)/.test((await txt(p, '.us-side')) || ''), 'party is not shown as a dated, sourced field');
     const faceLoaded = async (sel) => { for (let t = 0; t < 20; t++) { if (await p.evaluate((q) => { const i = document.querySelector(q); return !!i && i.complete && i.naturalWidth > 0; }, sel)) return true; await wait(150); } return false; };
-    // Jon Husted joined the Senate after the source's photos were made: his initials stay, and no broken picture shows
+    // Jon Husted joined the Senate after the photo archive was made; his picture comes from the Congress directory
+    expect(await faceLoaded('.us-side .cxm-fed-av img'), 'Husted has no loaded portrait (the Congress directory fallback)');
+    // Alan Armstrong (Oklahoma, appointed 2026) has no photo anywhere yet: his initials stay, and no broken picture shows
+    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Armstrong'); await wait(300);
+    await (await p.$('.us-results .us-pick')).click(); await wait(400);
     expect(await has(p, '.us-side .cxm-fed-ini') && !(await has(p, '.us-side .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
     await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Moreno'); await wait(300);
     await (await p.$('.us-results .us-pick')).click(); await wait(500);

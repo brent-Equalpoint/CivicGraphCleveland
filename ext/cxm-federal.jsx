@@ -91,10 +91,10 @@ function CxmFederal() {
         {st === `OH` && <button type="button" className="cxm-btn2" onClick={() => setOverlay({ type: `districts` })}>Find my district by address</button>}
         <p className="cxm-fine">Not sure of your district? Your address decides it. <a href={CX_HOUSE_FIND} target="_blank" rel="noreferrer">The House's official lookup<span className="sp-ext"> (opens in a new tab)</span></a></p>
       </CxmDrop>
-      {mine.dists.length > 0 && !mine.rep && <p className="cxm-status-line"><CxmStatusDot k="talk" />Choose your district to see your representative. Your senators are below.</p>}
+      {mine.dists.length > 0 && !mine.rep && <p className="cxm-status-line">Choose your district to see your representative. Your senators are below.</p>}
+      <CxmProfileStrip label="Jump to a person" items={deck.map((m) => ({ id: m.id, title: m.name, faceId: m.id, label: m.chamber === `senate` ? `Senate` : `House` }))} activeId={cur ? cur.id : ``} onPick={(id) => setI(Math.max(0, deck.findIndex((m) => m.id === id)))} />
       {body}
       <CxmProfileNav i={Math.min(i, deck.length - 1)} n={deck.length} onStep={step} />
-      <CxmProfileStrip label="Jump to a person" items={deck.map((m) => ({ id: m.id, title: m.name, faceId: m.id, label: m.chamber === `senate` ? `Senate` : `House` }))} activeId={cur ? cur.id : ``} onPick={(id) => setI(Math.max(0, deck.findIndex((m) => m.id === id)))} />
       <button type="button" className="cxm-row" onClick={() => setPeople((p) => ({ ...p, mode: `graph` }))}><span><strong>Explore Congress as a graph</strong><small>Every member, committee, and agency, and the topic explorer</small></span><CXI.Arrow size={16} /></button>
       <p className="cxm-fine">Members and committees: the congress-legislators record of current members (public domain). Votes: the recorded roll calls of the current Congress. <span>Photos: the U.S. Government Publishing Office's Member Guide (public domain).</span></p>
     </div>

@@ -44,7 +44,7 @@ function CxmReceiptRow({ x }) {
       <span className={`cxm-av cxm-av-${x.st.k}`}>{signer ? cxmInitials(signer) : `CH`}</span>
       <span className="cxm-rcpt-mid">
         <span className="cxm-rcpt-t">{title}</span>
-        <span className="cxm-rcpt-s"><CxmStatusDot k={x.st.k} />{x.st.label} · {cxmDate(x.when)}</span>
+        <span className="cxm-rcpt-s">{x.st.label} · {cxmDate(x.when)}</span>
       </span>
       {amount && <span className="cxm-rcpt-a">{amount}</span>}
     </button>
@@ -309,7 +309,7 @@ function CxmMoment() {
         <div className="cxm-rise cxm-moment-who">
           <h2>Who decided this<span className="cxm-dot">.</span></h2>
           <div className="cxm-tile">
-            {mo.who.map(([n, wl, yours]) => <div key={n} className="cxm-who-row"><span><i className="cxm-sdot cxm-s-done" />{n}</span><small className={yours ? `cxm-yours` : ``}>{yours ? `YOUR WARD` : wl}</small></div>)}
+            {mo.who.map(([n, wl, yours]) => <div key={n} className="cxm-who-row"><span>{n}</span><small className={yours ? `cxm-yours` : ``}>{yours ? `YOUR WARD` : wl}</small></div>)}
             <p className="cxm-fine">{mo.note}</p>
           </div>
           <p>{mo.member}</p>
