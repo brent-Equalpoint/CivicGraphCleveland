@@ -644,6 +644,21 @@ const CHECKS = {
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await done(p);
   },
+  async 'banners'() {
+    // The illustrated headers on Today: one per chapter, decoration only (hidden from screen readers, no words inside the pictures, nothing that needs
+    // translating), and still when the device asks for less motion.
+    const p = await open('/#phone', { mobile: true, easy: false, settle: 2000 });
+    const kinds = await p.$$eval('.bn', (els) => els.map((e) => e.className.split(' ')[1]));
+    for (const k of ['bn-news', 'bn-receipts', 'bn-home']) expect(kinds.includes(k), `Today has no ${k} banner (found ${kinds})`);
+    expect(await p.evaluate(() => [...document.querySelectorAll('.bn')].every((b) => { const svg = b.querySelector('svg.bn-art'); return svg && svg.getAttribute('aria-hidden') === 'true' && !svg.querySelector('text') && !!b.querySelector('h2'); })), 'a banner shows words in its picture, is not hidden from screen readers, or has no heading');
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the banners make Today scroll sideways');
+    expect(await p.evaluate(() => [...document.querySelectorAll('.bn')].every((b) => b.getBoundingClientRect().height >= 120 && b.getBoundingClientRect().height <= 180)), 'a banner is not between 120 and 180 px tall');
+    await done(p);
+    const q = await open('/#phone', { mobile: true, easy: false, settle: 1800, scheme: 'light' });
+    await q.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]); await wait(500);
+    expect(await q.evaluate(() => [...document.querySelectorAll('.bn *')].every((e) => getComputedStyle(e).animationName === 'none')), 'a banner still moves when the device asks for less motion');
+    await done(q);
+  },
   async 'city-hall'() {
     // At City Hall: the Clerk's meeting record as a front page. A card on Today, a story first in the row, and a page whose lead is the next Council meeting,
     // whose first items are real legislation (ceremonial resolutions come last), and which says what it does not hold.

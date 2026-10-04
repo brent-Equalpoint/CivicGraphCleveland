@@ -389,6 +389,33 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 .cxm-folders button.on { background: var(--tile) !important; border-color: var(--line) !important; color: var(--ink); font-weight: 600; margin-bottom: -1px; padding-bottom: 1px; }
 .cxm-folder-panel { padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
 /* At City Hall: the meeting front page */
+/* Section banners: an illustrated header for each chapter of Today (cxm-banner.jsx). The picture is drawn in the style's own colors through variables. */
+.bn { position: relative; overflow: hidden; isolation: isolate; display: flex; align-items: flex-end; min-height: 136px; padding: 16px 18px; border-radius: 20px; background: var(--navy); }
+.bn-art { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; }
+.bn::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(90deg, var(--navy) 30%, transparent 58%); }
+.bn-copy { max-width: 60%; display: flex; flex-direction: column; gap: 4px; }
+.bn-copy .cxm-h2 { margin: 0; }
+.bn-f1 { fill: var(--acc); } .bn-f2 { fill: var(--acc2); } .bn-f3 { fill: var(--soft); } .bn-f4 { fill: var(--tile2); } .bn-f5 { fill: var(--amber); } .bn-f6x { fill: var(--tile); } .bn-f7 { fill: var(--ink); }
+.bn-frame { stroke: var(--line); stroke-width: 1.5; }
+.bn-dim { opacity: .55; }
+.bn-stroke { fill: none; stroke: var(--soft); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.bn-teal { stroke: var(--teal); }
+.bn-dash { stroke-dasharray: 4 5; }
+.bn-ward { stroke-width: 1.5; opacity: .6; }
+.bn-ring { fill: none; stroke: var(--amber); stroke-width: 1.5; transform-box: fill-box; transform-origin: center; animation: bn-ring 2.4s ease-out infinite; }
+.bn-wave { fill: var(--acc); opacity: .22; animation: bn-wave 9s linear infinite; }
+.bn-wave-b { opacity: .14; animation-duration: 14s; }
+.bn-bob { transform-box: fill-box; transform-origin: center; animation: bn-bob 3.6s ease-in-out infinite; }
+.bn-ticker { animation: bn-ticker 3s linear infinite; }
+.bn-stamp { transform-box: fill-box; transform-origin: center; animation: bn-stamp .7s ease-out both; }
+.bn-flag { transform-box: fill-box; transform-origin: left center; animation: bn-flag 2.4s ease-in-out infinite; }
+@keyframes bn-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+@keyframes bn-ring { 0% { transform: scale(1); opacity: .9; } 100% { transform: scale(2.8); opacity: 0; } }
+@keyframes bn-ticker { from { transform: translateX(0); } to { transform: translateX(-34px); } }
+@keyframes bn-wave { from { transform: translateX(0); } to { transform: translateX(-60px); } }
+@keyframes bn-stamp { 0% { transform: scale(1.8); opacity: 0; } 60% { transform: scale(.94); opacity: 1; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes bn-flag { 0%, 100% { transform: skewY(0); } 50% { transform: skewY(-8deg); } }
+.mt-hall { display: flex; flex-direction: column; gap: 10px; }
 .mt { display: flex; flex-direction: column; gap: 18px; }
 .mt section { display: flex; flex-direction: column; gap: 10px; }
 .mt-head { margin: 4px 0 2px; font-size: 24px; line-height: 1.12; letter-spacing: -.03em; }

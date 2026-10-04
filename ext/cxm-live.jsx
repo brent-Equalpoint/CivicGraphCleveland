@@ -45,8 +45,7 @@ function CxmWhatsNew() {
   const parts = [[`passed`, `passed`], [`new`, `new`], [`moved`, `moved`], [`stopped`, `paused or stopped`]].filter(([k]) => c[k]);
   return (
     <section className="cxm-section cxm-newsbox">
-      <CxmKicker>What's new since {since ? cxShortDate(since) : `the last check`}</CxmKicker>
-      <h2 className="cxm-h2">{main.length ? `${main.length} changes at City Hall` : `A quiet week at City Hall`}<span className="cxm-dot">.</span></h2>
+      <CxmBanner kind="news" kicker={<>What's new since {since ? cxShortDate(since) : `the last check`}</>} title={main.length ? `${main.length} changes at City Hall` : `A quiet week at City Hall`} />
       {parts.length > 0 && <div className="cxm-chips static cxm-news-chips">{parts.map(([k, l]) => <span key={k} className={`k-${k}`}><b>{c[k]}</b> {l}</span>)}</div>}
       {w && <p className="cxm-mut">{mine.length ? `${cxmPl(mine.length, `change involves`, `changes involve`)} ${cxmMember(w)}, your council member.` : `Nothing new from ${cxmMember(w)} this week. No record is not a no.`}</p>}
       {top.map((r) => <CxmNewsRow key={r.f} r={r} />)}

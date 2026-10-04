@@ -243,8 +243,7 @@ function CxmMeetings() {
   const { openSheet } = useCxm();
   return (
     <div className="cxm-pad">
-      <CxmKicker>Council and committee meetings</CxmKicker>
-      <h2 className="cxm-h2">At City Hall<span className="cxm-dot">.</span></h2>
+      <CxmBanner kind="hall" kicker="Council and committee meetings" title="At City Hall" />
       <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} />
     </div>
   );
@@ -276,11 +275,13 @@ function CxmHallCard() {
   const L = s.lead ? cxMtgLine(m, today) : { sub: cxMtgOutcomes(m).slice(0, 2).map(([l, n]) => `${n} ${l.toLowerCase()}`).join(`, `) + `.` };
   const top = cxMtgRanked(m).map((i) => cxmMatter(i[0])).find(Boolean);
   return (
+    <section className="cxm-section mt-hall">
+    <CxmBanner kind="hall" kicker={s.lead ? `Next up` : `Just decided`} title="At City Hall" />
     <button type="button" className="cxm-card mt-card" onClick={() => openSheet(`meetings`)}>
-      <span className="cxm-kicker cxm-soft">At City Hall</span>
       <strong><CxMtgHead m={m} today={today} past={!s.lead} /></strong>
       <small><span>{L.sub}</span>{top ? <>{` `}<span>Biggest:</span>{` `}<span>{cxHeadline(top.title)}</span></> : null}</small>
       <em>See the week <CXI.Arrow size={14} /></em>
     </button>
+    </section>
   );
 }

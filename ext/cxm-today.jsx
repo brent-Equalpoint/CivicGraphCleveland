@@ -56,7 +56,7 @@ function CxmReceipts() {
   const [more, setMore] = u.useState({});
   return (
     <section className="cxm-section">
-      <h2 className="cxm-h2">City Hall receipts<span className="cxm-dot">.</span></h2>
+      <CxmBanner kind="receipts" title="City Hall receipts" />
       <p className="cxm-mut">Who paid whom, who signed off, and where it stands. {home?.ward ? `Ward ${home.ward} money and what its council member led, plus anything Council tabled.` : `Pick your place to see your own ward's receipts.`}</p>
       {groups.map(([id, title, sub, list]) => (
         <div key={id} className="cxm-rgroup">
@@ -165,7 +165,7 @@ function CxmToday() {
       <CxmHallCard />
       <CxmReceipts />
       <section className="cxm-section">
-        <h2 className="cxm-h2">Close to home<span className="cxm-dot">.</span></h2>
+        <CxmBanner kind="home" title="Close to home" />
         {moments.map((m, i) => (
           <button key={m.id} type="button" className="cxm-card cxm-moment-card" onClick={() => setOverlay({ type: `moment`, list: moments, i, lens: 0 })}>
             <span className="cxm-kicker cxm-soft">{m.kicker}</span>

@@ -202,7 +202,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/meetings/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -396,8 +396,8 @@ def main():
          "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-levies.jsx", "cx-districts.jsx",
-                 "cxm-core.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx",
+                 "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
         ext_js += f"\n/* ---- {name} ---- */\n" + out
@@ -965,6 +965,12 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     us_body = open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8").read()
     write(os.path.join(SITE, "us", "landscape-2026.json"), us_body)
     log(f"SITE   {sha(us_body.encode())}  site/us/landscape-2026.json")
+    mp = os.path.join(ROOT, "data", "meetings-2026.json")  # At City Hall: the Clerk's meeting record, fetched lazily on the hosted site
+    if os.path.exists(mp):
+        os.makedirs(os.path.join(SITE, "meetings"), exist_ok=True)
+        meet_body = open(mp, encoding="utf-8").read()
+        write(os.path.join(SITE, "meetings", "meetings-2026.json"), meet_body)
+        log(f"SITE   {sha(meet_body.encode())}  site/meetings/meetings-2026.json")
     vp = os.path.join(ROOT, "data", "us-votes-2026.json")  # D4: how members voted; fetched by Your members only
     if os.path.exists(vp):
         votes_body = open(vp, encoding="utf-8").read()
