@@ -619,6 +619,7 @@ const CHECKS = {
     // Constellation hides the folders, Profiles brings back the folder that was open
     await clickText(p, 'Constellation', '.cxm-seg button'); await wait(400);
     expect(!(await has(p, '.cxm-folders')) && (await has(p, '.cxm-const')), 'Constellation still shows the folders');
+    expect(await p.evaluate(() => { const m = document.querySelector('.cxm-cgraph-box'), q = document.querySelector('.cxm-qcard'); return !!m && !!q && !!(m.compareDocumentPosition(q) & Node.DOCUMENT_POSITION_FOLLOWING); }), 'the constellation is not above the question');
     await clickText(p, 'Profiles', '.cxm-seg button'); await wait(400);
     expect(await has(p, '.cxm-folders'), 'Profiles did not bring the folders back');
     await clickText(p, 'Federal', '.cxm-folders button'); await wait(1200);

@@ -2,6 +2,9 @@
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
   "ward": "distrito",
+  "Tomorrow. Eastern time.": "Mañana. Hora del Este.",
+  "Eastern time. Check the details with the Board of Elections.": "Hora del Este. Confirme los detalles con la Junta Electoral.",
+  "Eastern time. An application requests a ballot; it is not your completed ballot.": "Hora del Este. Una solicitud pide una boleta; no es su boleta completada.",
   "levy": "gravamen de impuestos",
   "data center": "centro de datos",
   "liquor": "licor",
@@ -576,6 +579,7 @@
   "City Council Event": "Evento del Concejo Municipal"
  },
  "masked": {
+  "{n} days from today. Eastern time.": "Dentro de {n} días. Hora del Este.",
   "{n} days": "{n} días",
   "{n} day": "{n} día",
   "(in {n} days)": "(en {n} días)",

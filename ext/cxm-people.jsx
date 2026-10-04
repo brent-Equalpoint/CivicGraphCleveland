@@ -344,6 +344,17 @@ function CxmConstellation() {
   };
   const short = (p) => (office === `council` ? cxmSurname(p.name) : cxmSurname(p.name.split(` & `)[0]));
   const n = stats.length;
+  const qcard = q && (
+    <div className="cxm-tile cxm-qcard cxm-rise" key={q.id}>
+      <span className="cxm-kicker">{kind === `mayor` ? `ADMINISTRATION PROPOSAL` : kind === `sponsor` ? `COUNCIL PROPOSAL` : kind === `vote` ? `RECORDED VOTE` : `CAMPAIGN STATEMENT`} · QUESTION {qi + 1} OF {qs.length}{file ? ` · ${file}` : ``}</span>
+      <small className="cxm-qtitle">{q.title}</small>
+      <strong className="cxm-q">{q.question}</strong>
+      <small className="cxm-mut">{q.explanation}</small>
+      <CxmAnswers value={answers[q.id]} onPick={(v) => answer(q.id, v)} />
+      <span className="cxm-row-links"><CxmSrc href={q.url}>Read the {kind === `sponsor` || kind === `mayor` ? `official record` : kind === `vote` ? `roll call` : `campaign source`}</CxmSrc><small className="cxm-mut">{q.date}</small></span>
+      <small className="cxm-fine">"It depends", "Still learning" and missing records are excluded, never counted as disagreement.</small>
+    </div>
+  );
   return (
     <div className="cxm-const">
       <div className="cxm-chips">{CXM_OFFICES.map(([id, l]) => <button key={id} type="button" className={office === id ? `on` : ``} onClick={() => setPeople((p) => ({ ...p, office: id, q: 0 }))}>{l}</button>)}</div>
@@ -356,17 +367,7 @@ function CxmConstellation() {
           <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address">Look it up by address</CxmSrc>
         </div>
       )}
-      {q && (
-        <div className="cxm-tile cxm-qcard cxm-rise" key={q.id}>
-          <span className="cxm-kicker">{kind === `mayor` ? `ADMINISTRATION PROPOSAL` : kind === `sponsor` ? `COUNCIL PROPOSAL` : kind === `vote` ? `RECORDED VOTE` : `CAMPAIGN STATEMENT`} · QUESTION {qi + 1} OF {qs.length}{file ? ` · ${file}` : ``}</span>
-          <small className="cxm-qtitle">{q.title}</small>
-          <strong className="cxm-q">{q.question}</strong>
-          <small className="cxm-mut">{q.explanation}</small>
-          <CxmAnswers value={answers[q.id]} onPick={(v) => answer(q.id, v)} />
-          <span className="cxm-row-links"><CxmSrc href={q.url}>Read the {kind === `sponsor` || kind === `mayor` ? `official record` : kind === `vote` ? `roll call` : `campaign source`}</CxmSrc><small className="cxm-mut">{q.date}</small></span>
-          <small className="cxm-fine">"It depends", "Still learning" and missing records are excluded, never counted as disagreement.</small>
-        </div>
-      )}
+      {n === 0 && qcard}
       {n > 0 && (
         <div className="cxm-cgraph">
           <span className="cxm-kicker">{kind === `mayor` ? `PROPOSALS HIS ADMINISTRATION SENT` : kind === `sponsor` ? `PROPOSALS THEY BACKED` : kind === `vote` ? `PAST VOTE AGREEMENT` : `STATED PLAN AGREEMENT`}</span>
@@ -396,6 +397,7 @@ function CxmConstellation() {
             </svg>
           </div>
           {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status">Answer yes or no to an idea with a documented record to place someone on the map.</p>}
+          {qcard}
           <p className="cxm-fine">{hl.size ? `White rings: who is on the record for this question. ` : ``}Nearer means more agreement on the answered records of this type. Direction has no meaning. {contest ? `A dotted halo marks your practice choice. ` : ``}Party and ballot selection do not affect distance. {office === `council` ? `Not sponsoring is no record, never a no. The gold dot is your ward's member. ` : ``}Tap a person to open them.</p>
           <CxmDrop title="Everyone stays visible" sub="A missing record is not a no">
             <p className="cxm-mut">A missing record is not a no. Different {office === `council` || office === `mayor` ? `people` : `candidates`} may have different evidence coverage; a fraction is not an overall {office === `council` || office === `mayor` ? `rating` : `candidate rating`}.</p>

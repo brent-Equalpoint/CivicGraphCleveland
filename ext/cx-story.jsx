@@ -102,7 +102,7 @@ function cxmBallotStory() {
   const i3 = Um.find((i) => i.number === 3);
   const nx = cxDatesNow().find((x) => x.state === `next` || x.state === `today`);
   const frames = [{ k: `Election Day`, big: days > 1 ? `${days} days. Tuesday, Nov. 3.` : days === 1 ? `Tomorrow. Tuesday, Nov. 3.` : days === 0 ? `Today is Election Day.` : `Election Day has passed.`, small: days < 0 ? `Official results come from the Cuyahoga County Board of Elections.` : `${Hm.length} contests on the county's candidate list and ${county} countywide issues, plus local issues that depend on your precinct.` }];
-  if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `Today` : `Next deadline`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Times are Eastern. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Times are Eastern.` });
+  if (nx && nx.iso !== CXM_ELECTION) frames.push({ k: nx.state === `today` ? `Today` : `Next deadline`, big: `${nx.text}: ${nx.state === `today` ? `today` : nx.label}.`, small: nx.state === `today` ? `Eastern time. Check the details with the Board of Elections.` : `${nx.days === 1 ? `Tomorrow` : `${nx.days} days from today`}. Eastern time.` });
   if (i3) frames.push({ k: `State Issue 3`, big: `${Xm(i3).title}.`, small: Xm(i3).no });
   const lv = cxmLevies();
   if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Short stories with the cost, what each pays for, and what people say. We do not tell you how to vote.`, type: `cta`, cta: `See the levy stories`, go: `levystories` });

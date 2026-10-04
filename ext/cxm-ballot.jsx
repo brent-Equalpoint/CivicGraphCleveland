@@ -41,7 +41,7 @@ function CxmBallot() {
       <p className="cxm-lede">Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.</p>
       <p className="cxm-status-line"><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
       <CxmDates />
-      <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}Times are Eastern. An application requests a ballot; it is not your completed ballot.</p>
+      <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}Eastern time. An application requests a ballot; it is not your completed ballot.</p>
       <div className="cxm-tile cxm-tile-acc">
         <strong>Set my districts</strong>
         <p className="cxm-mut">Your address, not your ward, decides your full ballot. Type your address and your districts are found on this phone, or pick them yourself. Nothing is saved or sent.</p>
