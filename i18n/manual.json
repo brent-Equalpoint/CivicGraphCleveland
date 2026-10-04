@@ -2,6 +2,12 @@
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
   "ward": "distrito",
+  "The closer the mayor is to You, the more of your yes and no answers match what his administration sent to Council in 2026. Sending a proposal is not a vote, and a missing record is never a no.": "Cuanto más cerca esté el alcalde de Usted, más de sus respuestas de sí y no coinciden con lo que su administración envió al Concejo en 2026. Enviar una propuesta no es votar, y la falta de un registro no significa que la respuesta sea no.",
+  "The closer a council member is to You, the more of your yes and no answers match what they sponsored in 2026. Sponsoring is not a vote, and a missing record is never a no.": "Cuanto más cerca esté un miembro del Concejo de Usted, más de sus respuestas de sí y no coinciden con lo que patrocinó en 2026. Patrocinar no es votar, y la falta de un registro no significa que la respuesta sea no.",
+  "The closer a candidate is to You, the more of your yes and no answers match what their campaign has said. A statement is not a vote, and a missing record is never a no.": "Cuanto más cerca esté un candidato de Usted, más de sus respuestas de sí y no coinciden con lo que ha dicho su campaña. Una declaración no es un voto, y la falta de un registro no significa que la respuesta sea no.",
+  "The closer a member is to You, the more of your yes and no answers match how they voted. A vote is on one question, and a missing record is never a no.": "Cuanto más cerca esté un miembro de Usted, más de sus respuestas de sí y no coinciden con cómo votó. Un voto es sobre una sola pregunta, y la falta de un registro no significa que la respuesta sea no.",
+  "How to read this map": "Cómo leer este mapa",
+  "Nearer, missing records, and everyone's record": "Cercanía, registros faltantes y el registro de todos",
   "Tomorrow. Eastern time.": "Mañana. Hora del Este.",
   "Eastern time. Check the details with the Board of Elections.": "Hora del Este. Confirme los detalles con la Junta Electoral.",
   "Eastern time. An application requests a ballot; it is not your completed ballot.": "Hora del Este. Una solicitud pide una boleta; no es su boleta completada.",

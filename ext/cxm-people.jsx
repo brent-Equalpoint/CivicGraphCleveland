@@ -337,6 +337,14 @@ function CxmConstellation() {
     : office === `council`
       ? `Council is not on the November ballot. This shows how your answers line up with the 2026 proposals your council members chose to sponsor. Sponsoring shows support; it is not a floor vote. A member who did not sponsor has no record here, never a no.`
       : `Your practice candidate choice never fills in these answers. This small evidence sample is not a political identity test or a recommendation.`;
+  /* the whole idea in two sentences; the longer rules fold into "How to read this map" below */
+  const lead = office === `mayor`
+    ? `The closer the mayor is to You, the more of your yes and no answers match what his administration sent to Council in 2026. Sending a proposal is not a vote, and a missing record is never a no.`
+    : office === `council`
+      ? `The closer a council member is to You, the more of your yes and no answers match what they sponsored in 2026. Sponsoring is not a vote, and a missing record is never a no.`
+      : office === `governor`
+        ? `The closer a candidate is to You, the more of your yes and no answers match what their campaign has said. A statement is not a vote, and a missing record is never a no.`
+        : `The closer a member is to You, the more of your yes and no answers match how they voted. A vote is on one question, and a missing record is never a no.`;
   const tap = (p) => {
     if (/^council-ward-/.test(p.id)) openSeat(p.id.replace(/^council-/, ``));
     else if (p.id === `mayor-bibb`) openSeat(`mayor`);
@@ -358,7 +366,7 @@ function CxmConstellation() {
   return (
     <div className="cxm-const">
       <div className="cxm-chips">{CXM_OFFICES.map(([id, l]) => <button key={id} type="button" className={office === id ? `on` : ``} onClick={() => setPeople((p) => ({ ...p, office: id, q: 0 }))}>{l}</button>)}</div>
-      <p className="cxm-fine">{intro}</p>
+      <div className="cxm-tile cxm-tile-acc"><p>{lead}</p></div>
       {office === `house` && !practice.state.districts.congress && (
         <div className="cxm-tile cxm-tile-acc">
           <strong>Which U.S. House district are you in?</strong>
@@ -370,7 +378,6 @@ function CxmConstellation() {
       {n === 0 && qcard}
       {n > 0 && (
         <div className="cxm-cgraph">
-          <span className="cxm-kicker">{kind === `mayor` ? `PROPOSALS HIS ADMINISTRATION SENT` : kind === `sponsor` ? `PROPOSALS THEY BACKED` : kind === `vote` ? `PAST VOTE AGREEMENT` : `STATED PLAN AGREEMENT`}</span>
           <div className="cxm-cgraph-box">
             <svg viewBox="-10 -16 360 314" role="img" aria-label="Constellation: the closer a person is to you, the more of your yes and no answers match their record">
               {[132, 114, 89, 64].map((r) => <circle key={r} cx="170" cy="140" r={r} className="cxm-cring" />)}
@@ -398,8 +405,9 @@ function CxmConstellation() {
           </div>
           {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status">Answer yes or no to an idea with a documented record to place someone on the map.</p>}
           {qcard}
-          <p className="cxm-fine">{hl.size ? `White rings: who is on the record for this question. ` : ``}Nearer means more agreement on the answered records of this type. Direction has no meaning. {contest ? `A dotted halo marks your practice choice. ` : ``}Party and ballot selection do not affect distance. {office === `council` ? `Not sponsoring is no record, never a no. The gold dot is your ward's member. ` : ``}Tap a person to open them.</p>
-          <CxmDrop title="Everyone stays visible" sub="A missing record is not a no">
+          <CxmDrop title="How to read this map" sub="Nearer, missing records, and everyone's record">
+            <p className="cxm-mut">{intro}</p>
+            <p className="cxm-mut">{hl.size ? `White rings: who is on the record for this question. ` : ``}Nearer means more agreement on the answered records of this type. Direction has no meaning. {contest ? `A dotted halo marks your practice choice. ` : ``}Party and ballot selection do not affect distance. {office === `council` ? `Not sponsoring is no record, never a no. The gold dot is your ward's member. ` : ``}Tap a person to open them.</p>
             <p className="cxm-mut">A missing record is not a no. Different {office === `council` || office === `mayor` ? `people` : `candidates`} may have different evidence coverage; a fraction is not an overall {office === `council` || office === `mayor` ? `rating` : `candidate rating`}.</p>
             {stats.map((p) => {
               const chosen = contest && practice.state.selections[contest.id] === p.id;
