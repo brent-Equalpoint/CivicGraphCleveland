@@ -169,13 +169,14 @@ function useCxmPrio() {
 /* v5.16: when a link points at something that does not exist, say so once instead of silently showing Today */
 const CXM_NOTICE = { v: null };
 function cxmFromUrl() {
-  const out = { tab: `today`, room: null, sheet: null, mode: null };
+  const out = { tab: `today`, room: null, sheet: null, mode: null, page: null };
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
+  // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], meetings: [`today`, `meetings`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
-  if (panel && P[panel]) { const [tab, sheet, mode] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && q.get(`view`) === `graph` ? `graph` : (mode || null) }; }
+    ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
+  if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && q.get(`view`) === `graph` ? `graph` : (mode || null), page: page || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
     if (node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) out.sheet = { type: `record`, room: r.id, node };
@@ -186,13 +187,14 @@ function cxmFromUrl() {
   else if (r && node && !r.nodes.some((n) => n.id === node)) CXM_NOTICE.v = `We could not find that record, so here is the room.`;
   return out;
 }
-function cxmToUrl(tab, room, top, peopleMode) {
+function cxmToUrl(tab, room, top, peopleMode, page) {
   let url;
   try { url = new URL(globalThis.location.href); } catch { return; }
   url.search = ``;
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
-  else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`, `meetings`].includes(top.type)) p.set(`panel`, top.type);
+  else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
+  else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); }
@@ -276,7 +278,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     return w ? { hood: CX_PLACE.hood || ``, ward: Number(w[1]) } : CX_PLACE.v === `county` || CX_PLACE.v === `unsure` ? { hood: ``, ward: null, place: CX_PLACE.v } : null;
   });
   const [sheets, setSheets] = u.useState(start.sheet ? [start.sheet] : []);
-  const [overlay, setOverlay] = u.useState(null);
+  const [overlay, setOverlay] = u.useState(() => (start.page ? { type: start.page } : null));
   const [toast, setToast] = u.useState(null);
   const [liked, setLiked] = u.useState([]);
   const [guide, setGuideState] = u.useState(() => cxmStore(`cx-guide`, `erie`));
@@ -323,9 +325,10 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const answer = (qid, v) => practice.update((s) => ({ ...s, answers: { ...s.answers, [qid]: v } }));
   u.useEffect(() => { if (mainRef.current) mainRef.current.scrollTop = 0; }, [tab, room]);
   const topSheet = sheets[sheets.length - 1];
-  u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode); }, [tab, room, topSheet, people.mode]);
+  const page = overlay ? overlay.type : null;
+  u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page); }, [tab, room, topSheet, people.mode, page]);
   u.useEffect(() => {
-    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay) setOverlay(null); } };
+    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay) setOverlay(overlay.type === `hall` && overlay.back ? overlay.back : null); } };
     globalThis.addEventListener(`keydown`, onKey);
     return () => globalThis.removeEventListener(`keydown`, onKey);
   }, [sheets.length, overlay]);
@@ -379,6 +382,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `keypad` && <CxmKeypad />}
             {overlay && overlay.type === `districts` && <CxmDistricts />}
             {overlay && overlay.type === `crush` && <CxmCrush />}
+            {overlay && overlay.type === `hall` && <CxmHall />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}
           {storyBack && !overlay && <button type="button" className="cxm-storyback" onClick={backToStory}><CXI.Back size={16} /> Back to the story</button>}
@@ -413,7 +417,6 @@ const CXM_SHEETS = {
   review: () => <CxmReview />,
   news: () => <CxmNews />,
   levies: () => <CxmLevies />,
-  meetings: () => <CxmMeetings />,
   us: () => <div className="cxm-pad"><CX_UsGraph phone /></div>,
   usvotes: (s) => <CxmUsVotes id={s.id} />,
   profile: (s) => <div className="cxm-pad"><CX_SeatProfile seatId={s.seat} /></div>,

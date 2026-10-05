@@ -41,7 +41,7 @@ function CxmExplore() {
   return room ? <CxmRoom roomId={room} /> : <CxmRooms />;
 }
 function CxmRooms() {
-  const { mainRef, setRoom, openSheet } = useCxm();
+  const { mainRef, setRoom, openSheet, setOverlay } = useCxm();
   const rail = useCxmRail();
   const levels = u.useMemo(() => cxmLevelRooms(), []);
   u.useEffect(() => {
@@ -72,6 +72,7 @@ function CxmRooms() {
       <p className="cxm-mut">Scroll down to zoom out, from your block all the way to Washington. {Uh.length} rooms, each answering one question.</p>
       <button type="button" className="cxm-searchbar" onClick={() => openSheet(`search`)}><CXI.Search size={18} /> Search records, people, laws, terms</button>
       <div className="cxm-doors" role="group" aria-label="Start with a topic">
+        <button type="button" className="cxm-door" onClick={() => setOverlay({ type: `hall` })}><CXI.Landmark size={18} /><strong>At City Hall</strong><small>Council meetings, agendas, and what was decided.</small></button>
         {CX_DOORWAYS.map(([, icon, title, sub, kind, target]) => {
           const Icon = CXI[icon];
           return <button key={title} type="button" className="cxm-door" onClick={() => (kind === `room` ? setRoom(target) : openSheet(target))}><Icon size={18} /><strong>{title}</strong><small>{sub}</small></button>;

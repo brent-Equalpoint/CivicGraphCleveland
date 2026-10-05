@@ -80,8 +80,9 @@ function CxmProfileStrip({ items, activeId, onPick, label }) {
   );
 }
 
-/* the folder tabs at the top of People: Cleveland, Federal, and room for a third */
-function CxmFolders({ items, value, onChange, label }) {
+/* the folder tabs at the top of People: Cleveland, Federal, and room for a third. Reused for the days of the week on At City Hall (idp names the tabs
+   and their panel, cls adds a class). */
+function CxmFolders({ items, value, onChange, label, idp = `cxm-folder`, cls }) {
   const keys = (e) => {
     const i = items.findIndex((x) => x[0] === value);
     const n = e.key === `ArrowRight` ? i + 1 : e.key === `ArrowLeft` ? i - 1 : null;
@@ -92,9 +93,9 @@ function CxmFolders({ items, value, onChange, label }) {
     setTimeout(() => { const b = bar.querySelector(`[aria-selected="true"]`); if (b) b.focus(); }, 0);
   };
   return (
-    <div className="cxm-folders" role="tablist" aria-label={label} onKeyDown={keys}>
+    <div className={cls ? `cxm-folders ${cls}` : `cxm-folders`} role="tablist" aria-label={label} onKeyDown={keys}>
       {items.map(([id, text]) => (
-        <button key={id} type="button" role="tab" id={`cxm-folder-${id}`} aria-selected={value === id} aria-controls="cxm-folder-panel" tabIndex={value === id ? 0 : -1} className={value === id ? `on` : ``} onClick={() => onChange(id)}>{text}</button>
+        <button key={id} type="button" role="tab" id={`${idp}-${id}`} aria-selected={value === id} aria-controls={`${idp}-panel`} tabIndex={value === id ? 0 : -1} className={value === id ? `on` : ``} onClick={() => onChange(id)}>{text}</button>
       ))}
     </div>
   );

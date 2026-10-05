@@ -188,6 +188,7 @@ function CxmStory() {
   const [asText, setAsText] = u.useState(!1);
   const deeper = (d) => {
     const back = { ...overlay };
+    if (d.kind === `page`) { setOverlay({ type: d.page, back }); return; }   // a full page (At City Hall): its own back arrow returns to this step
     setOverlay(null);
     if (d.kind === `profile`) openSheet(`profile`, { seat: d.seat });
     else if (d.kind === `sheet`) openSheet(d.sheet);
@@ -269,7 +270,7 @@ function CxmStory() {
         </div>
       )}
       {fr.type === `cta` && (
-        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else if (fr.go === `hall`) { setOverlay(null); openSheet(`meetings`); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
+        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else if (fr.go === `hall`) { setOverlay({ type: `hall`, back: { ...overlay } }); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
       {!asText && (!fr.type || fr.type === `more`) && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
       {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}

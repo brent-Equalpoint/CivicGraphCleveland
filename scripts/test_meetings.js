@@ -12,7 +12,7 @@ const pure = src.slice(src.indexOf('/* what the Clerk'), src.indexOf('/* -------
 const legis = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8')).matters;
 const byFile = new Map(legis.map((m) => [m.file, m]));
 const ctx = vm.createContext({ cxmPl: (n, a, b) => `${n} ${n === 1 ? a : b}`, cxmMatter: (f) => byFile.get(f) || null, cxHeadline: (t) => `HEAD: ${t}` });
-vm.runInContext(pure + '\n;this.api = { cxMtgAction, cxMtgKind, cxMtgSplit, cxMtgRanked, cxMtgOutcomes, cxMtgWhere, cxMtgLine, cxMtgStory, cxMtgDayWord, CX_MTG_ACTIONS, cxMtgGroup, cxMtgMix, cxMtgNote, cxMtgNoteParts };', ctx);
+vm.runInContext(pure + '\n;this.api = { cxMtgAction, cxMtgKind, cxMtgSplit, cxMtgRanked, cxMtgOutcomes, cxMtgWhere, cxMtgLine, cxMtgStory, cxMtgDayWord, CX_MTG_ACTIONS, cxMtgGroup, cxMtgMix, cxMtgNote, cxMtgNoteParts, cxMtgWeek, cxMtgByKind, cxMtgWatch, cxMtgTally, cxMtgDecided, cxMtgWardsIn, cxMtgForYou, cxMtgNorm, cxMtgIndex, cxMtgFind };', ctx);
 const A = ctx.api;
 const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'meetings-2026.json'), 'utf8'));
 let bad = 0;
@@ -88,6 +88,58 @@ if (story.frames.length < 4 || story.frames[story.frames.length - 1].type !== 'c
 if (!story.frames.some((f) => /^HEAD: /.test(f.big))) fail('the story does not lead with a plain headline of an item');
 if (story.frames.some((f) => /—|–/.test(JSON.stringify(f)))) fail('a dash in the story');
 eq(A.cxMtgStory(null, '2026-10-03'), null, 'no data, no story');
+
+// v5.30, the full page. The week as five day tabs: a weekday shows its own week; a weekend shows the coming week once it has a meeting, else the week just ended
+const wkMon = A.cxMtgWeek(data, '2026-10-05');
+eq(wkMon.days.map((d) => d.iso), ['2026-10-05', '2026-10-06', '2026-10-07', '2026-10-08', '2026-10-09'], 'a Monday shows Monday to Friday of its week');
+eq([wkMon.pick, wkMon.when], ['2026-10-05', 'this'], 'the tab that opens first is today, when anyone meets today');
+eq(wkMon.days.reduce((t, d) => t + d.list.length, 0), data.meetings.filter((m) => m.date >= '2026-10-05' && m.date <= '2026-10-09').length, 'every meeting of the week is under its day');
+const wkSat = A.cxMtgWeek(data, '2026-10-03');
+eq([wkSat.days[0].iso, wkSat.pick, wkSat.when], ['2026-10-05', '2026-10-05', 'next'], 'a Saturday shows the coming week once the Clerk has posted a meeting in it');
+const wkLate = A.cxMtgWeek({ meetings: data.meetings.filter((m) => m.date <= '2026-10-09') }, '2026-10-10');   // the record as it stood before the next week was posted
+eq([wkLate.days[0].iso, wkLate.pick, wkLate.when], ['2026-10-05', '2026-10-08', 'last'], 'with nothing posted for the coming week, a Saturday shows the week just ended, opened at its last meeting');
+eq(A.cxMtgWeek(data, '2026-10-07').pick, '2026-10-07', 'a Wednesday with a meeting opens on Wednesday');
+// the agenda by kind: every item once, in the fixed order, ceremonial last, the Clerk's order inside a kind
+const kinds = A.cxMtgByKind(s.lead);
+eq(kinds.reduce((t, g) => t + g.items.length, 0), s.lead.items.length, 'the agenda by kind keeps every item');
+eq(kinds.map((g) => g.label), ['Ordinances', 'Resolutions', 'Everything else', 'Ceremonial resolutions'].filter((l) => kinds.some((g) => g.label === l)), 'the kinds come in order');
+if (kinds[kinds.length - 1].g !== 'ceremonial') fail('ceremonial resolutions are not last');
+const firstKind = kinds[0].items.map((i) => s.lead.items.indexOf(i));
+if (firstKind.some((v, k) => k && v < firstKind[k - 1])) fail('items inside a kind are not in the Clerk\'s order');
+// how to watch: only what the Clerk's notice names, and a plain admission when it names nothing
+eq(A.cxMtgWatch('TENTATIVE AGENDA Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20'), 'Live on YouTube and Cleveland TV Channel 20.', 'the Council notice names YouTube and channel 20');
+eq(A.cxMtgWatch('Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil'), 'Live on YouTube.', 'a notice that names only YouTube');
+eq(A.cxMtgWatch('The meeting will be live broadcast. See meeting notice for details.'), 'The meeting will be broadcast live.', 'a notice that only says it is broadcast');
+eq(A.cxMtgWatch('See meeting notice for details.'), "The Clerk's notice does not say how to watch.", 'a notice that says nothing about watching');
+// Just decided: the last City Council meeting that acted on something, and counts that add up to its whole agenda
+const dec = A.cxMtgDecided(data, '2026-10-05');
+eq([dec.date, dec.body], ['2026-09-28', 'City Council'], 'just decided is the last Council meeting before today');
+eq(A.cxMtgTally(dec).reduce((t, x) => t + x[1], 0), dec.items.length, 'the counts add up to every item, those with no action recorded included');
+if (A.cxMtgTally(dec).some(([l]) => /score|rank|percent|%/i.test(l))) fail('a count reads as a grade');
+// For you: wards named in the record, priorities by the keyword rules, each with its reason, never a score, in the Clerk's order
+eq([...A.cxMtgWardsIn('New License Application, C1. Luxe Eatstation 815 Superior Ave. (Ward 3)')], [3], 'a ward in brackets');
+eq([...A.cxMtgWardsIn('from the Neighborhood Equity Fund of Wards 1, 2 and 14')].sort((a, b) => a - b), [1, 2, 14], 'a list of wards');
+eq([...A.cxMtgWardsIn('Ward 123 and Ward 16 and Rewards 4')], [], 'a number that is not a ward');
+const fakeLook = { fundWards: (f) => (f === '1205-2026' ? [9] : []), addrWards: (f) => (f === '1229-2026' ? [9] : []), match: (t) => (/Good Food/.test(t) ? { growth: 'retail' } : {}) };
+const fy = A.cxMtgForYou([s.lead], 9, ['growth'], fakeLook);
+eq(fy.map((r) => [r.f, r.why.map((w) => w[1])]), [['1205-2026', ['Ward 9 in the ordinance text']], ['1229-2026', ['Address in Ward 9']], ['1230-2026', ['growth']]], 'For you lists why each item is there, in the Clerk\'s order');
+eq(fy[2].why[0][2], 'Retailer', 'a keyword stem shows the title\'s own word');
+eq(A.cxMtgForYou([s.lead], null, [], fakeLook), [], 'nothing set, nothing shown');
+if (A.cxMtgForYou([s.lead, s.lead], 9, ['growth'], fakeLook).length !== fy.length) fail('an item on two agendas is listed twice');
+if (A.cxMtgForYou([s.lead], 9, ['growth'], { ...fakeLook, match: () => ({ growth: 'x' }) }).some((r) => A.cxMtgGroup(r.f) === 'ceremonial')) fail('a ceremonial resolution is in For you');
+if (JSON.stringify(fy).match(/score|percent|%/i)) fail('For you carries a score');
+// Look it up: file numbers, words, and addresses written either way; nothing found is an empty list, and one character is not a search
+eq(A.cxMtgNorm('3870 West 25th Street.'), ['3870', 'w', '25th', 'st'], 'an address is made plain');
+const idx = A.cxMtgIndex(data, legis);
+eq(A.cxMtgFind(idx, '1232-2026').leg.map((x) => x.file), ['1232-2026'], 'a file number finds its record');
+eq(A.cxMtgFind(idx, '1232-26').leg.map((x) => x.file), ['1232-2026'], 'a two-digit year works');
+if (!A.cxMtgFind(idx, '1232').leg.some((x) => x.file === '1232-2026')) fail('a bare file number does not find its record');
+eq(A.cxMtgFind(idx, 'W. 25th St').leg.map((x) => x.file), A.cxMtgFind(idx, 'West 25th Street').leg.map((x) => x.file), 'an address is found the same way written short or long');
+if (!A.cxMtgFind(idx, '3870 W 25th').leg.some((x) => x.file === '1232-2026')) fail('a house number and street do not find the record');
+if (!A.cxMtgFind(idx, 'Burke').meet.length) fail('a word in a Clerk\'s notice does not find the meeting');
+eq(A.cxMtgFind(idx, 'xyzzy'), { leg: [], meet: [] }, 'nothing found');
+eq(A.cxMtgFind(idx, 'a'), null, 'one character is not a search');
+if (A.cxMtgFind(idx, '1232-2026').meet.some((m) => !m.items.some((i) => i[0] === '1232-2026'))) fail('a meeting found by file number does not have the file');
 
 console.log(bad ? `${bad} failed` : `ok  city hall meetings (${data.meetings.length} meetings)`);
 process.exit(bad ? 1 : 0);
