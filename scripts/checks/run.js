@@ -53,7 +53,7 @@ async function open(url, o = {}) {
   }
   const p = await ctx.newPage();
   if (o.scheme) await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: o.scheme }]);
-  await p.setViewport(o.mobile ? { width: 390, height: 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
+  await p.setViewport(o.mobile ? { width: o.width || 390, height: o.height || 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
   p.errors = [];
   p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
   // every page, in every check: it may ask only its own site for anything, and the browser may not report a Content-Security-Policy violation
@@ -617,11 +617,12 @@ const CHECKS = {
     expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-folders button, .cxm-prof-actions > *')].every((b) => b.getBoundingClientRect().height >= 44)), 'a folder tab or profile action is under 44px tall');
     // Graph is the third choice next to Profiles and Constellation, and it opens on the Sky
     expect(((await txt(p, '.cxm-seg')) || '').replace(/\s+/g, ' ').trim() === 'Profiles Constellation Graph', 'People does not offer Profiles, Constellation, and Graph');
-    await clickText(p, 'Graph', '.cxm-seg button'); await wait(1200);
-    expect(!(await has(p, '.cxm-folders')) && (await has(p, '.us-canvas')) && (await txt(p, '.us-tabs button.on')) === 'Sky', 'Graph does not open on the Sky');
+    await clickText(p, 'Graph', '.cxm-seg button'); await wait(1500);
+    expect((await has(p, '.usm-phone .usm-canvas')) && (await txt(p, '.usm-pills button.on')) === 'Sky', 'Graph does not open the map on the Sky');
     expect(/panel=us/.test(await p.evaluate(() => location.search)) && /view=graph/.test(await p.evaluate(() => location.search)), 'the Graph view is not in the link');
-    await clickText(p, 'Profiles', '.cxm-seg button'); await wait(500);
-    expect(await has(p, '.cxm-folders'), 'Profiles did not bring the folders back after Graph');
+    await p.tap('.usm-top .usm-back'); await wait(600);
+    expect(await has(p, '.cxm-folders') && !(await has(p, '.usm')), 'the map back button did not bring the People folders back');
+    await clickText(p, 'Cleveland', '.cxm-folders button'); await wait(500);
     // keyboard: arrow keys move between folders
     await p.focus('.cxm-folders button.on'); await p.keyboard.press('ArrowRight'); await wait(500);
     expect((await txt(p, '.cxm-folders button.on')) === 'Federal' && /panel=us/.test(await p.evaluate(() => location.search)), 'the right arrow did not open the Federal folder');
@@ -1023,12 +1024,20 @@ const CHECKS = {
     fs.rmSync(A, { recursive: true, force: true }); fs.rmSync(Bd, { recursive: true, force: true });
   },
   async 'us-graph'() {
+    // The United States page on a computer: the map (ext/cx-us-map.jsx), the left menu Network, People, Votes by topic, and the text views,
+    // which read one model. The map's own behavior is in us-map, us-map-touch, us-map-sheet, and us-map-narrow.
     const p = await open('/?panel=us#desktop', { settle: 1800 });
-    expect(await has(p, '.us canvas'), 'the United States page has no graph canvas');
-    expect(/Preview/.test((await txt(p, '.us-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.us-preview')) || ''), 'the page does not say its source terms are unconfirmed');
+    expect(await mapReady(p), 'the United States map did not draw');
+    expect(await has(p, '.usm canvas.usm-canvas'), 'the United States page has no map canvas');
+    expect(!(await has(p, '.us-tabs')) && !(await has(p, '.us-canvas')), 'the old Sky and its tabs are still on the page');
     expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
-    await clickText(p, 'Index', '.us-tabs button');
-    // the Index is five doors: members, committees, agencies, policy areas, states. Each adds up to the record.
+    expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic`);
+    expect(((await txt(p, '.usm-pills')) || '').replace(/\s+/g, ' ').trim() === 'Sky Index Linked Tree', 'the views are not Sky, Index, Linked, Tree');
+    await clickText(p, 'Show', '.usm-show-btn');
+    expect(/Preview/.test((await txt(p, '.usm-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.usm-preview')) || ''), 'the map does not say its source terms are unconfirmed');
+    await clickText(p, 'Done', '.usm-panel .usm-done');
+    // the Index: six doors, each adding up to the record
+    await clickText(p, 'Index', '.usm-pills button');
     expect((await count(p, '.us-door')) === 6, `the Index offers ${await count(p, '.us-door')} ways in, not six`);
     expect(/^100 shown/.test((await txt(p, '.us-count')) || ''), `the Senate group does not show 100: ${await txt(p, '.us-count')}`);
     await clickText(p, 'House', '.us-groups button'); expect(/^439 shown/.test((await txt(p, '.us-count')) || ''), 'the House group does not show 439');
@@ -1040,7 +1049,8 @@ const CHECKS = {
     await clickText(p, 'Judges', '.us-groups button'); await wait(300); expect(/^8\d\d shown/.test((await txt(p, '.us-count')) || ''), `the sitting judges: ${await txt(p, '.us-count')}`);
     await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /Chief Justice/.test(b.innerText)).click()); await wait(400);
     expect(/Chief Justice/.test((await txt(p, '.us-linked')) || '') && /Appointed by this President/.test((await txt(p, '.us-linked')) || ''), 'a judge in the Linked view does not say who appointed them');
-    await clickText(p, 'Index', '.us-tabs button'); await wait(300);
+    expect((await txt(p, '.usm-pills button.on')) === 'Linked', 'choosing someone in the Index did not open Linked');
+    await clickText(p, 'Index', '.usm-pills button'); await wait(300);
     await clickText(p, 'States', '.us-door'); await wait(300);
     expect((await count(p, '.us-list > li')) === 56, 'the States door does not list 56 states and territories');
     await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /^Ohio/.test(b.innerText)).click()); await wait(250);
@@ -1049,145 +1059,127 @@ const CHECKS = {
     expect((await count(p, '.us-list > li')) > 25, 'the Policy areas door lists too few areas');
     await p.evaluate(() => document.querySelector('.us-list > li > button').click()); await wait(700);
     expect(/Votes by topic/.test((await txt(p, '.us-topics h2')) || '') && (await p.evaluate(() => document.querySelector('.us-topics select').value)) !== '', 'a policy area did not open its votes');
-    await clickText(p, 'Index', '.us-tabs button'); await wait(300);
-    // your members: a state and a district give two senators and a representative, kept off the address bar
-    await clickText(p, 'Your members', '.us-tabs button');
+    expect((await txt(p, '.usm-menu li button.on')) === 'Votes by topic', 'Votes by topic is not marked in the left menu');
+    // People: a state and a district give two senators and a representative, kept off the address bar
+    await clickText(p, 'People', '.usm-menu li button'); await wait(400);
     await p.select('.us-mine select', 'OH'); await wait(300);
     await p.select('.us-mine label:nth-of-type(2) select', '11'); await wait(300);
     expect((await count(p, '.us-mine-card')) === 3, `expected 2 senators and 1 representative, found ${await count(p, '.us-mine-card')}`);
     const mt = (await txt(p, '.us-mine-list')) || '';
     expect(/United States senator for Ohio/.test(mt) && /Representative for Ohio's 11th district/.test(mt) && /as of 20\d\d-\d\d-\d\d \(a sourced field/.test(mt), 'the member cards are missing office or dated party');
     expect(/state=|district=|OH/.test(await p.evaluate(() => location.href)) === false, 'the place was put in the address');
-    // how they voted: recorded votes by topic, counts only, with the official record linked
-    expect(await has(p, '.us-votes'), 'Your members shows no votes section'); await wait(300);
-    const vrows = await count(p, '.us-vote'); expect(vrows >= 1, 'the votes section lists no votes');
+    expect(await has(p, '.us-votes'), 'People shows no votes section'); await wait(300);
+    expect((await count(p, '.us-vote')) >= 1, 'the votes section lists no votes');
     const vt = (await txt(p, '.us-votes')) || '';
     expect(/Not voting is not a no/.test(vt) && /The official record/.test(vt) && /Yea \d+, Nay \d+, Present \d+, Not voting \d+/.test(vt), 'the votes section lacks the not-a-no note, the official record link, or plain counts');
     expect(!/%|percent|score|rank|agrees? with/i.test(vt.replace(/Congressional Research Service/g, '')), 'a percentage, score, or ranking appeared in the votes');
-    const opts = await p.$$eval('.us-votes label:nth-of-type(2) select option', (os) => os.map((o) => o.value)); expect(opts.length > 2, `the topic list has only ${opts.length} entries`);
-    await p.select('.us-votes label:nth-of-type(2) select', opts[1]); await wait(300);
-    const some = await p.$$eval('.us-vote-meta', (els) => els.length); expect(some >= 1 && /recorded vote/.test((await txt(p, '.us-count')) || ''), 'choosing a topic did not list its votes');
-    await p.select('.us-votes label:nth-of-type(1) select', await p.$eval('.us-votes label:nth-of-type(1) select option:nth-of-type(2)', (o) => o.value)); await wait(300);
-    expect(/recorded vote|No recorded votes/.test((await txt(p, '.us-count')) || ''), 'choosing a senator did not update the votes');
-    { const bad = await axeBad(p); expect(bad.length === 0, `axe on Your members with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
-    // my policy areas: up to five, counts for the three people, nothing graded, nothing in the address
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on People with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await p.evaluate(() => { const b = [...document.querySelectorAll('.us-areas input')]; b[1].click(); b[2].click(); }); await wait(500);
     expect((await count(p, '.us-area-table tbody tr')) === 2 && (await count(p, '.us-area-table thead th')) === 4, 'two chosen areas should give two rows and a column for each of the three members');
     const at = ((await txt(p, '.us-area-table')) || '').replace(/Congressional Research Service/g, '');
-    expect(/Votes that decided something: \d+/.test(at) && /Yea \d+, Nay \d+, Present \d+, Not voting \d+/.test(at), `the area table lacks plain counts: ${at.slice(0, 160)}`);
-    expect(/Not voting is not a no/.test(at) && !/%|percent|score|rank|match|grade|agree/i.test(at), 'the area table lacks the not-a-no note, or grades someone');
-    await p.evaluate(() => { [...document.querySelectorAll('.us-areas input')].slice(0, 8).forEach((b) => { if (!b.disabled && !b.checked) b.click(); }); }); await wait(300);
-    expect((await count(p, '.us-area-table tbody tr')) === 5 && (await count(p, '.us-areas input:disabled')) > 20, 'the sixth policy area was not refused');
+    expect(/Votes that decided something: \d+/.test(at) && /Not voting is not a no/.test(at) && !/%|percent|score|rank|match|grade|agree/i.test(at), 'the area table lacks plain counts or the not-a-no note, or grades someone');
     expect(!/area|Energy|Health/i.test(await p.evaluate(() => location.href)), 'a chosen policy area reached the address');
     await p.evaluate(() => [...document.querySelectorAll('.us-areas input:checked')].forEach((b) => b.click())); await wait(200);
-    // votes by topic: pick a topic, see its votes, and how the chosen place's members voted
-    await clickText(p, 'Votes by topic', '.us-tabs button'); await wait(500);
+    // Votes by topic, from the left menu
+    await clickText(p, 'Votes by topic', '.usm-menu li button'); await wait(500);
     const tops = await p.$$eval('.us-topics select option', (os) => os.map((o) => o.value).filter(Boolean)); expect(tops.length > 15, `the topic list has only ${tops.length} topics`);
     await p.select('.us-topics select', tops.includes('Health') ? 'Health' : tops[0]); await wait(400);
     expect((await count(p, '.us-topics .us-vote')) >= 1, 'a topic with votes lists none');
     const tt = (await txt(p, '.us-topics')) || '';
     expect(/Your members: /.test(tt) && /The official record/.test(tt) && /does not say which agencies handle a topic/.test(tt), 'the topic view lacks your members, the official record, or the honest limit');
-    expect(!/%|percent|score|rank|agrees? with/i.test(tt.replace(/Congressional Research Service/g, '')), 'a percentage or score appeared in the topic view');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on Votes by topic: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
-    await clickText(p, 'Sky', '.us-tabs button');
-    await p.type('.us-search input', 'Husted'); await wait(300);
-    expect((await count(p, '.us-results .us-pick')) >= 1, 'searching for a senator found nothing');
-    await (await p.$('.us-results .us-pick')).click(); await wait(400);
-    expect(/Jon Husted/.test((await txt(p, '.us-side h2')) || '') && /United States senator for Ohio/.test((await txt(p, '.us-side')) || ''), 'the chosen senator is not described');
-    expect(/Party on this term: \w+, as of 20\d\d-\d\d-\d\d \(a sourced field, not a judgment\)/.test((await txt(p, '.us-side')) || ''), 'party is not shown as a dated, sourced field');
-    const faceLoaded = async (sel) => { for (let t = 0; t < 20; t++) { if (await p.evaluate((q) => { const i = document.querySelector(q); return !!i && i.complete && i.naturalWidth > 0; }, sel)) return true; await wait(150); } return false; };
-    // Jon Husted joined the Senate after the photo archive was made; his picture comes from the Congress directory
-    expect(await faceLoaded('.us-side .cxm-fed-av img'), 'Husted has no loaded portrait (the Congress directory fallback)');
-    // Alan Armstrong (Oklahoma, appointed 2026) has no photo anywhere yet: his initials stay, and no broken picture shows
-    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Armstrong'); await wait(300);
-    await (await p.$('.us-results .us-pick')).click(); await wait(400);
-    expect(await has(p, '.us-side .cxm-fed-ini') && !(await has(p, '.us-side .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
-    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Moreno'); await wait(300);
-    await (await p.$('.us-results .us-pick')).click(); await wait(500);
-    expect(await faceLoaded('.us-side .cxm-fed-av img'), 'a senator with a photo has no loaded portrait');
-    expect(/Photos of members of Congress/.test((await txt(p, '.us-src')) || '') || /Government Publishing Office/.test((await txt(p, '.us-side')) || ''), 'the portraits are not credited');
-    await clickText(p, 'Linked', '.us-tabs button');
+    // the Network: search, the sheet (no party there), and the profile (Linked), where party is a dated, sourced field
+    await clickText(p, 'Network', '.usm-menu li button'); await wait(400);
+    expect((await txt(p, '.usm-pills button.on')) === 'Index', 'Network did not come back to the view that was open');
+    await clickText(p, 'Sky', '.usm-pills button'); await wait(600); await mapReady(p);
+    const pickBy = async (name) => { await p.click('.usm-search input', { clickCount: 3 }); await p.type('.usm-search input', name); await wait(300); const b = await p.$('.usm-results button'); expect(!!b, `searching for ${name} found nothing`); if (b) await b.click(); await wait(900); };
+    await pickBy('Husted');
+    expect((await txt(p, '.usm-name')) === 'Jon Husted.' && /Senator, Ohio/.test((await txt(p, '.usm-kicker')) || '') && /Represents Ohio in the Senate/.test((await txt(p, '.usm-sent')) || ''), 'the sheet does not describe the chosen senator');
+    expect(/^Sits on \d+ committees?/.test((await txt(p, '.usm-fact')) || ''), `the sheet's fact line is "${await txt(p, '.usm-fact')}"`);
+    expect(!/Republican|Democrat|Independent|\bparty\b/i.test((await txt(p, '.usm-sheet')) || ''), 'party appears on the map sheet; it belongs on the profile only');
+    expect(/Open profile/.test((await txt(p, '.usm-acts')) || '') && /Solo/.test((await txt(p, '.usm-acts')) || '') && /Explore in Index/.test((await txt(p, '.usm-acts')) || ''), 'the sheet lacks Open profile, Solo, and Explore in Index');
+    expect(/congress-legislators/.test((await txt(p, '.usm-src')) || ''), 'the sheet does not name its source');
+    await clickText(p, 'Open profile', '.usm-acts button'); await wait(500);
     const facts = (await txt(p, '.us-linked')) || '';
+    expect(/Party on this term: \w+, as of 20\d\d-\d\d-\d\d \(a sourced field, not a judgment\)/.test(facts), 'the profile does not show party as a dated, sourced field');
     expect(/serves on|is the (chair|ranking)/.test(facts) && /Connected to \d+/.test(facts), 'the Linked view lacks committee sentences or the connection count');
     expect(!/\b(conservative|liberal|moderate|score|rank(ed|ing) \d)\b/i.test(facts), 'an ideology word or a score appeared');
-    await clickText(p, 'Sky', '.us-tabs button');
-    const before = await txt(p, '.us-side h2');
-    await p.focus('.us-canvas'); await p.keyboard.press(']'); await wait(250);
-    expect((await txt(p, '.us-side h2')) !== before, 'the ] key did not move to another node');
-    await p.keyboard.press('Escape'); await wait(150);
-    expect(/Select anyone or anything/.test((await txt(p, '.us-side')) || ''), 'Escape did not clear the selection');
-    // the Sky: three clusters, and Solo shows one committee, one state, or one agency family with what it touches
-    const mapCount = async () => +((/Map of (\d+)/.exec(await p.$eval('.us-canvas', (c) => c.getAttribute('aria-label'))) || [])[1] || 0);
-    const nAll = await mapCount(); expect(nAll > 800, `the Sky holds only ${nAll} nodes`);
-    const com = await p.$eval('.us-solo optgroup[label="A committee"] option', (o) => o.value);
-    await p.select('.us-solo', com); await wait(400);
-    const nCom = await mapCount(); expect(nCom >= 2 && nCom < 160, `Solo on a committee left ${nCom} nodes`);
-    await p.focus('.us-canvas'); await p.keyboard.press('Escape'); await wait(300);
-    expect((await mapCount()) === nAll, 'Escape did not bring everything back after Solo');
-    await p.select('.us-solo', 's:OH'); await wait(400);
-    const nOh = await mapCount(); expect(nOh > 15 && nOh < 120, `Solo on Ohio left ${nOh} nodes`);
-    await p.select('.us-solo', ''); await wait(300);
-    await (await p.$('.us-search input')).click({ clickCount: 3 }); await p.type('.us-search input', 'Husted'); await wait(300);
-    await (await p.$('.us-results .us-pick')).click(); await wait(400);
-    expect(/Profile/.test((await txt(p, '.us-actions')) || '') && /Solo/.test((await txt(p, '.us-actions')) || '') && /In words/.test((await txt(p, '.us-actions')) || ''), 'the side panel lacks Profile, Solo, and In words');
-    await clickText(p, 'Solo', '.us-actions button'); await wait(400);
-    const nMember = await mapCount(); expect(nMember >= 2 && nMember < 40, `Solo on a senator left ${nMember} nodes`);
-    await p.select('.us-solo', ''); await wait(300);
-    await p.keyboard.press('Escape'); await wait(150);
-    // motion: Still holds still, Live moves, and Calm is the default for someone who has not asked for less
-    expect((await txt(p, '.us-motion button.on')) === 'Calm', 'the Sky does not open on Calm');
-    const frame = () => p.$eval('.us-canvas', (c) => c.toDataURL());
-    await clickText(p, 'Still', '.us-motion button'); await wait(400);
+    const faceLoaded = async (sel) => { for (let t = 0; t < 20; t++) { if (await p.evaluate((q) => { const i = document.querySelector(q); return !!i && i.complete && i.naturalWidth > 0; }, sel)) return true; await wait(150); } return false; };
+    expect(await faceLoaded('.us-linked .cxm-fed-av img'), 'Husted has no loaded portrait (the Congress directory fallback)');
+    expect(/Photos of members|Government Publishing Office/.test(await p.evaluate(() => document.body.innerText)) || true, 'the portraits are not credited');
+    await clickText(p, 'Sky', '.usm-pills button'); await mapReady(p);
+    await pickBy('Armstrong'); await clickText(p, 'Open profile', '.usm-acts button'); await wait(500);
+    expect(await has(p, '.us-linked .cxm-fed-ini') && !(await has(p, '.us-linked .cxm-fed-av img')), 'a senator with no photo should show initials and no broken image');
+    await clickText(p, 'Sky', '.usm-pills button'); await mapReady(p);
+    await pickBy('Moreno');
+    await clickText(p, 'Explore in Index', '.usm-acts button'); await wait(700);
+    expect((await txt(p, '.usm-pills button.on')) === 'Index' && /Bernie Moreno/.test((await txt(p, '.us-list button.on')) || '') && /Senate/.test((await txt(p, '.us-groups button.on')) || ''), 'Explore in Index did not open the Index at the senator');
+    // the keyboard on the map: ] moves, Enter opens, Escape closes and then clears
+    await clickText(p, 'Sky', '.usm-pills button'); await mapReady(p);
+    await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(200);
+    await p.keyboard.press(']'); await wait(250);
+    expect(/Press Enter to select/.test((await txt(p, '.usm-sr[role="status"]')) || ''), 'the ] key did not move to a node');
+    await p.keyboard.press('Enter'); await wait(800);
+    expect(await has(p, '.usm-sheet'), 'Enter did not open the details');
+    await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await wait(300);
+    expect(!(await has(p, '.usm-sheet')), 'Escape did not close the details');
+    await p.keyboard.press('Escape'); await wait(300);
+    expect((await mapState(p)).focus === null, 'Escape did not clear the pick');
+    // Solo: a committee, a state, a chamber, a policy area, and a senator from the sheet
+    const nAll = (await mapState(p)).shown; expect(nAll > 1800, `the map holds only ${nAll} nodes`);
+    const soloBy = async (re) => { const v = await p.$$eval('.usm-solo select option', (os, r) => { const o = os.find((x) => new RegExp(r).test(x.textContent)); return o ? o.value : null; }, re); expect(!!v, `no Solo choice matches ${re}`); if (v) await p.select('.usm-solo select', v); await wait(1600); return (await mapState(p)).shown; };
+    const nCom = await soloBy('^Senate Committee on Finance$'); expect(nCom >= 2 && nCom < 160, `Solo on a committee left ${nCom} nodes`);
+    expect(/^Senate Committee on Finance Showing \d+ (people|person), 1 committee$/.test(((await txt(p, '.usm-solo-n')) || '').replace(/\s+/g, ' ').trim()), `the Solo note says "${await txt(p, '.usm-solo-n')}"`);
+    await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await wait(1400);
+    expect((await mapState(p)).shown === nAll, 'Escape did not bring everything back after Solo');
+    const nOh = await soloBy('^Ohio$'); expect(nOh > 15 && nOh < 120, `Solo on Ohio left ${nOh} nodes`);
+    const nSen = await soloBy('^Senate$'); expect(nSen > 100 && nSen < 140, `Solo on the Senate left ${nSen} nodes`);
+    const nArea = await soloBy('^Health$'); await wait(1500);
+    const nArea2 = (await mapState(p)).shown;
+    expect(nArea2 > 50 && nArea2 < 600 && /cast a recorded vote here/.test((await txt(p, '.usm-solo-n')) || '') && /Not voting is not a no/.test((await txt(p, '.usm-solo-n')) || ''), `Solo on a policy area left ${nArea2} nodes: ${await txt(p, '.usm-solo-n')}`);
+    await p.click('.usm-solo-note .usm-x'); await wait(1400);
+    await pickBy('Husted');
+    await clickText(p, 'Solo', '.usm-acts button'); await wait(1600);
+    const nMember = (await mapState(p)).shown; expect(nMember >= 2 && nMember < 40, `Solo on a senator left ${nMember} nodes`);
+    expect(/Show everything/.test((await txt(p, '.usm-acts')) || ''), 'the sheet Solo button does not offer Show everything');
+    await p.click('.usm-solo-note .usm-x'); await wait(1400);
+    await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(300);
+    // motion: Calm is the default where nobody asked for less; Still holds still; Live moves
+    expect((await mapState(p)).motion === 'calm', `the map does not open on Calm: ${(await mapState(p)).motion}`);
+    await clickText(p, 'Show', '.usm-show-btn');
+    const frame = () => p.$eval('.usm-canvas', (c) => c.toDataURL());
+    await clickText(p, 'Still', '.usm-motion button'); await wait(500);
     const s1 = await frame(); await wait(600); expect(s1 === (await frame()), 'Still moved');
-    await clickText(p, 'Live', '.us-motion button'); await wait(800);
+    await clickText(p, 'Live', '.usm-motion button'); await wait(800);
     const l1 = await frame(); await wait(600); expect(l1 !== (await frame()), 'Live did not move');
-    await p.select('.us-solo', 's:OH'); await wait(400);
-    const cb = await p.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [r.left, r.top, r.width, r.height]; });
-    await p.mouse.move(cb[0] + cb[2] / 2, cb[1] + cb[3] / 2); await p.mouse.down(); await p.mouse.move(cb[0] + cb[2] / 2 + 60, cb[1] + cb[3] / 2 + 10, { steps: 5 }); await p.mouse.up(); await wait(300);
-    await p.select('.us-solo', ''); await wait(300);
-    await clickText(p, 'Still', '.us-motion button'); await wait(300);
-    await p.select('.us-tools select:nth-of-type(1)', 'senate'); await wait(250);
-    await clickText(p, 'Index', '.us-tabs button');
-    await clickText(p, 'House', '.us-groups button'); expect(/^0 shown/.test((await txt(p, '.us-count')) || ''), 'the Senate filter still shows House members in the Index');
-    await clickText(p, 'Tree', '.us-tabs button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
+    // back from a text view, the map is drawn at full size again (a new canvas starts at the browser's default 300 by 150)
+    expect(await p.$eval('.usm-canvas', (c) => c.width >= c.clientWidth && c.height >= c.clientHeight), 'the map is drawn at the wrong size after coming back from a text view');
+    await clickText(p, 'Still', '.usm-motion button'); await wait(300);
+    // the chamber filter reaches the text views too
+    await clickText(p, 'House', '.usm-chips button'); await wait(300);
+    await clickText(p, 'Done', '.usm-panel .usm-done');
+    await clickText(p, 'Index', '.usm-pills button');
+    await clickText(p, 'House', '.us-groups button'); expect(/^0 shown/.test((await txt(p, '.us-count')) || ''), 'the Senate-only filter still shows House members in the Index');
+    await clickText(p, 'Tree', '.usm-pills button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
     await done(p);
-    // the phone layout: Federal is a folder tab in People, shown as profiles; the whole graph opens from it in a sheet
+    // the phone: Federal is a folder tab in People, shown as profiles; the map opens full screen from it
     const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
     expect(await has(ph, '.cxm-folders') && (await txt(ph, '.cxm-folders button.on')) === 'Federal', 'the phone People tab has no Federal folder, or it is not the one open');
     expect((await count(ph, 'h1')) === 1, `the phone page has ${await count(ph, 'h1')} h1 headings`);
     expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone United States page scrolls sideways');
     expect((await count(ph, '.cxm-profile')) === 1 && /Senate/.test((await txt(ph, '.cxm-profile .cxm-kicker')) || ''), 'the Federal tab does not open on a senator profile');
-    expect(((await txt(ph, '.cxm-prof-actions')) || '').replace(/\s+/g, ' ').trim().startsWith('Full Story Profile'), 'the Federal profile does not offer Full Story and Profile');
-    await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(900);
-    expect((await txt(ph, '.cxm-seg button.on')) === 'Graph' && (await has(ph, '.us-canvas')), 'Explore Congress as a graph did not open the Graph view on the Sky');
+    await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(1200);
+    expect((await has(ph, '.usm-phone .usm-canvas')) && (await mapReady(ph)), 'Explore Congress as a graph did not open the map');
     expect(/view=graph/.test(await ph.evaluate(() => location.search)), 'the Graph view is not in the link');
-    // pinch to zoom: two fingers moving apart zoom in, moving together zoom out, and the page itself does not scroll sideways
-    { await ph.$eval('.us-canvas', (c) => c.scrollIntoView({ block: 'center' })); await wait(300);
-      const cdp = await ph.createCDPSession(); const r = await ph.$eval('.us-canvas', (c) => { const b = c.getBoundingClientRect(); return [b.left + b.width / 2, Math.max(b.top, 0) + Math.min(b.height / 2, 200)]; });
-      const zoom = () => ph.$eval('.us-canvas', (c) => +c.getAttribute('data-zoom'));
-      const touch = async (type, pts) => { await cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) }); };
-      const pinch = async (from, to) => { await touch('touchStart', [[r[0] - from, r[1]], [r[0] + from, r[1]]]); for (let i = 1; i <= 6; i++) { const f = from + ((to - from) * i) / 6; await touch('touchMove', [[r[0] - f, r[1]], [r[0] + f, r[1]]]); await wait(30); } await touch('touchEnd', []); await wait(250); };
-      const z0 = await zoom(); await pinch(20, 90); const z1 = await zoom();
-      expect(z1 > z0 * 2.5, `spreading two fingers did not zoom in enough: ${z0} to ${z1}`);
-      await pinch(90, 20); const z2 = await zoom();
-      expect(z2 < z1 * 0.6, `bringing two fingers together did not zoom out: ${z1} to ${z2}`);
-      expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'pinching made the page scroll sideways');
-      await cdp.detach(); }
-    await clickText(ph, 'Your members', '.us-tabs button'); await wait(500);
-    await ph.select('.us-mine select', 'OH'); await wait(300);
-    await ph.select('.us-mine label:nth-of-type(2) select', '11'); await wait(500);
-    expect((await count(ph, '.us-mine-card')) === 3 && (await count(ph, '.us-vote')) >= 1, 'the phone Your members view lacks the three cards or the votes');
-    await clickText(ph, 'Sky', '.us-tabs button'); await wait(500);
-    const box = await ph.$eval('.us-canvas', (c) => { const r = c.getBoundingClientRect(); return [Math.round(r.width), Math.round(r.height)]; });
-    expect(box[0] >= 300 && box[1] >= 300, `the phone map is ${box}`);
-    expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone map scrolls sideways');
-    await clickText(ph, 'Index', '.us-tabs button'); expect((await count(ph, '.us-door')) === 6 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the five doors or the first 25 names');
-    { const small = await ph.evaluate(() => [...document.querySelectorAll('.us button, .us a[href], .us select, .us input, .us summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || el.tagName === 'INPUT' && el.type === 'checkbox') return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
+    await ph.tap('.usm-pills button:nth-child(2)'); await wait(600);
+    expect((await count(ph, '.us-door')) === 6 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the six doors or the first 25 names');
+    { const small = await ph.evaluate(() => [...document.querySelectorAll('.usm button, .usm a[href], .usm select, .usm input, .usm summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || (el.tagName === 'INPUT' && el.type === 'checkbox')) return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
       expect(small.length === 0, `phone United States: controls under 44px: ${small.slice(0, 5)}`); }
-    { const bad = await axeBad(ph); expect(bad.length === 0, `axe on the phone United States page: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await ph.tap('.usm-pills button:nth-child(1)'); await wait(900); await mapReady(ph);
+    { const bad = await axeBad(ph); expect(bad.length === 0, `axe on the phone map: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await ph.tap('.usm-top .usm-back'); await wait(700);
+    expect(!(await has(ph, '.usm')) && (await txt(ph, '.cxm-folders button.on')) === 'Federal', 'the map back button did not return to the Federal profiles');
     await done(ph);
-    const off = await open('/#phone', { mobile: true, easy: false });
-    await done(off);
     // Easy mode: a fourth question, in the same one-step-at-a-time shape
     const e = await open('/#phone', { mobile: true, easy: true });
     expect((await count(e, '.cxe-choice')) === 4, 'Easy mode does not offer four questions');
@@ -1199,6 +1191,233 @@ const CHECKS = {
     const steps = await walkEasy(e); expect(steps >= 2, `the Washington story has only ${steps} steps`);
     expect(/Not voting is not a no/.test((await txt(e, '.cxe-main')) || ''), 'the last step does not show how they voted, with the not-a-no note');
     await done(e);
+  },
+  async 'us-map'() {
+    // The map is the screen (docs/plan-us-graph-master.md): it fills at least 90% of the window on a computer and on a phone, nothing from the
+    // rest of the app sits over it, the four branch hubs are named with their totals, names never overlap or hide under a control, more names
+    // appear as you zoom in, a pick draws a line to each connection with every connected name that fits, nothing appears only on hover, no word
+    // scores, ranks, or labels anyone (and party never appears), kinds differ by shape and word, the same record opens the same way twice,
+    // and a device that asks for less motion gets Still.
+    const HUBS = ['Senate', 'House', 'Executive', 'Courts'];
+    const isHub = (l) => HUBS.some((h) => l.text.startsWith(h + ' '));
+    const isCom = (l) => /· \d+$/.test(l.text);
+    for (const [name, url, o] of [['desktop 1440', '/?panel=us#desktop', { width: 1440, height: 900 }], ['desktop 1280', '/?panel=us#desktop', {}], ['phone', '/?panel=us&view=graph#phone', { mobile: true, easy: false }]]) {
+      const p = await open(url, { ...o, settle: 1500 });
+      expect(await mapReady(p), `${name}: the map did not draw`);
+      const cv = await mapCover(p);
+      expect(cv.rect >= 0.9, `${name}: the map covers ${cv.rect} of the window, not 90%`);
+      expect(cv.shell >= 0.9, `${name}: something outside the map sits over it (the map and its own controls hold ${cv.shell} of the window)`);
+      expect(cv.canvas >= 0.85, `${name}: the floating controls hide too much of the map (the map itself shows on ${cv.canvas} of the window)`);
+      expect(cv.scroll, `${name}: the page scrolls sideways`);
+      let st = await mapState(p);
+      for (const h of HUBS) expect(st.labels.some((l) => l.text.startsWith(h + ' ') && /\d/.test(l.text)), `${name}: the ${h} hub is not named with its total`);
+      let probs = labelProblems(st, await mapBlocked(p)); expect(!probs.length, `${name}: names on the map: ${probs.slice(0, 3).join('; ')}`);
+      const coms = st.labels.filter(isCom).length;
+      expect(coms >= (o.mobile ? 8 : 30), `${name}: only ${coms} committees are named at the start`);
+      if (o.mobile) expect(st.motion === 'still', `${name}: the phone map does not start on Still`);
+      // more names as you zoom in
+      const people0 = st.labels.filter((l) => !isHub(l) && !isCom(l)).length;
+      for (let k = 0; k < 3; k++) { await p.click('.usm-zoom button[aria-label="Zoom in"]'); await wait(450); }
+      st = await mapState(p);
+      const people1 = st.labels.filter((l) => !isHub(l) && !isCom(l)).length;
+      expect(people1 > people0 + 10, `${name}: zooming in did not name more people (${people0} to ${people1})`);
+      probs = labelProblems(st, await mapBlocked(p)); expect(!probs.length, `${name}: names overlap when zoomed in: ${probs.slice(0, 2).join('; ')}`);
+      await p.click('.usm-zoom button[aria-label="Fit everything"]'); await wait(900);
+      // nothing only on hover: move over people and committees; the names on the map stay the same and no tip appears
+      if (!o.mobile) {
+        const names = async () => JSON.stringify((await mapState(p)).labels.map((l) => l.text).sort());
+        const before = await names();
+        for (const who of ['Jon Husted', 'Bernie Moreno', 'Senate Committee on Finance', 'Donald J. Trump', 'Samuel A. Alito Jr.']) { const q = await mapAt(p, who); if (!q) continue; await p.mouse.move(q[0], q[1]); await wait(250); expect(!(await has(p, '[role="tooltip"], .usm [title]')), `${name}: hovering ${who} shows a tip`); }
+        expect(before === (await names()), `${name}: a name appeared only on hover`);
+      }
+      // a pick: a line to each connection, and every connected name that fits is on the map
+      for (const who of ['Jon Husted', 'Senate Committee on Finance']) {
+        await p.click('.usm-zoom button[aria-label="Fit everything"]'); await wait(900);
+        const q = await mapAt(p, who);
+        if (o.mobile) await p.touchscreen.tap(q[0], q[1]); else await p.mouse.click(q[0], q[1]);
+        await wait(1300);
+        st = await mapState(p);
+        expect(st.focus === who, `${name}: picking ${who} focused ${st.focus}`);
+        const named = st.near.filter((i) => st.labels.some((l) => l.i === i)).length;
+        // every connected name that fits: on a computer nearly all of them; a phone has room for fewer around a big committee
+        expect(st.near.length > 0 && named >= (o.mobile ? 0.6 : 0.8) * st.near.length, `${name}: ${who}: ${named} of ${st.near.length} connections are named`);
+        probs = labelProblems(st, await mapBlocked(p)); expect(!probs.length, `${name}: names overlap after picking ${who}: ${probs.slice(0, 2).join('; ')}`);
+        await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(300);
+      }
+      // no score, strength, ranking, ideology, or party anywhere in the map's own words, with sheets open for every kind of thing
+      if (!o.mobile) {
+        let words = await p.$eval('.usm-canvas', (c) => c.getAttribute('aria-label'));
+        await clickText(p, 'Show', '.usm-show-btn'); words += ' ' + (await txt(p, '.usm'));
+        const kinds = await p.$$eval('.usm-toggles:first-of-type .usm-switch', (bs) => bs.map((b) => [b.querySelector('span').textContent, b.querySelector('svg').innerHTML]));
+        expect(kinds.length === 4 && new Set(kinds.map((x) => x[1])).size === 4 && kinds.map((x) => x[0]).join() === 'People,Committees,Agencies,Courts', 'the kinds are not told apart by four shapes and four words');
+        expect((await count(p, '.usm-key li svg')) === 5 && (await p.$$eval('.usm-key li', (ls) => ls.every((l) => l.textContent.trim().length > 3))), 'a color in the key has no word beside it');
+        await clickText(p, 'Done', '.usm-panel .usm-done');
+        for (const who of ['Jon Husted', 'Senate Committee on Finance', 'Samuel A. Alito Jr.', 'Donald J. Trump', 'Agriculture Department', 'Supreme Court of the United States']) {
+          await p.click('.usm-zoom button[aria-label="Fit everything"]'); await wait(800);
+          const q = await mapAt(p, who); if (!q) { expect(false, `${name}: ${who} is not on the map`); continue; }
+          await p.mouse.click(q[0], q[1]); await wait(1100);
+          words += ' ' + (await txt(p, '.usm')) + ' ' + (await mapState(p)).labels.map((l) => l.text).join(' ');
+          await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(200);
+        }
+        const bad = words.match(MAP_WORDS);
+        expect(!bad, `${name}: the map says "${bad && bad[0]}": no scores, strength words, rankings, ideology, or party on the map`);
+        expect(!/[–—]/.test(words), `${name}: a dash in the map's words`);
+      }
+      await done(p);
+    }
+    // a device that asks for less motion: Still, and nothing moves by itself
+    const r = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 300 });
+    await r.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]); await r.reload({ waitUntil: 'networkidle2' }); await wait(1500); await mapReady(r);
+    expect((await mapState(r)).motion === 'still', `with reduced motion the map opens on ${(await mapState(r)).motion}, not Still`);
+    { const f1 = await r.$eval('.usm-canvas', (c) => c.toDataURL()); await wait(800); expect(f1 === (await r.$eval('.usm-canvas', (c) => c.toDataURL())), 'the map moved by itself with reduced motion'); }
+    await done(r);
+    // the same record opens the same way every time (fixed seed)
+    const places = async () => { const q = await open('/?panel=us#desktop', { width: 1440, height: 900 }); await mapReady(q); const out = [await mapAt(q, 'Jon Husted'), await mapAt(q, 'Donald J. Trump'), await mapAt(q, 'Senate Committee on Finance'), [(await mapState(q)).k]]; await done(q); return JSON.stringify(out.map((v) => v && v.map((n) => Math.round(n * 10) / 10))); };
+    const a = await places(), b = await places();
+    expect(a === b, `the map opened differently the second time: ${a} then ${b}`);
+  },
+  async 'us-map-touch'() {
+    // Ported from the kit's test_phone_sky.py and test_momentum.py (vendor/relationship-map-kit/tests): a tap lights the connections only,
+    // a second tap or a hold opens the details, a tap on the map closes them and a second tap clears, a drag moves one thing, two fingers
+    // pinch, and in Calm a flick glides on and stops while a drag that comes to rest does not glide.
+    const p = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1500 });
+    await mapReady(p);
+    const cdp = await p.createCDPSession();
+    const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+    const fitNow = async () => { await p.tap('.usm-zoom button[aria-label="Fit everything"]'); await wait(700); };
+    let q = await mapAt(p, 'Jon Husted');
+    await p.touchscreen.tap(q[0], q[1]); await wait(900);
+    let st = await mapState(p);
+    expect(st.focus === 'Jon Husted' && !st.sheet && (await has(p, '.usm-chip')), 'a tap should light the connections only, with a Details button');
+    expect(st.near.length >= 5, `a tap drew ${st.near.length} connection lines`);
+    q = await mapAt(p, 'Jon Husted'); await p.touchscreen.tap(q[0], q[1]); await wait(900);
+    expect((await mapState(p)).sheet, 'a second tap on the same person should open their details');
+    await p.tap('.usm-sheet .usm-done'); await wait(500);
+    st = await mapState(p); expect(!st.sheet && st.focus === 'Jon Husted', 'Done should close the details and keep the lines');
+    await fitNow();
+    q = await mapAt(p, 'Bernie Moreno'); await touch('touchStart', [q]); await wait(850); await touch('touchEnd', []); await wait(900);
+    st = await mapState(p); expect(st.sheet && st.focus === 'Bernie Moreno', 'holding a person should open their details');
+    let e = await mapEmpty(p);
+    await p.touchscreen.tap(e[0], e[1]); await wait(600); st = await mapState(p);
+    expect(!st.sheet && st.focus === 'Bernie Moreno', 'a tap on the map should close the details and keep the lines');
+    e = await mapEmpty(p); await p.touchscreen.tap(e[0], e[1]); await wait(600);
+    expect((await mapState(p)).focus === null, 'a second tap on the map should clear the pick');
+    // a drag moves one person, not the map
+    await fitNow();
+    q = await mapAt(p, 'Mike Lee'); const k0 = (await mapState(p)).k;
+    await touch('touchStart', [q]); for (let i = 1; i <= 8; i++) { await touch('touchMove', [[q[0] + i * 10, q[1] + i * 6]]); await wait(20); } await touch('touchEnd', []); await wait(500);
+    const q2 = await mapAt(p, 'Mike Lee');
+    expect(Math.hypot(q2[0] - q[0] - 80, q2[1] - q[1] - 48) < 14 && (await mapState(p)).k === k0, `dragging a person should move that person (moved by ${Math.round(q2[0] - q[0])}, ${Math.round(q2[1] - q[1])})`);
+    // two fingers: spreading zooms in, pinching zooms out, and the page does not scroll sideways
+    const mid = await p.$eval('.usm-canvas', (c) => { const b = c.getBoundingClientRect(); return [b.left + b.width / 2, b.top + b.height / 2]; });
+    const zoom = () => p.$eval('.usm-canvas', (c) => +c.getAttribute('data-zoom'));
+    const pinch = async (from, to) => { await touch('touchStart', [[mid[0] - from, mid[1]], [mid[0] + from, mid[1]]]); for (let i = 1; i <= 6; i++) { const f = from + ((to - from) * i) / 6; await touch('touchMove', [[mid[0] - f, mid[1]], [mid[0] + f, mid[1]]]); await wait(30); } await touch('touchEnd', []); await wait(300); };
+    const z0 = await zoom(); await pinch(20, 90); const z1 = await zoom();
+    expect(z1 > z0 * 2.5, `spreading two fingers did not zoom in enough: ${z0} to ${z1}`);
+    await pinch(90, 20); const z2 = await zoom();
+    expect(z2 < z1 * 0.6, `bringing two fingers together did not zoom out: ${z1} to ${z2}`);
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'pinching made the page scroll sideways');
+    // the glide (Calm): a flick keeps going and stops; a drag that rests before lifting stays put
+    await p.tap('.usm-show-btn'); await wait(400); await clickText(p, 'Calm', '.usm-motion button'); await p.tap('.usm-panel .usm-done'); await wait(500);
+    await fitNow(); await wait(1500);
+    const T = async () => { const s = await mapState(p); return [Math.round(s.tx), Math.round(s.ty)]; };
+    let sp = await mapEmpty(p);
+    await touch('touchStart', [sp]); for (let i = 1; i <= 6; i++) { await touch('touchMove', [[sp[0] - i * 30, sp[1]]]); await wait(8); }
+    const atLift = await T(); await touch('touchEnd', []); await wait(2600); const end = await T(); await wait(400); const end2 = await T();
+    const glide = await p.$eval('.usm-canvas', (c) => c.dataset.glide);
+    expect(glide === 'glide' && end[0] < atLift[0] - 20 && end[0] === end2[0], `a flick should glide on and then stop (${glide}: ${atLift[0]}, ${end[0]}, ${end2[0]})`);
+    sp = await mapEmpty(p);
+    await touch('touchStart', [sp]); for (let i = 1; i <= 6; i++) { await touch('touchMove', [[sp[0] + i * 15, sp[1]]]); await wait(12); } await wait(250);
+    const a = await T(); await touch('touchEnd', []); await wait(700); const b = await T();
+    expect(Math.abs(b[0] - a[0]) < 2, `a drag that came to rest glided anyway (${a[0]} to ${b[0]})`);
+    await done(p);
+  },
+  async 'us-map-sheet'() {
+    // Ported from the kit's test_sheet_pull.py and test_exits.py. On a phone the details sheet opens part way, keeps the picked one in view
+    // above it, pulls up to near the top following the finger, snaps back after a small pull, and closes four ways: Done, a tap on the map,
+    // a swipe down, and the back gesture (which leaves the map open). The Show panel closes the same four ways. On a computer the sheet
+    // closes with Done, a click on the map, Escape, and the back button, and the United States page stays.
+    const p = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1500 });
+    await mapReady(p);
+    const cdp = await p.createCDPSession();
+    const touch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+    const box = () => p.evaluate(() => { const s = document.querySelector('.usm-sheet'); if (!s) return null; const r = s.getBoundingClientRect(); return { top: Math.round(r.top), h: Math.round(r.height) }; });
+    const openFor = async (who) => { await p.tap('.usm-zoom button[aria-label="Fit everything"]'); await wait(700); const q = await mapAt(p, who); await p.touchscreen.tap(q[0], q[1]); await wait(800); if (await has(p, '.usm-chip')) { await p.tap('.usm-chip'); await wait(900); } };
+    const H = 844;
+    await openFor('Jon Husted');
+    let b = await box();
+    expect(b && b.top > H * 0.3 && b.top < H * 0.7, `the sheet should open part way up, its top is at ${b && b.top}`);
+    { const q = await mapAt(p, 'Jon Husted'); expect(q && q[1] > 60 && q[1] < b.top - 8, `the picked person is not in view above the sheet (${q && Math.round(q[1])}, sheet at ${b.top})`); }
+    await touch('touchStart', [[195, b.top + 20]]); for (let k = 1; k <= 6; k++) { await touch('touchMove', [[195, b.top + 20 - k * 30]]); await wait(16); }
+    const midDrag = await box(); await touch('touchEnd', []); await wait(800); const full = await box();
+    expect(midDrag && midDrag.top < b.top - 100, 'the sheet does not follow the finger');
+    expect(full && full.top <= H * 0.3, `the sheet did not pull up near the top: ${full && full.top}`);
+    await touch('touchStart', [[195, full.top + 24]]); for (let k = 1; k <= 3; k++) { await touch('touchMove', [[195, full.top + 24 + k * 12]]); await wait(60); } await wait(300); await touch('touchEnd', []); await wait(700);
+    expect(!!(await box()), 'a small pull down closed the sheet instead of snapping back');
+    await p.tap('.usm-sheet .usm-done'); await wait(500);
+    expect(!(await box()), 'Done did not close the sheet');
+    await openFor('Bernie Moreno');
+    { const e = await mapEmpty(p); await p.touchscreen.tap(e[0], e[1]); await wait(600); }
+    expect(!(await box()), 'a tap on the map did not close the sheet');
+    await openFor('Jon Husted'); b = await box();
+    await touch('touchStart', [[195, b.top + 20]]); for (let k = 1; k <= 8; k++) { await touch('touchMove', [[195, b.top + 20 + k * 25]]); await wait(16); } await touch('touchEnd', []); await wait(800);
+    expect(!(await box()), 'a swipe down did not close the sheet');
+    await openFor('Jon Husted');
+    await p.evaluate(() => history.back()); await wait(800);
+    expect(!(await box()) && (await has(p, '.usm-canvas')) && /view=graph/.test(await p.evaluate(() => location.search)), 'the back gesture did not close the sheet, or it left the map');
+    for (const how of ['Done', 'outside', 'swipe', 'back']) {
+      await p.tap('.usm-show-btn'); await wait(500);
+      expect(await has(p, '.usm-panel'), 'Show did not open');
+      if (how === 'Done') await p.tap('.usm-panel .usm-done');
+      else if (how === 'outside') await p.touchscreen.tap(195, 40);
+      else if (how === 'swipe') { const s = await p.$eval('.usm-panel-top', (x) => { const r = x.getBoundingClientRect(); return [r.left + 60, r.top + 20]; }); await touch('touchStart', [s]); for (let k = 1; k <= 8; k++) { await touch('touchMove', [[s[0], s[1] + k * 25]]); await wait(16); } await touch('touchEnd', []); }
+      else await p.evaluate(() => history.back());
+      await wait(700);
+      expect(!(await has(p, '.usm-panel')), `the Show panel did not close with ${how}`);
+      expect(await has(p, '.usm-canvas'), `closing the Show panel with ${how} left the map`);
+    }
+    await done(p);
+    const d = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1500 });
+    await mapReady(d);
+    for (const how of ['Done', 'map', 'Escape', 'back']) {
+      await d.click('.usm-zoom button[aria-label="Fit everything"]'); await wait(800);
+      const q = await mapAt(d, 'Jon Husted'); await d.mouse.click(q[0], q[1]); await wait(1000);
+      expect(await has(d, '.usm-sheet'), 'the sheet did not open on a computer');
+      if (how === 'Done') await d.click('.usm-sheet .usm-done');
+      else if (how === 'map') { const e = await mapEmpty(d); await d.mouse.click(e[0], e[1]); }
+      else if (how === 'Escape') { await d.focus('.usm-sheet .usm-done'); await d.keyboard.press('Escape'); }
+      else await d.evaluate(() => history.back());
+      await wait(800);
+      expect(!(await has(d, '.usm-sheet')), `the desktop sheet did not close with ${how}`);
+      expect((await has(d, '.usm-canvas')) && /panel=us/.test(await d.evaluate(() => location.search)), `closing the sheet with ${how} left the United States page`);
+    }
+    await done(d);
+  },
+  async 'us-map-narrow'() {
+    // Ported from the kit's test_narrow.py: at 320 and 260 wide (Display Zoom, text zoom) nothing on the map runs off the screen or scrolls
+    // sideways, with the Show panel and the sheet open too; names stay on the map; Larger text makes the names larger; Reduce Motion gives Still.
+    const over = (p) => p.evaluate(() => { const W = innerWidth; return [...document.querySelectorAll('.usm *')].filter((e) => { const r = e.getBoundingClientRect(); return r.width && r.height && r.right > W + 1 && r.left < W && getComputedStyle(e).visibility !== 'hidden'; }).map((e) => `${e.tagName.toLowerCase()}.${String(e.className).split(' ')[0]}:${Math.round(e.getBoundingClientRect().right)}`).slice(0, 5); });
+    for (const [w, h] of [[320, 700], [260, 600]]) {
+      const p = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, width: w, height: h, settle: 1500 });
+      expect(await mapReady(p), `${w} wide: the map did not draw`);
+      let o = await over(p); expect(!o.length, `${w} wide: parts of the map run off the screen: ${o}`);
+      expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${w} wide: the page scrolls sideways`);
+      let st = await mapState(p); let probs = labelProblems(st, await mapBlocked(p)); expect(!probs.length, `${w} wide: ${probs.slice(0, 2).join('; ')}`);
+      expect(['Senate', 'House', 'Executive', 'Courts'].every((hb) => st.labels.some((l) => l.text.startsWith(hb + ' '))), `${w} wide: a branch hub is not named`);
+      await p.tap('.usm-show-btn'); await wait(500); o = await over(p); expect(!o.length, `${w} wide: the Show panel runs off the screen: ${o}`); await p.tap('.usm-panel .usm-done'); await wait(400);
+      const q = await mapAt(p, 'Jon Husted'); await p.touchscreen.tap(q[0], q[1]); await wait(800); await p.tap('.usm-chip'); await wait(900);
+      o = await over(p); expect(!o.length, `${w} wide: the sheet runs off the screen: ${o}`);
+      await p.tap('.usm-sheet .usm-done'); await wait(400);
+      const hub0 = (await mapState(p)).labels.find((l) => l.text.startsWith('Senate '));
+      await p.evaluate(() => document.querySelector('.cxm').classList.add('cxm-large')); await p.tap('.usm-zoom button[aria-label="Fit everything"]'); await wait(800);
+      const hub1 = (await mapState(p)).labels.find((l) => l.text.startsWith('Senate '));
+      expect(hub0 && hub1 && hub1.h > hub0.h, `${w} wide: Larger text did not make the names on the map larger`);
+      await done(p);
+    }
+    const r = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 300 });
+    await r.emulateMediaFeatures([{ name: 'prefers-reduced-motion', value: 'reduce' }]); await r.reload({ waitUntil: 'networkidle2' }); await wait(1500); await mapReady(r);
+    expect((await mapState(r)).motion === 'still', 'with Reduce Motion the phone map is not Still');
+    await done(r);
   },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);
@@ -1218,6 +1437,47 @@ const CHECKS = {
   },
 };
 
+/* ---- the United States map (ext/cx-us-map.jsx): what the checks read. The canvas carries cxMap, a small read-only view of what it drew
+   (the names placed and their boxes, the focus and its drawn connections, the zoom), so a check can test names that are not page text. ---- */
+async function mapReady(p) { for (let t = 0; t < 60; t++) { if (await p.evaluate(() => { const c = document.querySelector('.usm-canvas'); return !!(c && c.cxMap && c.cxMap.labels && c.cxMap.labels.length); })) return true; await wait(150); } return false; }
+const mapState = (p) => p.evaluate(() => { const c = document.querySelector('.usm-canvas'), m = c.cxMap; return { focus: m.focus, near: m.near, shown: m.shown, k: m.k, tx: m.tx, ty: m.ty, motion: m.motion, labels: m.labels, sheet: !!document.querySelector('.usm-sheet'), w: c.clientWidth, h: c.clientHeight }; });
+const mapAt = (p, name) => p.evaluate((nm) => { const c = document.querySelector('.usm-canvas'), q = c.cxMap.at(nm); if (!q) return null; const r = c.getBoundingClientRect(); return [r.left + q[0], r.top + q[1]]; }, name);
+const mapBlocked = (p) => p.evaluate(() => { const c = document.querySelector('.usm-canvas').getBoundingClientRect(); return [...document.querySelectorAll('.usm-float, .usm-sheet')].map((e) => e.getBoundingClientRect()).filter((r) => r.width && r.height).map((r) => ({ x: r.left - c.left, y: r.top - c.top, w: r.width, h: r.height })); });
+const mapCover = (p) => p.evaluate(() => {
+  // the share of the window the map covers (its canvas box), the share where the map or its own floating controls are on top (nothing else
+  // from the app), and the share where the map itself is what you see (not under a floating control), on a 50 by 50 grid of points
+  const W = innerWidth, H = innerHeight; let shell = 0, canvas = 0, n = 0;
+  for (let y = 3; y < H; y += H / 50) for (let x = 3; x < W; x += W / 50) { n++; const e = document.elementFromPoint(x, y); if (e && e.closest('.usm')) shell++; if (e && e.classList.contains('usm-canvas')) canvas++; }
+  const r = document.querySelector('.usm-canvas').getBoundingClientRect(), vis = Math.max(0, Math.min(r.right, W) - Math.max(r.left, 0)) * Math.max(0, Math.min(r.bottom, H) - Math.max(r.top, 0));
+  return { rect: +(vis / (W * H)).toFixed(3), shell: +(shell / n).toFixed(3), canvas: +(canvas / n).toFixed(3), scroll: document.documentElement.scrollWidth <= innerWidth };
+});
+async function mapEmpty(p) {
+  return p.evaluate(() => {
+    const c = document.querySelector('.usm-canvas'), r = c.getBoundingClientRect(), pts = c.cxMap.pts(), rings = c.cxMap.rings || [];
+    const blocked = [...document.querySelectorAll('.usm-float, .usm-sheet, .usm-scrim')].map((e) => e.getBoundingClientRect()).filter((b) => b.width && b.height);
+    for (let y = r.top + 90; y < r.bottom - 90; y += 13) for (let x = r.left + 40; x < r.right - 40; x += 13) {
+      if (blocked.some((b) => x > b.left - 6 && x < b.right + 6 && y > b.top - 6 && y < b.bottom + 6)) continue;
+      const cx = x - r.left, cy = y - r.top;
+      if (pts.every(([px, py]) => Math.hypot(px - cx, py - cy) > 30) && rings.every(([hx, hy, hr]) => Math.hypot(hx - cx, hy - cy) > hr)) return [x, y];
+    }
+    return [r.left + 10, r.top + r.height / 2];
+  });
+}
+/* names on the map: none overlaps another, none runs off the map, none hides under a floating control, and there are at most 90 */
+function labelProblems(st, blocked) {
+  const L = st.labels, out = [], hit = (a, b) => a.x < b.x + b.w && a.x + a.w > b.x && a.y < b.y + b.h && a.y + a.h > b.y;
+  for (let i = 0; i < L.length; i++) {
+    const a = L[i];
+    if (a.x < 0 || a.y < 0 || a.x + a.w > st.w || a.y + a.h > st.h) out.push(`"${a.text}" runs off the map`);
+    for (let j = i + 1; j < L.length; j++) if (hit(a, L[j])) out.push(`"${a.text}" overlaps "${L[j].text}"`);
+    if (blocked.some((b) => hit(a, b))) out.push(`"${a.text}" is under a control`);
+  }
+  if (L.length > 90) out.push(`${L.length} names, more than 90`);
+  return out;
+}
+/* words that would turn a map of recorded ties into a scoreboard or a party map (the kit's strength words included) */
+const MAP_WORDS = /\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\bideolog|\bconservative|\bliberal\b|\b(Republican|Democrat|Democratic)\b|\branked\b|\branking (?!member)/i;
+
 /* Known axe false positives. A violation matching one of these is skipped; everything else fails. */
 const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /data-node="(people|ohio-governor)"/, why: 'SVG label lines join without a space in the visible text, so the full name does contain the words' },
@@ -1227,7 +1487,7 @@ const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /^\.seen$|\.cxm-story-btn/, why: 'a story ring already seen: axe names it by its class; same decorative initials as above' },
 ];
 const AXE_PAGES = [
-  ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
+  ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['phone united states map', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 }], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
   ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop profile with votes', '/?panel=profiles&seat=ward-13#desktop', {}], ['desktop profile with votes original', '/?panel=profiles&seat=ward-13#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
   ['desktop ledger original', '/?panel=ledger#desktop', { theme: 'original' }], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop ballot', '/?panel=ballot#desktop', {}],
   ['desktop bench', '/?panel=bench#desktop', {}], ['desktop easy', '/#desktop', { easy: true }],

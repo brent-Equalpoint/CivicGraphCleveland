@@ -423,8 +423,13 @@ def main():
         {"source": vt["source"], "retrieved_at": vt["retrieved_at"], "members": vt_members, "issues": [[l, u] for u, l in vt_issues],
          "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
         ensure_ascii=False, separators=(",", ":")) + ";\n"
+    # United States graph: only the d3 parts the map uses (force and zoom, ext/cx-d3.js), bundled from the pinned npm packages into the page as CXD3
+    d3_js = run([tool("esbuild"), os.path.join(EXT, "cx-d3.js"), "--bundle", "--format=iife", "--global-name=CXD3", "--target=es2020", "--legal-comments=none"])
+    d3_ver = ", ".join(f"{p} {json.load(open(os.path.join(ROOT, 'node_modules', p, 'package.json'), encoding='utf-8'))['version']}" for p in ("d3-force", "d3-zoom", "d3-selection", "d3-transition", "d3-quadtree", "d3-timer"))
+    log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
+    ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -618,7 +623,7 @@ def main():
     src = patch(src,
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n"
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n",
                 label="aux page: united states")
     # v5.17 Levies and taxes: sidebar entry (under Voter education), address panel, page
     src = patch(src, "`news`, `stories`, `profiles`, `us`]", "`news`, `stories`, `profiles`, `us`, `levies`]", count=2, label="url panels: levies")
@@ -629,8 +634,8 @@ def main():
                 "                    onClick: () => cxPanel(`levies`),\n                    children: [(0, W.jsx)(CXI.Wallet, { size: 18 }), (0, W.jsx)(`span`, { children: `Levies and taxes` })],\n                  }),\n",
                 label="sidebar: levies")
     src = patch(src,
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n"
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n",
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n"
                 "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n",
                 label="aux page: levies")
     # v5.17 Find my districts (the address is matched in the page and never saved or sent): sidebar entry under Levies and taxes, address panel, page
@@ -997,6 +1002,9 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     us_body = open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8").read()
     write(os.path.join(SITE, "us", "landscape-2026.json"), us_body)
     log(f"SITE   {sha(us_body.encode())}  site/us/landscape-2026.json")
+    # the settled United States graph (scripts/us_map.js): the same physics and seed the page uses, run once here so every device opens the same map at once
+    run(["node", os.path.join(ROOT, "scripts", "us_map.js"), os.path.join(ROOT, "data", "us-landscape-2026.json"), os.path.join(SITE, "us", "map-2026.json")])
+    log(f"SITE   {sha(os.path.join(SITE, 'us', 'map-2026.json'))}  site/us/map-2026.json  (where each node of the United States graph settles)")
     mp = os.path.join(ROOT, "data", "meetings-2026.json")  # At City Hall: the Clerk's meeting record, fetched lazily on the hosted site
     if os.path.exists(mp):
         os.makedirs(os.path.join(SITE, "meetings"), exist_ok=True)
