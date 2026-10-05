@@ -248,7 +248,7 @@ html[data-cx-theme="original"] .cxm-crush { background: #2a170f; }
 /* receipts */
 .cxm-rgroup { display: flex; flex-direction: column; gap: 2px; }
 .cxm-rgroup-h { display: flex; justify-content: space-between; align-items: baseline; padding: 8px 2px 2px; }
-.cxm-rgroup-h strong { font-size: 16px; display: flex; align-items: center; gap: 8px; }
+.cxm-rgroup-h strong { font-size: 16px; color: var(--acc2); }
 .cxm-rgroup-h small { font-size: 12px; color: var(--faint); }
 .cxm-rcpt { display: flex; align-items: center; gap: 12px; padding: 10px 8px; border-radius: 14px; text-align: left; width: 100%; }
 .cxm-av { width: 44px; height: 44px; flex: none; border-radius: 50%; background: var(--acc); color: #fff; font-size: 14px; font-weight: 700; display: grid; place-items: center; }
@@ -315,7 +315,7 @@ html[data-cx-theme="original"] .cxm-map { background: #1a1613; }
 .cxm-map-label { font-size: 8.5px; fill: #cfd2da; text-anchor: middle; font-family: var(--display) !important; }
 .cxm-legend { display: flex; flex-wrap: wrap; gap: 4px 12px; padding: 0 8px; font-size: 12px; color: var(--mut); }
 .cxm-legend span { display: flex; align-items: center; gap: 6px; }
-.cxm-legend i, .cxm-layer-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+.cxm-legend i { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
 .cxm-ward { fill: #2a3150; stroke: #9dbaff66; stroke-width: 1.6; cursor: pointer; }
 .cxm-ward:hover { fill: #34406e; }
 .cxm-ward.on { fill: var(--acc); stroke: #fff; }

@@ -311,7 +311,7 @@ function CxmRoom({ roomId }) {
         <CxmKicker>Records in this room · {room.nodes.length}</CxmKicker>
         {[...byLayer, ...(orphan.length ? [[{ id: `other`, label: `Other records` }, orphan]] : [])].map(([l, list]) => (
           <div key={l.id} className="cxm-rgroup">
-            <div className="cxm-rgroup-h"><strong><i className="cxm-layer-dot" style={{ background: l.color || `#8f93a0` }} />{l.label}</strong><small>{list.length}</small></div>
+            <div className="cxm-rgroup-h"><strong>{l.label}</strong><small>{list.length}</small></div>
             {list.map((n) => (
               <button key={n.id} type="button" className="cxm-row" onClick={() => open(n.id)}>
                 <span><strong>{n.name}</strong><small>{n.kind} · {n.region}</small>{proof && <CxmEvidence state={n.evidence} />}</span><CXI.Arrow size={15} />
