@@ -218,7 +218,7 @@ function CX_Stories() {
       <div className="cx-stories-pick" role="group" aria-label="Choose a story">
         {stories.map((x, n) => (
           <button key={x.id} type="button" className={n === i ? `on` : ``} aria-current={n === i ? `true` : undefined} onClick={() => pick(n)}>
-            <span className="cx-stories-ring">{x.portrait ? <img src={cxmAsset(x.portrait)} alt="" /> : <span>{x.ini}</span>}</span>
+            <span className="cx-stories-ring">{cxStoryMark(x)}</span>
             <span>{x.label}</span>
           </button>
         ))}
@@ -244,4 +244,35 @@ function CX_Stories() {
       </div>
     </section>
   );
+}
+
+/* Small pictures for the story circles: white shapes on the blue circle, in the colors the circle already has. A story about a place or a thing
+   gets a picture; a story about one person keeps a photo, and a neighborhood keeps its initials. The label under the circle says what it is. */
+function CxStoryArt({ id }) {
+  const k = /^hall-/.test(id) ? `hall` : /^levy-/.test(id) ? `issue` : id;
+  const soft = { opacity: 0.45 }, ink = { stroke: `var(--acc)` };
+  const common = { width: 40, height: 40, viewBox: `0 0 48 48`, fill: `none`, stroke: `currentColor`, strokeWidth: 2.4, strokeLinecap: `round`, strokeLinejoin: `round`, focusable: `false`, 'aria-hidden': `true` };
+  if (k === `register`) return (
+    <svg {...common}><rect x="6" y="11" width="30" height="24" rx="4" fill="currentColor" style={soft} stroke="none" /><rect x="6" y="11" width="30" height="24" rx="4" /><path d="M12 19h12M12 25h8" /><circle cx="34" cy="32" r="9" fill="currentColor" /><path d="M29.5 32l3.2 3.2 5.6-6.4" style={ink} /></svg>);
+  if (k === `hall`) return (
+    <svg {...common}><path d="M24 7L7 17h34z" fill="currentColor" /><path d="M11 21v14M19 21v14M29 21v14M37 21v14" /><path d="M6 39h36M9 43h30" /></svg>);
+  if (k === `council`) {
+    const dots = [];
+    [[9, 5], [15, 5], [21, 5]].forEach(([r, n]) => { for (let i = 0; i < n; i++) { const a = Math.PI * (1 - i / (n - 1)); dots.push([24 + r * Math.cos(a), 35 - r * Math.sin(a), r]); } });
+    return (<svg {...common} strokeWidth="2">{dots.map(([x, y, r], i) => <circle key={i} cx={x.toFixed(1)} cy={y.toFixed(1)} r="2.5" fill="currentColor" stroke="none" />)}<path d="M16 42h16" /></svg>);
+  }
+  if (k === `ballot`) return (
+    <svg {...common}><rect x="10" y="4" width="28" height="22" rx="3" fill="currentColor" style={soft} stroke="none" /><rect x="10" y="4" width="28" height="22" rx="3" transform="rotate(-6 24 15)" /><path d="M17 12l3 3 6-7" transform="rotate(-6 24 15)" /><rect x="6" y="24" width="36" height="19" rx="4" fill="currentColor" /><path d="M16 29h16" style={ink} /></svg>);
+  if (k === `us`) return (
+    <svg {...common}><path d="M13 23a11 11 0 0 1 22 0z" fill="currentColor" /><path d="M24 7v5" /><path d="M10 27v10M18 27v10M30 27v10M38 27v10" /><path d="M6 41h36" /></svg>);
+  if (k === `issue`) return (
+    <svg {...common}><rect x="9" y="5" width="30" height="38" rx="4" fill="currentColor" style={soft} stroke="none" /><rect x="9" y="5" width="30" height="38" rx="4" /><path d="M15 12h18" /><text x="24" y="35" textAnchor="middle" fontSize="17" fontWeight="700" fill="currentColor" stroke="none">{id.replace(/^levy-/, ``)}</text></svg>);
+  return null;
+}
+/* the mark inside a story circle: a photo, a picture, or the initials */
+function cxStoryMark(s) {
+  const k = /^hall-/.test(s.id) ? `hall` : s.id;
+  if (s.portrait) return <img src={cxmAsset(s.portrait)} alt="" />;
+  if ([`register`, `hall`, `council`, `ballot`, `us`].includes(k) || /^levy-/.test(s.id)) return <span className="cx-story-art"><CxStoryArt id={s.id} /></span>;
+  return <span>{s.ini}</span>;
 }

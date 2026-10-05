@@ -1457,3 +1457,4 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 @media (prefers-reduced-motion: reduce) { .usm * { transition: none !important; animation: none !important; } }
 @media print { .usm { position: static; } .usm-canvas, .usm-ctl, .usm-solo, .usm-top { display: none !important; } }
 @media (forced-colors: active) { .usm-float, .usm-sheet { border: 2px solid CanvasText; } }
+.cx-story-art svg { width: 72%; height: 72%; }

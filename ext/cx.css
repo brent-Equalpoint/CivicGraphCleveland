@@ -669,3 +669,5 @@
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #fff; }
   html[data-cx-theme="original"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-color: var(--atlas-orange); }
 }
+.cx-stories-ring .cx-story-art { width: 100%; height: 100%; display: grid; place-items: center; color: #fff; }
+.cx-story-art svg { width: 72%; height: 72%; }
