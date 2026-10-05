@@ -182,7 +182,8 @@ function cxmFromUrl() {
   // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
     ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
-  if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && q.get(`view`) === `graph` ? `graph` : (mode || null), page: page || null }; }
+  // a profile link (?panel=us&who=bernie-moreno) opens the map, where the profile page lives
+  if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null }; }
   if (r && r.id !== `overview`) {
     out.tab = `explore`; out.room = r.id;
     if (node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) out.sheet = { type: `record`, room: r.id, node };
@@ -196,6 +197,7 @@ function cxmFromUrl() {
 function cxmToUrl(tab, room, top, peopleMode, page) {
   let url;
   try { url = new URL(globalThis.location.href); } catch { return; }
+  const who = url.searchParams.get(`who`);   // the profile open on the map (a person's link name, never the viewer's): the map keeps it
   url.search = ``;
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
@@ -203,7 +205,7 @@ function cxmToUrl(tab, room, top, peopleMode, page) {
   else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
-  else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); }
+  else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); if (who && /^[a-z0-9:-]{1,120}$/i.test(who)) p.set(`who`, who); }
   else if (tab === `people`) p.set(`panel`, peopleMode === `const` ? `constellation` : peopleMode === `us` ? `us` : `leaders`);
   else if (tab === `ballot`) p.set(`panel`, `ballot`);
   if (url.href !== globalThis.location.href) globalThis.history.replaceState(globalThis.history.state, ``, url.href);

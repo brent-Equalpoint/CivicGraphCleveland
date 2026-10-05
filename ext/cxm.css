@@ -1379,6 +1379,83 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 
 /* the Show panel */
 .usm-panel { position: absolute; left: 12px; bottom: 72px; z-index: 4; width: 300px; max-height: calc(100% - 300px); display: flex; flex-direction: column; }
+/* on a computer the panel opens beside the left menu, never over it, so People and Votes by topic stay in reach while it is open */
+.usm-desk .usm-panel { left: 232px; max-height: calc(100% - 220px); }
+/* Settings (a computer): the map covers the app's header, so Style, Mode, Dictionary, and Easy mode open from the map's own top bar */
+.usm-set-btn { padding: 0 16px 0 12px; }
+.usm-settings { position: absolute; top: 80px; right: 12px; z-index: 6; width: 340px; max-width: calc(100% - 24px); max-height: calc(100% - 100px); display: flex; flex-direction: column; }
+.usm-set-row { display: grid; gap: 6px; margin: 10px 0 4px; }
+.usm-set-row > span { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usm-settings .usm-switch { margin-top: 8px; }
+.usm-settings .usm-switch small { flex: none; }
+.usm .cx-theme-switch { justify-content: flex-start; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--u-line); background: var(--u-tile2); color: var(--u-ink); font-weight: 600; }
+.usm .cx-theme-dot, .usm .cx-mode-dot { display: none; }
+.usm .cxm-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--u-tile2); }
+.usm .cxm-seg button { flex: 1 0 auto; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usm .cxm-seg button.on { background: var(--u-acc); color: #fff; }
+/* the dictionary, over the map, as its own dialog */
+.usm-dict { position: absolute; inset: 0; z-index: 20; display: grid; justify-items: center; align-items: start; padding: 80px 16px 16px; background: #0000003d; }
+.usm-dict-card { display: flex; flex-direction: column; width: min(760px, 100%); max-height: 100%; background: var(--u-tile); border: 1px solid var(--u-line); border-radius: 20px; box-shadow: 0 8px 24px #0000003d; }
+.usm-dict-body { flex: 1; min-height: 0; overflow: auto; padding: 0 20px 20px; overscroll-behavior: contain; }
+.usm-dict-body .atlas-dictionary-results { max-height: none; }
+.usm-dict-body button { min-height: 44px; }
+/* the profile page (CX_UsProfile): a calm page over the map, on the page's own colors; its small corner map is drawn dark, like the map */
+.usm-prof { position: absolute; inset: 0; z-index: 8; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; background: var(--u-bg); color: var(--u-ink); }
+.usmp-bar { position: sticky; top: 0; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 12px 18px; background: var(--u-bg); border-bottom: 1px solid var(--u-line); }
+.usmp-bar-end { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; }
+.usmp-back { padding: 0 16px 0 12px; }
+.usmp { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr); gap: 28px 44px; max-width: 1180px; margin: 0 auto; padding: 28px 28px 48px; }
+.usmp-phone { grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 18px 18px 40px; }
+.usmp-main, .usmp-side { min-width: 0; }
+.usmp-face { margin-bottom: 14px; }
+.usmp-kicker { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--u-soft); }
+.usmp-name { margin: 8px 0 12px; font-size: 64px; line-height: 1.06; letter-spacing: -0.035em; font-weight: 800; overflow-wrap: anywhere; }
+.usm .usmp-name:focus, .usm .usmp-list h3:focus { outline: none; }
+.usmp-phone .usmp-name { font-size: 44px; }
+.usmp-sent { font-size: 18px; line-height: 1.45; }
+.usmp-fact { margin-top: 10px; font-size: 18px; font-weight: 700; line-height: 1.4; color: var(--u-soft); }
+.usmp-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+.usmp-main > section { margin-top: 28px; }
+.usmp-side > section + section { margin-top: 28px; }
+.usmp h2 { margin-bottom: 10px; font-size: 18px; font-weight: 700; }
+.usmp-cbox { position: relative; height: 380px; border-radius: 16px; overflow: hidden; border: 1px solid var(--u-line); }
+.usmp-phone .usmp-cbox { height: 320px; }
+.usmp-canvas { position: absolute; inset: 0; display: block; width: 100%; height: 100%; touch-action: pan-y; cursor: grab; }
+.usmp-note { display: block; margin-top: 8px; color: var(--u-mut); font-size: 14px; line-height: 1.4; }
+.usmp-jump { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.usmp-jump button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--u-line); background: var(--u-tile); color: var(--u-ink); font-weight: 600; }
+.usmp-jump small { color: var(--u-mut); font-size: 14px; }
+.usmp-glance ul { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+.usmp-glance li { display: grid; align-content: start; gap: 4px; padding: 14px; border-radius: 14px; background: var(--u-tile); border: 1px solid var(--u-line); }
+.usmp-glance b { font-size: 44px; line-height: 1.06; letter-spacing: -0.045em; font-weight: 800; color: var(--u-soft); }
+.usmp-glance li span { color: var(--u-mut); font-size: 14px; font-weight: 600; line-height: 1.35; }
+.usmp-row { display: grid; grid-template-columns: minmax(104px, 0.42fr) minmax(0, 1fr); gap: 4px 14px; padding: 12px 0; border-top: 1px solid var(--u-line); }
+.usmp-row dt { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usmp-row dd { display: grid; gap: 4px; min-width: 0; margin: 0; }
+.usmp-row dd ul { display: grid; gap: 2px; }
+.usmp-val, .usmp-row dd li { font-weight: 600; overflow-wrap: anywhere; }
+.usmp-row dd > .usmp-note { margin-top: 0; }
+.usmp-src { color: var(--u-mut); font-size: 14px; overflow-wrap: anywhere; }
+.usmp-src a, .usmp-row dd > a { color: var(--u-soft); overflow-wrap: anywhere; }
+.usmp-row dd > a { display: flex; align-items: center; min-height: 44px; font-weight: 600; }
+.usmp-row dd > .usm-more { justify-self: start; margin-top: 0; padding: 0; }
+.usmp-list { margin-top: 14px; }
+.usmp-list h3 { margin-bottom: 4px; color: var(--u-mut); font-size: 14px; font-weight: 600; outline: none; }
+.usmp-list h3 small { margin-left: 4px; }
+.usmp-list li > button, .usmp-list li > a, .usmp-list li > p { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--u-ink); text-align: left; text-decoration: none; }
+.usmp-list li > button:hover, .usmp-list li > a:hover, .usmp-list li > button:focus-visible, .usmp-list li > a:focus-visible { background: var(--u-tile2); }
+.usmp-cn { display: grid; flex: 1; gap: 1px; min-width: 0; }
+.usmp-cn > span { font-weight: 600; overflow-wrap: anywhere; }
+.usmp-cn small { color: var(--u-mut); font-size: 14px; overflow-wrap: anywhere; }
+.usmp-word { flex: none; max-width: 40%; color: var(--u-ink); font-size: 14px; font-weight: 700; text-align: right; }
+.usmp-side > .usm-preview { margin-top: 28px; }
+.usm-linked-acts { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+/* the hover card on a computer: beside what the mouse points at, never under the pointer and never in its way */
+.usm-hover { position: absolute; z-index: 5; pointer-events: none; padding: 12px 14px; border-radius: 14px; background: var(--u-tile); border: 1px solid var(--u-line); box-shadow: 0 8px 24px #0000003d; }
+.usm-hover-n { margin-top: 4px; font-size: 18px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.usm-hover-f { margin-top: 4px; font-size: 14px; line-height: 1.4; }
+.usm-hover-c { margin-top: 8px; color: var(--u-mut); font-size: 14px; }
+@media (max-width: 1000px) { .usmp { grid-template-columns: minmax(0, 1fr); } }
 .usm-panel-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 6px 16px; }
 .usm-panel-top h2 { font-size: 18px; font-weight: 700; }
 .usm-panel-body { flex: 1; overflow: auto; padding: 0 16px 16px; overscroll-behavior: contain; }
