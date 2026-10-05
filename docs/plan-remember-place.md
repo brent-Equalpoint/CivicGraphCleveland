@@ -8,7 +8,7 @@ Nothing personal leaves the browser. Place, answers and priorities never go into
 
 ## What it does
 
-- A small switch, "Remember my place on this device", appears right after someone picks a ward or neighborhood, and in Settings. It is off until they turn it on.
+- A small switch, labeled just "Remember this device" (the explanation belongs in the privacy policy, `docs/plan-privacy-policy.md`), appears right after someone picks a ward or neighborhood, and in Settings. It is off until they turn it on.
 - When it is on, the page saves one entry, `cx-place`, with a version number and the date saved. It holds only:
   - the Cleveland ward (or neighborhood name),
   - the federal state and district they chose.

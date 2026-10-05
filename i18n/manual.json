@@ -2,9 +2,8 @@
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
   "ward": "distrito",
+  "Remember this device": "Recordar este dispositivo",
   "Pick your state. If your state has more than one district, pick yours too. This stays on your device and is never sent.": "Elija su estado. Si su estado tiene más de un distrito, elija el suyo también. Esto se queda en su dispositivo y nunca se envía.",
-  "Remember my place on this device": "Recordar mi lugar en este dispositivo",
-  "Saves your ward and federal district here. Never your address.": "Guarda aquí su distrito y su distrito federal. Nunca su dirección.",
   "Saved on this device only.": "Guardado solo en este dispositivo.",
   "Forgotten. Your place stays only for this visit.": "Olvidado. Su lugar queda solo durante esta visita.",
   "This browser could not save your place. It stays for this visit.": "Este navegador no pudo guardar su lugar. Se queda durante esta visita.",

@@ -245,17 +245,19 @@ function cxPlaceForget() { try { localStorage.removeItem(CX_PLACE_KEY); } catch 
 function CxmRememberPlace() {
   const [on, setOn] = u.useState(cxPlaceRemembered);
   const [msg, setMsg] = u.useState(``);
+  const [bad, setBad] = u.useState(!1);
   const ios = /iPhone|iPad|iPod/.test(globalThis.navigator ? globalThis.navigator.userAgent : ``) && !(globalThis.navigator && globalThis.navigator.standalone);
   const toggle = () => {
-    if (on) { cxPlaceForget(); setOn(!1); setMsg(`Forgotten. Your place stays only for this visit.`); return; }
+    if (on) { cxPlaceForget(); setOn(!1); setBad(!1); setMsg(`Forgotten. Your place stays only for this visit.`); return; }
     const ok = cxPlaceSave();
     setOn(ok);
-    setMsg(ok ? `Saved on this device only.` : `This browser could not save your place. It stays for this visit.`);
+    setBad(!ok);
+    setMsg(ok ? `Saved on this device only.` : `This browser could not save your place. It stays for this visit.`);   // only a failure is shown; the rest is for screen readers, and the privacy policy says the rest
   };
   return (
     <div className="cxm-remember">
-      <button type="button" className={`cxm-switch ${on ? `on` : ``}`} aria-pressed={on} onClick={toggle}><span>Remember my place on this device<small>Saves your ward and federal district here. Never your address.</small></span><i><b /></i></button>
-      {msg && <p className="cxm-fine" role="status">{msg}</p>}
+      <button type="button" className={`cxm-switch ${on ? `on` : ``}`} aria-pressed={on} onClick={toggle}><span>Remember this device</span><i><b /></i></button>
+      {msg && <p className={bad ? `cxm-fine` : `cxm-sr`} role="status">{msg}</p>}
       {on && ios && <p className="cxm-fine">Add to Home Screen to keep this through the election.</p>}
     </div>
   );
