@@ -65,9 +65,9 @@ Word budget: 400 words showing before anything is opened (today it is 722). The 
 6. **Desktop page (about two days):** a sidebar panel through `build.py`, same sections, same data.
 7. **Checks throughout:** extend `city-hall` to cover the day tabs, "For you" with and without a ward, sheet and page width, Spanish, and light mode.
 
-## Decisions needed from you
+## Decisions (made 2026-10-05)
 
-1. Full screen with a back arrow on top of the tabs, or a sixth bottom tab called City Hall? The plan recommends the back-arrow page, and promoting it to a tab if it gets used.
-2. Is "For you" by ward and priorities the right filter, or do you want a topic row (housing, safety, money) as well?
-3. For "Take part": who confirms the public comment wording, and from which official page?
-4. Should the Today card show the next meeting only, or the next meeting plus what was just decided?
+1. Placement: a full page with a back arrow over the tabs, opened from the Today card, the story, and Explore. It can become its own tab later if it gets used.
+2. "For you": by your ward and your priorities. It stays on the device and is never a score.
+3. "Take part" (how to watch, public comment): ships without it. It comes back once a person confirms the wording from Council's own pages.
+4. The Today card shows the next meeting only: who meets when, and how many items are on it.

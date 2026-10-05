@@ -92,13 +92,13 @@ Each phase ends with the full gate passing and a screenshot review before the ne
 - **Spanish.** Every new line needs Spanish. Names from official records stay as they are.
 - **Two maps for a while.** Keep the old one reachable until the new one passes, then remove it.
 
-## Decisions needed from you
+## Decisions (made 2026-10-05)
 
-1. **Hover.** Names are on the map. Should hub totals ("Senate, 100 people") also show in a small hover box, as in the example, or only on the hub's label and in the sheet?
-2. **Hubs.** Only Senate, House, Executive, Courts, and committees? Or policy areas as hubs too, so bills and votes gather by topic?
-3. **Everyone at once.** All people and committees on screen at the start, or people first and committees on zoom or focus?
-4. **Party.** A dated, sourced fact on a profile only, or also a filter chip? (Never a color.)
-5. **d3.** Use the force and zoom parts of d3 as the template does, or port the behavior into our small engine?
-6. **Left menu.** Does the desktop get the Network, People, Votes by topic menu from the example, replacing the current federal entry points?
-7. **Recording the kit.** Vendor it into this repo, with Futureland as owner and Equalpoint credited as builder?
-8. **Order.** Map first (phases 1 to 5), or profile page first?
+1. Hover: hub totals are drawn in the hub's own label and in the side sheet. Nothing appears only on hover.
+2. Hubs: Senate, House, Executive, Courts, and committees. Not policy areas.
+3. Who is shown: everyone at once, with names by priority and more as you zoom.
+4. Party: a dated, sourced fact on the profile only. Never a color, never on the map, not a filter.
+5. Physics: add the force and zoom parts of d3, as the template does.
+6. Left menu on desktop: yes, Network, People, Votes by topic, replacing the current federal entry points.
+7. The kit: vendor a copy into `vendor/relationship-map-kit/`; Futureland owns it, Equalpoint is credited as builder.
+8. Order: the map first (phases 1 to 5), then the profile page.

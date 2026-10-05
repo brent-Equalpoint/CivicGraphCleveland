@@ -62,10 +62,6 @@ The kit's map (`src/flx-vcfest.template.html`, the `skyBuild` function and the l
 7. **Checks:** map fills at least 90% of the viewport on phone and desktop; labels never overlap; no names appear only on hover; no horizontal scroll; Still when the device asks for less motion; Spanish; light mode; color-vision; axe. Browser checks for pinch and drag with simulated touch, and one pass on a real phone.
 8. **Remove the old Sky code** once the new one passes, so there is one map.
 
-## Open questions for you
+## Decisions (made 2026-10-05; the full list is in `docs/plan-us-graph-master.md`)
 
-1. **Hover.** You said no names that pop up on hover. The kit's map does show a small hover box with a group's totals (for example "45 startups, 36 investors"). Should hub totals appear in a hover box, in a label on the hub, or only in the side sheet?
-2. **Groups.** Should the hubs be only Senate, House, Executive and Courts, or should policy areas (the Congressional Research Service areas) be hubs too, so bills and votes gather by topic?
-3. **Who is in the map.** All 540 members and every committee at once, or members first with committees appearing on zoom or on focus? The kit shows everyone at once and relies on zoom.
-4. **d3.** Add the force and zoom parts of d3 to the page (a few tens of kilobytes), or port the kit's behavior into our own small engine? The first is faster and matches the template; the second keeps the page smaller.
-5. **Recording the kit.** Is vendoring it into this repo, with Futureland as owner and Equalpoint credited as builder, the right record?
+Hub totals on the hub's label and in the sheet, no hover box. Hubs are the chambers, executive, courts and committees. Everyone shown at once. Party only as a dated fact on a profile. d3 force and zoom added. Kit vendored with Futureland as owner and Equalpoint credited.
