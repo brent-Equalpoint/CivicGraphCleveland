@@ -144,7 +144,7 @@ function CxmToday() {
       <div className="cxm-stories" role="group" aria-label="Stories">
         {stories.map((s, i) => (
           <button key={s.id} type="button" className={`cxm-story-btn ${seen[s.id] ? `seen` : ``}`} aria-label={`${s.label} story${seen[s.id] ? `, seen` : `, new`}`} onClick={() => setOverlay({ type: `story`, list: stories, i, f: 0 })}>
-            <span className="cxm-ring" aria-hidden="true">{s.portrait ? <img src={cxmAsset(s.portrait)} alt="" /> : <span>{s.ini}</span>}</span>
+            <span className="cxm-ring" aria-hidden="true">{cxStoryMark(s)}</span>
             <small>{s.label}</small>
           </button>
         ))}
@@ -216,7 +216,7 @@ function CxmStory() {
     <div className={`cxm-overlay cxm-story cxm-story-${s.id}`} role="dialog" aria-modal="true" aria-label={`${s.name} story`}>
       <div className="cxm-bars">{s.frames.map((_, k) => <i key={k} className={k <= f ? `on` : ``} />)}</div>
       <div className="cxm-story-head">
-        <span className="cxm-story-who">{s.portrait ? <img src={cxmAsset(s.portrait)} alt="" /> : <span>{s.ini}</span>}<span><strong>{s.name}</strong><small>{cxTight(s.when)}</small></span></span>
+        <span className="cxm-story-who">{cxStoryMark(s)}<span><strong>{s.name}</strong><small>{cxTight(s.when)}</small></span></span>
         <button type="button" aria-label="Close story" onClick={() => setOverlay(null)}><CXI.X size={22} /></button>
       </div>
       <div className="cxm-story-bar2"><button type="button" className="cxm-story-text" aria-pressed={asText} onClick={() => setAsText(!asText)}>{asText ? `Back to the story` : `Read as text`}</button></div>
