@@ -1,5 +1,7 @@
 # Plan: a knowledge map of how the federal government is connected
 
+> Update 2026-10-05: the map itself is being rebuilt on the relationship-map template, full page and shaped by gravity. The top plan is `docs/plan-us-graph-master.md` and the technical detail is `docs/plan-us-graph-rebuild.md`. Where they disagree with the Sky phases below, those two win.
+
 Written Oct 3, 2026. Nothing here is built. It is a plan to pick up when we choose to, in the same form as the other plans.
 
 The goal: someone can see who is connected to whom in the federal government, open any person, committee, or agency, and read
