@@ -1423,6 +1423,84 @@ async function clipBad(p) {
     return out.slice(0, 12);
   });
 }
+/* Text on top of text. A number that runs into its label, a line that sits over the next one: no two pieces of visible text may overlap. Every page the accessibility check visits is
+   scrolled from top to bottom, and the text that is really painted (not hidden in a closed section, not covered by a sheet) is compared. */
+const OVERLAP_FN = () => {
+  const boxes = [];
+  const walker = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT);
+  let n;
+  while ((n = walker.nextNode())) {
+    const t = n.nodeValue.replace(/\s+/g, ' ').trim();
+    if (t.length < 2) continue;
+    const el = n.parentElement;
+    if (!el || el.closest('svg, canvas, script, style, noscript, [aria-hidden="true"], .cxm-sr, .sp-ext, .cxm-fresh-hint')) continue;
+    const cs = getComputedStyle(el);
+    if (cs.visibility !== 'visible' || cs.display === 'none' || parseFloat(cs.opacity) < 0.05) continue;
+    const range = document.createRange(); range.selectNodeContents(n);
+    for (const r of range.getClientRects()) {
+      if (r.width < 4 || r.height < 6 || r.bottom < 0 || r.top > innerHeight || r.right < 0 || r.left > innerWidth) continue;
+      const y = Math.min(innerHeight - 1, Math.max(0, r.top + r.height / 2));
+      const painted = [0.1, 0.3, 0.5, 0.7, 0.9].some((f) => { const top = document.elementFromPoint(Math.min(innerWidth - 1, Math.max(0, r.left + r.width * f)), y); return !!top && el.contains(top); });
+      if (!painted) continue;   // painted: somewhere along the text, what is on top is the text's own element (so text in a closed section or under a sheet is not counted, but text that another text partly covers is)
+      boxes.push({ t: t.slice(0, 28), el, x0: r.left, x1: r.right, y0: r.top, y1: r.bottom });
+    }
+  }
+  boxes.sort((a, b) => a.y0 - b.y0);
+  const out = [];
+  const name = (e) => `${e.tagName.toLowerCase()}${typeof e.className === 'string' && e.className ? '.' + e.className.split(' ')[0] : ''}`;
+  for (let i = 0; i < boxes.length; i++) {
+    for (let j = i + 1; j < boxes.length && boxes[j].y0 < boxes[i].y1; j++) {
+      const a = boxes[i], b = boxes[j];
+      if (a.el === b.el) continue;
+      const w = Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0), h = Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0);
+      if (w > 3 && h > 3 && w * h > 0.15 * Math.min((a.x1 - a.x0) * (a.y1 - a.y0), (b.x1 - b.x0) * (b.y1 - b.y0))) out.push(`"${a.t}" (${name(a.el)}) over "${b.t}" (${name(b.el)}), ${Math.round(w)}x${Math.round(h)}px`);
+    }
+  }
+  return out.slice(0, 6);
+};
+async function overlapScan(p) {
+  const info = await p.evaluate(() => {
+    const cands = [document.scrollingElement, ...document.querySelectorAll('*')].filter((e) => e && e.scrollHeight - e.clientHeight > 60 && (e === document.scrollingElement || (/(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.clientWidth > 280)));
+    const sheet = document.querySelector('.cxm-sheet');
+    const el = sheet && cands.includes(sheet) ? sheet : cands.sort((a, b) => (b.scrollHeight - b.clientHeight) - (a.scrollHeight - a.clientHeight))[0] || document.scrollingElement;
+    window.__scroller = el;
+    return { h: el.scrollHeight, vh: el === document.scrollingElement ? innerHeight : el.clientHeight };
+  });
+  const step = Math.max(200, Math.floor(info.vh * 0.8)), found = new Set();
+  for (let y = 0, k = 0; y < info.h && k < 18; y += step, k++) {
+    await p.evaluate((y) => { window.__scroller.scrollTo(0, y); }, y); await wait(70);
+    for (const f of await p.evaluate(OVERLAP_FN)) found.add(f);
+  }
+  return [...found];
+}
+CHECKS['text-overlap'] = async () => {
+  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
+  for (const [name, url, o] of pages) {
+    const p = await open(url, o);
+    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
+    const bad = await overlapScan(p);
+    expect(bad.length === 0, `text overlaps text on ${name}: ` + bad.slice(0, 3).join('; '));
+    await done(p);
+  }
+  if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'sheets') {   // the Profile sheet (counts, lists, votes) is where the big numbers are
+    const s = await open('/?panel=profiles#phone', { mobile: true, easy: false });
+    await clickText(s, 'Profile', '.cxm-prof-actions button'); await wait(900);
+    const bad = await overlapScan(s);
+    expect(bad.length === 0, 'text overlaps text on the Profile sheet: ' + bad.slice(0, 3).join('; '));
+    await done(s);
+  }
+  // the detector must catch it, or a clean result means nothing
+  if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'selftest') {
+    const t = await open('/#phone', { mobile: true, easy: false });
+    await t.evaluate(() => {
+      const d = document.createElement('div'); d.style.cssText = 'position:fixed;top:300px;left:20px;z-index:99999;background:#222;color:#fff;font:34px sans-serif';
+      d.innerHTML = '<span style="display:inline-block;width:20px;overflow:visible;white-space:nowrap">357</span><span>voted yea</span>'; document.body.appendChild(d);
+    });
+    const hit = await t.evaluate(OVERLAP_FN);
+    expect(hit.some((x) => /357/.test(x) && /voted yea/.test(x)), 'the overlap detector missed a number running into its label');
+    await done(t);
+  }
+};
 CHECKS['no-bleed'] = async () => {
   const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
   for (const [name, url, o] of pages) {

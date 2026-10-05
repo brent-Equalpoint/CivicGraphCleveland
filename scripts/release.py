@@ -155,7 +155,7 @@ def verify(key):
         if rc:
             fail(out[-2500:])
         # the light look: the layout, contrast, and color-vision checks again with light mode on, in both styles
-        light = ",".join(["axe", "no-bleed", "story-fit", "color-vision", "targets", "titles-never-cut", "print"])
+        light = ",".join(["axe", "no-bleed", "text-overlap", "story-fit", "color-vision", "targets", "titles-never-cut", "print"])
         for style in ("bento", "original"):
             rc, out = run(["node", "scripts/checks/run.js", "--only", light], env=dict(os.environ, CHECK_MODE="light", CHECK_THEME=style))
             print(f"  light mode, {style}: " + (out.splitlines()[-1] if out else ""))
