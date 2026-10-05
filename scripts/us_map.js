@@ -19,7 +19,7 @@ function load() {
   const cut = (src, marker) => { const i = src.indexOf(marker); if (i < 0) throw new Error(`marker not found: ${marker}`); return src.slice(0, i); };
   const ctx = vm.createContext({ setTimeout, clearTimeout, setInterval, clearInterval, performance, console });
   vm.runInContext(d3 + '\n' + cut(us, '/* ---------- Your members') + '\n' + read('ext/cx-us-model.jsx') + '\n' + cut(map, '/* ---------- the page (React)') +
-    '\n;this.api = { CXD3, cxUsGraph, cxUsHash, cxUsMapModel, cxUsMapSim, cxUsmSeed, cxUsMapLabels, cxUsmFit, cxUsmBox, cxUsmIds, CX_USM_LINES, CX_USM_SOURCES, CX_USM_COLORS };', ctx);
+    '\n;this.api = { CXD3, cxUsGraph, cxUsHash, cxUsMapModel, cxUsMapSim, cxUsmSeed, cxUsMapLabels, cxUsmFit, cxUsmBox, cxUsmIds, CX_USM_LINES, CX_USM_SOURCES, CX_USM_COLORS, CX_USM_FAMILY };', ctx);
   return ctx.api;
 }
 

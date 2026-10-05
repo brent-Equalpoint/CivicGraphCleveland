@@ -68,9 +68,11 @@ if (M.nodes.some((n) => 'party' in n)) fail('a map node carries party');
 if (/\b(Republican|Democrat|Democratic|Independent|conservative|liberal)\b/i.test(JSON.stringify(A.CX_USM_LINES) + JSON.stringify(M.nodes.filter((n) => n.kind !== 'person').map((n) => n.label)))) fail('a party or ideology word in the map text');
 if (/\b(Strong|Some|Light)\b|\bscores?\b|\brank(s|ed)?\b|\bmatch(es)?\b|%/.test(JSON.stringify(A.CX_USM_LINES) + JSON.stringify(M.nodes.map((n) => n.totalText || '')))) fail('a strength or score word in the map text');
 if (/[–—]/.test(words)) fail('a dash in the map text');
-const colors = new Set(Object.values(A.CX_USM_COLORS));
+const colors = new Set([...Object.values(A.CX_USM_COLORS), ...Object.values(A.CX_USM_FAMILY).flatMap((f) => Object.values(f))]);
 const tokens = JSON.parse(fs.readFileSync(path.join(ROOT, 'design', 'tokens.json'), 'utf8')).meaning.find((m) => /United States chambers/.test(m.name));
-eq([...colors].sort(), Object.values(tokens.colors).sort(), 'the map colors are the registered meaning group, nothing new');
+const registered = new Set(Object.values(tokens.colors));
+const unregistered = [...colors].filter((c) => !registered.has(c));
+if (unregistered.length) fail('the map uses colors that are not in the registered meaning group: ' + unregistered.join(', '));
 
 // physics: the same twice, every node placed, nothing a bad number
 const t0 = Date.now();
