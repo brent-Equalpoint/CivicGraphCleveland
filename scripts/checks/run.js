@@ -1250,7 +1250,7 @@ const CHECKS = {
         await clickText(p, 'Show', '.usm-show-btn'); words += ' ' + (await txt(p, '.usm'));
         const kinds = await p.$$eval('.usm-toggles:first-of-type .usm-switch', (bs) => bs.map((b) => [b.querySelector('span').textContent, b.querySelector('svg').innerHTML]));
         expect(kinds.length === 4 && new Set(kinds.map((x) => x[1])).size === 4 && kinds.map((x) => x[0]).join() === 'People,Committees,Agencies,Courts', 'the kinds are not told apart by four shapes and four words');
-        expect((await count(p, '.usm-key li svg')) === 5 && (await p.$$eval('.usm-key li', (ls) => ls.every((l) => l.textContent.trim().length > 3))), 'a color in the key has no word beside it');
+        expect((await count(p, '.usm-key li svg')) === 10 && (await p.$$eval('.usm-key li', (ls) => ls.every((l) => l.textContent.trim().length > 3))), 'a color in the key has no word beside it');
         await clickText(p, 'Done', '.usm-panel .usm-done');
         for (const who of ['Jon Husted', 'Senate Committee on Finance', 'Samuel A. Alito Jr.', 'Donald J. Trump', 'Agriculture Department', 'Supreme Court of the United States']) {
           await p.click('.usm-zoom button[aria-label="Fit everything"]'); await wait(800);

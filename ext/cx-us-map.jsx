@@ -28,7 +28,19 @@ const CX_USM_SOURCES = {
   circuits: { registry: `us_circuits`, label: `28 U.S.C. 41, the federal circuits`, url: `https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title28-section41&num=0&edition=prelim` },
 };
 /* the meaning group "United States chambers, agencies, and courts" in design/tokens.json; every color is also said by a shape and a word */
-const CX_USM_COLORS = { senate: `#7aa2ff`, house: `#5fd6c4`, joint: `#d6a3ff`, exec: `#ffc66b`, courts: `#ff9db8` };
+const CX_USM_COLORS = { senate: `#7aa2ff`, house: `#4cc9f0`, exec: `#ffc66b`, courts: `#ff9db8` };
+/* each category has its own family of hues and the branch moves the hue inside it: people are blues, committees are greens, agencies are ambers, courts are pink */
+const CX_USM_FAMILY = {
+  person: { senate: `#7aa2ff`, house: `#4cc9f0`, exec: `#a78bfa`, courts: `#8fa3c9` },
+  committee: { senate: `#4cd37b`, house: `#5fd6c4`, joint: `#c8e86a` },
+  agency: { dept: `#ffc66b`, other: `#ff9a5a` },
+};
+function cxUsmColor(m) {
+  if (m.kind === `person`) return CX_USM_FAMILY.person[m.branch] || CX_USM_FAMILY.person.courts;
+  if (m.kind === `committee`) return CX_USM_FAMILY.committee[m.branch] || CX_USM_FAMILY.committee.joint;
+  if (m.kind === `agency`) return m.sub ? CX_USM_FAMILY.agency.other : CX_USM_FAMILY.agency.dept;
+  return CX_USM_COLORS[m.branch];
+}
 
 /* how hard a member is pulled to their chamber and, split across their seats, to their committees (lighter than the chamber, as the plan says) */
 const CX_USM_PULL = { memberChamber: 0.26, memberCommittee: 0.5 };
@@ -66,9 +78,9 @@ function cxUsMapModel(d, g) {
       const dup = committeeLabels.get(n.label) > 1;
       // a joint committee keeps its full name ("Joint Committee on Taxation", not "Taxation", which would read like a policy area)
       const label = cxUsmShort(n.c.chamber === `joint` ? n.name : dup ? `${n.c.chamber === `senate` ? `Senate` : `House`} ${n.label}` : n.label);
-      Object.assign(m, { kind: `committee`, shape: `diamond`, label, total: n.c.members, totalText: cxUsmPlural(n.c.members, `member`, `members`), r: 6 + Math.sqrt(n.c.members) * 1.1, charge: -110 });
+      Object.assign(m, { kind: `committee`, shape: `pentagon`, label, total: n.c.members, totalText: cxUsmPlural(n.c.members, `member`, `members`), r: 6 + Math.sqrt(n.c.members) * 1.1, charge: -110 });
     } else if (n.kind === `agency`) {
-      Object.assign(m, { kind: `agency`, shape: `square`, label: cxUsmShort(n.label, 28), r: n.a.parent_id ? 2.8 : 3.8, charge: -14 });
+      Object.assign(m, { kind: `agency`, sub: !!n.a.parent_id, shape: `square`, label: cxUsmShort(n.label, 28), r: n.a.parent_id ? 2.8 : 3.8, charge: -14 });
     } else if (n.kind === `court`) {
       const t = n.c.type;
       Object.assign(m, { kind: `court`, shape: `hex`, label: cxUsmShort(n.label, 28), r: t === `supreme` ? 7 : t === `appeals` ? 5.4 : 4, charge: t === `supreme` ? -160 : t === `appeals` ? -60 : -16 });
@@ -403,10 +415,10 @@ function cxUsmAreaMembers(vd, area) {
   return ids;
 }
 
-/* one shape on the canvas: circle (a person), diamond (a committee), square (an agency), hexagon (a court) */
+/* one shape on the canvas: circle (a person), pentagon (a committee), square (an agency), hexagon (a court) */
 function cxUsmPath(x, shape, px, py, r) {
   x.beginPath();
-  if (shape === `diamond`) { x.moveTo(px, py - r * 1.25); x.lineTo(px + r, py); x.lineTo(px, py + r * 1.25); x.lineTo(px - r, py); x.closePath(); }
+  if (shape === `pentagon`) { for (let k = 0; k < 5; k++) { const a = -Math.PI / 2 + (k * 2 * Math.PI) / 5, qx = px + r * 1.25 * Math.cos(a), qy = py + r * 1.25 * Math.sin(a) + r * 0.1; if (k) x.lineTo(qx, qy); else x.moveTo(qx, qy); } x.closePath(); }
   else if (shape === `square`) x.rect(px - r * 0.9, py - r * 0.9, r * 1.8, r * 1.8);
   else if (shape === `hex`) { for (let k = 0; k < 6; k++) { const a = -Math.PI / 2 + (k * Math.PI) / 3, qx = px + r * 1.15 * Math.cos(a), qy = py + r * 1.15 * Math.sin(a); if (k) x.lineTo(qx, qy); else x.moveTo(qx, qy); } x.closePath(); }
   else x.arc(px, py, r, 0, 6.2832);
@@ -417,7 +429,7 @@ function CxUsmShape({ shape, color, line }) {
   if (line) return <svg className="usm-glyph" width="26" height="12" viewBox="0 0 26 12" aria-hidden="true"><line x1="1" y1="6" x2="25" y2="6" stroke="currentColor" strokeWidth={line === `lead` ? 3 : 1.6} strokeDasharray={line === `appointed` ? `5 4` : line === `oversees` ? `1 4` : undefined} strokeLinecap="round" /></svg>;
   return (
     <svg className="usm-glyph" width="16" height="16" viewBox="0 0 16 16" aria-hidden="true">
-      {shape === `diamond` ? <path d="M8 1.5L13.5 8L8 14.5L2.5 8Z" fill={c} /> : shape === `square` ? <rect x="3" y="3" width="10" height="10" fill={c} /> : shape === `hex` ? <path d="M8 1.6L13.6 4.8V11.2L8 14.4L2.4 11.2V4.8Z" fill="none" stroke={c} strokeWidth="1.8" /> : shape === `ring` ? <circle cx="8" cy="8" r="5.6" fill="none" stroke={c} strokeWidth="1.8" /> : <circle cx="8" cy="8" r="5" fill={c} />}
+      {shape === `pentagon` ? <path d="M8 1.5L14.2 6L11.9 13.3H4.1L1.8 6Z" fill={c} /> : shape === `square` ? <rect x="3" y="3" width="10" height="10" fill={c} /> : shape === `hex` ? <path d="M8 1.6L13.6 4.8V11.2L8 14.4L2.4 11.2V4.8Z" fill="none" stroke={c} strokeWidth="1.8" /> : shape === `ring` ? <circle cx="8" cy="8" r="5.6" fill="none" stroke={c} strokeWidth="1.8" /> : <circle cx="8" cy="8" r="5" fill={c} />}
     </svg>
   );
 }
@@ -672,7 +684,7 @@ function CX_UsMap({ phone, onExit }) {
         const px = X(i), py = Y(i); if (px < -30 || py < -30 || px > s.W + 30 || py > s.H + 30) continue;
         let a = (on && !on.has(i)) || c.dimF(i) ? 0.13 : quiet ? 0.7 : 1;
         if (live && !on) a *= 0.84 + 0.16 * Math.sin(now / 1700 + i * 2.39996);
-        x.globalAlpha = a; const col = CX_USM_COLORS[m.branch];
+        x.globalAlpha = a; const col = cxUsmColor(m);
         cxUsmPath(x, m.shape, px, py, sr(i));
         if (m.shape === `hex`) { x.fillStyle = col; x.globalAlpha = a * 0.28; x.fill(); x.globalAlpha = a; x.strokeStyle = col; x.lineWidth = 1.6; x.stroke(); }
         else { x.fillStyle = col; x.fill(); }
@@ -996,7 +1008,7 @@ function CX_UsMap({ phone, onExit }) {
       <div className="usm-panel-top"><h2>Show</h2><button type="button" className="usm-done" onClick={() => setPanel(!1)}>Done</button></div>
       <div className="usm-panel-body">
         <fieldset className="usm-toggles"><legend>On the map</legend>
-          {[[`people`, `People`, `circle`], [`committees`, `Committees`, `diamond`], [`agencies`, `Agencies`, `square`], [`courts`, `Courts`, `hex`]].map(([key, t, shape]) => (
+          {[[`people`, `People`, `circle`], [`committees`, `Committees`, `pentagon`], [`agencies`, `Agencies`, `square`], [`courts`, `Courts`, `hex`]].map(([key, t, shape]) => (
             <button key={key} type="button" className="usm-switch" aria-pressed={show[key]} onClick={() => setShow({ ...show, [key]: !show[key] })}><CxUsmShape shape={shape} /><span>{t}</span><small>{counts[key]}</small></button>
           ))}
         </fieldset>
@@ -1013,8 +1025,12 @@ function CX_UsMap({ phone, onExit }) {
         <div className="usm-motion" role="group" aria-label="Motion"><span>Motion</span>{[[`still`, `Still`], [`calm`, `Calm`], [`live`, `Live`]].map(([id, t]) => <button key={id} type="button" aria-pressed={motion === id} className={motion === id ? `on` : ``} onClick={() => chooseMotion(id)}>{t}</button>)}</div>
         <div className="usm-key">
           <h3>Key</h3>
-          <ul>{[[`senate`, `circle`, `Senate`], [`house`, `circle`, `House`], [`joint`, `diamond`, `Joint committees`], [`exec`, `square`, `Executive branch`], [`courts`, `hex`, `Courts`]].map(([b, shape, t]) => <li key={b}><CxUsmShape shape={shape} color={CX_USM_COLORS[b]} /><span>{t}</span></li>)}</ul>
-          <p className="usm-note">Circles are people, diamonds are committees, squares are agencies, and hexagons are courts. A ring is a branch, with its total. Things sit near what they are tied to on the record. Distance is not a rank.</p>
+          {[[`People`, `circle`, [[`Senators`, CX_USM_FAMILY.person.senate], [`Representatives`, CX_USM_FAMILY.person.house], [`Executive officials`, CX_USM_FAMILY.person.exec], [`Judges`, CX_USM_FAMILY.person.courts]]],
+            [`Committees`, `pentagon`, [[`Senate`, CX_USM_FAMILY.committee.senate], [`House`, CX_USM_FAMILY.committee.house], [`Joint`, CX_USM_FAMILY.committee.joint]]],
+            [`Agencies`, `square`, [[`Departments`, CX_USM_FAMILY.agency.dept], [`Other agencies`, CX_USM_FAMILY.agency.other]]],
+            [`Courts`, `hex`, [[`Courts`, CX_USM_COLORS.courts]]]].map(([g, shape, rows]) => (
+            <ul key={g} aria-label={g}>{rows.map(([t, color]) => <li key={t}><CxUsmShape shape={shape} color={color} /><span>{t}</span></li>)}</ul>))}
+          <p className="usm-note">Circles are people, pentagons are committees, squares are agencies, and hexagons are courts. A ring is a branch, with its total. Things sit near what they are tied to on the record. Distance is not a rank.</p>
           {!phone && <p className="usm-note">Keys: ] and [ move, Enter selects, Esc clears, S solos, arrows pan, + and - zoom, / searches.</p>}
         </div>
         <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. The terms of those sources have not yet been read by a person. Party is never shown on the map.`}</p>
