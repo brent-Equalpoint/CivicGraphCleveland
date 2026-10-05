@@ -244,7 +244,6 @@ const CX_USM_FONT = `"Schibsted Grotesk", Inter, ui-sans-serif, system-ui, sans-
 function cxUsmIsland() { return document.documentElement.getAttribute(`data-cx-theme`) === `original` ? `#141210` : `#0f1012`; }
 function cxUsmLess() { return !!(globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches); }
 const CX_USM_TERR = new Set([`DC`, `PR`, `GU`, `VI`, `AS`, `MP`]);
-function cxUsmDot(s) { return /[.!?]$/.test(s) ? s : `${s}.`; }
 
 /* where a node is listed in the Index: its door and group (the same doors as cxUsDoors) */
 function cxUsmDoorOf(n) {
@@ -492,7 +491,7 @@ function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo,
         <button type="button" className="usm-done" onClick={onClose}>Done</button>
       </div>
       <div className="usm-sheet-body" ref={bodyRef}>
-        <h2 id="usm-sheet-h" className="usm-name">{cxUsmDot(info.name)}</h2>
+        <h2 id="usm-sheet-h" className="usm-name">{info.name}{!/[.!?]$/.test(info.name) && <span className="usm-dot">.</span>}</h2>
         <p className="usm-sent">{info.sentence}</p>
         <p className="usm-fact">{info.fact}</p>
         {info.lists.map((L) => (
@@ -853,7 +852,7 @@ function CX_UsMap({ phone, onExit }) {
   const pick = (i, open) => {
     const s = S.current; s.t0 = performance.now(); s.cursor = null;
     setSel(i); if (open) setSheet(!0);
-    const n = g.nodes[i]; setSay([cxUsmDot(n.name), typeof cxUsWhere(n) === `string` ? cxUsmDot(cxUsWhere(n)) : ``]);
+    const n = g.nodes[i]; setSay([n.name, typeof cxUsWhere(n) === `string` ? cxUsWhere(n) : ``]);
     if (page !== `network` || view !== `sky`) { setPage(`network`); setView(`sky`); }
     requestAnimationFrame(() => focusFit(i));
   };
@@ -910,7 +909,7 @@ function CX_UsMap({ phone, onExit }) {
     if (K === `]` || K === `[`) {
       e.preventDefault(); const L = stops(); if (!L.length) return;
       let j = L.indexOf(s.cursor !== null ? s.cursor : sel); j = K === `]` ? (j + 1) % L.length : j <= 0 ? L.length - 1 : j - 1;
-      s.cursor = L[j]; const n = g.nodes[L[j]]; setSay([cxUsmDot(n.name), L[j] === sel ? `Selected.` : `Press Enter to select.`]); request(); return;
+      s.cursor = L[j]; const n = g.nodes[L[j]]; setSay([n.name, L[j] === sel ? `Selected.` : `Press Enter to select.`]); request(); return;
     }
     if (K === `Enter` || K === ` `) { e.preventDefault(); if (s.cursor !== null && s.cursor !== sel) { pick(s.cursor, !0); return; } if (sel !== null) setSheet(!0); return; }
     if (K === `Escape`) { if (s.cursor !== null) { s.cursor = null; request(); return; } if (sheet) { setSheet(!1); return; } if (sel !== null) { clear(); return; } if (solo) setSolo(null); return; }
@@ -1097,7 +1096,7 @@ function CX_UsMap({ phone, onExit }) {
         </div>
       )}
       {!sky && <div className="us usm-text">{textView}</div>}
-      <p className="usm-sr" role="status" aria-live="polite">{Array.isArray(say) ? say.filter(Boolean).map((t, k) => <span key={k}>{k ? ` ` : ``}{t}</span>) : say}</p>
+      <p className="usm-sr" role="status" aria-live="polite">{Array.isArray(say) ? say.filter(Boolean).map((t, k) => <span key={k}>{k ? <span>, </span> : null}<span>{t}</span></span>) : say}</p>
     </section>
   );
 }
