@@ -417,6 +417,7 @@ const CHECKS = {
     await tap(); all.push(await frame());
     expect(/\$196/.test(all[1]) && /Now about \$108\.50\. The increase is \$87\.50/.test(all[1]), `the cost frame is wrong: ${all[1].slice(0, 160)}`);
     await tap();
+    expect(await m.evaluate(() => !document.querySelector('.cxm-story-text')), 'the number pad screen still shows Read as text, which breaks the screen');
     for (const k of ['2', '5', '0', '0', '0', '0']) await m.evaluate((k) => [...document.querySelectorAll('.lv-keys button')].find((b) => b.getAttribute('aria-label') === k).click(), k);
     all.push(await frame());
     expect(/\$250,000/.test(all[2]) && /Issue 10: about \$198 a year\. Issue 11: about \$490 a year/.test(all[2]), `the number pad did not scale the figures: ${all[2].slice(0, 200)}`);

@@ -219,7 +219,7 @@ function CxmStory() {
         <span className="cxm-story-who">{cxStoryMark(s)}<span><strong>{s.name}</strong><small>{cxTight(s.when)}</small></span></span>
         <button type="button" aria-label="Close story" onClick={() => setOverlay(null)}><CXI.X size={22} /></button>
       </div>
-      <div className="cxm-story-bar2"><button type="button" className="cxm-story-text" aria-pressed={asText} onClick={() => setAsText(!asText)}>{asText ? `Back to the story` : `Read as text`}</button></div>
+      {(asText || !(/^levy-/.test(s.id) && fr.type === `home`)) && <div className="cxm-story-bar2"><button type="button" className="cxm-story-text" aria-pressed={asText} onClick={() => setAsText(!asText)}>{asText ? `Back to the story` : `Read as text`}</button></div>}
       <p className="cxm-sr" aria-live="polite" aria-atomic="true">{asText ? `` : `Step ${Math.min(f, s.frames.length - 1) + 1} of ${s.frames.length}. ${fr.k ? `${fr.k}. ` : ``}${fr.fig ? `${fr.fig} ` : ``}${fr.big} ${fr.small}`}</p>
       {asText && (
         <div className="cxm-story-all">

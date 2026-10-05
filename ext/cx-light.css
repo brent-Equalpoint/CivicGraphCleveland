@@ -43,3 +43,4 @@ html[data-cx-mode="light"] .cxm-dates .cxm-date-today em { background: #7a4b00; 
 /* the United States graph (ext/cx-us-map.jsx): the map is drawn on its canvas in the dark island colors in both modes, like the desktop map panels; the floating controls, the sheet, and the text views take the light palette (tokens: modes.light) */
 html[data-cx-mode="light"] .usm { --u-bg: #f5f6fa; --u-tile: #ffffff; --u-tile2: #eceef5; --u-line: #d9dce6; --u-ink: #14161d; --u-mut: #4a4f5e; --u-acc: #2f66f3; --u-acc2: #1f4fd6; --u-soft: #1a45c4; }
 html[data-cx-mode="light"][data-cx-theme="original"] .usm { --u-bg: #faf6f1; --u-tile: #ffffff; --u-tile2: #f3ebe2; --u-line: #e1d6c9; --u-ink: #1f1814; --u-mut: #5a4d42; --u-acc: #c2410c; --u-acc2: #a8330a; --u-soft: #9a2f08; }
+html[data-cx-mode="light"] .cxm-story .cxm-keys button, html[data-cx-mode="light"] .cxm-keypad .cxm-keys button { color: #ffffff; }
