@@ -93,3 +93,83 @@ On the phone link to the map, the federal record arrived at 5,462 ms and the fir
    halves the phone's frame rate; about 80% of it is d3's many-body and collision forces. Label placement is under 0.2 ms a frame even
    zoomed in, so a spatial grid would not show.
 6. **Idle is quiet.** Today sitting still runs only the banner drawings: about 4 ms of main-thread work in 3 s.
+
+## What changed (nothing a resident sees or reads)
+
+1. **The old Sky's layout runs only for the old Sky** (`ext/cx-us.jsx`). `cxUsGraph` builds the federal record without it, and `cxUsSky(g)`
+   places it once when the old Sky is drawn (its sheet is still registered, though nothing opens it). The new map, the Index, the profiles,
+   and Easy mode never read those positions. Proven the same: the old Sky's positions, rings, and clusters from the new code equal the
+   committed code's, value for value; building the record went from 117 ms to 4 ms in Node; `scripts/test_us_model.js` now also fails if
+   building the record lays out the old Sky again. `site/us/map-2026.json` is byte for byte the same (`ce0d604b...`).
+2. **Dates are worked out once** (`cxShortDate`, `cxDayET`, `cxClockET` in `ext/cx-live.jsx`, `cxmDate` in `ext/cxm-core.jsx`, `cxVoteDate`
+   in `ext/cx-us.jsx`). Each keeps one `Intl.DateTimeFormat` and remembers the answer for a day it has seen, on the function itself (a
+   `const` cache in a later file would not exist yet when an earlier file calls these at load time). In Chrome, the formatter gives
+   exactly what `toLocaleDateString` gave for every day from 2020 to 2030 and every time of 2026 (13,265 cases, 0 different).
+3. **Records travel as JSON, not as code** (`build.py`, `js_data`). Council's items, roll calls, place histories, ward maps, and What's new
+   are one `<script type="application/json" id="cx-data">` block, read once with `JSON.parse` and then removed. Writing them as
+   `JSON.parse('...')` inside the code was tried first: as fast, but it kept the text in memory beside the data (+1.4 MB of heap); the
+   block does not (heap 5.44 MB against 5.42 MB before). A data block never runs, so the Content-Security-Policy needs no new hash.
+4. **The CSS loses its spaces and comments** (`build.py`, esbuild `--minify-whitespace`, nothing else): about 44 KB less CSS to read and
+   6.5 KB less to download. Every rule, value, and selector stays in its order; `design-look` (four looks, 47 parts of 9 screens) is unchanged.
+5. **The hosted copies of the federal record and the meetings file lose their indentation** (`build.py`): 63 KB and 11 KB less to read.
+6. **A link starts its second download right away** (`build.py`, `EARLY_FETCH`, hosted site only). A small script in the head preloads the
+   federal record and the map's places when the address opens the United States page (the map file only where the map shows, by the same
+   rule as `cxmWantPhone`), and the Spanish dictionary when this browser chose Spanish. Same files, same site, nothing personal in them.
+
+## Before and after (median of 3, back to back on the same machine)
+
+| | Before | After | Change |
+| --- | --- | --- | --- |
+| `index.html`, brotli (what a visitor downloads) | 493.6 KB | 487.6 KB | -6.0 KB |
+| `index.html`, raw | 2,666.5 KB | 2,652.3 KB | -14.2 KB |
+| `us/landscape-2026.json`, raw | 715.1 KB | 652.6 KB | -62.5 KB |
+| Phone, Today: ready | 4,015 ms | 3,896 ms | -119 ms |
+| Phone, Today: long tasks | 783 ms (longest 386) | 707 ms (longest 345) | -10% |
+| Phone, Today: blocking | 633 ms | 557 ms | -12% |
+| Phone, Today: largest paint | 4,940 ms | 4,836 ms | -104 ms |
+| Phone, Today: JS heap | 5.42 MB | 5.44 MB | same |
+| Phone, Spanish: page in Spanish | 5,857 ms | 5,021 ms | -836 ms |
+| Phone, Spanish: English shown first, for | 1,831 ms | 313 ms | |
+| Phone, link to People > Graph: map drawn | 5,929 ms | 4,605 ms | -1,324 ms (-22%) |
+| Phone, link to People > Graph: long tasks | 914 ms | 529 ms | -42% |
+| Desktop, home: ready | 217 ms | 200 ms | -17 ms |
+| Desktop, United States map: drawn | 351 ms | 281 ms | -70 ms (-20%) |
+| Desktop, United States map: long tasks | 234 ms | 146 ms | -38% |
+| Phone, map's first drawing after its data (opened from inside the app) | 496 ms | about 185 ms | -63% |
+| Map frames (still, pan, zoom, pick, Calm, Live) | see above | the same within 0.5 ms | no change |
+
+The phone map figure "opened from inside the app" is from the runs between changes (`?panel=us&view=graph` before the early download was
+added: 489 ms before, 183 to 186 ms after), because with the early download the data now arrives before the app has started.
+
+**Trade-offs, honestly.** On a link to the map, the app's first drawing (the "Loading the federal record" screen) comes 0.38 s later,
+because the page and the federal record share the connection; the map itself comes 1.3 s sooner. For a Spanish reader, the English
+page draws 0.68 s later and, in 2 of 3 runs, one more long task (the page laid out again when its fonts arrive) ends about 0.1 s after
+the old finish; the page reads in Spanish 0.84 s sooner. A reader in English on Today pays nothing for either.
+
+## Tried or considered, and not kept
+
+- **A spatial grid for map labels, cached label boxes, batched canvas paths, fewer allocations per frame.** Labels and drawing cost under
+  1 ms a frame on a computer and under 3 ms on the slow phone; there was nothing to win that would show. Batching paths by color would
+  also change how overlapping see-through shapes blend, which residents could see.
+- **Making Calm and Live cheaper.** About 80% of a moving frame is d3's physics. Fewer collision passes, a coarser Barnes-Hut, or ticking
+  every other frame would change how the map moves. Not done. (Calm also never moves by itself after the map opens; see Traps in
+  `docs/how-it-fits.md`.)
+- **Skipping the 30 ms pause before the map's first drawing** and **the opening glide that moves nothing**: small, and each changes a
+  moment on screen (the "Arranging the map" line, or Calm starting to drift at open).
+- **Preloading the fonts.** They arrive after the app draws and are swapped in (the largest paint on Today is that swap). Preloading would
+  make the page itself arrive about 0.5 s later on Slow 4G. Not measured on a real HTTP/2 host; left alone.
+- **`content-visibility` on Today's lower sections** to skip their first layout (172 ms on the slow phone). It changes how the page
+  scrolls before those parts are laid out. Not done.
+- **Lazy portraits.** Today shows few, and they are on the first screen.
+- **Taking the records out of the page, and a separate phone build** (`docs/plan-optimization.md`, phases 3 and 6). These are the only
+  large wins left for the phone's first load (it waits about 3.4 s for 488 KB on Slow 4G), and each needs its own session.
+
+## The budget (`perf-budget` in `scripts/checks/run.js`)
+
+Recorded Oct 5, 2026 in `scripts/checks/perf-budget.json` (bytes are gzip -9 of the files in `site/`): the app's code in the page
+494.1 KB (fails past +3%); its records 142.6 KB (fails past +60%, a year of Council records); Today's first load on a phone, 7 files,
+738.9 KB (fails past +25%, and fails at once if it asks for the federal record, the votes, the district list, or in English the Spanish
+dictionary); the map's two files 101.8 KB (fails past +25%); the map's first drawing, 10,154 canvas shape calls (fails past +10%; the
+same in every run). When the map's first drawing is done (about 250 to 300 ms after the page starts on the checks' server) is printed,
+and only warns past twice that. Proven: 40 KB of incompressible text added to the CSS fails it (code 524.5 KB); a page that makes
+Today download the federal votes fails it; the real build passes, in English and in Spanish.

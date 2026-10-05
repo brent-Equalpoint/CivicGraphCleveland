@@ -1663,7 +1663,8 @@ CHECKS['perf-budget'] = async () => {
   const asked = [...new Set(p.asked)].sort(), ok = process.env.CHECK_LANG === 'es' ? [...PERF_TODAY_OK, /^\/i18n\/es\.json$/] : PERF_TODAY_OK;
   const extra = asked.filter((u) => !ok.some((re) => re.test(u)));
   expect(extra.length === 0, `the first load of Today asked for files it does not need yet: ${extra.join(', ')} (load them when their screen opens)`);
-  now.todayFirstLoadGzip = asked.filter((u) => ok.some((re) => re.test(u)) && !/^\/sw\.js$/.test(u)).reduce((t, u) => t + perfGzip(u === '/' ? '/index.html' : u), 0);
+  // the total leaves out the service worker and, in Spanish, the dictionary (the reader's choice, not part of the app's growth), so both languages count the same files
+  now.todayFirstLoadGzip = asked.filter((u) => ok.some((re) => re.test(u)) && !/^\/(sw\.js|i18n\/es\.json)$/.test(u)).reduce((t, u) => t + perfGzip(u === '/' ? '/index.html' : u), 0);
   await done(p);
   now.mapFilesGzip = perfGzip('/us/landscape-2026.json') + perfGzip('/us/map-2026.json');
   // the United States map's first drawing on a computer
