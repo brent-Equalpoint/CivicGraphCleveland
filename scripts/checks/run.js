@@ -112,6 +112,98 @@ const etToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'Americ
 const nextEnabled = (p) => p.evaluate(() => { const n = document.querySelector('.cxe-nav .cxe-btn:not(.alt)'); return !!n && !n.disabled; });
 async function walkEasy(p) { let n = 0; while (await nextEnabled(p) && n++ < 12) await clickText(p, 'Next'); return n; }
 
+/* Part of the levies check: the other questions on every ballot in the county (State Issue 3, county charter Issues 12 to 14, ext/cx-levies.jsx).
+   Each opens from its ring on Today and shows the ballot slip with its number; says where it is decided (Issue 3 statewide, the others county
+   charter questions); shows a supporter by name and either a concern by name or the plain statement that none was found; has no number pad;
+   links its sources securely; quotes the official wording; never advises (our own words, not a person's quoted words, may not say should,
+   best, worst, vote yes, vote no, we recommend); has no em or en dash; and Issue 14's big figure matches the numbers in its official wording.
+   Then the Ballot tab card and an issue row's sheet open the stories, and the desktop Stories page lists them. */
+const OUR_ADVICE = /\b(should|vote yes|vote no|you should vote|we recommend|we urge|best|worst|good deal|bad deal)\b/i;
+const notQuoted = (t) => t.replace(/“[^”]*”/g, '“”');   // a person's own words, in quotation marks, are theirs, not advice from us
+async function ballotIssueStories() {
+  const WHERE = { 3: /^Issue 3 · Statewide$/, 12: /^Issue 12 · Everywhere in the county$/, 13: /^Issue 13 · Everywhere in the county$/, 14: /^Issue 14 · Everywhere in the county$/ };
+  const WORDING = { 3: /^Proposed Constitutional Amendment TO REQUIRE VOTERS TO PRESENT PHOTO IDENTIFICATION/, 12: /^Proposed Charter Amendment County of Cuyahoga .*Section 2\.03/, 13: /^Proposed Charter Amendment County of Cuyahoga .*Section 5\.06/, 14: /^Proposed Charter Amendment County of Cuyahoga .*Section 12\.09/ };
+  for (const n of [3, 12, 13, 14]) {
+    const m = await open('/#phone', { mobile: true, easy: false });
+    const ring = await m.evaluateHandle((n) => [...document.querySelectorAll('.cxm-story-btn')].find((b) => new RegExp(`^Issue ${n} story`).test(b.getAttribute('aria-label') || '')) || null, n);
+    const el = ring.asElement();
+    expect(!!el, `no Issue ${n} story on the phone Today screen`);
+    if (!el) { await done(m); continue; }
+    expect(await el.evaluate((b, n) => (b.querySelector('.cxm-ring svg text') || {}).textContent === String(n), n), `the Issue ${n} ring does not show the ballot slip with its number`);
+    await el.click(); await wait(500);
+    expect(WHERE[n].test(((await txt(m, '.cxm-story .cxm-kicker')) || '').trim()), `the Issue ${n} story does not open by saying where it is decided: "${await txt(m, '.cxm-story .cxm-kicker')}"`);
+    const frames = [];
+    for (let f = 0; f < 14; f++) {
+      const fr = await m.evaluate(() => ({ head: (document.querySelector('.cxm-story-who strong') || {}).innerText || '', text: document.querySelector('.cxm-story').innerText.replace(/\s+/g, ' '),
+        fig: (document.querySelector('.cxm-story-body .cxm-story-fig') || {}).innerText || '', pad: !!document.querySelector('.cxm-story .lv-keys'), more: !!document.querySelector('.lv-more-story'),
+        link: [...document.querySelectorAll('.cxm-story-react a.cxm-btn')].map((a) => ({ href: a.href, target: a.target })) }));
+      expect(fr.head === `Issue ${n}`, `the Issue ${n} story ran into another story ("${fr.head}") before its last step`);
+      expect(!fr.pad, `the Issue ${n} story shows a number pad; it is not a tax`);
+      frames.push(fr);
+      if (fr.more) break;
+      const x = await m.$('.cxm-tap-r'); if (!x) break; await x.click(); await wait(220);
+    }
+    const text = frames.map((f) => f.text).join(' | ');
+    expect(/Someone who supports it|Who supports it/.test(text), `the Issue ${n} story names no supporter`);
+    expect(/A concern raised|We found no named opponent/.test(text), `the Issue ${n} story shows no concern and does not say that none was found`);
+    const links = frames.flatMap((f) => f.link);
+    expect(links.some((a) => /^https:\/\/boe\.cuyahogacounty\.gov\//.test(a.href) && a.target === '_blank'), `the Issue ${n} story has no secure link to the official wording that opens in a new tab`);
+    expect(frames[frames.length - 1].more, `the Issue ${n} story does not end with Read more`);
+    await m.evaluate(() => { const d = document.querySelector('.lv-more-story'); if (d) d.open = true; document.querySelectorAll('.lv-more-story .lv-wording').forEach((w) => { w.open = true; }); });
+    const more = await m.evaluate(() => {
+      const b = document.querySelector('.lv-more-story .lv-body'); if (!b) return null;
+      const ours = b.cloneNode(true); ours.querySelectorAll('.lv-wording').forEach((w) => w.remove());
+      const src = [...document.querySelectorAll('.cxm-story-src2 a, .cxm-story-src a, .lv-more-story a')];
+      return { all: b.innerText.replace(/\s+/g, ' '), ours: ours.textContent.replace(/\s+/g, ' '), wording: ((b.querySelector('.lv-wtext') || {}).textContent || '').trim(),
+        bad: src.filter((a) => !/^https:\/\//.test(a.href) || a.target !== '_blank').length, hrefs: [...new Set(src.map((a) => a.href))].length };
+    });
+    expect(!!more, `the Issue ${n} story's Read more is empty`);
+    if (more) {
+      for (const h of ['What it asks', 'How it works now', 'What changes if it passes', 'What happens if it fails', 'How it got on the ballot', 'What people have said', 'Questions to ask yourself', 'The official ballot wording'])
+        expect(more.all.includes(h), `the Issue ${n} Read more lacks "${h}"`);
+      expect(/Supports it/.test(more.all), `the Issue ${n} Read more names no supporter`);
+      expect(/Raised a concern/.test(more.all) || /We found no named person speaking against/.test(more.all), `the Issue ${n} Read more shows no concern and does not say that none was found`);
+      expect(WORDING[n].test(more.wording), `the Issue ${n} Read more does not quote its official ballot wording: "${more.wording.slice(0, 80)}"`);
+      expect(/A person has not yet read it against them|Read against its sources by/.test(more.all), `the Issue ${n} Read more does not say whether a person has reviewed it`);
+      expect(more.bad === 0, `${more.bad} source links in the Issue ${n} story are not secure or do not open in a new tab`);
+      expect(more.hrefs >= 3, `the Issue ${n} story links only ${more.hrefs} sources`);
+      const ours = notQuoted(`${text} ${more.ours}`), hit = ours.match(OUR_ADVICE);
+      expect(!hit, `the Issue ${n} story tells people how to vote or what is best ("${hit && hit[0]}")`);
+      expect(!/[–—]/.test(`${text} ${more.all}`), `the Issue ${n} story has an em or en dash`);
+      if (n === 14) {   // the figure is read from the official wording, so it must say what the wording says
+        const w = more.wording, num = (rx) => (w.match(rx) || [])[1];
+        const ex = num(/\((\d+)\) members of the Charter Review Commission shall be appointed by the County Executive/), co = num(/\((\d+)\) members shall be appointed by the Council/);
+        const fig = (frames.find((f) => f.fig) || {}).fig || '';
+        expect(ex && co && fig === `${ex} and ${co}`, `the Issue 14 figure "${fig}" does not match the official wording (${ex} by the County Executive, ${co} by Council)`);
+      }
+    }
+    await done(m);
+  }
+  // the Ballot tab: the card opens the stories at Issue 3, and an issue's row opens a sheet whose button opens that issue's story
+  const b = await open('/?panel=ballot#phone', { mobile: true, easy: false });
+  expect(await has(b, '.cxm-keycard-issues'), 'the Ballot tab has no card for the other ballot questions');
+  await b.evaluate(() => document.querySelector('.cxm-keycard-issues').click()); await wait(500);
+  expect(((await txt(b, '.cxm-story-who strong')) || '') === 'Issue 3', 'the Ballot tab card does not open the Issue 3 story');
+  await b.evaluate(() => document.querySelector('.cxm-story-head > button').click()); await wait(300);
+  await b.evaluate(() => { const r = [...document.querySelectorAll('.cxm-row')].find((x) => /^Issue 12:/.test((x.innerText || '').trim())); if (r) r.click(); }); await wait(600);
+  expect(await has(b, '.cxm-sheet .cxm-keycard-issues'), 'the Issue 12 row on the Ballot tab does not lead to its story');
+  if (await has(b, '.cxm-sheet .cxm-keycard-issues')) {
+    await b.evaluate(() => document.querySelector('.cxm-sheet .cxm-keycard-issues').click()); await wait(600);
+    expect(((await txt(b, '.cxm-story-who strong')) || '') === 'Issue 12', 'the Issue 12 sheet does not open the Issue 12 story');
+  }
+  await done(b);
+  // the desktop Stories page lists every ballot question and reads Issue 13 to its Read more
+  const d = await open('/?panel=stories#desktop', {});
+  const picks = await d.evaluate(() => [...document.querySelectorAll('.cx-stories-pick button')].map((x) => x.lastElementChild.innerText.trim()));
+  for (const n of [3, 10, 11, 12, 13, 14]) expect(picks.includes(`Issue ${n}`), `the desktop Stories page does not offer Issue ${n}`);
+  await d.evaluate(() => [...document.querySelectorAll('.cx-stories-pick button')].find((x) => x.lastElementChild.innerText.trim() === 'Issue 13').click()); await wait(300);
+  for (let i = 0; i < 14 && !(await has(d, '.cx-story-reader .lv-more-story')); i++) { await d.evaluate(() => [...document.querySelectorAll('.cx-story-nav button')].pop().click()); await wait(150); }
+  expect(await has(d, '.cx-story-reader .lv-more-story'), 'the desktop Issue 13 story does not reach Read more');
+  await d.evaluate(() => { const x = document.querySelector('.cx-story-reader .lv-more-story'); if (x) x.open = true; });
+  expect(/How it got on the ballot/.test((await txt(d, '.cx-story-reader')) || ''), 'the desktop Issue 13 Read more is not the issue write-up');
+  await done(d);
+}
+
 const CHECKS = {
   async 'stories-desktop'() {
     const p = await open('/?panel=stories#desktop');
@@ -469,6 +561,7 @@ const CHECKS = {
     await d.evaluate(() => [...document.querySelectorAll('.cx-story-nav button')].pop().click()); await wait(300);
     expect(/\$196/.test(await d.evaluate(() => document.querySelector('.cx-story-body').innerText)), 'the desktop story does not show $196');
     await done(d);
+    await ballotIssueStories();
   },
   async 'story-fit'() {
     // every frame of every story, on the phone and on the desktop: no line of text may run past the screen or out of its reader,
@@ -490,24 +583,31 @@ const CHECKS = {
       }
       return out.slice(0, 4);
     }, sel);
-    const m = await open('/#phone', { mobile: true, easy: false });
-    const n = await count(m, '.cxm-story-btn');
-    expect(n >= 5, `only ${n} stories on the phone Today screen`);
-    for (let k = 0; k < n; k++) {
-      const rings = await m.$$('.cxm-story-btn'); await rings[k].click(); await wait(400);
-      const name = await txt(m, '.cxm-story-who strong');
-      for (let f = 0; f < 14; f++) {
-        const bad = await off(m, '.cxm-story');
-        expect(bad.length === 0, `phone story "${name}", step ${f + 1}: text runs past the screen: ${bad.join('; ')}`);
-        const total = await count(m, '.cxm-bars i'), on = await count(m, '.cxm-bars i.on');
-        if (on >= total) break;
-        const x = await m.$('.cxm-tap-r');
-        if (x) await x.click(); else await m.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story button')].find((y) => /^(Next|Siguiente)$/.test(y.innerText.trim())); if (b) b.click(); });
-        await wait(180);
+    // only: which rings to open (all of them by default); at 320 px wide, the smallest phone we design for, the ballot-question stories are opened again
+    const phone = async (width, only) => {
+      const m = await open('/#phone', { mobile: true, easy: false, width });
+      const n = await count(m, '.cxm-story-btn');
+      if (!only) expect(n >= 5, `only ${n} stories on the phone Today screen`);
+      for (let k = 0; k < n; k++) {
+        const rings = await m.$$('.cxm-story-btn');
+        if (only && !only.test((await rings[k].evaluate((e) => e.getAttribute('aria-label'))) || '')) continue;
+        await rings[k].click(); await wait(400);
+        const name = await txt(m, '.cxm-story-who strong');
+        for (let f = 0; f < 14; f++) {
+          const bad = await off(m, '.cxm-story');
+          expect(bad.length === 0, `phone story "${name}" at ${width || 390} px, step ${f + 1}: text runs past the screen: ${bad.join('; ')}`);
+          const total = await count(m, '.cxm-bars i'), on = await count(m, '.cxm-bars i.on');
+          if (on >= total) break;
+          const x = await m.$('.cxm-tap-r');
+          if (x) await x.click(); else await m.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story button')].find((y) => /^(Next|Siguiente)$/.test(y.innerText.trim())); if (b) b.click(); });
+          await wait(180);
+        }
+        await m.evaluate(() => { const c = document.querySelector('.cxm-story-head > button'); if (c) c.click(); }); await wait(250);
       }
-      await m.evaluate(() => { const c = document.querySelector('.cxm-story-head > button'); if (c) c.click(); }); await wait(250);
-    }
-    await done(m);
+      await done(m);
+    };
+    await phone();
+    await phone(320, /(Issue|Asunto) \d+\b/);
     const d = await open('/?panel=stories#desktop', {});
     const dn = await count(d, '.cx-stories-pick button');
     for (let k = 0; k < dn; k++) {
@@ -1642,7 +1742,7 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone issue story', '/#phone', { mobile: true, easy: false, after: 'issueStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
@@ -1666,6 +1766,12 @@ const AXE_AFTER = {
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     [...document.querySelectorAll('.cxm-story-btn')].find((b) => /(Issue|Asunto) 11/.test(b.getAttribute('aria-label') || '')).click(); await w(400);
     for (let i = 0; i < 9; i++) { const t = document.querySelector('.cxm-tap-r'); if (t) t.click(); else { const n = [...document.querySelectorAll('.cxm-story button')].find((b) => /^(Next|Siguiente)$/.test(b.innerText.trim())); if (n) n.click(); } await w(200); }
+    document.querySelectorAll('.lv-more-story, .lv-wording').forEach((d) => { d.open = true; });
+  },
+  issueStory: async () => {   // open the Issue 13 story (a county charter question), go to its last frame, and open Read more and the official wording
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    [...document.querySelectorAll('.cxm-story-btn')].find((b) => /(Issue|Asunto) 13\b/.test(b.getAttribute('aria-label') || '')).click(); await w(400);
+    for (let i = 0; i < 12 && !document.querySelector('.lv-more-story'); i++) { const t = document.querySelector('.cxm-tap-r'); if (t) t.click(); await w(200); }
     document.querySelectorAll('.lv-more-story, .lv-wording').forEach((d) => { d.open = true; });
   },
 };

@@ -24,7 +24,7 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
 | --- | --- |
 | Every number comes from a record in the app (`data/`, the official ballot wording), read by code. No number is typed into text by hand. A derived number says how it is derived. | `levies` (figures against the ballot wording, fails if one is changed), `council-votes` |
 | Sponsorship is not a vote. A missing record is not a no. Say so where the difference matters. | `test_i18n.py` (the Spanish keeps both), reading |
-| No scores, rankings, percentages of agreement, or ideology labels. No advice on how to vote or what is "good" or "bad". | `levies` (no "vote yes", "we recommend", "good deal"), reading |
+| No scores, rankings, percentages of agreement, or ideology labels. No advice on how to vote or what is "good" or "bad". | `levies` (no "vote yes", "we recommend", "good deal"; for Issues 3 and 12 to 14 also no "should", "best", or "worst" in our own words, outside a person's quotation), reading |
 | Both sides, by name, with a date and a link. If a side has no named voice, say that, and say it is not the same as nobody disagreeing. | `levies` |
 | Every claim has a source link. Interpretive text carries a review flag and says a person has not reviewed it until one has. | `levies`, `build.py --mark-*-reviewed` |
 | Official records update by themselves; anything interpretive (news, reasons, office text, levy write-ups) needs a named person. | `refresh.py --check`, review flags |
@@ -105,7 +105,7 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 1. ~~A check that no one-off color or font size is used outside the tokens.~~ Done: `scripts/design/audit.js` (see `docs/design-system.md`). Still to do: move the legacy values onto tokens.
 2. A check that no new input sends its value anywhere (network log while typing). **(no check yet)**
 3. Reduced-motion and larger-text runs of the story and sheet checks.
-4. A 320 px run of `story-fit` and `no-bleed` on every screen.
+4. A 320 px run of `story-fit` and `no-bleed` on every screen. (Started Oct 5, 2026: `story-fit` opens every ballot-question story, Issues 3 and 10 to 14, again at 320 px.)
 5. Screenshot review by a person for each release, kept with the build record.
 6. Device testing with VoiceOver, TalkBack, NVDA, switch, and voice control; five residents, one task each (Phase 6 of `plan-guided-stories.md`).
 
