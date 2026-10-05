@@ -105,7 +105,7 @@ async function explore(p, into, scene, deadline, depth, visited, mobile) {
 async function scenes(B, base, layout) {
   const mobile = layout === 'phone';
   const list = mobile
-    ? ['/#phone', '/?room=voting#phone', '/?panel=place#phone', '/?panel=leaders#phone', '/?panel=constellation#phone', '/?panel=us#phone', '/?panel=us&view=graph#phone', '/?panel=ballot#phone', '/?panel=ledger#phone', '/?panel=bench#phone', '/?panel=news#phone', '/?panel=settings#phone', '/?panel=priorities#phone']
+    ? ['/#phone', '/?room=voting#phone', '/?panel=place#phone', '/?panel=leaders#phone', '/?panel=constellation#phone', '/?panel=us#phone', '/?panel=us&view=graph#phone', '/?panel=ballot#phone', '/?panel=ledger#phone', '/?panel=bench#phone', '/?panel=news#phone', '/?panel=settings#phone', '/?panel=priorities#phone', '/?panel=meetings#phone']
     : ['/#desktop', '/?room=voting#desktop', '/?panel=place#desktop', '/?panel=leaders#desktop', '/?panel=constellation#desktop', '/?panel=profiles#desktop', '/?panel=ballot#desktop', '/?panel=ledger#desktop', '/?panel=bench#desktop', '/?panel=news#desktop', '/?panel=stories#desktop', '/?panel=us#desktop', '/?panel=priorities#desktop'];
   const into = new Map();
   for (const url of list) {
@@ -119,7 +119,7 @@ async function scenes(B, base, layout) {
       if (!ok) { console.log(`  ${layout} ${url}: no translator hook (is the debug flag supported?)`); await ctx.close(); continue; }
       await explore(p, into, `${layout} ${url}`, Date.now() + BUDGET, 0, new Set(), mobile);
       // scroll the whole page once so lazy parts are drawn
-      await p.evaluate(async () => { const m = document.querySelector('.cxm-main, .atlas-main, main') || document.scrollingElement; for (let i = 0; i < 12; i++) { m.scrollTop += 600; await new Promise((r) => setTimeout(r, 120)); } });
+      await p.evaluate(async () => { const m = document.querySelector('.cxm-full-body') || document.querySelector('.cxm-main, .atlas-main, main') || document.scrollingElement; for (let i = 0; i < 12; i++) { m.scrollTop += 600; await new Promise((r) => setTimeout(r, 120)); } });
       await wait(300); await harvest(p, into, `${layout} ${url}`);
     } catch (e) { console.log(`  ${layout} ${url}: ${String(e.message).slice(0, 100)}`); }
     if (errs.length) console.log(`  ${layout} ${url}: page errors ${JSON.stringify(errs.slice(0, 2))}`);

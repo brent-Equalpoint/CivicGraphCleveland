@@ -289,7 +289,7 @@ function CxMtgAgenda({ m, onOpen, past, first = 5 }) {
         if (!show.length) return null;
         return (
           <div key={g.g} className="mt-group">
-            <p className="mt-group-h"><span>{g.label}</span>{` `}<span className="mt-n">{g.items.length}</span></p>
+            <h4 className="mt-group-h"><span>{g.label}</span>{` `}<span className="mt-n">{g.items.length}</span></h4>
             <div className="mt-items">{show.map((i, k) => <CxMtgItem key={`${i[0]}${k}`} i={i} onOpen={onOpen} past={past} />)}</div>
           </div>
         );
