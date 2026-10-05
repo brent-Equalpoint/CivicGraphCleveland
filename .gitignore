@@ -12,3 +12,4 @@ bench/shadow/packets-2026.json
 # Local secrets (API keys). Never commit these.
 .env
 .env.*
+.claude/worktrees/
