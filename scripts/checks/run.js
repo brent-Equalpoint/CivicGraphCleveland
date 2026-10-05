@@ -441,7 +441,7 @@ const CHECKS = {
     const c = await open('/#phone', { mobile: true, easy: false });
     await clickText(c, 'Ballot'); await wait(400);
     expect(/What would the county levies cost you\?/.test(await c.evaluate(() => document.body.innerText)), 'the Ballot tab has no levies card');
-    await c.evaluate(() => [...document.querySelectorAll('.cxm-keycard')][0].click()); await wait(500);
+    await c.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].find((x) => /levies cost/i.test(x.innerText)).click()); await wait(500);
     expect(/Issue 10/.test((await c.evaluate(() => (document.querySelector('.cxm-story') || { innerText: '' }).innerText)) || ''), 'the Ballot tab card does not open the levy story');
     await done(c);
     // the desktop Stories page lists both and reads Issue 11 with the same figures
@@ -775,8 +775,8 @@ const CHECKS = {
     const p = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
     if (!upcoming && !rec.meetings.some((m) => m.items.some((i) => i[1]))) { await done(p); return; }
     expect(await has(p, '.mt-card'), 'Today has no At City Hall card');
-    expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText)))[0] === 'City Hall', 'the City Hall story is not first in the row');
-    await p.evaluate(() => document.querySelector('.cxm-story-btn').click()); await wait(600);
+    expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText).filter((t) => t !== 'Register')))[0] === 'City Hall', 'the City Hall story is not first in the row (after the Register story, which leads in the week of the deadline)');
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall/.test(x.innerText)); if (b) b.click(); }); await wait(600);
     expect(/City Hall/.test((await txt(p, '.cxm-story-head')) || ''), 'the City Hall story did not open');
     for (let i = 0; i < 8 && !(await has(p, '.cxm-story .cxm-btn-light')); i++) { await p.mouse.click(300, 420); await wait(350); }
     expect(await has(p, '.cxm-story .cxm-btn-light'), 'the City Hall story has no button to open the page');

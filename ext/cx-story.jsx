@@ -120,16 +120,16 @@ function cxmRegisterStory() {
   const open = toDeadline >= 0;
   const frames = [
     { k: `Register to vote`, big: toDeadline === 0 ? `Today is the last day to register.` : toDeadline === 1 ? `Tomorrow is the last day to register.` : toDeadline > 1 ? `${toDeadline} days left to register.` : `The registration deadline has passed.`,
-      small: open ? `Ohio closes registration 30 days before the election. Check the exact closing time with the Board of Elections.` : `Ohio closed registration on Oct. 5. Here is how to check where you stand.` },
-    { k: `Step 1`, big: `First, check if you are already registered.`, small: `It is quick, and you may already be set. If you moved or changed your name, update your registration.`, src: CX_REG_SOS },
+      small: open ? `Check the exact closing time with the Board of Elections.` : `Ohio closed registration on Oct. 5. Check where you stand.` },
+    { k: `Step 1`, big: `First, check if you are already registered.`, small: `If you moved or changed your name, update it.`, src: CX_REG_SOS },
   ];
   if (open) {
-    frames.push({ k: `Who can register`, big: `U.S. citizens who will be 18 by Nov. 3 and have lived in Ohio for 30 days.`, small: `The official site lists every rule. Not sure you qualify? Ask the Board of Elections.`, src: CX_REG_SOS });
-    frames.push({ k: `Step 2`, big: `Not registered, or you moved? Register online.`, small: `The form asks for your date of birth, your address, and an Ohio driver license or state ID number. No Ohio ID? Ask the Board of Elections for a paper form.`, src: CX_REG_SOS });
-    frames.push({ k: `Prefer paper?`, big: `Mail the form or bring it to the Board of Elections.`, small: `A mailed form must be postmarked by the deadline. If you bring it in, ask the board for its closing time.`, src: CX_REG_BOE });
+    frames.push({ k: `Who can register`, big: `You can register if you are a U.S. citizen, are 18 by Nov. 3, and have lived in Ohio 30 days.`, small: `Not sure you qualify? Ask the Board of Elections.`, src: CX_REG_SOS });
+    frames.push({ k: `Step 2`, big: `Not registered, or you moved? Register online.`, small: `You need your date of birth, address, and Ohio driver license or state ID number. No Ohio ID? Use a paper form.`, src: CX_REG_SOS });
+    frames.push({ k: `Paper form`, big: `Prefer paper? Mail it or bring it in.`, small: `A mailed form must be postmarked by the deadline.`, src: CX_REG_BOE });
   }
-  frames.push({ k: `Missed it?`, big: `Missed the deadline? Call the Board of Elections.`, small: `Ohio has no same-day registration, so a late form counts for the next election. The board can tell you what is still possible for you.`, src: CX_REG_BOE });
-  frames.push({ k: `What this app can do`, big: `We cannot register you. The official sites can.`, small: `We link to them and send nothing about you. A person has not yet read these steps against the official pages, so check each one there.`, src: CX_REG_SOS });
+  frames.push({ k: `After the deadline`, big: `Missed it? Contact the Board of Elections.`, small: `Ohio has no same-day registration. A late form counts for the next election.`, src: CX_REG_BOE });
+  frames.push({ k: `Do it on the official site`, big: `We cannot register you. The official sites can.`, small: `We only link to them and send nothing about you. A person has not yet checked these steps against the official pages.`, src: CX_REG_SOS });
   return { id: `register`, label: `Register`, ini: `RV`, name: `Register to vote`, when: open ? `Deadline: Monday, Oct. 5` : `The deadline was Monday, Oct. 5`, source: CX_REG_BOE, frames };
 }
 function cxmSamePerson(a, b) {
@@ -154,8 +154,7 @@ function cxmHoodStory(hood) {
   return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
-  const reg = cxmRegisterStory(), soon = reg && cxmDaysTo(CX_REG_DATE) <= 7;   // in the week of the deadline it leads the row
-  return [soon ? reg : null, home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), soon ? null : reg, cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmRegisterStory(), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
 }
 
 /* ---------- desktop Stories page (sidebar: Stories) ---------- */
