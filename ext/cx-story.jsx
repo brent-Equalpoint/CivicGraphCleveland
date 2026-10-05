@@ -89,8 +89,6 @@ function cxmMayorStory(answers) {
   const qs = CX_MAYOR_Q.map((x) => ({ x, w: Wm.find((z) => z.id === x[1]), r: CX_REASONS[x[1]] })).filter((o) => o.w);
   const frames = [{ k: `From the Mayor's office`, big: `${admin.items.length} requests sent to Council this year.`, small: `City departments send requests like contracts, grants, and project steps. Council still decides each one.` }];
   qs.filter((o) => o.r && o.r.points.length).slice(0, 2).forEach((o) => frames.push({ k: ``, big: `${o.w.title}.`, small: `${o.r.points[0]} ${o.x[0]}.` }));
-  const q = [...qs].sort((a, b) => Number(!!answers[a.w.id]) - Number(!!answers[b.w.id]))[0];
-  if (q) frames.push({ k: `Your turn`, big: q.w.title, small: q.w.question, type: `react`, qid: q.w.id, match: { who: `Mayor Bibb's administration`, seat: `mayor`, portrait: admin.portrait, question: q.w.question, how: `sent the proposal to Council`, file: q.x[0], cand: `mayor-bibb` } });
   return { id: `mayor`, label: `Mayor`, ini: `JB`, portrait: admin.portrait, name: `Mayor Bibb's administration`, when: `What it sent to Council in 2026`, deeper: { label: `Read the profile of the Mayor`, kind: `profile`, seat: `mayor` }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
 function cxmLevies() {

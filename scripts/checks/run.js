@@ -1293,6 +1293,7 @@ const CV_PAGES = [
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
      TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget
    Screens that show a record's own words (What's new) are left out. See docs/plan-plain-text.md. */
+const TEXT_WIDE = { 'At City Hall': 0.35, Today: 0.15, 'Decision ledger': 0.3 };
 const TEXT_SCREENS = [
   ['Today', '/#phone'], ['Explore', '/#phone', 'Explore'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
   ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
@@ -1314,7 +1315,7 @@ CHECKS['text-budget'] = async () => {
   for (const [name, words] of Object.entries(now)) {
     const rec = have[name];
     if (rec == null) { expect(false, `${name} has no recorded word count: run TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget`); continue; }
-    const room = Math.max(30, Math.round(rec * 0.08));
+    const room = Math.max(30, Math.round(rec * (TEXT_WIDE[name] || 0.08)));   // screens built from the nightly records vary more than screens of our own words
     expect(words <= rec + room, `${name} grew to ${words} words (recorded ${rec}, room ${room}). Say it in fewer words, or record the new count on purpose with TEXT_BUDGET_UPDATE=1`);
   }
 };

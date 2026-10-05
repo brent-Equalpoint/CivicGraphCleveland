@@ -662,6 +662,8 @@
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] { flex: none !important; width: auto; height: auto !important; min-height: 44px !important; margin-bottom: 0; padding: 10px 16px; gap: 8px; white-space: nowrap; font-size: 14px; border: 1px solid var(--atlas-border); border-bottom: 0; border-radius: 12px 12px 0 0; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] svg:last-child:not(:first-child) { display: none; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger]::after { display: none; }
+  /* a personal page is open, so the room tab stops looking selected (v5.7 rule above): keep its words as readable as the other tabs */
+  html .atlas-workspace .atlas-sidebar:has(.atlas-sidebar-bottom button.active) .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { color: var(--atlas-muted) !important; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-bottom: 1px solid var(--atlas-bg); }
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { background: var(--bb-blue); border-color: var(--bb-blue); color: #fff; }
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #fff; }
