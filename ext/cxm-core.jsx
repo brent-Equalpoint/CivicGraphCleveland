@@ -84,8 +84,14 @@ function cxmMoney(n) {
 }
 function cxmDate(iso) {
   if (!iso) return ``;
-  const d = new Date(`${String(iso).slice(0, 10)}T12:00:00`);
-  return isNaN(d) ? String(iso) : d.toLocaleDateString(`en-US`, { month: `short`, day: `numeric` });
+  const key = String(iso), day = key.slice(0, 10), seen = cxmDate.m || (cxmDate.m = new Map());   // speed: remembered by day, one formatter (see cxShortDate)
+  let out = seen.get(day);
+  if (out === undefined) {
+    const d = new Date(`${day}T12:00:00`);
+    out = isNaN(d) ? null : (cxmDate.f || (cxmDate.f = new Intl.DateTimeFormat(`en-US`, { month: `short`, day: `numeric` }))).format(d);
+    seen.set(day, out);
+  }
+  return out === null ? key : out;
 }
 function cxmAsset(p) {
   return globalThis.__cxAsset ? globalThis.__cxAsset(p) : p;

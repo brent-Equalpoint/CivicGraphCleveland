@@ -42,7 +42,13 @@ function cxMemberVotes(vd, m) {
 /* Plain counts of what the record says, never a share or a score. */
 function cxCastCounts(rows) { const t = { Y: 0, N: 0, P: 0, X: 0, O: 0 }; rows.forEach((r) => { t[r.c] += 1; }); return t; }
 function cxCountLine(t) { return [`Yea ${t.Y}`, `Nay ${t.N}`, `Present ${t.P}`, `Not voting ${t.X}`].concat(t.O ? [`Named a person ${t.O}`] : []).join(`, `); }
-function cxVoteDate(iso) { const d = new Date(`${iso}T12:00:00`); return isNaN(d) ? iso : d.toLocaleDateString(`en-US`, { month: `short`, day: `numeric`, year: `numeric` }); }
+function cxVoteDate(iso) {   // speed: an answer once worked out is remembered, with one formatter (see cxShortDate)
+  const seen = cxVoteDate.m || (cxVoteDate.m = new Map());
+  if (seen.has(iso)) return seen.get(iso);
+  const d = new Date(`${iso}T12:00:00`), out = isNaN(d) ? iso : (cxVoteDate.f || (cxVoteDate.f = new Intl.DateTimeFormat(`en-US`, { month: `short`, day: `numeric`, year: `numeric` }))).format(d);
+  seen.set(iso, out);
+  return out;
+}
 function cxVoteWhat(r) { return r.b ? `${r.b.label}${r.b.title ? `, ${r.b.title}` : ``}` : r.v.desc || r.v.legis || r.v.question; }
 function cxOrd(n) { const s = [`th`, `st`, `nd`, `rd`], v = n % 100; return n + (s[(v - 20) % 10] || s[v] || s[0]); }
 const CX_US_STATES = { AL: `Alabama`, AK: `Alaska`, AZ: `Arizona`, AR: `Arkansas`, CA: `California`, CO: `Colorado`, CT: `Connecticut`, DE: `Delaware`, FL: `Florida`, GA: `Georgia`, HI: `Hawaii`, ID: `Idaho`, IL: `Illinois`, IN: `Indiana`, IA: `Iowa`, KS: `Kansas`, KY: `Kentucky`, LA: `Louisiana`, ME: `Maine`, MD: `Maryland`, MA: `Massachusetts`, MI: `Michigan`, MN: `Minnesota`, MS: `Mississippi`, MO: `Missouri`, MT: `Montana`, NE: `Nebraska`, NV: `Nevada`, NH: `New Hampshire`, NJ: `New Jersey`, NM: `New Mexico`, NY: `New York`, NC: `North Carolina`, ND: `North Dakota`, OH: `Ohio`, OK: `Oklahoma`, OR: `Oregon`, PA: `Pennsylvania`, RI: `Rhode Island`, SC: `South Carolina`, SD: `South Dakota`, TN: `Tennessee`, TX: `Texas`, UT: `Utah`, VT: `Vermont`, VA: `Virginia`, WA: `Washington`, WV: `West Virginia`, WI: `Wisconsin`, WY: `Wyoming`, DC: `District of Columbia`, PR: `Puerto Rico`, GU: `Guam`, VI: `U.S. Virgin Islands`, AS: `American Samoa`, MP: `Northern Mariana Islands` };
@@ -101,7 +107,13 @@ function cxUsGraph(d) {
   }
   const adj = nodes.map(() => []);
   edges.forEach((e, k) => { adj[e.a].push(k); adj[e.b].push(k); });
-  return cxUsPlace({ nodes, byId, edges, adj });
+  return { nodes, byId, edges, adj };
+}
+/* The old Sky's fixed layout (cxUsPlace), worked out only when the old Sky is drawn. The United States map, the Index, the profiles, and
+   Easy mode never read these positions, so building the record no longer pays for them (about 0.3 s on a slow phone). Same picture as before. */
+function cxUsSky(g) {
+  if (g && !g.clusters) cxUsPlace(g);
+  return g;
 }
 
 /* what a node says about itself, and its connections, as plain sentences with names */
@@ -511,7 +523,7 @@ function CX_UsGraph({ phone, start }) {
   const [data, setData] = u.useState(CX_US.v);
   const [state, setState] = u.useState(CX_US.p ? `ready` : `loading`);
   u.useEffect(() => { let live = !0; cxUsLoad().then((d) => { if (live) { setData(d); setState(d ? `ready` : `none`); } }); return () => { live = !1; }; }, []);
-  const g = CX_US.graph;
+  const g = cxUsSky(CX_US.graph);
   const [view, setView] = u.useState(start || (phone ? `mine` : `sky`));
   const [sel, setSel] = u.useState(null);
   const [q, setQ] = u.useState(``);

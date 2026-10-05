@@ -37,7 +37,7 @@ const RULES = [
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', ...SWEEP]],
   [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
-  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'us-graph', 'screen-states', 'update-wins']],
+  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'us-graph', 'screen-states', 'update-wins', 'perf-budget']],
   [(f) => f.startsWith('design/'), ['design-look', 'color-vision']],
   [(f) => f.startsWith('scripts/checks/') || f.startsWith('scripts/design/'), ALL],
   [(f) => f.startsWith('scripts/') || f.startsWith('.github/') || f === 'vercel.json', []],   // unit tests and workflows, not the browser

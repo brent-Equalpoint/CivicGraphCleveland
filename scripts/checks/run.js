@@ -57,8 +57,8 @@ async function open(url, o = {}) {
   p.errors = [];
   p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
   // every page, in every check: it may ask only its own site for anything, and the browser may not report a Content-Security-Policy violation
-  p.outside = []; p.csp = [];
-  p.on('request', (r) => { try { const u = new URL(r.url()); if (!['data:', 'blob:', 'about:'].includes(u.protocol) && u.origin !== new URL(BASE).origin) p.outside.push(r.url().slice(0, 100)); } catch (e) { /* not a web address */ } });
+  p.outside = []; p.csp = []; p.asked = [];   // asked: the paths this page requested from its own site (perf-budget reads it)
+  p.on('request', (r) => { try { const u = new URL(r.url()); if (!['data:', 'blob:', 'about:'].includes(u.protocol) && u.origin !== new URL(BASE).origin) p.outside.push(r.url().slice(0, 100)); else if (u.origin === new URL(BASE).origin) p.asked.push(u.pathname); } catch (e) { /* not a web address */ } });
   p.on('console', (m) => { if (m.type() === 'error' && /Content Security Policy/i.test(m.text())) p.csp.push(m.text().slice(0, 200)); });
   if (o.mock) {  // { '/bench/public-2026.json': {...} }: answer these addresses with made-up JSON
     await p.setRequestInterception(true);
@@ -1783,6 +1783,65 @@ CHECKS['text-budget'] = async () => {
     const room = Math.max(30, Math.round(rec * (TEXT_WIDE[name] || 0.08)));   // screens built from the nightly records vary more than screens of our own words
     expect(words <= rec + room, `${name} grew to ${words} words (recorded ${rec}, room ${room}). Say it in fewer words, or record the new count on purpose with TEXT_BUDGET_UPDATE=1`);
   }
+};
+/* Speed budget (docs/performance.md). Bytes fail the check; the one timing only warns, because timings depend on the machine.
+     PERF_BUDGET_UPDATE=1 node scripts/checks/run.js --only perf-budget      record today's numbers on purpose (and say why in the commit)
+   - the app's own code in the hosted page (everything but its data block), gzipped, may grow 3% past its record
+   - the records in the data block may grow 60% (a year of Council records), so only an accident, such as embedding a lazy file, fails
+   - a phone's first load of Today asks only for the page, fonts, pictures, and the meetings file: never the federal record, the votes,
+     the district list, or (in English) the Spanish dictionary; all it asks for, gzipped, may grow 25%
+   - opening the United States map downloads the federal record and the map's places, gzipped: may grow 25%
+   - the map's first drawing makes a fixed number of canvas shape calls (paths, fills, lines; not text, whose count depends on the font
+     having arrived): may grow 10%. When it is done, counted from the start of the page, is printed, with a warning past twice the record. */
+const PERF_TODAY_OK = [/^\/$/, /^\/index\.html$/, /^\/favicon\.svg$/, /^\/manifest\.webmanifest$/, /^\/sw\.js$/, /^\/fonts\/[^/]+\.woff2$/, /^\/portraits\/[^/]+\.webp$/, /^\/meetings\/meetings-2026\.json$/, /^\/bench\/[^/]+\.json$/];
+function perfGzip(rel) {
+  const f = path.join(SITE, rel.replace(/^\//, '') || 'index.html'), raw = fs.readFileSync(f);
+  return /\.(html|js|json|svg|webmanifest|css)$/.test(f) ? require('zlib').gzipSync(raw, { level: 9 }).length : raw.length;
+}
+function perfCanvasCount() {   // runs in the page before anything else: counts canvas shape calls until the map's first drawing is done
+  const P = (window.__cxCanvas = { n: 0, first: null, at: null });
+  for (const k of ['beginPath', 'closePath', 'moveTo', 'lineTo', 'arc', 'rect', 'fill', 'stroke', 'fillRect']) {
+    const f = CanvasRenderingContext2D.prototype[k];
+    CanvasRenderingContext2D.prototype[k] = function (...a) { P.n++; return f.apply(this, a); };
+  }
+  // the map hands what it drew to the canvas as cxMap at the end of each drawing, so the first assignment marks the end of the first drawing
+  Object.defineProperty(HTMLCanvasElement.prototype, 'cxMap', { configurable: true, get() { return this.__cxMap; }, set(v) { if (P.first === null && v && v.labels && v.labels.length) { P.first = P.n; P.at = performance.now(); } this.__cxMap = v; } });
+}
+CHECKS['perf-budget'] = async () => {
+  const file = path.join(__dirname, 'perf-budget.json');
+  const have = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
+  const html = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8'), gz = (s) => require('zlib').gzipSync(Buffer.from(s, 'utf8'), { level: 9 }).length;
+  const block = /<script type="application\/json" id="cx-data">[\s\S]*?<\/script>\n?/.exec(html);
+  expect(!!block, 'the hosted page has no data block (cx-data): the records went back into the code, where they are slower to read');
+  const now = { pageCodeGzip: gz(block ? html.replace(block[0], '') : html), pageDataGzip: block ? gz(block[0]) : 0 };
+  // Today's first load on a phone, in this check's language
+  const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
+  const asked = [...new Set(p.asked)].sort(), ok = process.env.CHECK_LANG === 'es' ? [...PERF_TODAY_OK, /^\/i18n\/es\.json$/] : PERF_TODAY_OK;
+  const extra = asked.filter((u) => !ok.some((re) => re.test(u)));
+  expect(extra.length === 0, `the first load of Today asked for files it does not need yet: ${extra.join(', ')} (load them when their screen opens)`);
+  // the total leaves out the service worker and, in Spanish, the dictionary (the reader's choice, not part of the app's growth), so both languages count the same files
+  now.todayFirstLoadGzip = asked.filter((u) => ok.some((re) => re.test(u)) && !/^\/(sw\.js|i18n\/es\.json)$/.test(u)).reduce((t, u) => t + perfGzip(u === '/' ? '/index.html' : u), 0);
+  await done(p);
+  now.mapFilesGzip = perfGzip('/us/landscape-2026.json') + perfGzip('/us/map-2026.json');
+  // the United States map's first drawing on a computer
+  const m = await open('/?panel=us#desktop', { pre: perfCanvasCount, settle: 600 });
+  for (let t = 0; t < 80 && !(await m.evaluate(() => window.__cxCanvas.first !== null)); t++) await wait(100);
+  const c = await m.evaluate(() => ({ ops: window.__cxCanvas.first, ms: window.__cxCanvas.at }));   // ms: from the start of the page (its data may arrive before the app starts)
+  await done(m);
+  expect(c.ops !== null, 'the United States map never finished its first drawing');
+  now.mapFirstDrawOps = c.ops; now.mapFirstDrawMs = c.ms === null ? null : Math.round(c.ms);
+  console.log(`    page code ${(now.pageCodeGzip / 1024).toFixed(1)} KB gzip, records ${(now.pageDataGzip / 1024).toFixed(1)} KB, Today's first load ${(now.todayFirstLoadGzip / 1024).toFixed(1)} KB (${asked.length} files), map files ${(now.mapFilesGzip / 1024).toFixed(1)} KB, map first drawing ${now.mapFirstDrawOps} canvas calls, done ${now.mapFirstDrawMs} ms after the page started`);
+  if (process.env.PERF_BUDGET_UPDATE) {
+    const rec = { about: 'Recorded by PERF_BUDGET_UPDATE=1 node scripts/checks/run.js --only perf-budget. Bytes are gzip -9 of the files in site/. See docs/performance.md.', ...now, recorded: new Date().toISOString().slice(0, 10) };
+    fs.writeFileSync(file, JSON.stringify(rec, null, 1) + String.fromCharCode(10)); console.log('    wrote scripts/checks/perf-budget.json'); return;
+  }
+  expect(Object.keys(have).length > 0, 'scripts/checks/perf-budget.json is missing: run PERF_BUDGET_UPDATE=1 node scripts/checks/run.js --only perf-budget');
+  const room = { pageCodeGzip: 1.03, pageDataGzip: 1.6, todayFirstLoadGzip: 1.25, mapFilesGzip: 1.25, mapFirstDrawOps: 1.1 };
+  for (const [k, f] of Object.entries(room)) {
+    if (have[k] == null || now[k] == null) continue;
+    expect(now[k] <= Math.round(have[k] * f), `${k} grew to ${now[k]} (recorded ${have[k]}, room ${Math.round((f - 1) * 100)}%). Find what grew, or record the new size on purpose with PERF_BUDGET_UPDATE=1`);
+  }
+  if (have.mapFirstDrawMs && now.mapFirstDrawMs > have.mapFirstDrawMs * 2) console.log(`    warning: the map's first drawing was done ${now.mapFirstDrawMs} ms after the page started, more than twice the ${have.mapFirstDrawMs} ms recorded (a timing, so not a failure; measure it with node scripts/perf/measure.js)`);
 };
 CHECKS['color-vision'] = async () => {
   const tokens = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', 'design', 'tokens.json'), 'utf8'));

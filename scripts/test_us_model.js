@@ -11,13 +11,15 @@ const read = (f) => fs.readFileSync(path.join(ROOT, f), 'utf8');
 const us = read('ext/cx-us.jsx');
 const pure = us.slice(0, us.indexOf('/* ---------- Your members'));
 const ctx = vm.createContext({});
-vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION, cxUsAreaList, cxUsAreaCounts, cxMemberVotes, cxUsFaceId };', ctx);
+vm.runInContext(pure + '\n' + read('ext/cx-us-model.jsx') + '\n;this.api = { cxUsGraph, cxUsSky, cxUsDoors, cxUsLinks, cxUsStateMembers, cxUsTree, cxUsEdgeSentence, CX_US_DOORS, cxUsSolo, CX_US_LAYOUT, cxUsStep, cxUsMotionState, CX_US_MOTION, cxUsAreaList, cxUsAreaCounts, cxMemberVotes, cxUsFaceId };', ctx);
 const A = ctx.api;
 const data = JSON.parse(read('data/us-landscape-2026.json')), vd = JSON.parse(read('data/us-votes-2026.json'));
-const g = A.cxUsGraph(data);
+const g = A.cxUsSky(A.cxUsGraph(data));
 let bad = 0;
 const fail = (m) => { bad++; console.log('FAIL ' + m); };
 const eq = (a, b, m) => { if (JSON.stringify(a) !== JSON.stringify(b)) fail(`${m}: got ${JSON.stringify(a)}, wanted ${JSON.stringify(b)}`); };
+// speed: building the record does not lay out the old Sky (only the old Sky reads those positions, through cxUsSky)
+eq(A.cxUsGraph(data).clusters, undefined, 'building the record skips the old Sky layout');
 
 const doors = A.cxUsDoors(data, g, vd), by = Object.fromEntries(doors.map((d) => [d.id, d]));
 eq(doors.map((d) => d.id), ['members', 'committees', 'executive', 'courts', 'areas', 'states'], 'the six doors, in order');
@@ -130,7 +132,7 @@ eq(g.nodes.filter((n) => n.kind === 'agency').length, data.agencies.length, 'eve
 }
 
 // Sky layout: same data, same picture; nobody overlaps; everyone is inside their cluster; committees sit on the rim
-const g2 = A.cxUsGraph(data);
+const g2 = A.cxUsSky(A.cxUsGraph(data));
 eq(g.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), g2.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), 'two builds give the same positions');
 eq(g.clusters.map((c) => [c.id, c.count]), [['senate', 100], ['house', 439], ['exec', 260], ['joint', 5], ['judicial', data.judiciary.judges.length]], 'the clusters and their counts');
 for (const ch of ['senate', 'house']) {
