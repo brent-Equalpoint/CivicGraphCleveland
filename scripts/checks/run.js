@@ -708,14 +708,14 @@ const CHECKS = {
     const read = async (p) => {
       await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-keycard')].find((x) => /register|where you stand/i.test(x.innerText)); if (b) b.click(); });
       await wait(700);
-      let text = '', links = [];
+      let text = '', links = [], btns = [];
       for (let k = 0; k < 9; k++) {   // walk the frames, taking the words and the links of each
-        const f = await p.evaluate(() => ({ text: ((document.querySelector('.cxm-story') || {}).innerText || '').replace(/ /g, ' '), links: [...document.querySelectorAll('.cxm-story a')].map((a) => a.href) }));
-        text += ' ' + f.text; links = links.concat(f.links);
+        const f = await p.evaluate(() => ({ text: ((document.querySelector('.cxm-story') || {}).innerText || '').replace(/ /g, ' '), links: [...document.querySelectorAll('.cxm-story a')].map((a) => a.href), btns: [...document.querySelectorAll('.cxm-story a.cxm-btn')].map((a) => a.href) }));
+        text += ' ' + f.text; links = links.concat(f.links); btns = btns.concat(f.btns);
         if (!(await has(p, '.cxm-tap-r'))) break;
         await p.evaluate(() => document.querySelector('.cxm-tap-r').click()); await wait(250);
       }
-      return { text, links };
+      return { text, links, btns };
     };
     for (const [iso, want, absent] of [['2026-10-05T15:00:00-04:00', /Today is the last day to register/, null], ['2026-10-02T15:00:00-04:00', /3 days left to register/, null], ['2026-10-08T15:00:00-04:00', /registration deadline has passed/, /Who can register/]]) {
       const p = await open('/?panel=ballot#phone', { mobile: true, easy: false, pre: at(iso), settle: 1500 });
@@ -724,6 +724,7 @@ const CHECKS = {
       expect(want.test(r.text), `${iso.slice(0, 10)}: the story does not say ${want}`);
       if (absent) expect(!absent.test(r.text), `${iso.slice(0, 10)}: after the deadline the story still has the sign-up steps`);
       expect(r.links.some((h) => /olvr\.ohiosos\.gov/.test(h)), `${iso.slice(0, 10)}: no link to Ohio's official registration site`);
+      expect(r.btns.some((h) => /olvr\.ohiosos\.gov/.test(h)), `${iso.slice(0, 10)}: the story has no button that sends the person to Ohio's registration site`);
       expect(/cannot register you/i.test(r.text), `${iso.slice(0, 10)}: the story does not say the app cannot register anyone`);
       expect(!/strong|score|rank/i.test(r.text.replace(/Secretary of State/g, '')), `${iso.slice(0, 10)}: a score word is in the story`);
       expect(!/—|–/.test(r.text), `${iso.slice(0, 10)}: a dash is in the story`);

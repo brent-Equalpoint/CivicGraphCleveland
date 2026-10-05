@@ -2,6 +2,10 @@
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
   "ward": "distrito",
+  "Check or register now": "Verifique o inscríbase ahora",
+  "Check my registration": "Verificar mi inscripción",
+  "Register online": "Inscribirme en línea",
+  "Contact the Board of Elections": "Contactar a la Junta Electoral",
   "Ohio closed registration on Oct. 5. Check where you stand.": "Ohio cerró la inscripción el 5 de oct. Vea su situación.",
   "If you moved or changed your name, update it.": "Si se mudó o cambió de nombre, actualícela.",
   "You can register if you are a U.S. citizen, are 18 by Nov. 3, and have lived in Ohio 30 days.": "Puede inscribirse si es ciudadano de EE. UU., tiene 18 años el 3 de nov. y ha vivido en Ohio 30 días.",

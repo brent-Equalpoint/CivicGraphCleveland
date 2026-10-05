@@ -241,6 +241,11 @@ function CxmStory() {
           </>
         )}
       </div>}
+      {fr.type === `link` && fr.link && (
+        <div className="cxm-story-react cxm-rise">
+          <a className="cxm-btn" href={fr.link.url} target="_blank" rel="noreferrer">{fr.link.label}<span className="sp-ext"> (opens in a new tab)</span></a>
+        </div>
+      )}
       {fr.type === `home` && (
         <div className="cxm-story-react cxm-rise">
           <CxLevyPad />

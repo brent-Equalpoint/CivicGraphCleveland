@@ -120,15 +120,16 @@ function cxmRegisterStory() {
   const open = toDeadline >= 0;
   const frames = [
     { k: `Register to vote`, big: toDeadline === 0 ? `Today is the last day to register.` : toDeadline === 1 ? `Tomorrow is the last day to register.` : toDeadline > 1 ? `${toDeadline} days left to register.` : `The registration deadline has passed.`,
-      small: open ? `Check the exact closing time with the Board of Elections.` : `Ohio closed registration on Oct. 5. Check where you stand.` },
-    { k: `Step 1`, big: `First, check if you are already registered.`, small: `If you moved or changed your name, update it.`, src: CX_REG_SOS },
+      small: open ? `Check the exact closing time with the Board of Elections.` : `Ohio closed registration on Oct. 5. Check where you stand.`,
+      type: `link`, link: { label: open ? `Check or register now` : `Check my registration`, url: CX_REG_SOS.url } },
+    { k: `Step 1`, big: `First, check if you are already registered.`, small: `If you moved or changed your name, update it.`, type: `link`, link: { label: `Check my registration`, url: CX_REG_SOS.url } },
   ];
   if (open) {
     frames.push({ k: `Who can register`, big: `You can register if you are a U.S. citizen, are 18 by Nov. 3, and have lived in Ohio 30 days.`, small: `Not sure you qualify? Ask the Board of Elections.`, src: CX_REG_SOS });
-    frames.push({ k: `Step 2`, big: `Not registered, or you moved? Register online.`, small: `You need your date of birth, address, and Ohio driver license or state ID number. No Ohio ID? Use a paper form.`, src: CX_REG_SOS });
+    frames.push({ k: `Step 2`, big: `Not registered, or you moved? Register online.`, small: `You need your date of birth, address, and Ohio driver license or state ID number. No Ohio ID? Use a paper form.`, type: `link`, link: { label: `Register online`, url: CX_REG_SOS.url } });
     frames.push({ k: `Paper form`, big: `Prefer paper? Mail it or bring it in.`, small: `A mailed form must be postmarked by the deadline.`, src: CX_REG_BOE });
   }
-  frames.push({ k: `After the deadline`, big: `Missed it? Contact the Board of Elections.`, small: `Ohio has no same-day registration. A late form counts for the next election.`, src: CX_REG_BOE });
+  frames.push({ k: `After the deadline`, big: `Missed it? Contact the Board of Elections.`, small: `Ohio has no same-day registration. A late form counts for the next election.`, type: `link`, link: { label: `Contact the Board of Elections`, url: CX_REG_BOE.url } });
   frames.push({ k: `Do it on the official site`, big: `We cannot register you. The official sites can.`, small: `We only link to them and send nothing about you. A person has not yet checked these steps against the official pages.`, src: CX_REG_SOS });
   return { id: `register`, label: `Register`, ini: `RV`, name: `Register to vote`, when: open ? `Deadline: Monday, Oct. 5` : `The deadline was Monday, Oct. 5`, source: CX_REG_BOE, frames };
 }
@@ -182,6 +183,7 @@ function CX_StoryFrame({ fr: fr0, s, onGo, plain }) {
           {m && <a className="cx-story-link" href={m.url} target="_blank" rel="noreferrer">Read the record, file {m.file} (opens in a new tab)</a>}
         </div>
       )}
+      {fr.type === `link` && fr.link && <div className="cx-story-act"><a className="cx-story-btn" href={fr.link.url} target="_blank" rel="noreferrer">{fr.link.label}<span className="sp-ext"> (opens in a new tab)</span></a></div>}
       {fr.type === `cta` && <div className="cx-story-act"><button type="button" className="cx-story-btn" onClick={() => (fr.go === `levystories` && onGo ? onGo(`levy-10`) : CX_NAV.panel(fr.go === `place` ? `place` : fr.go === `levies` ? `levies` : `ballot`))}>{fr.go === `place` ? `Open Who decides here?` : fr.go === `levies` ? `See the levies` : fr.go === `levystories` ? fr.cta : `Open the voter guide`} <CXI.Arrow size={14} /></button></div>}
       <CxSource source={s.source} cls="cx-story-src" />
     </>
