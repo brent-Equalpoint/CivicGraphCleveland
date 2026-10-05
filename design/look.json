@@ -2565,7 +2565,7 @@
  },
  "bento light | phone number pad": {
   ".cxm-keys button": {
-   "color": "rgb(20, 22, 29)",
+   "color": "rgb(255, 255, 255)",
    "backgroundColor": "rgba(0, 0, 0, 0)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "26px",
@@ -2579,7 +2579,7 @@
    "paddingLeft": "0px",
    "minHeight": "auto",
    "borderTopWidth": "0px",
-   "borderTopColor": "rgb(20, 22, 29)"
+   "borderTopColor": "rgb(255, 255, 255)"
   },
   ".cxm-story .cxm-btn": {
    "color": "rgb(12, 26, 69)",
@@ -3639,7 +3639,7 @@
  },
  "original light | phone number pad": {
   ".cxm-keys button": {
-   "color": "rgb(31, 24, 20)",
+   "color": "rgb(255, 255, 255)",
    "backgroundColor": "rgba(0, 0, 0, 0)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "26px",
@@ -3653,7 +3653,7 @@
    "paddingLeft": "0px",
    "minHeight": "auto",
    "borderTopWidth": "0px",
-   "borderTopColor": "rgb(31, 24, 20)"
+   "borderTopColor": "rgb(255, 255, 255)"
   },
   ".cxm-story .cxm-btn": {
    "color": "rgb(12, 26, 69)",

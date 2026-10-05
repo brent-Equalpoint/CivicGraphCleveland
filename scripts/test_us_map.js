@@ -74,6 +74,59 @@ const registered = new Set(Object.values(tokens.colors));
 const unregistered = [...colors].filter((c) => !registered.has(c));
 if (unregistered.length) fail('the map uses colors that are not in the registered meaning group: ' + unregistered.join(', '));
 
+// shapes by tier: a branch is a ring (the biggest), a committee a filled hexagon, a court an outlined hexagon, an agency a square, a person a circle;
+// committees and courts, both hexagons, also differ by fill and by color family, and the key says each in words
+const tier = { hub: 'ring', committee: 'hex', court: 'hexo', agency: 'square', person: 'circle' };
+M.nodes.forEach((n) => { if (n.shape !== tier[n.kind]) fail(`${n.name}: a ${n.kind} is drawn as ${n.shape}, not ${tier[n.kind]}`); });
+{
+  const comCols = new Set(M.nodes.filter((n) => n.kind === 'committee').map((n) => A.cxUsmColor(n))), courtCols = new Set(M.nodes.filter((n) => n.kind === 'court').map((n) => A.cxUsmColor(n)));
+  if ([...comCols].some((c) => courtCols.has(c))) fail('a committee and a court share a color');
+}
+
+// the profile page: every node has a link name that finds it again, and every profile reads only from the record. Party is one row of the
+// record, with its date and source, and nowhere else; no score, strength, or ranking word; no dash; every row has a source and a pulled date.
+const vd = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'us-votes-2026.json'), 'utf8'));
+{
+  const S = A.cxUsmSlugs(g);
+  if (new Set(S.of).size !== g.nodes.length) fail('two nodes share a link name');
+  const lost = g.nodes.filter((n) => A.cxUsmFind(g, S.of[n.i]) !== n.i || A.cxUsmFind(g, n.id) !== n.i); if (lost.length) fail(`${lost.length} link names do not find their node, for example ${lost[0].name}`);
+  if (!/^[a-z0-9-]+$/.test(S.of.join('-'))) fail('a link name has a character that is not a lowercase letter, a digit, or a hyphen');
+  eq(S.of[g.byId.get('m:M001242') ? g.byId.get('m:M001242').i : 0], g.byId.get('m:M001242') ? 'bernie-moreno' : S.of[0], 'Bernie Moreno is shared as bernie-moreno');
+  const kinds = new Map();
+  g.nodes.forEach((n) => { const k = n.kind; if (!kinds.has(k)) kinds.set(k, []); if (kinds.get(k).length < 25) kinds.get(k).push(n.i); });
+  const ours = (P) => JSON.stringify([P.kicker, P.sentence, P.fact, P.glance.map((x) => x.label), P.glanceNote, P.record.filter((r) => r.key !== 'party').map((r) => [r.label, typeof r.value === 'string' && !r.link ? r.value : '', r.note || '']), P.lists.map((L) => [L.title, L.note || '', L.rows.map((r) => r.word)])]);
+  let n = 0;
+  for (const [k, list] of kinds) for (const i of list) {
+    const P = A.cxUsProfile(g, M, d, vd, i), name = g.nodes[i].name; n++;
+    if (!P.kicker || !P.name || !P.sentence.length || !P.record.length) { fail(`${name}: the profile is missing its kicker, name, sentence, or record`); continue; }
+    const words = ours(P);
+    if (/\b(Republican|Democrat|Democratic|Independent|conservative|liberal|moderate)\b/i.test(words)) fail(`${name}: a party or ideology word outside the Party row`);
+    if (/\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\branked\b|\brank(ing)? (?!member)/i.test(words)) fail(`${name}: a score or strength word: ${words.match(/\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\branked\b/i)}`);
+    if (/[–—]/.test(words)) fail(`${name}: a dash in the profile`);
+    P.record.forEach((r) => { if (!r.src || !r.src.label || !/^https:\/\//.test(r.src.url || '') || !/\d{4}$/.test(r.src.pulled || '')) fail(`${name}: the ${r.label} row has no source address or pulled date`); });
+    const party = P.record.filter((r) => r.key === 'party');
+    if (party.length && !/^Recorded as of \w+ \d+, \d{4}$/.test(party[0].note || '')) fail(`${name}: party is not dated`);
+    if (k === 'member' && !party.length) fail(`${name}: a member's profile has no dated Party row`);
+    if (k !== 'member' && k !== 'president' && party.length) fail(`${name}: a ${k} has a Party row`);
+    if (k === 'member' && !/^(Voted on [\d,]+ bills? this Congress\.|No recorded vote on a bill is in our record yet\.)$/.test(P.fact)) fail(`${name}: the fact line is "${P.fact}"`);
+    if (k === 'member' && P.glance.length !== 3) fail(`${name}: a member has ${P.glance.length} numbers at a glance, not 3`);
+    P.lists.forEach((L) => L.rows.forEach((r) => { if (!r.word) fail(`${name}: a row of ${L.title} has no word from the record`); }));
+    const nb = new Set(g.adj[i].map((ei) => (g.edges[ei].a === i ? g.edges[ei].b : g.edges[ei].a)));
+    // what the corner map draws (lists marked map) is only their own recorded connections
+    P.lists.filter((L) => L.map).forEach((L) => L.rows.forEach((r) => { if (r.i !== null && r.i !== undefined && !nb.has(r.i)) fail(`${name}: ${L.title} would put ${g.nodes[r.i].name} on the corner map, who is not connected on the record`); }));
+  }
+  // a member's numbers are counts from the record
+  const mo = g.byId.get('m:M001242');
+  if (mo) {
+    const P = A.cxUsProfile(g, M, d, vd, mo.i), i0 = vd.members.indexOf('M001242');
+    const cast = vd.votes.filter((v) => v.chamber === 'senate' && ['Y', 'N', 'P', 'O'].includes(v.codes[i0])).length;
+    eq(P.glance[0].n, cast, 'Bernie Moreno: recorded votes cast, counted straight from the roll calls');
+    const bills = new Set(vd.votes.filter((v) => v.chamber === 'senate' && v.bill && ['Y', 'N', 'P'].includes(v.codes[i0])).map((v) => v.bill)).size;
+    eq(P.fact, `Voted on ${bills} bills this Congress.`, 'Bernie Moreno: the fact line counts the bills he cast a vote on');
+  }
+  console.log(`  ${n} profiles read`);
+}
+
 // physics: the same twice, every node placed, nothing a bad number
 const t0 = Date.now();
 const one = settle(A, d), two = settle(A, d);
@@ -90,12 +143,28 @@ for (let a = 0; a < 4; a++) for (let b = a + 1; b < 4; b++) if (Math.hypot(H[a][
 const near = M.nodes.filter((n) => n.kind === 'person' && n.role === 'member').filter((n) => { const own = g.nodes[n.i].m.chamber === 'senate' ? 0 : 1, p = one.xy[n.i]; const dd = (h) => Math.hypot(p[0] - H[h][0], p[1] - H[h][1]); return dd(own) < dd(1 - own); }).length;
 if (near < 0.95 * d.counts.members) fail(`only ${near} of ${d.counts.members} members settled nearer their own chamber`);
 
+// the tall map (a phone held upright): the same physics and seed, started in three rows. It must be taller than wide, keep the four
+// branches apart, and keep members near their own chamber, like the wide one.
+const tall = settle(A, d, 'tall');
+eq(tall.xy.every((p) => p && Number.isFinite(p[0]) && Number.isFinite(p[1])), true, 'tall: every node has a place');
+{
+  const tb = A.cxUsmBox(tall.xy.map((p, i) => ({ x: p[0], y: p[1], r: M.nodes[i].r }))), tw = tb.x1 - tb.x0, th = tb.y1 - tb.y0;
+  if (!(th > 1.5 * tw)) fail(`the tall map is not tall enough for a phone held upright: ${Math.round(tw)} by ${Math.round(th)}`);
+  const wb = box, fitW = (bx) => Math.min(358 / (bx.x1 - bx.x0), 690 / (bx.y1 - bx.y0));   // the room on a 390 by 844 phone, between its controls
+  if (!(fitW(tb) > 1.3 * fitW(wb))) fail(`the tall map does not fill a 390 by 844 phone better than the wide one: ${fitW(tb).toFixed(3)} against ${fitW(wb).toFixed(3)}`);
+  const TH = [M.branchHubs.senate, M.branchHubs.house, M.branchHubs.exec, M.branchHubs.courts].map((i) => tall.xy[i]);
+  for (let a = 0; a < 4; a++) for (let b = a + 1; b < 4; b++) if (Math.hypot(TH[a][0] - TH[b][0], TH[a][1] - TH[b][1]) < 200) fail(`tall: two branch hubs settled too close: ${a} and ${b}`);
+  const tnear = M.nodes.filter((n) => n.kind === 'person' && n.role === 'member').filter((n) => { const own = g.nodes[n.i].m.chamber === 'senate' ? 0 : 1, p = tall.xy[n.i]; const dd = (h) => Math.hypot(p[0] - TH[h][0], p[1] - TH[h][1]); return dd(own) < dd(1 - own); }).length;
+  if (tnear < 0.95 * d.counts.members) fail(`tall: only ${tnear} of ${d.counts.members} members settled nearer their own chamber`);
+}
+
 // the settled file the build writes must be a fresh run of the same code on the same record
 const built = path.join(ROOT, 'site', 'us', 'map-2026.json');
 if (fs.existsSync(built)) {
   const f = JSON.parse(fs.readFileSync(built, 'utf8'));
   eq(f.ids, A.cxUsmIds(g), 'the built file is for this record');
   eq(JSON.stringify(f.xy) === JSON.stringify(one.xy), true, 'the built file matches a fresh run (rebuild with python build.py)');
+  eq(JSON.stringify(f.tall) === JSON.stringify(tall.xy), true, 'the built file\'s tall map matches a fresh run (rebuild with python build.py)');
 } else console.log('note: site/us/map-2026.json is not built yet; run python build.py');
 
 // names on the map never overlap, whatever they are asked to place
