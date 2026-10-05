@@ -645,3 +645,25 @@
 .cx-stories .cx-story-all .cx-story-big { font-size: 26px; }
 .cx-stories .cx-story-all .cx-story-small { font-size: 17px; }
 @media (prefers-reduced-motion: reduce) { .cx-story-body * { animation: none !important; } }
+
+/* v5.27 desktop: the rooms as folder tabs above the graph, from "Your government" to "Civic ecosystem". The compiled app already lays these out as a row on a narrow
+   screen; this does it at every width of a computer. The old left sidebar becomes a strip across the top: the personal pages (My priorities, My constellation, My ballot,
+   Voter education) as a quiet row, then the room tabs sitting on the page below. The chosen tab joins the page, like a folder tab. */
+@media (min-width: 761px) {
+  .atlas-workspace[data-slot=tabs], .rail-collapsed .atlas-workspace[data-slot=tabs] { display: block; }
+  .atlas-workspace .atlas-sidebar { position: static; height: auto; min-height: 0; flex-direction: column; gap: 0; padding: 10px 26px 0; border-right: 0; border-bottom: 1px solid var(--atlas-border); }
+  .atlas-workspace .rail-toggle { display: none; }
+  .atlas-workspace .atlas-sidebar-bottom { order: -1; display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; margin: 0 0 10px; padding: 0 0 4px; border: 0; overflow-x: auto; scrollbar-width: thin; }
+  .atlas-workspace .atlas-sidebar-bottom button { flex: none; width: auto; min-height: 40px; margin: 0; padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+  .atlas-workspace .atlas-sidebar-bottom p, .atlas-workspace .atlas-sidebar-bottom .atlas-version { display: none; }
+  .rail-collapsed .atlas-sidebar-bottom span, .rail-collapsed .atlas-sidebar-bottom p { display: inline; }
+  .atlas-workspace .atlas-room-tabs[data-slot=tabs-list] { flex: none; flex-flow: row nowrap !important; justify-content: flex-start !important; align-items: flex-end; gap: 4px; width: 100%; max-width: none; margin-bottom: -1px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .atlas-workspace .atlas-room-tabs[data-slot=tabs-list]::-webkit-scrollbar { display: none; }
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] { flex: none !important; width: auto; height: auto !important; min-height: 44px !important; margin-bottom: 0; padding: 10px 16px; gap: 8px; white-space: nowrap; font-size: 14px; border: 1px solid var(--atlas-border); border-bottom: 0; border-radius: 12px 12px 0 0; }
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] svg:last-child:not(:first-child) { display: none; }
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger]::after { display: none; }
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-bottom: 1px solid var(--atlas-bg); }
+  html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { background: var(--bb-blue); border-color: var(--bb-blue); color: #fff; }
+  html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #fff; }
+  html[data-cx-theme="original"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-color: var(--atlas-orange); }
+}

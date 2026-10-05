@@ -108,6 +108,30 @@ function cxmBallotStory() {
   if (lv.length) frames.push({ k: `Levies`, big: `${cxmPl(lv.length, `county levy`, `county levies`)}. What would they cost you?`, small: `Short stories with the cost, what each pays for, and what people say. We do not tell you how to vote.`, type: `cta`, cta: `See the levy stories`, go: `levystories` });
   return { id: `ballot`, label: `Your ballot`, ini: days > 0 ? String(days) : `✓`, name: `Your ballot`, when: `Election Day is Tuesday, Nov. 3`, deeper: { label: `Open my ballot`, kind: `tab`, tab: `ballot`, panel: `ballot` }, source: { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` }, frames };
 }
+/* Register to vote: a short walkthrough, shown until Election Day and first in the row in the week of the deadline (Ohio closes registration 30 days before the election).
+   It links to the official sites and says what this app cannot do: it cannot register anyone and it sends nothing about the person. The steps are Ohio's general rules
+   written in plain words; a person has not yet read them against the Secretary of State's pages, and the last frame says so. */
+const CX_REG_DATE = `2026-10-05`;
+const CX_REG_SOS = { label: `Ohio Secretary of State: check or register to vote`, url: `https://olvr.ohiosos.gov/` };
+const CX_REG_BOE = { label: `Cuyahoga County Board of Elections`, url: `https://boe.cuyahogacounty.gov/` };
+function cxmRegisterStory() {
+  const toDeadline = cxmDaysTo(CX_REG_DATE);
+  if (cxmDaysTo(CXM_ELECTION) < 0) return null;
+  const open = toDeadline >= 0;
+  const frames = [
+    { k: `Register to vote`, big: toDeadline === 0 ? `Today is the last day to register.` : toDeadline === 1 ? `Tomorrow is the last day to register.` : toDeadline > 1 ? `${toDeadline} days left to register.` : `The registration deadline has passed.`,
+      small: open ? `Ohio closes registration 30 days before the election. Check the exact closing time with the Board of Elections.` : `Ohio closed registration on Oct. 5. Here is how to check where you stand.` },
+    { k: `Step 1`, big: `First, check if you are already registered.`, small: `It is quick, and you may already be set. If you moved or changed your name, update your registration.`, src: CX_REG_SOS },
+  ];
+  if (open) {
+    frames.push({ k: `Who can register`, big: `U.S. citizens who will be 18 by Nov. 3 and have lived in Ohio for 30 days.`, small: `The official site lists every rule. Not sure you qualify? Ask the Board of Elections.`, src: CX_REG_SOS });
+    frames.push({ k: `Step 2`, big: `Not registered, or you moved? Register online.`, small: `The form asks for your date of birth, your address, and an Ohio driver license or state ID number. No Ohio ID? Ask the Board of Elections for a paper form.`, src: CX_REG_SOS });
+    frames.push({ k: `Prefer paper?`, big: `Mail the form or bring it to the Board of Elections.`, small: `A mailed form must be postmarked by the deadline. If you bring it in, ask the board for its closing time.`, src: CX_REG_BOE });
+  }
+  frames.push({ k: `Missed it?`, big: `Missed the deadline? Call the Board of Elections.`, small: `Ohio has no same-day registration, so a late form counts for the next election. The board can tell you what is still possible for you.`, src: CX_REG_BOE });
+  frames.push({ k: `What this app can do`, big: `We cannot register you. The official sites can.`, small: `We link to them and send nothing about you. A person has not yet read these steps against the official pages, so check each one there.`, src: CX_REG_SOS });
+  return { id: `register`, label: `Register`, ini: `RV`, name: `Register to vote`, when: open ? `Deadline: Monday, Oct. 5` : `The deadline was Monday, Oct. 5`, source: CX_REG_BOE, frames };
+}
 function cxmSamePerson(a, b) {
   const n = (s) => String(s).toLowerCase().replace(/[^a-z\s-]/g, ``).trim().split(/\s+/);
   const x = n(a), y = n(b);
@@ -130,7 +154,8 @@ function cxmHoodStory(hood) {
   return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
-  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+  const reg = cxmRegisterStory(), soon = reg && cxmDaysTo(CX_REG_DATE) <= 7;   // in the week of the deadline it leads the row
+  return [soon ? reg : null, home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), soon ? null : reg, cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
 }
 
 /* ---------- desktop Stories page (sidebar: Stories) ---------- */

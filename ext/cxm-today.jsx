@@ -132,7 +132,7 @@ function CxmToday() {
   const base = u.useMemo(() => cxmStories(home, answers), [home?.ward, home?.hood, Object.keys(answers).length]);
   const hallData = useCxMtg();
   const hall = u.useMemo(() => cxMtgStory(hallData, cxTodayET()), [hallData]);
-  const stories = hall ? [hall, ...base] : base;
+  const stories = hall ? (base[0] && base[0].id === `register` ? [base[0], hall, ...base.slice(1)] : [hall, ...base]) : base;   // the Register story leads in the week of the deadline
   const moments = u.useMemo(() => cxmMoments(home), [home?.ward]);
   const [note, setNote] = u.useState(CXM_NOTICE.v);
   const days = cxmDaysTo(CXM_ELECTION);

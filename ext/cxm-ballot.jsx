@@ -40,6 +40,11 @@ function CxmBallot() {
       <CxmH1>My ballot</CxmH1>
       <p className="cxm-lede">Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.</p>
       <p className="cxm-status-line"><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
+      {cxmRegisterStory() && (
+        <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-reg" onClick={() => setOverlay({ type: `story`, list: [cxmRegisterStory()], i: 0, f: 0 })}>
+          <span><strong>{cxmDaysTo(CX_REG_DATE) === 0 ? `Register to vote: today is the deadline` : cxmDaysTo(CX_REG_DATE) > 0 ? `Register to vote` : `Not registered? Here is where you stand`}</strong><small>A short walkthrough. We link to the official sites; we cannot register you.</small></span><b>RV</b>
+        </button>
+      )}
       <CxmDates />
       <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}All times are Eastern time. An application requests a ballot; it is not your completed ballot.</p>
       <div className="cxm-tile cxm-tile-acc">

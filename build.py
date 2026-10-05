@@ -434,6 +434,9 @@ def main():
     # 4. patches
     log("Applying patches:")
     src = patch(src, "export { Qh as default };", "export { CX_Root as default };", label="phone app: root switch")
+    # v5.27 desktop: the rooms are folder tabs above the graph (ext/cx.css), so the arrow keys that move between them are left and right, not up and down
+    src = patch(src, "        onValueChange: Me,\n        orientation: `vertical`,\n        className: `atlas-workspace`,",
+                "        onValueChange: Me,\n        orientation: `horizontal`,\n        className: `atlas-workspace`,", label="desktop: room tabs keys")
     # v5.15 dates know what day it is (passed / today / next); the text must match the compiled guide
     d0 = ("                    [\n                      [`Oct 5`, `Registration deadline`],\n                      [`Oct 6`, `Early voting begins`],\n"
           "                      [`Oct 27`, `Mail ballot application due by 8:30 p.m.`],\n                      [`Nov 1`, `Early in-person voting ends at 5 p.m.`],\n"

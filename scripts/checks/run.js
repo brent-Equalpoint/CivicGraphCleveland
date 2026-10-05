@@ -701,6 +701,41 @@ const CHECKS = {
     p.csp = []; p.outside = [];   // those attempts were on purpose
     await done(p);
   },
+  async 'register-story'() {
+    // "Register to vote": a story on the Ballot tab and first in the Today row in the week of the deadline. It links to the official sites, says the app cannot register anyone,
+    // changes by the day (before, on, and after the deadline), and is gone after Election Day. Each day is forced with a fake clock.
+    const at = (iso) => `(() => { const R = Date, off = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
+    const read = async (p) => {
+      await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-keycard')].find((x) => /register|where you stand/i.test(x.innerText)); if (b) b.click(); });
+      await wait(700);
+      let text = '', links = [];
+      for (let k = 0; k < 9; k++) {   // walk the frames, taking the words and the links of each
+        const f = await p.evaluate(() => ({ text: ((document.querySelector('.cxm-story') || {}).innerText || '').replace(/ /g, ' '), links: [...document.querySelectorAll('.cxm-story a')].map((a) => a.href) }));
+        text += ' ' + f.text; links = links.concat(f.links);
+        if (!(await has(p, '.cxm-tap-r'))) break;
+        await p.evaluate(() => document.querySelector('.cxm-tap-r').click()); await wait(250);
+      }
+      return { text, links };
+    };
+    for (const [iso, want, absent] of [['2026-10-05T15:00:00-04:00', /Today is the last day to register/, null], ['2026-10-02T15:00:00-04:00', /3 days left to register/, null], ['2026-10-08T15:00:00-04:00', /registration deadline has passed/, /Who can register/]]) {
+      const p = await open('/?panel=ballot#phone', { mobile: true, easy: false, pre: at(iso), settle: 1500 });
+      expect(await has(p, '.cxm-keycard'), `${iso.slice(0, 10)}: the Ballot has no Register to vote card`);
+      const r = await read(p);
+      expect(want.test(r.text), `${iso.slice(0, 10)}: the story does not say ${want}`);
+      if (absent) expect(!absent.test(r.text), `${iso.slice(0, 10)}: after the deadline the story still has the sign-up steps`);
+      expect(r.links.some((h) => /olvr\.ohiosos\.gov/.test(h)), `${iso.slice(0, 10)}: no link to Ohio's official registration site`);
+      expect(/cannot register you/i.test(r.text), `${iso.slice(0, 10)}: the story does not say the app cannot register anyone`);
+      expect(!/strong|score|rank/i.test(r.text.replace(/Secretary of State/g, '')), `${iso.slice(0, 10)}: a score word is in the story`);
+      expect(!/—|–/.test(r.text), `${iso.slice(0, 10)}: a dash is in the story`);
+      await done(p);
+    }
+    const t = await open('/#phone', { mobile: true, easy: false, pre: at('2026-10-05T15:00:00-04:00'), settle: 1500 });
+    expect(await t.evaluate(() => { const b = document.querySelector('.cxm-story-btn'); return !!b && /Register/i.test(b.getAttribute('aria-label') || ''); }), 'in the week of the deadline the Register story is not first in the Today row');
+    await done(t);
+    const after = await open('/?panel=ballot#phone', { mobile: true, easy: false, pre: at('2026-11-04T12:00:00-05:00'), settle: 1500 });
+    expect(!(await after.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].some((x) => /register/i.test(x.innerText)))), 'the Register card is still on the Ballot after Election Day');
+    await done(after);
+  },
   async 'date-states'() {
     // The election dates on the phone Ballot show a tag by the day: "Next" before a date, "Today" on it, "Passed" after. A color that was fine for two of them once failed
     // contrast only on the one day a person actually met it, so each state is forced here with a fake clock, in dark and light, and checked for contrast (and, the day after the election, for a link marked by color alone).
