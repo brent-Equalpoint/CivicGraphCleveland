@@ -2,6 +2,13 @@
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
   "ward": "distrito",
+  "All times are Eastern time. An application requests a ballot; it is not your completed ballot.": "Todas las horas son del Este. Una solicitud pide una boleta; no es su boleta completada.",
+  "Check the exact closing time with the Board of Elections.": "Confirme la hora exacta de cierre con la Junta Electoral.",
+  "All times are Eastern time. Check the exact closing time with the Board of Elections.": "Todas las horas son del Este. Confirme la hora exacta de cierre con la Junta Electoral.",
+  "Tomorrow.": "Mañana.",
+  "Tomorrow. All times are Eastern time.": "Mañana. Todas las horas son del Este.",
+  "{n} days from today.": "Dentro de {n} días.",
+  "{n} days from today. All times are Eastern time.": "Dentro de {n} días. Todas las horas son del Este.",
   "Your privacy": "Su privacidad",
   "This site sets no cookies and has no analytics. Your choices stay on your device, and the browser is told to talk only to this site.": "Este sitio no usa cookies ni análisis. Sus elecciones se quedan en su dispositivo, y al navegador se le indica que hable solo con este sitio.",
   "Six ways into the federal government.": "Seis maneras de entrar al gobierno federal.",
@@ -23,9 +30,6 @@
   "The closer a member is to You, the more of your yes and no answers match how they voted. A vote is on one question, and a missing record is never a no.": "Cuanto más cerca esté un miembro de Usted, más de sus respuestas de sí y no coinciden con cómo votó. Un voto es sobre una sola pregunta, y la falta de un registro no significa que la respuesta sea no.",
   "How to read this map": "Cómo leer este mapa",
   "Nearer, missing records, and everyone's record": "Cercanía, registros faltantes y el registro de todos",
-  "Tomorrow. Eastern time.": "Mañana. Hora del Este.",
-  "Eastern time. Check the details with the Board of Elections.": "Hora del Este. Confirme los detalles con la Junta Electoral.",
-  "Eastern time. An application requests a ballot; it is not your completed ballot.": "Hora del Este. Una solicitud pide una boleta; no es su boleta completada.",
   "levy": "gravamen de impuestos",
   "data center": "centro de datos",
   "liquor": "licor",
@@ -600,7 +604,6 @@
   "City Council Event": "Evento del Concejo Municipal"
  },
  "masked": {
-  "{n} days from today. Eastern time.": "Dentro de {n} días. Hora del Este.",
   "{n} days": "{n} días",
   "{n} day": "{n} día",
   "(in {n} days)": "(en {n} días)",

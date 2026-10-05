@@ -703,15 +703,15 @@ const CHECKS = {
   },
   async 'date-states'() {
     // The election dates on the phone Ballot show a tag by the day: "Next" before a date, "Today" on it, "Passed" after. A color that was fine for two of them once failed
-    // contrast only on the one day a person actually met it, so each state is forced here with a fake clock, in dark and light, and checked for contrast.
+    // contrast only on the one day a person actually met it, so each state is forced here with a fake clock, in dark and light, and checked for contrast (and, the day after the election, for a link marked by color alone).
     const at = (iso) => `(() => { const R = Date, off = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
-    for (const [iso, tag] of [['2026-10-04T15:00:00-04:00', 'TOMORROW'], ['2026-10-05T15:00:00-04:00', 'TODAY'], ['2026-10-08T15:00:00-04:00', 'PASSED']]) {
+    for (const [iso, tag] of [['2026-10-04T15:00:00-04:00', 'TOMORROW'], ['2026-10-05T15:00:00-04:00', 'TODAY'], ['2026-10-08T15:00:00-04:00', 'PASSED'], ['2026-11-04T12:00:00-05:00', 'PASSED']]) {
       for (const mode of ['dark', 'light']) {
         const p = await open('/?panel=ballot#phone', { mobile: true, easy: false, mode, pre: at(iso), settle: 1500 });
         const tags = await p.$$eval('.cxm-dates em', (els) => els.map((e) => e.innerText.trim().toUpperCase()));
         expect(tags.includes(tag), `${iso.slice(0, 10)} ${mode}: expected a ${tag} tag on the dates, found ${JSON.stringify(tags)}`);
-        const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast');
-        expect(bad.length === 0, `${iso.slice(0, 10)} ${mode}: contrast on the dates: ${bad.slice(0, 3).map((x) => x.target).join('; ')}`);
+        const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast' || x.id === 'link-in-text-block');
+        expect(bad.length === 0, `${iso.slice(0, 10)} ${mode}: contrast or an unmarked link on the dates page: ${bad.slice(0, 3).map((x) => x.target).join('; ')}`);
         await done(p);
       }
     }

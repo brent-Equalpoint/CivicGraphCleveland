@@ -826,7 +826,7 @@ html[data-cx-theme] .atlas-shell .sp p.sp-note, html[data-cx-theme] .atlas-shell
 
 /* ---- v5.16 accessibility pass ---- */
 /* links inside running text are told apart by more than color (the desktop theme removes underlines, so these are specific) */
-.sp a, .cx-stories .cx-story-src a, .cxm-story-src a, .cx-empty a, .cxm-empty a { text-decoration: underline; text-underline-offset: 3px; }
+.cxm-status-line a, .sp a, .cx-stories .cx-story-src a, .cxm-story-src a, .cx-empty a, .cxm-empty a { text-decoration: underline; text-underline-offset: 3px; }
 html[data-cx-theme] .atlas-shell .sp a, html[data-cx-theme] .atlas-shell .cx-stories .cx-story-src a, html[data-cx-theme] .atlas-shell .cx-empty a { text-decoration: underline; text-underline-offset: 3px; }
 /* small grey figures on the ledger summary were 4.1:1; text needs 4.5:1 */
 html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary small, .ledger-summary span { color: #b3b8c4; }
