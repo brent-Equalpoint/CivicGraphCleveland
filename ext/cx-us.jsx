@@ -421,16 +421,24 @@ function cxUsWhere(n) {
   if (n.kind === `committee`) return n.c.chamber === `joint` ? `Joint committee` : `${n.c.chamber === `senate` ? `Senate` : `House`} committee`;
   return n.a && n.a.parent_id ? `Part of a larger agency` : `Federal agency`;
 }
-function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
+function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics, start }) {
   const [vd, setVd] = u.useState(CX_USV.v);
   u.useEffect(() => { let live = !0; if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live && d) setVd(d); }); return () => { live = !1; }; }, []);
   const doors = u.useMemo(() => cxUsDoors(data, g, vd), [data, g, vd]);
-  const [door, setDoor] = u.useState(`members`), [grp, setGrp] = u.useState(``), [more, setMore] = u.useState(25), [openState, setOpenState] = u.useState(``);
-  const cur = doors.find((d) => d.id === door), gr = cur.groups.find((x) => x.id === grp) || cur.groups[0];
+  // start: { door, grp, id } opens the Index where one node is listed, with that node in view (the map's "Explore in Index")
+  const [door, setDoor] = u.useState(start && start.door ? start.door : `members`), [grp, setGrp] = u.useState(start && start.grp ? start.grp : ``), [more, setMore] = u.useState(25), [openState, setOpenState] = u.useState(``);
+  const cur = doors.find((d) => d.id === door) || doors[0], gr = cur.groups.find((x) => x.id === grp) || cur.groups[0];
   const needle = q.trim().toLowerCase();
   const pickDoor = (id) => { setDoor(id); setGrp(``); setMore(25); setOpenState(``); };
   let items = null, total = 0;
   if (gr.nodes) { items = gr.nodes.map((i) => g.nodes[i]).filter((n) => visible(n) && !dim(n) && (!needle || n.name.toLowerCase().includes(needle))); total = items.length; }
+  const want = start && start.id && items ? items.findIndex((n) => n.id === start.id) : -1;
+  if (want >= more) setMore(Math.ceil((want + 1) / 25) * 25);
+  u.useEffect(() => {
+    if (!start || !start.id) return;
+    const el = [...document.querySelectorAll(`.us-list [data-node]`)].find((b) => b.getAttribute(`data-node`) === start.id);
+    if (el) { el.scrollIntoView({ block: `center` }); el.focus({ preventScroll: !0 }); }
+  }, [start && start.id, more]);
   return (
     <div className="us-index">
       <p>Six ways into the federal government.</p>
@@ -451,7 +459,7 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics }) {
         <>
           <p className="us-count" role="status">{total} shown. Choose one to see its connections.</p>
           <ul className="us-list">
-            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" className={n.kind === `member` || n.kind === `president` ? `has-face` : ``} onClick={() => onOpen(n.i)}>{(n.kind === `member` || n.kind === `president`) && <CxFace id={cxUsFaceId(n)} name={n.name} size={44} />}<strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
+            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" data-node={n.id} aria-current={start && start.id === n.id ? `true` : undefined} className={`${n.kind === `member` || n.kind === `president` ? `has-face` : ``} ${start && start.id === n.id ? `on` : ``}`} onClick={() => onOpen(n.i)}>{(n.kind === `member` || n.kind === `president`) && <CxFace id={cxUsFaceId(n)} name={n.name} size={44} />}<strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
           </ul>
           {total > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {total - more}</button></p>}
         </>

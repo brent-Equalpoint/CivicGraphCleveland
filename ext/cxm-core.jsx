@@ -372,6 +372,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             ))}
           </nav>
           {tab === `explore` && !room && <CxmRail />}
+          {tab === `people` && people.mode === `graph` && <CxBoundary phone label="The United States graph" resetKey="usmap" onHome={() => setPeople((p) => ({ ...p, mode: `us` }))}><CX_UsMap phone onExit={() => setPeople((p) => ({ ...p, mode: `us` }))} /></CxBoundary>}
           <CxBoundary phone label="This screen" resetKey={overlay ? `${overlay.type}|${overlay.i ?? ``}|${overlay.f ?? ``}` : `none`} onHome={() => setOverlay(null)}>
             {overlay && overlay.type === `story` && <CxmStory />}
             {overlay && overlay.type === `moment` && <CxmMoment />}

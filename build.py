@@ -623,7 +623,7 @@ def main():
     src = patch(src,
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n",
                 "          F === `profiles` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Profiles`, resetKey: F, children: (0, W.jsx)(CX_Profiles, {}) }) }),\n"
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n",
                 label="aux page: united states")
     # v5.17 Levies and taxes: sidebar entry (under Voter education), address panel, page
     src = patch(src, "`news`, `stories`, `profiles`, `us`]", "`news`, `stories`, `profiles`, `us`, `levies`]", count=2, label="url panels: levies")
@@ -634,8 +634,8 @@ def main():
                 "                    onClick: () => cxPanel(`levies`),\n                    children: [(0, W.jsx)(CXI.Wallet, { size: 18 }), (0, W.jsx)(`span`, { children: `Levies and taxes` })],\n                  }),\n",
                 label="sidebar: levies")
     src = patch(src,
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n",
-                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsGraph, {}) }) }),\n"
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n",
+                "          F === `us` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `United States`, resetKey: F, children: (0, W.jsx)(CX_UsMap, {}) }) }),\n"
                 "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n",
                 label="aux page: levies")
     # v5.17 Find my districts (the address is matched in the page and never saved or sent): sidebar entry under Levies and taxes, address panel, page

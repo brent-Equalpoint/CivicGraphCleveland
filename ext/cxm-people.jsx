@@ -108,7 +108,7 @@ function CxmPeople() {
     <div className="cxm-page cxm-rise">
       <CxmH1>People</CxmH1>
       <CxmSeg label="People view" items={[[`profiles`, `Profiles`], [`const`, `Constellation`], [`graph`, `Graph`]]} value={view} onChange={(m) => set(m === `profiles` ? (people.mode === `us` ? `us` : `profiles`) : m)} />
-      {view === `graph` ? <CX_UsGraph phone start="sky" /> : view === `const` ? <CxmConstellation /> : (
+      {view === `graph` ? <p className="cxm-fine" role="status">The United States graph is open.</p> : view === `const` ? <CxmConstellation /> : (
         <>
           <CxmFolders label="Whose profiles" items={[[`profiles`, `Cleveland`], [`us`, `Federal`]]} value={people.mode === `us` ? `us` : `profiles`} onChange={set} />
           <div id="cxm-folder-panel" role="tabpanel" aria-labelledby={`cxm-folder-${people.mode === `us` ? `us` : `profiles`}`} className="cxm-folder-panel">

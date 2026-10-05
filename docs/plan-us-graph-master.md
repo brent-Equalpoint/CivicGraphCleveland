@@ -1,6 +1,7 @@
 # Master plan: the United States graph, rebuilt on the relationship-map template
 
-Status: proposed, nothing built. Written 2026-10-05 for Brent and the team. This is the top plan. `docs/plan-us-graph-rebuild.md` holds the technical detail of the map itself (physics, labels, touch, the kit), and `docs/plan-federal-map.md` holds the data and the earlier history. Where they disagree, this plan wins.
+Status: phases 1 to 5 built on a branch (2026-10-05), not yet reviewed or released; phases 6 to 10 not started. Written 2026-10-05 for Brent and the team.
+What exists: the kit's map pieces vendored in `vendor/relationship-map-kit/` (README has origin, fingerprint, owner, credit); the adapter and physics in `ext/cx-us-map.jsx` (`cxUsMapModel`, `cxUsMapSim`, `cxUsMapLabels`), tested by `scripts/test_us_map.js`; the d3 force and zoom parts bundled from `ext/cx-d3.js`; the settled map written at build time by `scripts/us_map.js` to `site/us/map-2026.json`; the page `CX_UsMap` on the desktop United States page and the phone's People > Graph; browser checks `us-map`, `us-map-touch`, `us-map-sheet`, `us-map-narrow`, and a rewritten `us-graph`. The old Sky (`CX_UsGraph` in `ext/cx-us.jsx`) is off the page and still in the code (phase 9). "Open profile" opens the Linked view until the profile page (phase 6) exists. This is the top plan. `docs/plan-us-graph-rebuild.md` holds the technical detail of the map itself (physics, labels, touch, the kit), and `docs/plan-federal-map.md` holds the data and the earlier history. Where they disagree, this plan wins.
 
 ## The goal in one paragraph
 
