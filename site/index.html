@@ -1661,6 +1661,31 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .sp-reviewed { margin: 6px 0 12px 0; padding: 8px 12px; border-radius: 12px; background: #ffffff0d; }
 .sp-reviewed summary { cursor: pointer; min-height: 36px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; font-weight: 600; }
 .sp-reviewed p, .sp-reviewed li { font-size: 16px; }
+/* The profile in a phone sheet (CX_SeatProfile is the desktop fact sheet): the phone's hierarchy on the same words. Blue headings and numbers, small labels over values,
+   each part in its own tile, notes and sources small and quiet. Scoped to the profile article in the sheet (not the Levies or district pages, which share the sp class), so the desktop page and print are unchanged. */
+.cxm-sheet article.sp { max-width: none; font-size: 15px; line-height: 1.5; color: var(--ink); }
+.cxm-sheet .sp-head { gap: 14px; margin: 0 0 12px; padding: 14px; border-radius: 18px; background: var(--tile2); }
+.cxm-sheet .sp-head img { width: 72px; height: 72px; }
+.cxm-sheet article.sp h1 { margin: 0 0 2px; font-size: 22px; }
+.cxm-sheet .sp-office { margin: 0 0 6px; font-size: 15px; color: var(--mut); }
+.cxm-sheet .sp-chip, .cxm-sheet .sp-asof { font-size: 12.5px; }
+.cxm-sheet .sp-asof { color: var(--mut); }
+.cxm-sheet article.sp > section { margin: 0 0 12px; padding: 14px 16px; border-radius: 18px; background: var(--tile2); }
+.cxm-sheet article.sp h2 { margin: 0 0 10px; font-size: 16px; font-weight: 700; color: var(--acc2); }
+.cxm-sheet article.sp h3 { margin: 14px 0 6px; font-size: 15px; font-weight: 700; color: var(--acc2); }
+.cxm-sheet article.sp p { margin: 0 0 10px; }
+.cxm-sheet .sp-dl { grid-template-columns: 1fr; gap: 0; }
+.cxm-sheet .sp-dl dt { margin-top: 12px; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--mut); }
+.cxm-sheet .sp-dl dt:first-child { margin-top: 0; }
+.cxm-sheet .sp-counts { margin: 4px 0 10px; gap: 10px; }
+.cxm-sheet .sp-counts li { display: grid; grid-template-columns: 2.1em 1fr; align-items: baseline; gap: 10px; }
+.cxm-sheet .sp-counts strong { min-width: 0; font-size: 34px; line-height: 1; color: var(--acc2); }
+.cxm-sheet .sp-list { padding-left: 18px; }
+.cxm-sheet .sp-note, .cxm-sheet .sp-src, .cxm-sheet .sp-map figcaption { font-size: 13.5px; color: var(--mut); }
+.cxm-sheet article.sp a { color: var(--soft); }
+.cxm-sheet article.sp details { margin: 8px 0 0; padding-top: 4px; border-top: 1px solid var(--line); }
+.cxm-sheet article.sp summary { color: var(--ink); }
+.cxm-sheet .sp-actions button { border-color: var(--line); color: var(--ink); }
 .cx-bench-status ul { margin: 8px 0 12px; padding-left: 22px; }
 .cx-bench-status li { margin: 4px 0; font-size: 17px; }
 
