@@ -37,3 +37,6 @@ html[data-cx-mode="light"] .atlas-shell .cx-k-passed > b { color: #0f6b3f; }
 html[data-cx-mode="light"][data-cx-theme="original"] .atlas-shell [data-slot="tabs-trigger"][data-state="active"] { background: #1f1814 !important; color: #ffffff !important; }
 html[data-cx-mode="light"] .atlas-shell .dist-card p, html[data-cx-mode="light"] .atlas-shell .dist-card :is(span, dt, dd, small, a, label) { color: #ffffff !important; }
 html[data-cx-mode="light"] .cxm-btn-dark { background: #14161d !important; color: #ffffff !important; }
+/* the "Today" tag on the phone dates: the light amber is too pale for small white or dark text (4.0:1), so the deep amber of the tokens carries white text (7.6:1) */
+html[data-cx-mode="light"] .cxm-fresh.stale b { color: #7a4b00; }
+html[data-cx-mode="light"] .cxm-dates .cxm-date-today em { background: #7a4b00; color: #ffffff; }
