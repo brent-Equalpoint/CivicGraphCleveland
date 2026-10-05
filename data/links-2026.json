@@ -1,8 +1,39 @@
 {
- "checked_at": "2026-10-01",
- "checked": 114,
- "ok": 110,
- "uncertain": 4,
+ "checked_at": "2026-10-05",
+ "checked": 131,
+ "ok": 120,
+ "uncertain": 8,
  "about": "Weekly check of public source links (scripts/check_links.py). A link is shown to residents as broken only after it failed on two checks in a row.",
- "broken": []
+ "broken": [
+  {
+   "url": "https://github.com/$",
+   "status": 404,
+   "kind": "gone",
+   "since": "2026-10-05",
+   "consecutive": 1,
+   "where": [
+    "cx-seat.jsx"
+   ]
+  },
+  {
+   "url": "https://www.fjc.gov/node/$",
+   "status": 404,
+   "kind": "gone",
+   "since": "2026-10-05",
+   "consecutive": 1,
+   "where": [
+    "cx-us.jsx"
+   ]
+  },
+  {
+   "url": "https://www.legislature.ohio.gov/",
+   "status": 0,
+   "kind": "unreachable",
+   "since": "2026-10-05",
+   "consecutive": 1,
+   "where": [
+    "cxm-ballot.jsx"
+   ]
+  }
+ ]
 }

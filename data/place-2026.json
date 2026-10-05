@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-04T15:24:08+00:00",
+"retrieved_at": "2026-10-05T19:25:00+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -4055,6 +4055,11 @@
 "2026-09-17",
 "recommended for approval",
 "Utilities Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "759-2026": [
@@ -4400,6 +4405,11 @@
 "2026-09-23",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "903-2026": [
@@ -4636,6 +4646,11 @@
 "2026-09-29",
 "recommended for approval",
 "Development, Planning and Sustainability Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "922-2026": [
@@ -4651,6 +4666,11 @@
 "2026-09-23",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "925-2026": [
@@ -4697,6 +4717,11 @@
 "2026-09-30",
 "recommended for approval",
 "Safety Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "928-2026": [],
@@ -5082,6 +5107,11 @@
 "2026-09-30",
 "recommended for approval",
 "Safety Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1036-2026": [
@@ -5419,7 +5449,18 @@
 "1163-2026": [],
 "1164-2026": [],
 "1165-2026": [],
-"1166-2026": [],
+"1166-2026": [
+[
+"2026-10-05",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+],
+[
+"2026-10-05",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+]
+],
 "1167-2026": [],
 "1168-2026": [],
 "1169-2026": [],
@@ -5489,7 +5530,8 @@
 "1232-2026": [],
 "1233-2026": [],
 "1234-2026": [],
-"1235-2026": []
+"1235-2026": [],
+"1236-2026": []
 },
 "addresses": {
 "4025 East 131st Street": {
@@ -6103,7 +6145,8 @@
 },
 "10207 Madison Avenue": {
 "files": [
-"1158-2026"
+"1158-2026",
+"1236-2026"
 ],
 "matched": "10207 MADISON AVE, CLEVELAND, OH, 44102",
 "lon": -81.755858,
