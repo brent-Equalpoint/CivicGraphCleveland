@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-04T15:26:25+00:00",
+"retrieved_at": "2026-10-05T19:27:38+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
 "meetings": 141,
 "with_agenda": 141,
 "with_minutes": 10,
-"legislation_items": 1838
+"legislation_items": 1840
 },
 "meetings": [
 {
@@ -9135,7 +9135,7 @@
 ],
 [
 "1166-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -9167,28 +9167,32 @@
 "note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
 [
+"1166-2026",
+"recommended for approval"
+],
+[
 "758-2026",
-""
+"recommended for approval"
 ],
 [
 "902-2026",
-""
+"recommended for approval"
 ],
 [
 "921-2026",
-""
+"recommended for approval"
 ],
 [
 "924-2026",
-""
+"recommended for approval"
 ],
 [
 "927-2026",
-""
+"recommended for approval"
 ],
 [
 "1035-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -9203,7 +9207,7 @@
 "page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3924&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
 "agenda_status": "Final",
 "minutes_status": "Draft",
-"note": "TENTATIVE AGENDA Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
 [
 "1206-2026",
@@ -9251,6 +9255,10 @@
 ],
 [
 "1217-2026",
+""
+],
+[
+"1218-2026",
 ""
 ],
 [
@@ -9330,6 +9338,10 @@
 ""
 ],
 [
+"1236-2026",
+""
+],
+[
 "758-2026",
 ""
 ],
@@ -9339,10 +9351,6 @@
 ],
 [
 "921-2026",
-""
-],
-[
-"923-2026",
 ""
 ],
 [

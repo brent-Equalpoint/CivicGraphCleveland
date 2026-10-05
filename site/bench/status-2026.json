@@ -1,10 +1,10 @@
 {
  "about": "Where each Bench packet stands. Written by scripts/packets.py. Approved means a named publisher approved this exact version.",
- "as_of": "2026-10-04T15:23:46+00:00",
+ "as_of": "2026-10-05T19:24:33+00:00",
  "counts": {
   "approved_current": 0,
   "approved_stale": 0,
-  "awaiting_review": 519,
+  "awaiting_review": 520,
   "blocked": 0,
   "human_required": 0,
   "quarantined": 0,
@@ -19,6 +19,6 @@
   "rejected": [],
   "revision_requested": []
  },
- "packets": 519,
+ "packets": 520,
  "with_skeptic_veto": []
 }

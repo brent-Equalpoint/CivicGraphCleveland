@@ -1137,6 +1137,145 @@
    "from": "2026-10-03T17:48:40+00:00",
    "count": 1391,
    "changes": []
+  },
+  {
+   "at": "2026-10-05T19:24:33+00:00",
+   "from": "2026-10-04T15:23:46+00:00",
+   "count": 1393,
+   "changes": [
+    {
+     "f": "927-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "924-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "921-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "902-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "758-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1236-2026",
+     "new": true
+    },
+    {
+     "f": "1166-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Health, Human Services and the Arts Committee"
+      ],
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1035-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1218-2026",
+     "new": true
+    },
+    {
+     "f": "1172-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1171-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1165-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    }
+   ]
   }
  ]
 }
