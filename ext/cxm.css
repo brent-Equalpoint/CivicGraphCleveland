@@ -421,19 +421,68 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 .mt-sub { margin: 0 0 4px; font-size: 16px; }
 .mt-items { display: flex; flex-direction: column; gap: 6px; margin: 4px 0; }
 .mt-item { display: flex; align-items: flex-start; gap: 10px; width: 100%; min-height: 48px; padding: 10px 12px; border-radius: 14px; background: var(--tile2); text-align: left; }
-.mt-item span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.mt-item > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .mt-item small { color: var(--mut); font-size: 14px; }
 .mt-note { color: var(--mut); font-size: 14px; }
 .mt-links { display: flex; flex-wrap: wrap; gap: 0 16px; margin: 6px 0 0; font-size: 14px; color: var(--mut); }
 .mt-links a, .mt-links span { display: inline-flex; align-items: center; min-height: 44px; }
-.mt-strip { position: relative; display: flex; gap: 10px; overflow-x: auto; margin: 0 -18px; padding: 4px 18px; scroll-snap-type: x mandatory; scrollbar-width: none; }
-.mt-small { flex: 0 0 84%; scroll-snap-align: start; display: flex; flex-direction: column; gap: 4px; }
 .mt-chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 2px 0 6px; }
-.mt-chip { display: inline-flex; align-items: center; padding: 6px 12px; border-radius: 999px; background: var(--tile2); font-size: 14px; }
-.mt-meet { padding: 4px 0; border-top: 1px solid var(--line); }
-.mt-meet summary { display: flex; flex-direction: column; gap: 2px; min-height: 48px; justify-content: center; cursor: pointer; }
+.mt-chip { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px; background: var(--tile2); font-size: 14px; }
+.mt-chip b { font-weight: 700; }
+.mt-meet { padding: 2px 0; border-top: 1px solid var(--line); }
+.mt-meet summary { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-height: 48px; padding: 6px 0; cursor: pointer; list-style: none; }
+.mt-meet summary::-webkit-details-marker { display: none; }
+.mt-meet summary > span { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .mt-meet summary small { color: var(--mut); font-size: 14px; }
+.mt-meet[open] > summary .cxm-chev { transform: rotate(180deg); }
+.mt-meet-body { display: flex; flex-direction: column; gap: 8px; padding: 0 0 10px; }
 .mt-card { display: flex; flex-direction: column; gap: 4px; text-align: left; }
+.mt-card strong span { color: inherit; font-size: inherit; }
+/* v5.30 At City Hall as a full page over the tabs (cx-meetings.jsx, CxmHall): a bar with the back arrow and the language switch, then the page, which
+   scrolls up and down only. Exactly the width of the screen: nothing in it may push it wider, so a phone cannot slide it sideways. */
+.cxm-full { position: absolute; inset: 0; z-index: 30; display: flex; flex-direction: column; background: var(--bg); overflow: hidden; }
+.cxm-full-bar { flex: none; height: 56px; display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 0 8px 0 8px; border-bottom: 1px solid var(--line); }
+.cxm-full-back { display: inline-flex; align-items: center; gap: 6px; min-height: 44px; min-width: 44px; padding: 0 12px 0 8px; border-radius: 12px; color: var(--soft); font-size: 16px; font-weight: 600; }
+/* position: relative keeps the screen-reader-only text (absolutely placed) inside the scroller; without it that text sat outside, made the page taller
+   and wider than the screen, and focus or a jump could slide the whole page */
+.cxm-full-body { position: relative; flex: 1; min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 14px 18px calc(28px + env(safe-area-inset-bottom)); scrollbar-width: none; }
+.cxm-full-body::-webkit-scrollbar { display: none; }
+.mt-page .mt { margin-top: 18px; }
+.mt .cxm-h3 { margin: 4px 0 0; }
+.mt-item strong, .mt-meet summary strong, .mt-row strong, .mt-place span { overflow-wrap: anywhere; }
+.mt-place { display: flex; align-items: center; gap: 6px; font-size: 15px; color: var(--ink); }
+.mt-place svg { flex: none; color: var(--soft); }
+.mt-watch { font-size: 15px; color: var(--mut); }
+.mt-acts { display: flex; gap: 8px; margin-top: 6px; }
+.mt-acts .cxm-btn2 { flex: 1 1 0; color: var(--ink); text-decoration: none; }
+/* the week: five folder tabs that share the screen's width, and the chosen day's panel joined to its tab */
+.cxm-folders.mt-days { gap: 2px; }
+.cxm-folders.mt-days button { position: relative; min-width: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 0; padding: 6px 2px; line-height: 1.2; }
+.cxm-folders.mt-days button small { font-size: 13px; font-weight: 500; }
+.mt-daypanel { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px 4px; border: 1px solid var(--line); border-top: 0; border-radius: 0 0 18px 18px; background: var(--tile); }
+.mt-daypanel > .cxm-kicker { margin-bottom: 4px; }
+.mt-daypanel > .cxm-kicker + .mt-meet { border-top: 0; }
+.mt-none { padding: 6px 0 12px; }
+.mt-group { display: flex; flex-direction: column; gap: 2px; }
+.mt-group-h { display: flex; align-items: baseline; gap: 8px; margin: 6px 0 0; font-size: 14px; font-weight: 600; color: var(--mut); }
+.mt-n { font-family: var(--mono); font-size: 13px; }
+.mt-agenda { display: flex; flex-direction: column; gap: 4px; }
+.mt-why { overflow-wrap: anywhere; }
+.mt-you-empty p { font-size: 15px; }
+.mt-you-none { font-size: 15px; color: var(--mut); }
+.mt-res { display: flex; flex-direction: column; gap: 4px; }
+.mt-res-meet { display: flex; flex-direction: column; padding: 0 14px; border-radius: 18px; background: var(--tile); }
+.mt-res-meet > .mt-meet:first-child { border-top: 0; }
+.mt-row { padding: 10px 12px; background: var(--tile); }
+.mt-months { display: flex; flex-direction: column; gap: 8px; }
+.mt-months .cxm-drop { background: var(--tile2); }
+.mt-months .cxm-drop-body > .mt-meet:first-child { border-top: 0; }
+.mt-foot { display: flex; flex-direction: column; gap: 4px; padding-top: 4px; }
+@media print {
+  .cxm-full, .cxm-full-body { position: static !important; display: block !important; height: auto !important; overflow: visible !important; inset: auto !important; }
+  .cxm-full-bar { display: none !important; }
+  .cxm:has(.cxm-full) .cxm-main, .cxm:has(.cxm-sheet) .cxm-full { display: none !important; }
+}
 .mt-card em { font-style: normal; color: var(--soft); display: inline-flex; align-items: center; gap: 4px; }
 .mt-heard-row { margin: 4px 0; font-size: 15px; }
 .mt-heard-row a { display: inline-flex; align-items: center; min-height: 44px; }
