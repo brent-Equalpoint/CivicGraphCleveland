@@ -361,7 +361,7 @@ function cxLocalCards(place, onGo, onPanel) {
 }
 function CX_LocalContext({ onGo, onPanel }) {
   const [place, setPlaceState] = u.useState(CX_PLACE.v);
-  const setPlace = (v) => { CX_PLACE.v = v; setPlaceState(v); };
+  const setPlace = (v) => { CX_PLACE.v = v; CX_PLACE.hood = ``; setPlaceState(v); cxPlacePersist(); };
   const ward = place.startsWith(`ward-`) ? _h.find(([n]) => `ward-${n}` === place) : null;
   const outside = place === `county`;
   const unsure = place === `unsure`;

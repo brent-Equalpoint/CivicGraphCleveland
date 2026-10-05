@@ -927,7 +927,8 @@ def main():
     def page(inline_assets, fonts):
         dist_tag = ('<script type="application/octet-stream" id="cx-districts-gz">' + dist_gz + '</script>\n') if inline_assets else ""
         i18n_tag = ('<script type="application/json" id="cx-i18n-es">' + i18n_min.replace("</", "<\\/") + '</script>\n') if inline_assets else ""
-        icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else '<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n'
+        icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else ('<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n<link rel="manifest" href="/manifest.webmanifest">\n'
+                                                                                                                                                  '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Civic Graph">\n<meta name="theme-color" content="#0c0c0e">\n')
         offline = "" if inline_assets else OFFLINE_NOTICE
         return f"""<!doctype html>
 <html lang="en" class="dark">
@@ -1026,6 +1027,9 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     log(f"SITE   {sha((dist_min + chr(10)).encode())}  site/districts/districts-2026.json")
     log(f"SITE   {sha((i18n_min + chr(10)).encode())}  site/i18n/es.json")
     write(os.path.join(SITE, "favicon.svg"), FAVICON_SVG + "\n")
+    # installable on a phone's Home Screen (the hosted site only): on an iPhone, Safari clears a website's saved data after about a week away unless the site is on the Home Screen
+    write(os.path.join(SITE, "manifest.webmanifest"), json.dumps({"name": "Cleveland Civic Graph", "short_name": "Civic Graph", "description": "A plain-English map of who decides what in Cleveland.", "start_url": "/", "display": "standalone",
+                                                                  "background_color": "#0c0c0e", "theme_color": "#0c0c0e", "icons": [{"src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any"}]}, indent=1) + "\n")
     log(f"SITE   {sha(os.path.join(SITE, '404.html'))}  site/404.html  (page not found)")
     site_bytes = sum(os.path.getsize(os.path.join(dp, f)) for dp, _, fs in os.walk(SITE) for f in fs)
     log(f"SITE   {sha(os.path.join(SITE, 'index.html'))}  site/index.html  {os.path.getsize(os.path.join(SITE, 'index.html'))} bytes "

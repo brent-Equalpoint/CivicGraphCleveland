@@ -325,10 +325,10 @@ function CX_UsMine({ data, g, onSee, onTopics }) {
   return (
     <div className="us-mine">
       <h2>Your members of Congress</h2>
-      <p>Choose your state and, for your representative, your district. This stays on your device for this visit and is never put in a link.</p>
+      <p>Choose your state and, for your representative, your district. This stays on your device and is never put in a link.</p>
       <div className="us-tools">
-        <label>Your state <select value={st} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setSt(e.target.value); setDi(``); }}><option value="">Choose a state</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
-        {mine && mine.dists.length > 0 && <label>Your district <select value={di} onChange={(e) => { CX_US_PLACE.district = e.target.value; setDi(e.target.value); }}><option value="">Choose a district</option>{mine.dists.map((d) => <option key={d} value={d}>{d === 0 ? `At-large (the whole state)` : `District ${d}`}</option>)}</select></label>}
+        <label>Your state <select value={st} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setSt(e.target.value); setDi(``); cxPlacePersist(); }}><option value="">Choose a state</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select></label>
+        {mine && mine.dists.length > 0 && <label>Your district <select value={di} onChange={(e) => { CX_US_PLACE.district = e.target.value; setDi(e.target.value); cxPlacePersist(); }}><option value="">Choose a district</option>{mine.dists.map((d) => <option key={d} value={d}>{d === 0 ? `At-large (the whole state)` : `District ${d}`}</option>)}</select></label>}
       </div>
       <p className="us-src">Not sure of your district? Your address decides it. <a href={CX_HOUSE_FIND} target="_blank" rel="noreferrer">The House's official lookup<span className="sp-ext"> (opens in a new tab)</span></a> finds it.</p>
       {mine && (

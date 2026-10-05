@@ -455,6 +455,7 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 .cxm-vrow small { color: var(--mut); }
 .cxm-vrow small b { color: var(--ink); }
 .cxm-roles-votes { grid-template-columns: repeat(3, 1fr); }
+.cxm-remember { display: flex; flex-direction: column; gap: 8px; margin: 6px 0 12px; }
 .cxm-key { display: flex; flex-wrap: wrap; gap: 4px 14px; }
 .cxm-prof-nav { display: flex; align-items: center; justify-content: space-between; }
 .cxm-prof-nav button { width: 48px; height: 48px; border-radius: 50%; border: 1px solid var(--line) !important; background: var(--tile) !important; display: grid; place-items: center; }

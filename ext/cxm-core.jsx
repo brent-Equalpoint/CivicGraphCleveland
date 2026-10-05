@@ -209,6 +209,57 @@ function useCxm() {
 function cxmStore(key, fallback) {
   try { const v = localStorage.getItem(key); return v == null ? fallback : v; } catch { return fallback; }
 }
+/* ---------- remembering a person's place, on their own device only (docs/plan-remember-place.md) ----------
+   Off until the person turns it on. One entry in this browser's local storage, never a cookie, never in a link or a request. It holds the Cleveland ward or neighborhood and the
+   federal state and district, and nothing else: never the typed address, never the districts the address finder works out. It is checked when read (a broken or old entry is dropped)
+   and kept for 120 days or until the week after Election Day. */
+const CX_PLACE_KEY = `cx-place`;
+const CX_PLACE_KEEP_DAYS = 120;
+const CX_PLACE_LAST_DAY = `2026-11-10`;
+function cxPlaceLoad() {
+  let raw;
+  try { raw = localStorage.getItem(CX_PLACE_KEY); } catch { return null; }
+  if (!raw) return null;
+  const drop = () => { try { localStorage.removeItem(CX_PLACE_KEY); } catch {} return null; };
+  let d;
+  try { d = JSON.parse(raw); } catch { return drop(); }
+  const ok = !!d && typeof d === `object` && Object.keys(d).every((k) => [`v`, `saved`, `place`, `hood`, `state`, `district`].includes(k)) && d.v === 1 && /^\d{4}-\d{2}-\d{2}$/.test(d.saved || ``) && /^(ward-([1-9]|1[0-5])|county|unsure)?$/.test(d.place ?? ``)
+    && /^[A-Za-z .'&-]{0,60}$/.test(d.hood ?? ``) && /^([A-Z]{2})?$/.test(d.state ?? ``) && /^\d{0,2}$/.test(d.district ?? ``);
+  if (!ok) return drop();
+  if (cxDays(d.saved, cxTodayET()) > CX_PLACE_KEEP_DAYS || cxDays(cxTodayET(), CX_PLACE_LAST_DAY) < 0) return drop();
+  return d;
+}
+function cxPlaceRemembered() { try { return localStorage.getItem(CX_PLACE_KEY) != null; } catch { return false; } }
+function cxPlaceSave() {
+  try { localStorage.setItem(CX_PLACE_KEY, JSON.stringify({ v: 1, saved: cxTodayET(), place: CX_PLACE.v || ``, hood: CX_PLACE.hood || ``, state: CX_US_PLACE.state || ``, district: CX_US_PLACE.district || `` })); return !0; } catch { return !1; }
+}
+function cxPlacePersist() { if (cxPlaceRemembered()) cxPlaceSave(); }   // called whenever the place changes; it saves only if the person turned remembering on
+function cxPlaceForget() { try { localStorage.removeItem(CX_PLACE_KEY); } catch {} }
+(function cxPlaceRestore() {
+  const d = cxPlaceLoad();
+  if (!d) return;
+  if (d.place) CX_PLACE.v = d.place;
+  if (d.hood) CX_PLACE.hood = d.hood;
+  if (d.state) { CX_US_PLACE.state = d.state; CX_US_PLACE.district = d.district || ``; }
+})();
+function CxmRememberPlace() {
+  const [on, setOn] = u.useState(cxPlaceRemembered);
+  const [msg, setMsg] = u.useState(``);
+  const ios = /iPhone|iPad|iPod/.test(globalThis.navigator ? globalThis.navigator.userAgent : ``) && !(globalThis.navigator && globalThis.navigator.standalone);
+  const toggle = () => {
+    if (on) { cxPlaceForget(); setOn(!1); setMsg(`Forgotten. Your place stays only for this visit.`); return; }
+    const ok = cxPlaceSave();
+    setOn(ok);
+    setMsg(ok ? `Saved on this device only.` : `This browser could not save your place. It stays for this visit.`);
+  };
+  return (
+    <div className="cxm-remember">
+      <button type="button" className={`cxm-switch ${on ? `on` : ``}`} aria-pressed={on} onClick={toggle}><span>Remember my place on this device<small>Saves your ward and federal district here. Never your address.</small></span><i><b /></i></button>
+      {msg && <p className="cxm-fine" role="status">{msg}</p>}
+      {on && ios && <p className="cxm-fine">Add to Home Screen to keep this through the election.</p>}
+    </div>
+  );
+}
 function cxmPut(key, v) {
   try { localStorage.setItem(key, v); } catch {}
 }
@@ -220,7 +271,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [tab, setTab] = u.useState(start.tab);
   const [home, setHomeState] = u.useState(() => {
     const w = /^ward-(\d+)$/.exec(CX_PLACE.v || ``);
-    return w ? { hood: ``, ward: Number(w[1]) } : CX_PLACE.v === `county` || CX_PLACE.v === `unsure` ? { hood: ``, ward: null, place: CX_PLACE.v } : null;
+    return w ? { hood: CX_PLACE.hood || ``, ward: Number(w[1]) } : CX_PLACE.v === `county` || CX_PLACE.v === `unsure` ? { hood: ``, ward: null, place: CX_PLACE.v } : null;
   });
   const [sheets, setSheets] = u.useState(start.sheet ? [start.sheet] : []);
   const [overlay, setOverlay] = u.useState(null);
@@ -237,7 +288,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const setEasy = (v) => { setEasyState(v); cxmPut(`cx-easy`, v ? `on` : `off`); };
   const [theme, setThemeState] = u.useState(() => document.documentElement.getAttribute(`data-cx-theme`) || `bento`);
   const [room, setRoom] = u.useState(start.room);
-  const [placeHood, setPlaceHood] = u.useState(null);
+  const [placeHood, setPlaceHood] = u.useState(CX_PLACE.hood || null);
   const [people, setPeople] = u.useState({ mode: start.mode || `profiles`, seat: null, office: `council`, q: 0 });
   const [seen, setSeen] = u.useState({});
   const mainRef = u.useRef(null);
@@ -245,7 +296,9 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const setHome = (h) => {
     setHomeState(h);
     CX_PLACE.v = h && h.ward ? `ward-${h.ward}` : (h && h.place) || ``;
+    CX_PLACE.hood = h && h.hood ? h.hood : ``;
     if (h && h.hood) setPlaceHood(h.hood);
+    cxPlacePersist();
   };
   const setGuide = (g) => { setGuideState(g); cxmPut(`cx-guide`, g); };
   const setTheme = (t) => { setThemeState(t); document.documentElement.setAttribute(`data-cx-theme`, t); cxmPut(`cx-theme`, t); };
@@ -572,7 +625,8 @@ function CxmHomePicker() {
     <div className="cxm-pad">
       <CxmKicker>Your place</CxmKicker>
       <h2 className="cxm-h2">Where do you call home?</h2>
-      <p className="cxm-mut">Pick your neighborhood. It stays on this visit only and is never sent anywhere. Your exact address decides your ward; the Board of Elections lookup confirms it.</p>
+      <p className="cxm-mut">Pick your neighborhood. It is never sent anywhere. Your exact address decides your ward; the Board of Elections lookup confirms it.</p>
+      <CxmRememberPlace />
       <label className="cxm-field"><span>Find a neighborhood</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hough, Ohio City, Kamm's…" /></label>
       <div className="cxm-chips">
         {list.map((h) => {
@@ -590,7 +644,7 @@ function CxmHomePicker() {
         <button type="button" className={home?.place === `county` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `county` }); closeSheet(); }}>Elsewhere in Cuyahoga County</button>
         <button type="button" className={home?.place === `unsure` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `unsure` }); closeSheet(); }}>I am not sure</button>
       </div>
-      <p className="cxm-fine">Do not know your ward? Choose "I am not sure" and use the official lookup. Private to this visit: your choice stays in this page's memory and is not saved, shared, or added to links. Reloading clears it.</p>
+      <p className="cxm-fine">Do not know your ward? Choose "I am not sure" and use the official lookup. Private: your choice is never shared or added to links. It stays only for this visit unless you turn on Remember my place.</p>
       <div className="cxm-row-links">
         <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address">Find my ward by address</CxmSrc>
         {home && <button type="button" className="cxm-link" onClick={() => { setHome(null); closeSheet(); }}>Clear my place</button>}

@@ -29,7 +29,7 @@ function CxmFederal() {
   const cur = deck[Math.min(i, Math.max(0, deck.length - 1))];
   const step = (d) => setI((x) => (x + d + deck.length) % Math.max(1, deck.length));
   const place = `${cxStateName(st)}${mine.rep && mine.rep.district ? ` · District ${mine.rep.district}` : ``}`;
-  const setPlace = (s, d) => { CX_US_PLACE.state = s; CX_US_PLACE.district = d; setSt(s); setDi(d); setI(0); };
+  const setPlace = (s, d) => { CX_US_PLACE.state = s; CX_US_PLACE.district = d; setSt(s); setDi(d); setI(0); cxPlacePersist(); };
   const body = cur ? (() => {
     const isSen = cur.chamber === `senate`;
     const com = cxCommitteeLine(g, cur);
@@ -76,7 +76,8 @@ function CxmFederal() {
   return (
     <div className="cxm-profiles">
       <CxmDrop title="Your place in Washington" sub={place}>
-        <p className="cxm-fine">Choose your state and district. This stays on your device for this visit and is never put in a link.</p>
+        <p className="cxm-fine">Choose your state and district. This stays on your device and is never put in a link.</p>
+        <CxmRememberPlace />
         <label className="cxm-field"><span>Your state</span>
           <select value={st} onChange={(e) => setPlace(e.target.value, ``)}>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}</select>
         </label>

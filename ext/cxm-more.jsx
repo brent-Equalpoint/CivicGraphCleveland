@@ -176,6 +176,10 @@ function CxmYou() {
         <div className="cxm-guides">{Object.entries(CXM_GUIDES).map(([k, n]) => <button key={k} type="button" className={guide === k ? `on` : ``} aria-pressed={guide === k} onClick={() => setGuide(k)}><CxmGuide kind={k} size={52} /><span>{n}</span></button>)}</div>
       </section>
       <section className="cxm-section">
+        <CxmKicker>Your place</CxmKicker>
+        <CxmRememberPlace />
+      </section>
+      <section className="cxm-section">
         <CxmKicker>About and sharing</CxmKicker>
         <button type="button" className="cxm-row" onClick={() => openSheet(`bench`)}><span><strong>How this is built</strong><small>Sources, method, and what is not running yet</small></span><CXI.Arrow size={15} /></button>
         <button type="button" className="cxm-row" onClick={share}><span><strong>Share this screen</strong><small>A plain link to where you are. Your place and choices stay out of it.</small></span><CXI.Arrow size={15} /></button>

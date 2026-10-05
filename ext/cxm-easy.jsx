@@ -189,15 +189,15 @@ function CxmEasy() {
               const mine = usSt ? cxUsMine(usData, usSt, usDi) : null;
               return (
                 <>
-                  <p className="cxe-text">Pick your state. If your state has more than one district, pick yours too. This stays on your device and is not saved or sent.</p>
+                  <p className="cxe-text">Pick your state. If your state has more than one district, pick yours too. This stays on your device and is never sent.</p>
                   <label className="cxe-field"><span>Your state</span>
-                    <select value={usSt} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setUsSt(e.target.value); setUsDi(``); }}>
+                    <select value={usSt} onChange={(e) => { CX_US_PLACE.state = e.target.value; CX_US_PLACE.district = ``; setUsSt(e.target.value); setUsDi(``); cxPlacePersist(); }}>
                       <option value="">Choose your state</option>{states.map((s) => <option key={s} value={s}>{cxStateName(s)}</option>)}
                     </select>
                   </label>
                   {mine && mine.dists.length > 0 && (
                     <label className="cxe-field"><span>Your district</span>
-                      <select value={usDi} onChange={(e) => { CX_US_PLACE.district = e.target.value; setUsDi(e.target.value); }}>
+                      <select value={usDi} onChange={(e) => { CX_US_PLACE.district = e.target.value; setUsDi(e.target.value); cxPlacePersist(); }}>
                         <option value="">Choose your district</option>{mine.dists.map((d) => <option key={d} value={d}>{d === 0 ? `The whole state (at-large)` : `District ${d}`}</option>)}
                       </select>
                     </label>

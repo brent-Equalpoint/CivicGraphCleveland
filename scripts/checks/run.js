@@ -737,6 +737,55 @@ const CHECKS = {
     expect(!(await after.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].some((x) => /register/i.test(x.innerText)))), 'the Register card is still on the Ballot after Election Day');
     await done(after);
   },
+  async 'remember-place'() {
+    // Remembering a person's place: off until chosen, on this device only, only the ward or neighborhood and the federal state and district, never an address,
+    // expired or odd entries thrown away, and nothing left in a link or a request. The saved entry is seeded before the page loads, so what the page does with it is what is tested.
+    const today = new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+    const seed = (obj) => `(() => { try { if (!sessionStorage.getItem('rp-seeded')) { localStorage.setItem('cx-place', ${JSON.stringify(typeof obj === 'string' ? obj : JSON.stringify(obj))}); sessionStorage.setItem('rp-seeded', '1'); } } catch (e) {} })()`;
+    const stored = (p) => p.evaluate(() => localStorage.getItem('cx-place'));
+    // 1. nothing remembered: no ward is marked as yours
+    const a = await open('/?panel=profiles#phone', { mobile: true, easy: false });
+    expect(!(await has(a, '.cxm-yours')), 'a ward is marked as yours although nothing was chosen or remembered');
+    expect((await stored(a)) === null, 'something was stored before the person chose to remember');
+    await done(a);
+    // 2. a remembered ward comes back on the next visit
+    const b = await open('/?panel=profiles#phone', { mobile: true, easy: false, pre: seed({ v: 1, saved: today, place: 'ward-6', hood: '', state: 'OH', district: '11' }) });
+    expect(await b.evaluate(() => /YOUR WARD/.test(document.body.innerText)), 'a remembered ward is not marked YOUR WARD on the next visit');
+    await done(b);
+    // 3. old, odd, and extra-field entries are thrown away
+    for (const [label, val] of [['expired', { v: 1, saved: '2025-01-01', place: 'ward-6', hood: '', state: '', district: '' }], ['not JSON', '{bad'], ['a field that is not allowed', { v: 1, saved: today, place: 'ward-6', hood: '', state: '', district: '', address: '601 Lakeside Ave' }], ['an odd ward', { v: 1, saved: today, place: 'ward-99', hood: '', state: '', district: '' }]]) {
+      const c = await open('/?panel=profiles#phone', { mobile: true, easy: false, pre: seed(val) });
+      expect((await stored(c)) === null && !(await has(c, '.cxm-yours')), `an entry that is ${label} was kept or used`);
+      await done(c);
+    }
+    // 4. the switch in Settings: off by default; on saves only the allowed fields; reload keeps it; off forgets
+    const d = await open('/?panel=settings#phone', { mobile: true, easy: false });
+    const sw = '.cxm-remember .cxm-switch';
+    expect((await d.$eval(sw, (e) => e.getAttribute('aria-pressed'))) === 'false', 'Remember my place is on before the person chose it');
+    await d.click(sw); await wait(400);
+    const saved = JSON.parse((await stored(d)) || 'null');
+    expect(!!saved && Object.keys(saved).every((k) => ['v', 'saved', 'place', 'hood', 'state', 'district'].includes(k)), `the saved entry has the wrong shape: ${JSON.stringify(saved)}`);
+    expect(!/\d+\s+\w+\s+(ave|st|rd|blvd|road|street)/i.test(JSON.stringify(saved)), 'the saved entry looks like it has an address');
+    await d.goto(BASE + '/?panel=settings#phone', { waitUntil: 'networkidle2' }); await wait(1500);   // a real new visit: the address bar is rewritten once Settings opens, so go to it again
+    expect((await d.$eval(sw, (e) => e.getAttribute('aria-pressed'))) === 'true', 'Remember my place did not survive a reload');
+    await d.click(sw); await wait(400);
+    expect((await stored(d)) === null, 'turning Remember my place off did not forget the place');
+    await done(d);
+    // 5. picking a ward while remembering is on saves it; the link never holds it
+    const e = await open('/#phone', { mobile: true, easy: false, pre: seed({ v: 1, saved: today, place: '', hood: '', state: '', district: '' }) });
+    await e.click('.cxm-setplace'); await wait(600);
+    await clickText(e, 'Ward 6', '.cxm-sheet .cxm-chips button'); await wait(600);
+    const s5 = JSON.parse((await stored(e)) || 'null');
+    expect(!!s5 && s5.place === 'ward-6', `picking a ward did not save it while remembering was on: ${JSON.stringify(s5)}`);
+    expect(!/ward|place|lakeside|district/i.test(await e.evaluate(() => location.href)), 'the place reached the link');
+    await done(e);
+    // 6. a browser that blocks storage: the person is told, and the app still works
+    const f = await open('/?panel=settings#phone', { mobile: true, easy: false, pre: `(() => { const s = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k === 'cx-place') throw new Error('blocked'); return s.call(this, k, v); }; })()` });
+    await f.click(sw); await wait(400);
+    expect(await f.evaluate(() => /could not save your place/i.test(document.body.innerText)), 'a browser that blocks storage was not told');
+    expect((await f.$eval(sw, (x) => x.getAttribute('aria-pressed'))) === 'false', 'the switch says on although nothing was saved');
+    await done(f);
+  },
   async 'date-states'() {
     // The election dates on the phone Ballot show a tag by the day: "Next" before a date, "Today" on it, "Passed" after. A color that was fine for two of them once failed
     // contrast only on the one day a person actually met it, so each state is forced here with a fake clock, in dark and light, and checked for contrast (and, the day after the election, for a link marked by color alone).
