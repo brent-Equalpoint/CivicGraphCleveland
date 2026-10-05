@@ -213,7 +213,7 @@ function CxmStory() {
     if (v === `yes` && fr.match && cxmRecordFor(fr.match.cand, fr.qid)) setOverlay({ type: `crush`, match: fr.match, back: { ...overlay } });
   };
   return (
-    <div className={`cxm-overlay cxm-story cxm-story-${s.id}`} role="dialog" aria-modal="true" aria-label={`${s.name} story`}>
+    <div className={`cxm-overlay cxm-story cxm-story-${s.id}${/^issue-/.test(s.id) ? ` cxm-story-issue` : ``}`} role="dialog" aria-modal="true" aria-label={`${s.name} story`}>
       <div className="cxm-bars">{s.frames.map((_, k) => <i key={k} className={k <= f ? `on` : ``} />)}</div>
       <div className="cxm-story-head">
         <span className="cxm-story-who">{cxStoryMark(s)}<span><strong>{s.name}</strong><small>{cxTight(s.when)}</small></span></span>
@@ -255,7 +255,7 @@ function CxmStory() {
       )}
       {fr.type === `more` && (
         <div className="cxm-story-react cxm-rise">
-          <CxLevyMore n={Number(String(s.id).replace(`levy-`, ``))} />
+          <CxLevyMore n={cxStoryIssueNo(s.id)} />
           {i < list.length - 1 && <button type="button" className="cxm-btn" onClick={next}>Next story <CXI.Arrow size={15} /></button>}
         </div>
       )}

@@ -541,6 +541,8 @@ html[data-cx-theme="original"] .cxm-cgraph-box { background: #1a1613; }
 .cxm-keycard { flex-direction: row; align-items: center; justify-content: space-between; background: var(--acc) !important; color: #fff; }
 .cxm-keycard small { color: #dfe7ff !important; }
 .cxm-keycard.cxm-keycard-reg small { color: #ffffff !important; }
+.cxm-keycard.cxm-keycard-issues small { color: #ffffff !important; }   /* white on the blue passes 4.5:1; the paler tint does not need to be repeated */
+.cxm-keycard-issues > b { display: inline-flex; flex: none; color: #fff; }
 .cxm-keycard b { font-size: 34px; }
 .cxm-pick { display: inline-flex; align-items: center; gap: 6px; color: var(--soft2) !important; }
 .cxm-pick i { width: 8px; height: 8px; border-radius: 50%; background: var(--acc2); }
@@ -1243,6 +1245,12 @@ html[data-cx-theme="original"] .lv-tile { background: var(--acc, #c2410c); }
 .cxm-story-levy-10 .cxm-story-src2, .cxm-story-levy-11 .cxm-story-src2 { color: #fff; }
 .cxm-story-ballot .cxm-story-who > span:first-child, .cxm-story-levy-10 .cxm-story-who > span:first-child, .cxm-story-levy-11 .cxm-story-who > span:first-child { background: #1b3f9c; }
 .cxm-story-ballot .cxm-story-text, .cxm-story-levy-10 .cxm-story-text, .cxm-story-levy-11 .cxm-story-text { background: #0000003d; border-color: #ffffff8c; color: #fff; }
+/* the other ballot questions as stories (State Issue 3, county Issues 12 to 14, ext/cx-levies.jsx): the same blue and the same white text as the levy stories */
+.cxm-story-issue { background: var(--acc) !important; }
+.cxm-story-issue .cxm-kicker, .cxm-story-issue .cxm-story-who small, .cxm-story-issue .cxm-story-small, .cxm-story-issue .cxm-story-hint,
+.cxm-story-issue .cxm-story-src, .cxm-story-issue .cxm-story-src2 { color: #fff; }
+.cxm-story-issue .cxm-story-who > span:first-child { background: #1b3f9c; }
+.cxm-story-issue .cxm-story-text { background: #0000003d; border-color: #ffffff8c; color: #fff; }
 .lv-tile-kick, .lv-tile-per, .lv-tile-kick span { color: #fff; }
 .lv-more-story a { color: #fff; text-underline-offset: 3px; }
 .lv-more-story .lv-wtext, .lv-more-story .lv-note { color: #f1f4ff; }

@@ -77,6 +77,11 @@ function CxmBallot() {
           <button type="button" className="cxm-link" onClick={() => openSheet(`levies`)}>All the tax issues on your ballot</button>
         </>
       )}
+      {cxmIssueStories().length > 0 && (
+        <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-issues" onClick={() => setOverlay({ type: `story`, list: cxmIssueStories(), i: 0, f: 0 })}>
+          <span><strong>The other questions on every ballot in the county</strong><small>Short stories for State Issue 3 and county Issues 12, 13, and 14: what each asks, and what people on each side say.</small></span><b><CxStoryArt id="ballot" /></b>
+        </button>
+      )}
       {groups.map(([g, list]) => (
         <section key={g} className="cxm-section">
           <CxmKicker>{g} · {list.length}</CxmKicker>
@@ -181,17 +186,23 @@ function CxmContest({ id }) {
   );
 }
 function CxmIssue({ id }) {
-  const { practice } = useCxm();
+  const { practice, setOverlay, closeSheet } = useCxm();
   const i = Um.find((x) => x.id === id);
   if (!i) return null;
   const g = Xm(i);
   const sel = practice.state.selections[id];
   const pick = (v) => practice.update((s) => ({ ...s, selections: { ...s.selections, [id]: s.selections[id] === v ? undefined : v } }));
   const onBallot = th(practice.state).some((it) => it.id === id);
+  const story = cxIssueStoryFor(i.number);   // Issues 3 and 10 to 14 have a short story with both sides; the row on the Ballot tab leads to it
   return (
     <div className="cxm-pad">
       <CxmKicker>Issue {i.number} · {cxArea(i.area, g.title)}</CxmKicker>
       <h2 className="cxm-h2">{g.title}</h2>
+      {story && (
+        <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-issues" onClick={() => { closeSheet(); setOverlay({ type: `story`, list: story.list, i: story.i, f: 0 }); }}>
+          <span><strong>Read the short story</strong><small>What it asks, what changes, and what people on each side say, with sources.</small></span><b><CxStoryArt id={story.list[story.i].id} /></b>
+        </button>
+      )}
       {!Ym(i) && <p className="cxm-status-line">A detailed plain-language review is not loaded for this issue. Read the official wording below.</p>}
       <p className="cxm-fine">Tap yes or no to practice your pick. It stays in this browser.</p>
       <button type="button" className={`cxm-cand ${sel === `yes` ? `on` : ``}`} aria-pressed={sel === `yes`} onClick={() => pick(`yes`)}><strong>A yes vote means</strong><small>{g.yes}</small></button>

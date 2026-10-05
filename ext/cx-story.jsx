@@ -154,7 +154,7 @@ function cxmHoodStory(hood) {
   return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
-  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmRegisterStory(), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmRegisterStory(), cxmBallotStory(), ...cxmBallotIssueStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
 }
 
 /* ---------- desktop Stories page (sidebar: Stories) ---------- */
@@ -174,7 +174,7 @@ function CX_StoryFrame({ fr: fr0, s, onGo, plain }) {
       <p className="cx-story-small">{cxTight(fr.small)}</p>
       {fr.src ? <CxSource source={fr.src} cls="cx-story-src2" /> : null}
       {fr.type === `home` && !plain && <CxLevyPad />}
-      {fr.type === `more` && <CxLevyMore n={Number(String(s.id).replace(`levy-`, ``))} />}
+      {fr.type === `more` && <CxLevyMore n={cxStoryIssueNo(s.id)} />}
       {fr.type === `react` && (
         <div className="cx-story-act">
           <p><strong>{fr.small}</strong></p>
@@ -249,7 +249,7 @@ function CX_Stories() {
 /* Small pictures for the story circles: white shapes on the blue circle, in the colors the circle already has. A story about a place or a thing
    gets a picture; a story about one person keeps a photo, and a neighborhood keeps its initials. The label under the circle says what it is. */
 function CxStoryArt({ id }) {
-  const k = /^hall-/.test(id) ? `hall` : /^levy-/.test(id) ? `issue` : id;
+  const k = /^hall-/.test(id) ? `hall` : /^(levy|issue)-/.test(id) ? `issue` : id;   // any ballot issue's story gets the ballot slip with its number
   const soft = { opacity: 0.45 }, ink = { stroke: `var(--acc)` };
   const common = { width: 40, height: 40, viewBox: `0 0 48 48`, fill: `none`, stroke: `currentColor`, strokeWidth: 2.4, strokeLinecap: `round`, strokeLinejoin: `round`, focusable: `false`, 'aria-hidden': `true` };
   if (k === `register`) return (
@@ -266,13 +266,13 @@ function CxStoryArt({ id }) {
   if (k === `us`) return (
     <svg {...common}><path d="M13 23a11 11 0 0 1 22 0z" fill="currentColor" /><path d="M24 7v5" /><path d="M10 27v10M18 27v10M30 27v10M38 27v10" /><path d="M6 41h36" /></svg>);
   if (k === `issue`) return (
-    <svg {...common}><rect x="9" y="5" width="30" height="38" rx="4" fill="currentColor" style={soft} stroke="none" /><rect x="9" y="5" width="30" height="38" rx="4" /><path d="M15 12h18" /><text x="24" y="35" textAnchor="middle" fontSize="17" fontWeight="700" fill="currentColor" stroke="none">{id.replace(/^levy-/, ``)}</text></svg>);
+    <svg {...common}><rect x="9" y="5" width="30" height="38" rx="4" fill="currentColor" style={soft} stroke="none" /><rect x="9" y="5" width="30" height="38" rx="4" /><path d="M15 12h18" /><text x="24" y="35" textAnchor="middle" fontSize="17" fontWeight="700" fill="currentColor" stroke="none">{id.replace(/^(levy|issue)-/, ``)}</text></svg>);
   return null;
 }
 /* the mark inside a story circle: a photo, a picture, or the initials */
 function cxStoryMark(s) {
   const k = /^hall-/.test(s.id) ? `hall` : s.id;
   if (s.portrait) return <img src={cxmAsset(s.portrait)} alt="" />;
-  if ([`register`, `hall`, `council`, `ballot`, `us`].includes(k) || /^levy-/.test(s.id)) return <span className="cx-story-art"><CxStoryArt id={s.id} /></span>;
+  if ([`register`, `hall`, `council`, `ballot`, `us`].includes(k) || /^(levy|issue)-/.test(s.id)) return <span className="cx-story-art"><CxStoryArt id={s.id} /></span>;
   return <span>{s.ini}</span>;
 }
