@@ -45,6 +45,30 @@ def log(msg):
     LOG.append(msg)
 
 
+DATA_BLOCK = {}
+
+
+def js_data(key, obj):
+    """A large dataset for the page script. Instead of an object literal in the code, it travels in one <script type="application/json"
+    id="cx-data"> block that never runs (so the Content-Security-Policy needs no new hash), and the script reads it with JSON.parse when it
+    starts: a browser reads JSON text much faster than the same data written as code, and the block is removed once read, so its text is
+    not kept in memory beside the data. The values are identical. Returns the expression the script uses in place of the literal."""
+    DATA_BLOCK[key] = obj
+    return f"cxDataBlock(`{key}`)"
+
+
+# the reader for the data block: hoisted (a function declaration), so code anywhere in the shared scope can use the data at load time
+DATA_READER = ("\n/* ---- the data block (build.py js_data): read once, then removed so its text can be freed ---- */\n"
+               "function cxDataBlock(k) {\n  if (!cxDataBlock.d) {\n    const el = document.getElementById(`cx-data`);\n"
+               "    cxDataBlock.d = JSON.parse(el.textContent);\n    el.remove();\n  }\n  return cxDataBlock.d[k];\n}\n")
+
+
+def data_tag():
+    """The data block itself. Every "<" is written as \\u003c, so nothing in the records can end the element early or confuse the HTML parser."""
+    body = json.dumps(DATA_BLOCK, ensure_ascii=False, separators=(",", ":")).replace("<", "\\u003c")
+    return '<script type="application/json" id="cx-data">' + body + "</script>\n"
+
+
 def sha(path_or_bytes):
     b = path_or_bytes if isinstance(path_or_bytes, bytes) else open(path_or_bytes, "rb").read()
     return hashlib.sha256(b).hexdigest()
@@ -219,6 +243,17 @@ OFFLINE_NOTICE = ('<div id="cx-offline" role="status" hidden>You appear to be of
                   'addEventListener("offline",u);addEventListener("online",u);u();})();</script>\n'
                   '<script>if("serviceWorker" in navigator&&(location.protocol==="https:"||location.hostname==="localhost"))addEventListener("load",function(){navigator.serviceWorker.register("/sw.js").catch(function(){});});</script>\n')
 
+# Hosted site only, in the head: start the downloads this visit is known to need while the page itself is still arriving, instead of after
+# the app has drawn. The same files the app asks for anyway, from this site only: the federal record and the map's settled places when the
+# link opens the United States page (the map file only where the map shows: a computer, or the phone's Graph, the same rule as cxmWantPhone),
+# and the Spanish dictionary when this browser chose Spanish. Nothing personal is in any of these requests.
+EARLY_FETCH = ("(function(){try{var q=new URLSearchParams(location.search),h=location.hash,"
+               "ph=/(^|[#&])phone\\b/.test(h)||(!/(^|[#&])desktop\\b/.test(h)&&(matchMedia('(max-width: 760px)').matches||"
+               "(matchMedia('(pointer: coarse)').matches&&!!screen&&Math.min(screen.width,screen.height)<=500))),"
+               "L=function(u){var l=document.createElement('link');l.rel='preload';l.as='fetch';l.crossOrigin='anonymous';l.href=u;document.head.appendChild(l);},g;"
+               "if(q.get('panel')==='us'){L('/us/landscape-2026.json');if(!ph||q.get('view')==='graph')L('/us/map-2026.json');}"
+               "try{g=localStorage.getItem('cx-lang');}catch(e){}if(g==='es')L('/i18n/es.json');}catch(e){}})();")
+
 # v5.16: if the app has not drawn after 12 seconds (old browser, blocked script, very slow connection) say so in plain words
 BOOT_TIMEOUT = ("setTimeout(function(){var b=document.getElementById('cx-boot');if(!b)return;"
                 "b.innerHTML='This is taking longer than usual.<small>Your connection may be slow, or your browser may be out of date. "
@@ -331,10 +366,10 @@ def main():
     leg_path = os.path.join(ROOT, "data", "legistar-2026.json")
     leg = json.load(open(leg_path, encoding="utf-8"))
     log(f"data   {sha(leg_path)}  legistar-2026.json  ({leg['count']} items, retrieved {leg['retrieved_at']})")
-    ext_js = "\n/* ---- data/legistar-2026.json ---- */\nconst CX_LEG = " + json.dumps(
+    DATA_BLOCK.clear()
+    ext_js = DATA_READER + "\n/* ---- data/legistar-2026.json ---- */\nconst CX_LEG = " + js_data("leg",
         {k: leg[k] for k in ("source", "retrieved_at", "count")} | {"matters": [
-            {k: m[k] for k in ("id", "file", "type", "status", "title", "intro", "passed", "url", "sponsors")} for m in leg["matters"]]},
-        ensure_ascii=False, separators=(",", ":")) + ";\n"
+            {k: m[k] for k in ("id", "file", "type", "status", "title", "intro", "passed", "url", "sponsors")} for m in leg["matters"]]}) + ";\n"
     rs_path = os.path.join(ROOT, "data", "reasons-2026.json")
     rs = json.load(open(rs_path, encoding="utf-8"))
     log(f"data   {sha(rs_path)}  reasons-2026.json  ({len(rs['items'])} proposals, retrieved {rs['retrieved_at']})")
@@ -367,18 +402,16 @@ def main():
         log(f"  note: newest change log entry ({ups[0]['at']}) is older than the Legistar snapshot; run scripts/refresh.py")
     log(f"data   {sha(ch_path) if os.path.exists(ch_path) else '-' * 64}  changes-2026.json  ({len(ups)} checks"
         + (f", newest {ups[0]['at']}: {len(ups[0]['changes'])} items changed since {ups[0]['from']})" if ups else ")"))
-    ext_js += "/* ---- data/changes-2026.json (What's new) ---- */\nconst CX_UPDATES = " + json.dumps(
-        {"updated": leg["retrieved_at"], "log": ups}, ensure_ascii=False, separators=(",", ":")) + ";\n"
+    ext_js += "/* ---- data/changes-2026.json (What's new) ---- */\nconst CX_UPDATES = " + js_data("updates", {"updated": leg["retrieved_at"], "log": ups}) + ";\n"
     # v5.13 "Who decides here?": ward maps as SVG paths + decision paths/addresses/ward money
     geo_path, pl_path = os.path.join(ROOT, "data", "geo-2026.json"), os.path.join(ROOT, "data", "place-2026.json")
     geo, pl = json.load(open(geo_path, encoding="utf-8")), json.load(open(pl_path, encoding="utf-8"))
     log(f"data   {sha(geo_path)}  geo-2026.json  (retrieved {geo['retrieved_at']})")
     log(f"data   {sha(pl_path)}  place-2026.json  ({len(pl['histories'])} histories, {len(pl['addresses'])} addresses, {len(pl['funds'])} ward-money items, retrieved {pl['retrieved_at']})")
-    ext_js += "\n/* ---- data/geo-2026.json (as SVG) ---- */\nconst CX_GEO = " + json.dumps(geo_svg(geo), separators=(",", ":")) + ";\n"
-    ext_js += "/* ---- data/place-2026.json ---- */\nconst CX_PL = " + json.dumps(
+    ext_js += "\n/* ---- data/geo-2026.json (as SVG) ---- */\nconst CX_GEO = " + js_data("geo", geo_svg(geo)) + ";\n"
+    ext_js += "/* ---- data/place-2026.json ---- */\nconst CX_PL = " + js_data("place",
         {"retrieved": pl["retrieved_at"], "histories": pl["histories"], "addresses": pl["addresses"],
-         "funds": {f: {k: r.get(k) for k in ("file", "text_url", "amounts", "limit", "wards")} for f, r in pl["funds"].items()}},
-        ensure_ascii=False, separators=(",", ":")) + ";\n"
+         "funds": {f: {k: r.get(k) for k in ("file", "text_url", "amounts", "limit", "wards")} for f, r in pl["funds"].items()}}) + ";\n"
     # v5.16 profile office text: reviewed by a person only while its fingerprint still matches what they read
     of_path = os.path.join(ROOT, "data", "office-reviewed.json")
     of = json.load(open(of_path, encoding="utf-8")) if os.path.exists(of_path) else {}
@@ -419,10 +452,9 @@ def main():
     def vt_row(v):
         r = [v["date"], vt_q[v["question"]], vt_issue_ix[v["anchor"]["url"]], vt_codes(v)]
         return r + [v["misprint"]] if v.get("misprint") else r
-    ext_js += "/* ---- data/votes-2026.json (Council roll calls from the City Record) ---- */\nconst CX_VOTES = " + json.dumps(
+    ext_js += "/* ---- data/votes-2026.json (Council roll calls from the City Record) ---- */\nconst CX_VOTES = " + js_data("votes",
         {"source": vt["source"], "retrieved_at": vt["retrieved_at"], "members": vt_members, "issues": [[l, u] for u, l in vt_issues],
-         "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]},
-        ensure_ascii=False, separators=(",", ":")) + ";\n"
+         "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]}) + ";\n"
     # United States graph: only the d3 parts the map uses (force and zoom, ext/cx-d3.js), bundled from the pinned npm packages into the page as CXD3
     d3_js = run([tool("esbuild"), os.path.join(EXT, "cx-d3.js"), "--bundle", "--format=iife", "--global-name=CXD3", "--target=es2020", "--legal-comments=none"])
     d3_ver = ", ".join(f"{p} {json.load(open(os.path.join(ROOT, 'node_modules', p, 'package.json'), encoding='utf-8'))['version']}" for p in ("d3-force", "d3-zoom", "d3-selection", "d3-transition", "d3-quadtree", "d3-timer"))
@@ -896,6 +928,11 @@ def main():
     log(f"light layer (desktop, original): {st_d1['mapped']} rules, {len(light_d1)} bytes, {sha(light_d1.encode())}; (desktop, bento): {st_d2['mapped']} rules, {len(light_d2)} bytes, {sha(light_d2.encode())}")
     css += "\n/* ---- light mode for the desktop app (generated by light.py) ---- */\n" + light_d1 + "\n" + light_d2
     css += "\n/* ---- light mode, hand-written parts that come after the generated layers (ext/cx-light.css) ---- */\n" + open(os.path.join(EXT, "cx-light.css"), encoding="utf-8").read()
+    # spaces and comments only: every rule, value, and selector stays as written and in the same order (the Bento and light layers above
+    # were generated from the unminified text). About 45 KB less CSS for a phone to read and 6 KB less to download.
+    css_full = len(css)
+    css = run([tool("esbuild"), "--loader=css", "--minify-whitespace", "--log-level=warning"], input=css)
+    log(f"css: {css_full} bytes, {len(css)} without spaces and comments, {sha(css.encode())}")
     css = css.replace("</style", "<\\/style")
 
     # fonts: the offline file asks Google Fonts (and falls back to system fonts offline);
@@ -935,6 +972,7 @@ def main():
         icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else ('<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n<link rel="manifest" href="/manifest.webmanifest">\n'
                                                                                                                                                   '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Civic Graph">\n<meta name="theme-color" content="#0c0c0e">\n')
         offline = "" if inline_assets else OFFLINE_NOTICE
+        early = "" if inline_assets else f"<script>{EARLY_FETCH}</script>\n"
         return f"""<!doctype html>
 <html lang="en" class="dark">
 <head>
@@ -942,7 +980,7 @@ def main():
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Cleveland Civic Graph</title>
 <meta name="description" content="A question-led map of who decides what in Cleveland, in plain English, with public sources, visible gaps, What's new from Council's record, and a practice ballot.">
-{icon}{fonts}<style>
+{icon}{fonts}{early}<style>
 html,body{{margin:0;background:#141210;color:#f4eee8}}
 </style>
 {boot}</head>
@@ -954,7 +992,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
 {css}
 </style>
 <script>{preamble(inline_assets)}</script>
-{i18n_tag}{dist_tag}<script>{js}</script>
+{data_tag()}{i18n_tag}{dist_tag}<script>{js}</script>
 </body>
 </html>
 """
@@ -999,7 +1037,8 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     os.makedirs(os.path.join(SITE, "bench"), exist_ok=True)
     # v5.16 United States graph data: not embedded (about half a megabyte); the hosted page fetches it
     os.makedirs(os.path.join(SITE, "us"), exist_ok=True)
-    us_body = open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8").read()
+    # the hosted copies of the larger records are written without the indentation, so a phone reads fewer bytes (same values)
+    us_body = json.dumps(json.load(open(os.path.join(ROOT, "data", "us-landscape-2026.json"), encoding="utf-8")), ensure_ascii=False, separators=(",", ":")) + "\n"
     write(os.path.join(SITE, "us", "landscape-2026.json"), us_body)
     log(f"SITE   {sha(us_body.encode())}  site/us/landscape-2026.json")
     # the settled United States graph (scripts/us_map.js): the same physics and seed the page uses, run once here so every device opens the same map at once
@@ -1008,7 +1047,7 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     mp = os.path.join(ROOT, "data", "meetings-2026.json")  # At City Hall: the Clerk's meeting record, fetched lazily on the hosted site
     if os.path.exists(mp):
         os.makedirs(os.path.join(SITE, "meetings"), exist_ok=True)
-        meet_body = open(mp, encoding="utf-8").read()
+        meet_body = json.dumps(json.load(open(mp, encoding="utf-8")), ensure_ascii=False, separators=(",", ":")) + "\n"
         write(os.path.join(SITE, "meetings", "meetings-2026.json"), meet_body)
         log(f"SITE   {sha(meet_body.encode())}  site/meetings/meetings-2026.json")
     vp = os.path.join(ROOT, "data", "us-votes-2026.json")  # D4: how members voted; fetched by Your members only
