@@ -1,4 +1,4 @@
-/* Cleveland Civic Graph service worker, build 0733a1830526.
+/* Cleveland Civic Graph service worker, build 4e9211f6cb09.
    Purpose: the hosted site opens with no signal, using the copy this browser last loaded.
    Rules that keep it safe:
      - A page load and the /bench/ data files go to the NETWORK FIRST. Online, a visitor always gets the newest
@@ -7,7 +7,7 @@
      - Nothing else is touched, and nothing from another site.
      - Each build has its own cache name. When a new build installs, every older cache is deleted, so no one is
        left on an old version. */
-const V = "cx-0733a1830526";
+const V = "cx-4e9211f6cb09";
 const SLOW = 8000;
 self.addEventListener("install", (e) => {
   e.waitUntil(caches.open(V).then((c) => c.addAll(["/", "/favicon.svg"])).then(() => self.skipWaiting()));

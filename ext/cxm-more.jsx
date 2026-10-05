@@ -169,15 +169,12 @@ function CxmYou() {
         <div className="cxm-kv"><span>Light or dark</span><CX_ModeChoice /></div>
         <button type="button" className={`cxm-switch ${large ? `on` : ``}`} aria-pressed={large} onClick={() => setLarge(!large)}><span>Larger text</span><i><b /></i></button>
         <button type="button" className="cxm-row" onClick={() => { setEasy(!0); closeSheet(); }}><span><strong>Easy mode</strong><small>One step at a time, bigger text, and Read it to me</small></span><CXI.Arrow size={15} /></button>
+        <CxmRememberPlace />
         {!canSave && <p className="cxm-fine" role="status">This browser is not saving settings, so Easy mode, style, and your guide start over each time you open the page. Private browsing can cause this.</p>}
       </section>
       <section className="cxm-section">
         <CxmKicker>Your guide</CxmKicker>
         <div className="cxm-guides">{Object.entries(CXM_GUIDES).map(([k, n]) => <button key={k} type="button" className={guide === k ? `on` : ``} aria-pressed={guide === k} onClick={() => setGuide(k)}><CxmGuide kind={k} size={52} /><span>{n}</span></button>)}</div>
-      </section>
-      <section className="cxm-section">
-        <CxmKicker>Your place</CxmKicker>
-        <CxmRememberPlace />
       </section>
       <section className="cxm-section">
         <CxmKicker>About and sharing</CxmKicker>
