@@ -774,7 +774,7 @@ function CX_UsCorner({ g, M, P, still, phone, onGroup, onNode }) {
       const cand = [];
       groupsN.forEach((n) => { const gr = C.groups[n.g]; cand.push({ i: -1 - n.g, x: X(n), y: Y(n), rr: n.r * T.k, pri: 99, center: !0, lines: [{ text: cxUsmTr(gr.title), font: f(700, 13), size: z(13) }, { text: String(gr.count), font: f(600, 12), size: z(12) }] }); });
       cand.push({ i: F.i, x: X(F), y: Y(F), rr: F.r * T.k + 5, pri: 98, lines: [{ text: M.nodes[F.i].kind === `hub` ? cxUsmTr(M.nodes[F.i].label) : g.nodes[F.i].name, font: f(800, 14), size: z(14) }] });
-      R.nodes.forEach((n, k) => { if (n.k === `dot`) cand.push({ i: n.i, x: X(n), y: Y(n), rr: n.r * T.k, pri: 50 - k * 0.001, lines: [{ text: M.nodes[n.i].kind === `hub` ? cxUsmTr(M.nodes[n.i].label) : cxUsmShort(g.nodes[n.i].name, 32), font: f(500, 12), size: z(12) }] }); });
+      R.nodes.forEach((n, k) => { if (n.k === `dot`) cand.push({ i: n.i, x: X(n), y: Y(n), rr: n.r * T.k, pri: 50 - k * 0.001, lines: [{ text: M.nodes[n.i].kind === `hub` ? cxUsmTr(M.nodes[n.i].label) : M.nodes[n.i].kind === `person` ? cxUsmShort(g.nodes[n.i].name, 32) : M.nodes[n.i].label, font: f(500, 12), size: z(12) }] }); });   // the main map's short names ("Sixth Circuit", "Budget"); people in full
       const boxes = cxUsMapLabels(cand, measure, W, H, 90);
       x.textBaseline = `middle`; x.lineJoin = `round`;
       boxes.forEach((b) => { let y = b.y + 1.5; b.lines.forEach((l) => { y += l.size * 0.6; x.font = l.font; x.textAlign = b.align === `center` ? `center` : `left`; const tx = b.align === `center` ? b.x + b.w / 2 : b.x + 3; x.lineWidth = 4; x.strokeStyle = cxUsmIsland(); x.strokeText(l.text, tx, y); x.fillStyle = `#f4f2ee`; x.fillText(l.text, tx, y); y += l.size * 0.6; }); });

@@ -1386,8 +1386,8 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 .usm-settings { position: absolute; top: 80px; right: 12px; z-index: 6; width: 340px; max-width: calc(100% - 24px); max-height: calc(100% - 100px); display: flex; flex-direction: column; }
 .usm-set-row { display: grid; gap: 6px; margin: 10px 0 4px; }
 .usm-set-row > span { color: var(--u-mut); font-size: 14px; font-weight: 600; }
-.usm-settings .usm-switch { margin-top: 8px; }
-.usm-settings .usm-switch small { flex: none; }
+.usm-settings .usm-switch { flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; margin-top: 8px; padding: 8px 12px; }
+.usm-settings .usm-switch span, .usm-settings .usm-switch small { flex: none; max-width: 100%; overflow-wrap: anywhere; }
 .usm .cx-theme-switch { justify-content: flex-start; min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1px solid var(--u-line); background: var(--u-tile2); color: var(--u-ink); font-weight: 600; }
 .usm .cx-theme-dot, .usm .cx-mode-dot { display: none; }
 .usm .cxm-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--u-tile2); }
@@ -1410,7 +1410,8 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 .usmp-face { margin-bottom: 14px; }
 .usmp-kicker { font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--u-soft); }
 .usmp-name { margin: 8px 0 12px; font-size: 64px; line-height: 1.06; letter-spacing: -0.035em; font-weight: 800; overflow-wrap: anywhere; }
-.usm .usmp-name:focus, .usm .usmp-list h3:focus { outline: none; }
+/* the page's name and a list's title take the focus only to move a screen reader there (they are not controls), so they show no ring, in either mode */
+html[data-cx-mode] .usm .usmp-name:focus, html[data-cx-mode] .usm .usmp-list h3:focus, .usm .usmp-name:focus, .usm .usmp-list h3:focus { outline: none; }
 .usmp-phone .usmp-name { font-size: 44px; }
 .usmp-sent { font-size: 18px; line-height: 1.45; }
 .usmp-fact { margin-top: 10px; font-size: 18px; font-weight: 700; line-height: 1.4; color: var(--u-soft); }
