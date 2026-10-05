@@ -91,6 +91,24 @@ async function done(p) {
   expect((p.csp || []).length === 0, `the browser reported a Content-Security-Policy violation: ${JSON.stringify(p.csp)}`);
   await p.close2();
 }
+/* At City Hall's own functions (the part of ext/cx-meetings.jsx with no screen in it, and the priority keyword rules of ext/cx-leaders.jsx) run on the
+   record, so the city-hall check knows what the page should show on any day without typing an expected number by hand */
+function cityHallApi() {
+  const vm = require('vm');
+  const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-meetings.jsx'), 'utf8'), lead = fs.readFileSync(path.join(ROOT, 'ext', 'cx-leaders.jsx'), 'utf8');
+  const pure = src.slice(src.indexOf('/* what the Clerk'), src.indexOf('/* ---------- the screen'));
+  const rules = lead.slice(lead.indexOf('/* ---------- Topic matching'), lead.indexOf('/* Legistar sponsor names'));
+  const matters = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8')).matters;
+  const byFile = new Map(matters.map((m) => [m.file, m]));
+  const ctx = vm.createContext({ cxmPl: (n, a, b) => `${n} ${n === 1 ? a : b}`, cxmMatter: (f) => byFile.get(f) || null, cxHeadline: (t) => t });
+  vm.runInContext(`${pure}\n${rules}\n;this.api = { cxMtgSplit, cxMtgWeek, cxMtgDecided, cxMtgByKind, cxMtgWatch, cxMtgForYou, cxMtgIndex, cxMtgFind, cxMatch, priorityIds: () => Object.keys(CX_MATCH_RULES) };`, ctx);
+  return { ...ctx.api, matters, data: JSON.parse(fs.readFileSync(path.join(SITE, 'meetings', 'meetings-2026.json'), 'utf8')) };
+}
+function cityHallLook(A) {
+  const pl = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'place-2026.json'), 'utf8'));
+  return { fundWards: (f) => (pl.funds[f] || {}).wards || [], addrWards: (f) => Object.values(pl.addresses).filter((r) => (r.files || []).includes(f)).map((r) => r.ward2026), match: (t) => A.cxMatch(t) };
+}
+const etToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });   // the app's own day (cxTodayET), Cleveland time
 const nextEnabled = (p) => p.evaluate(() => { const n = document.querySelector('.cxe-nav .cxe-btn:not(.alt)'); return !!n && !n.disabled; });
 async function walkEasy(p) { let n = 0; while (await nextEnabled(p) && n++ < 12) await clickText(p, 'Next'); return n; }
 
@@ -818,41 +836,169 @@ const CHECKS = {
     await done(q);
   },
   async 'city-hall'() {
-    // At City Hall: the Clerk's meeting record as a front page. A card on Today, a story first in the row, and a page whose lead is the next Council meeting,
-    // whose first items are real legislation (ceremonial resolutions come last), and which says what it does not hold.
-    const rec = JSON.parse(fs.readFileSync(path.join(SITE, 'meetings', 'meetings-2026.json'), 'utf8'));
-    const today = new Date().toISOString().slice(0, 10);
-    const upcoming = rec.meetings.filter((m) => m.date >= today).length > 0;
+    // At City Hall (docs/plan-city-hall-page.md): the Clerk's meeting record as a full page with a back arrow over the tabs (not a sheet, not a sixth tab),
+    // opened from the Today card, the story, an Explore door, and ?panel=meetings. The lead is the next Council meeting (when, where, how to watch, two
+    // sentences at most); the week is five day tabs with no sideways scrolling anywhere; the next agenda is grouped by kind with ceremonial resolutions last;
+    // For you appears only from a ward or priorities set on the device and is never a score; Just decided counts what the record says; Look it up sends
+    // nothing; the year is one fold of month folds; the footer says the record holds no testimony. Expected values come from the page's own functions run on
+    // the record (cityHallApi), and the page is checked in English and Spanish, dark and light.
+    const A = cityHallApi(), today = etToday(), data = A.data;
+    const lead = A.cxMtgSplit(data, today).lead, wk = A.cxMtgWeek(data, today), dec = A.cxMtgDecided(data, today);
+    const EN = process.env.CHECK_LANG !== 'es';
+    // 1. Today: a card for the next meeting only (who meets when, how many items), and the story first in the row
     const p = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
-    if (!upcoming && !rec.meetings.some((m) => m.items.some((i) => i[1]))) { await done(p); return; }
     expect(await has(p, '.mt-card'), 'Today has no At City Hall card');
-    expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText).filter((t) => t !== 'Register')))[0] === 'City Hall', 'the City Hall story is not first in the row (after the Register story, which leads in the week of the deadline)');
-    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall/.test(x.innerText)); if (b) b.click(); }); await wait(600);
-    expect(/City Hall/.test((await txt(p, '.cxm-story-head')) || ''), 'the City Hall story did not open');
+    const card = (await txt(p, '.mt-card')) || '';
+    if (EN) expect(lead ? /meets/.test(card) && /legislation|agenda/.test(card) && !/Biggest/.test(card) : /No meetings/.test(card), `the Today card does not say who meets when and how many items, or says more: ${card}`);
+    if (EN) expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText).filter((t) => t !== 'Register')))[0] === 'City Hall', 'the City Hall story is not first in the row (after the Register story, which leads in the week of the deadline)');
+    await p.evaluate(() => document.querySelector('.mt-card').click()); await wait(700);
+    expect(await has(p, '.cxm-full.mt-page') && !(await has(p, '.cxm-sheet')), 'the Today card did not open At City Hall as a full page (it must not be a sheet)');
+    expect(/panel=meetings/.test(await p.evaluate(() => location.search)), 'the page does not keep its ?panel=meetings address');
+    await p.evaluate(() => document.querySelector('.cxm-full-back').click()); await wait(500);
+    expect(!(await has(p, '.cxm-full')) && (await has(p, '.mt-card')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the back arrow did not return to Today');
+    // 2. the story's last step opens the page, and its back arrow (and Escape) return to the same step
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall|Ayuntamiento/.test(x.getAttribute('aria-label') || x.innerText)); if (b) b.click(); }); await wait(600);
     for (let i = 0; i < 8 && !(await has(p, '.cxm-story .cxm-btn-light')); i++) { await p.mouse.click(300, 420); await wait(350); }
     expect(await has(p, '.cxm-story .cxm-btn-light'), 'the City Hall story has no button to open the page');
-    await p.evaluate(() => document.querySelector('.cxm-story .cxm-btn-light').click()); await wait(1200);
-    expect(await has(p, '.mt-lead') || !upcoming, 'the City Hall page has no lead story');
-    if (upcoming) {
-      expect(/meets/.test((await txt(p, '.mt-head')) || ''), `the lead does not say who meets when: ${await txt(p, '.mt-head')}`);
-      expect((await count(p, '.mt-lead .mt-item')) <= 3, 'the lead shows more than three items before "Show all"');
-      const mixOk = await p.evaluate(() => [...document.querySelectorAll('.mt-lead .mt-chip')].map((c) => c.innerText).join(' | '));
-      expect(/ordinance|resolution|item/.test(mixOk), `the lead does not say what the agenda is made of: ${mixOk}`);
-      const firstTitles = await p.$$eval('.mt-lead .mt-item strong', (els) => els.map((e) => e.innerText));
-      expect(!firstTitles.some((t) => /^(Condolence|Congratulations|Recognition)/.test(t)), `a ceremonial resolution leads the agenda: ${firstTitles}`);
-      expect(!/https?:|www\./.test((await txt(p, '.mt-lead')) || ''), 'web addresses from the Clerk are shown in the lead');
-      expect((await count(p, '.mt-lead .mt-links a')) >= 1, 'the lead has no agenda link');
-    }
-    expect(/not include testimony or public comment/.test((await txt(p, '.mt')) || ''), 'the page does not say it holds no testimony or public comment');
-    expect((await count(p, '.mt-strip .mt-small')) >= 0 && (await has(p, '.cxm-drop')), 'the earlier meetings are not folded away');
-    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the City Hall page scrolls sideways');
-    // the sheet itself must not be wider than the screen: a sr-only line inside the horizontal strip once made it 1624 px, and a phone then let the whole sheet slide sideways
-    expect(await p.evaluate(() => { const sh = document.querySelector('.cxm-sheet'); return !sh || sh.scrollWidth <= sh.clientWidth + 1; }), 'the City Hall sheet is wider than the screen (it slides sideways on a phone)');
-    // an item opens its legislation record, which says where else it was on an agenda
-    await p.evaluate(() => document.querySelector('.mt-item').click()); await wait(900);
-    expect(await has(p, '.cxm-sheet .mt-heard') || !(await has(p, '.cxm-sheet')), 'a legislation record does not list its meetings');
-    { const bad = await axeBad(p); expect(bad.length === 0, `axe on At City Hall: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    const frame = await txt(p, '.cxm-story-big');
+    await p.evaluate(() => document.querySelector('.cxm-story .cxm-btn-light').click()); await wait(800);
+    expect(await has(p, '.cxm-full.mt-page'), 'the story did not open the page');
+    if (EN) expect((await txt(p, '.cxm-full-back')) === 'Back to the story', `the back arrow from the story does not say where it goes: ${await txt(p, '.cxm-full-back')}`);
+    await p.keyboard.press('Escape'); await wait(500);
+    expect(await has(p, '.cxm-story') && (await txt(p, '.cxm-story-big')) === frame, 'Escape on the page did not return to the same step of the story');
+    await p.evaluate(() => document.querySelector('.cxm-story [aria-label="Close story"], .cxm-story-head button').click()); await wait(400);
+    // 3. the Explore door
+    await p.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')][1].click()); await wait(700);
+    await p.evaluate(() => { const d = [...document.querySelectorAll('.cxm-door')].find((b) => /City Hall|Ayuntamiento/.test(b.innerText)); if (d) d.click(); }); await wait(700);
+    expect(await has(p, '.cxm-full.mt-page'), 'Explore has no door to At City Hall');
     await done(p);
+
+    // 4. the page itself, from ?panel=meetings, with no ward and no priorities
+    const q = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200 });
+    expect(await has(q, '.cxm-full.mt-page') && !(await has(q, '.cxm-sheet')) && (await q.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')].every((b) => { const r = b.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !b.contains(e); }))), '?panel=meetings did not open the page over the tabs');
+    // exactly the screen's width, nothing outside its scroller, and nothing anywhere on it that scrolls sideways
+    const geo = await q.evaluate(() => {
+      const f = document.querySelector('.cxm-full'), b = document.querySelector('.cxm-full-body');
+      const wide = [...f.querySelectorAll('*')].filter((e) => /(auto|scroll)/.test(getComputedStyle(e).overflowX) && e.scrollWidth > e.clientWidth + 1).map((e) => e.className);
+      return { w: f.getBoundingClientRect().width, iw: innerWidth, fsw: f.scrollWidth, fcw: f.clientWidth, fsh: f.scrollHeight, fch: f.clientHeight, bsw: b.scrollWidth, bcw: b.clientWidth, doc: document.documentElement.scrollWidth, wide };
+    });
+    expect(Math.abs(geo.w - geo.iw) < 1 && geo.doc <= geo.iw, `the page is not exactly the screen's width: ${JSON.stringify(geo)}`);
+    expect(geo.fsw <= geo.fcw + 1 && geo.fsh <= geo.fch + 1 && geo.bsw <= geo.bcw + 1, `something on the page sits outside its scroller, so a phone can slide the page (it once did): ${JSON.stringify(geo)}`);
+    expect(geo.wide.length === 0, `part of the page scrolls sideways: ${geo.wide.slice(0, 3)}`);
+    expect(!(await has(q, '.mt-strip')), 'the sideways strip of meetings is back');
+    // the lead: who meets when, where, how to watch (from the Clerk's notice), two sentences at most, the agenda and the meeting page
+    if (lead) {
+      if (EN) expect(/meets/.test((await txt(q, '.mt-head')) || ''), `the lead does not say who meets when: ${await txt(q, '.mt-head')}`);
+      const watch = ((await txt(q, '.mt-watch')) || '').replace(/\s+/g, ' ');
+      if (EN) expect(watch === A.cxMtgWatch(lead.note), `the lead's how-to-watch line is not the one the Clerk's notice gives: ${watch}`);
+      const prose = await q.evaluate(() => ['.mt-head', '.mt-watch'].map((s) => (document.querySelector(`.mt-lead ${s}`) || {}).innerText || '').join(' '));
+      expect((prose.match(/[.!?](\s|$)/g) || []).length <= 2, `the lead says more than two sentences: ${prose}`);
+      expect(!/https?:|www\./.test((await txt(q, '.mt-lead')) || ''), 'web addresses from the Clerk are shown in the lead');
+      expect((await count(q, '.mt-lead a[href^="https://"]')) >= 1, 'the lead has no agenda or meeting page link');
+      if (lead.place) expect(((await txt(q, '.mt-place')) || '').length > 0, 'the lead does not say where the meeting is');
+    }
+    // the week: five folder tabs, Monday to Friday, the right day open, each day's meetings in its panel
+    const tabs = await q.$$eval('.mt-days [role=tab]', (els) => els.map((e) => ({ id: e.id, on: e.getAttribute('aria-selected') === 'true', w: e.getBoundingClientRect().width })));
+    expect(tabs.length === 5 && tabs.map((t) => t.id.replace('mt-day-', '')).join() === wk.days.map((d) => d.iso).join(), `the week is not five day tabs, Monday to Friday: ${tabs.map((t) => t.id)}`);
+    expect((tabs.find((t) => t.on) || {}).id === `mt-day-${wk.pick}`, `the day that opens first is not ${wk.pick}: ${(tabs.find((t) => t.on) || {}).id}`);
+    for (const d of wk.days) {
+      await q.evaluate((id) => document.getElementById(id).click(), `mt-day-${d.iso}`); await wait(150);
+      const n = await count(q, '#mt-day-panel .mt-meet');
+      expect(n === d.list.length, `${d.iso}: the day tab shows ${n} meetings, the record has ${d.list.length}`);
+    }
+    await q.evaluate((id) => document.getElementById(id).click(), `mt-day-${wk.days[0].iso}`); await wait(150);
+    await q.focus(`#mt-day-${wk.days[0].iso}`); await q.keyboard.press('ArrowRight'); await wait(200);
+    expect(await q.evaluate((id) => document.activeElement.id === id && document.activeElement.getAttribute('aria-selected') === 'true', `mt-day-${wk.days[1].iso}`), 'the arrow keys do not move between the day tabs');
+    // what is on the next agenda: by kind, ceremonial last, five before "Show all", then every item
+    if (lead && lead.items.length) {
+      const kinds = await q.$$eval('.mt-on .mt-group-h span:first-child', (els) => els.map((e) => e.innerText));
+      const want = A.cxMtgByKind(lead).map((g) => g.label);
+      if (EN) expect(want.slice(0, kinds.length).join() === kinds.join(), `the agenda is not grouped by kind in order: ${kinds} (wanted ${want})`);
+      expect((await count(q, '.mt-on .mt-item')) === Math.min(5, lead.items.length), 'the next agenda does not show its first five items');
+      const firstTitles = await q.$$eval('.mt-on .mt-item strong', (els) => els.map((e) => e.innerText));
+      if (A.cxMtgByKind(lead)[0].g !== 'ceremonial') expect(!firstTitles.some((t) => /^(Condolence|Congratulations|Recognition)/.test(t)), `a ceremonial resolution leads the agenda: ${firstTitles}`);
+      if (lead.items.length > 5) { await q.evaluate(() => document.querySelector('.mt-on .cxm-link').click()); await wait(300); expect((await count(q, '.mt-on .mt-item')) === lead.items.length, '"Show all" does not show every item on the agenda'); }
+    }
+    // For you, with nothing set: it says what to set, and shows nothing else
+    expect((await count(q, '.mt-you button')) === 2 && (await count(q, '.mt-you .mt-item')) === 0, 'For you with no ward or priorities does not say what to set');
+    // Just decided: the counts add up to the meeting's agenda, and none reads as a score
+    if (dec) {
+      const chips = await q.$$eval('.mt-done .mt-chip b', (els) => els.map((e) => Number(e.innerText)));
+      expect(chips.reduce((a, b) => a + b, 0) === dec.items.length, `the Just decided counts (${chips}) do not add up to the ${dec.items.length} items on the agenda`);
+      expect(!/%|\bscore|\brank|\bpercent/i.test((await txt(q, '.mt-done')) || ''), 'Just decided reads as a score');
+    }
+    // the year: one fold, and inside it one fold per month
+    const months = A.cxMtgSplit(data, today).months.length;
+    expect((await count(q, '.mt-earlier > .cxm-drop')) === 1 && !(await has(q, '.mt-months')), 'Earlier this year is not one closed fold');
+    await q.evaluate(() => document.querySelector('.mt-earlier .cxm-drop-head').click()); await wait(300);
+    expect((await count(q, '.mt-months > .cxm-drop')) === months, `Earlier this year does not open to one fold per month (${months})`);
+    // the footer: two lines, where the record comes from and when, and that it holds no testimony
+    if (EN) expect(/Pulled/.test((await txt(q, '.mt-foot')) || '') && /not include testimony or public comment/.test((await txt(q, '.mt-foot')) || '') && (await count(q, '.mt-foot p')) === 2, 'the footer is not two lines saying where the record comes from, when, and that it holds no testimony');
+    // no dashes, no scores, and every control a finger can hit
+    const words = (await txt(q, '.cxm-full')) || '';
+    expect(!/[–—]/.test(words), 'a dash on the City Hall page');
+    expect(!/%|\bpercent|\bscore|\branked\b/i.test(words), 'the City Hall page shows a percentage, score, or ranking');
+    const small = await q.evaluate(() => [...document.querySelectorAll('.cxm-full button, .cxm-full a[href], .cxm-full input, .cxm-full summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
+    expect(small.length === 0, `controls under 44px on the City Hall page: ${small.slice(0, 5)}`);
+    // Look it up: a file number and an address are found on the device; nothing typed goes into a request, the link, or storage
+    const sent = []; q.on('request', (r) => sent.push(r.url()));
+    const at = A.cxMtgFind(A.cxMtgIndex(data, A.matters), '1232-2026');
+    await q.type('.mt-find input', '1232-2026'); await wait(400);
+    expect((await count(q, '.mt-find .mt-row')) === Math.min(5, at.leg.length), `Look it up found ${await count(q, '.mt-find .mt-row')} records for 1232-2026, the record has ${at.leg.length}`);
+    await q.evaluate(() => { const i = document.querySelector('.mt-find input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, ''); i.dispatchEvent(new Event('input', { bubbles: true })); });
+    await q.type('.mt-find input', '3870 W. 25th St'); await wait(400);
+    const addr = A.cxMtgFind(A.cxMtgIndex(data, A.matters), '3870 W. 25th St');
+    expect((await count(q, '.mt-find .mt-row')) === Math.min(5, addr.leg.length) && addr.leg.length > 0, `Look it up did not find the address 3870 W. 25th St the way the record has it (${addr.leg.length})`);
+    expect(!sent.some((u) => /3870|25th|1232/i.test(u)), 'something typed into Look it up was sent in a request');
+    expect(!(await q.evaluate(() => /3870|25th/i.test(location.href + JSON.stringify(localStorage) + JSON.stringify(sessionStorage) + document.cookie))), 'something typed into Look it up reached the link or storage');
+    // an item opens its legislation record over the page, which lists its meetings, and closing it returns to the page
+    await q.evaluate(() => document.querySelector('.mt-find .mt-row').click()); await wait(800);
+    expect(await has(q, '.cxm-sheet .mt-heard') && /panel=meetings/.test(await q.evaluate(() => location.search)), 'a record opened from the page does not list its meetings, or the page lost its address');
+    await q.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
+    expect(await has(q, '.cxm-full.mt-page') && !(await has(q, '.cxm-sheet')), 'closing a record did not return to the page');
+    { const bad = await axeBad(q); expect(bad.length === 0, `axe on At City Hall: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(q);
+
+    // 5. For you with a ward (and then a priority): the items that name the ward in the record, each saying why, in the Clerk's order; the ward never leaves
+    const look = cityHallLook(A);
+    const week = wk.days.flatMap((d) => d.list);
+    const ward = [...Array(15).keys()].map((i) => i + 1).find((w) => A.cxMtgForYou(week, w, [], look).length) || 1;
+    const mine = A.cxMtgForYou(week, ward, [], look);
+    const place = `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: ${JSON.stringify(today)}, place: 'ward-${ward}', hood: '', state: '', district: '' })); } catch (e) {} })()`;
+    const r = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200, pre: place });
+    const reqs = []; r.on('request', (x) => reqs.push(x.url()));
+    const rows = await r.$$eval('.mt-you .mt-item small', (els) => els.map((e) => e.innerText));
+    expect(rows.length === Math.min(5, mine.length), `For you with Ward ${ward} shows ${rows.length} items, the record has ${mine.length}`);
+    if (EN) expect(rows.every((t) => new RegExp(`Ward ${ward}\\b`).test(t)), `a For you item does not say how it names Ward ${ward}: ${rows}`);
+    if (!mine.length && EN) expect(new RegExp(`names Ward\\s${ward}`).test((await txt(r, '.mt-you')) || ''), 'For you with nothing that names the ward does not say so');
+    expect(rows.map((t) => t.split(' ')[0]).join() === mine.slice(0, 5).map((x) => x.f).join(), 'For you is not in the Clerk\'s order');
+    expect(!/%|\bscore|\bmatch(es)? \d|\bpercent/i.test((await txt(r, '.mt-you')) || ''), 'For you shows a score or percentage');
+    await r.evaluate(() => document.querySelector('.mt-find input').focus()); await wait(200);
+    expect(!/ward|place/i.test(await r.evaluate(() => location.href)) && !reqs.some((u) => /ward|cx-place/i.test(u)), 'the ward reached the link or a request');
+    await done(r);
+    const prio = A.priorityIds().find((pid) => A.cxMtgForYou(week, null, [pid], look).length) || 'housing';
+    const pmine = A.cxMtgForYou(week, null, [prio], look);
+    const s = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200, pre: `(() => { try { localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { ${prio}: 'most' }, stances: {} })); } catch (e) {} })()` });
+    const prows = await s.$$eval('.mt-you .mt-item small', (els) => els.map((e) => e.innerText));
+    expect(prows.length === Math.min(5, pmine.length), `For you with the priority ${prio} shows ${prows.length} items, the keyword rules find ${pmine.length}`);
+    expect(prows.every((t, k) => t.includes(pmine[k].why.find((w) => w[0] === 'prio')[2])), `a For you item does not show the word from its title that matched: ${prows}`);
+    await done(s);
+
+    // 6. Spanish and light mode: the page's own words change, and the light page passes contrast in both styles
+    const es = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2400, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} })()` });
+    const esText = (await txt(es, '.cxm-full')) || '';
+    for (const w of ['Volver', 'Esta semana', 'Lun', 'Vie', 'Para usted', 'Recién decidido', 'Búsquelo', 'Antes en el año', 'No incluye testimonios']) expect(esText.includes(w) || (w === 'Esta semana' && /semana/.test(esText)), `the page in Spanish is missing "${w}"`);
+    for (const w of ['This week', 'For you', 'Look it up', 'Just decided', 'What is on it', 'Set your place']) expect(!esText.includes(w), `the page in Spanish still says "${w}"`);
+    expect(await es.evaluate(() => document.querySelector('.cxm-full').scrollWidth <= innerWidth), 'the page in Spanish is wider than the screen');
+    await done(es);
+    for (const theme of [undefined, 'original']) {
+      const l = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200, mode: 'light', theme });
+      const bg = await l.evaluate(() => getComputedStyle(document.querySelector('.cxm-full')).backgroundColor);
+      expect((bg.match(/\d+/g) || []).slice(0, 3).every((v) => Number(v) > 200), `the page is not light in light mode (${theme || 'bento'}): ${bg}`);
+      const bad = await axeBad(l);
+      expect(bad.length === 0, `axe on At City Hall in light (${theme || 'bento'}): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));
+      await done(l);
+    }
   },
   async 'spanish-switch'() {
     // Spanish on the phone: the tabs and headings change, the notice says it is a draft, English comes back exactly, and the choice is remembered
@@ -1495,10 +1641,19 @@ const AXE_PAGES = [
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
+  hallOpen: async () => {   // At City Hall with everything opened: the day's meetings, the whole next agenda, the year's folds, and a search
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    document.querySelectorAll('.mt-daypanel details').forEach((d) => { d.open = true; });
+    const all = document.querySelector('.mt-on .cxm-link'); if (all) all.click();
+    const earlier = document.querySelector('.mt-earlier .cxm-drop-head'); if (earlier) { earlier.click(); await w(200); }
+    const month = document.querySelector('.mt-months .cxm-drop-head'); if (month) { month.click(); await w(200); }
+    const i = document.querySelector('.mt-find input');
+    if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'liquor'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
+  },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
   districtResult: async () => {   // open the finder (on the phone), type City Hall's address, and look for the districts
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -1531,7 +1686,7 @@ const LOOK_PAGES = [
   ['phone story figure', '/#phone', { mobile: true, easy: false }, 'figure', ['.cxm-story-fig', '.cxm-story-big']],
   ['phone number pad', '/#phone', { mobile: true, easy: false }, 'pad', ['.cxm-keys button', '.cxm-story .cxm-btn', '.cxm-story-fig']],
   ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.lv-tile', '.lv-tile-fig', '.lv-tile-per', '.lv-field input', '.lv-h2']],
-  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.mt-lead', '.mt-head', '.mt-sub', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.mt-small', '.mt-note', '.cxm-kicker']],
+  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-full', '.cxm-full-bar', '.cxm-full-back', '.mt-lead', '.mt-head', '.mt-watch', '.mt-days [aria-selected="true"]', '.mt-days [aria-selected="false"]', '.mt-daypanel', '.mt-group-h', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.cxm-kicker']],
   ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
   ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
@@ -1602,7 +1757,8 @@ const CV_PAGES = [
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
      TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget
    Screens that show a record's own words (What's new) are left out. See docs/plan-plain-text.md. */
-const TEXT_WIDE = { 'At City Hall': 0.35, Today: 0.15, 'Decision ledger': 0.3 };
+// At City Hall was 0.35 while it was a sheet of 722 words; as a page it holds about 400 (docs/plan-city-hall-page.md), so it gets the same room as Today
+const TEXT_WIDE = { 'At City Hall': 0.15, Today: 0.15, 'Decision ledger': 0.3 };
 const TEXT_SCREENS = [
   ['Today', '/#phone'], ['Explore', '/#phone', 'Explore'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
   ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
@@ -1616,7 +1772,7 @@ CHECKS['text-budget'] = async () => {
   for (const [name, url, tab] of TEXT_SCREENS) {
     const p = await open(url, { mobile: true, easy: false, settle: 1500 });
     if (tab) { await p.evaluate((t) => { const b = [...document.querySelectorAll('.cxm-tabs button, nav button, [role=tab]')].find((x) => (x.innerText || '').trim().startsWith(t)); if (b) b.click(); }, tab); await wait(900); }
-    now[name] = await p.evaluate(() => { const root = document.querySelector('.cxm-sheet') || document.querySelector('.cxm-main') || document.body; return (root.innerText || '').trim().split(/\s+/).filter(Boolean).length; });
+    now[name] = await p.evaluate(() => { const root = document.querySelector('.cxm-sheet') || document.querySelector('.cxm-full') || document.querySelector('.cxm-main') || document.body; return (root.innerText || '').trim().split(/\s+/).filter(Boolean).length; });   // a full page (At City Hall) counts itself, not Today under it
     await done(p);
   }
   if (process.env.TEXT_BUDGET_UPDATE) { fs.writeFileSync(file, JSON.stringify(now, null, 1) + String.fromCharCode(10)); console.log(`    wrote scripts/checks/text-budget.json (${Object.keys(now).length} screens)`); return; }
@@ -1770,7 +1926,7 @@ const OVERLAP_FN = () => {
 async function overlapScan(p) {
   const info = await p.evaluate(() => {
     const cands = [document.scrollingElement, ...document.querySelectorAll('*')].filter((e) => e && e.scrollHeight - e.clientHeight > 60 && (e === document.scrollingElement || (/(auto|scroll)/.test(getComputedStyle(e).overflowY) && e.clientWidth > 280)));
-    const sheet = document.querySelector('.cxm-sheet');
+    const sheet = document.querySelector('.cxm-sheet') || document.querySelector('.cxm-full-body');   // a sheet, or a full page over the tabs, is what is on screen
     const el = sheet && cands.includes(sheet) ? sheet : cands.sort((a, b) => (b.scrollHeight - b.clientHeight) - (a.scrollHeight - a.clientHeight))[0] || document.scrollingElement;
     window.__scroller = el;
     return { h: el.scrollHeight, vh: el === document.scrollingElement ? innerHeight : el.clientHeight };

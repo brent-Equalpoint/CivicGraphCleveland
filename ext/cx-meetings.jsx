@@ -142,7 +142,7 @@ function cxMtgLine(m, today) {
 /* the Cleveland wards a title names: "Ward 7", "(Ward 3)", "Wards 1, 2 and 14" */
 function cxMtgWardsIn(title) {
   const out = new Set();
-  for (const g of String(title || ``).matchAll(/\bWards?\s+(\d{1,2}(?:\s*(?:,\s*and|,|and|&)\s*\d{1,2})*)/gi)) for (const n of g[1].match(/\d+/g)) { const w = Number(n); if (w >= 1 && w <= 15) out.add(w); }
+  for (const g of String(title || ``).matchAll(/\bWards?\s+(\d{1,2}(?!\d)(?:\s*(?:,\s*and|,|and|&)\s*\d{1,2}(?!\d))*)/gi)) for (const n of g[1].match(/\d+/g)) { const w = Number(n); if (w >= 1 && w <= 15) out.add(w); }
   return out;
 }
 /* For you: the items on these meetings that name the person's ward in the record (the title, the ward money's own ordinance text, or an address in the
@@ -164,7 +164,8 @@ function cxMtgForYou(meetings, ward, chosen, look) {
       else if (look.addrWards(f).includes(ward)) why.push([`ward`, `Address in Ward ${ward}`]);
     }
     const hits = (chosen || []).length ? look.match(x.title) : {};
-    (chosen || []).forEach((p) => { if (hits[p]) why.push([`prio`, p, hits[p]]); });
+    // the rule may be a stem ("universit"); show the title's own word that it matched ("University")
+    (chosen || []).forEach((p) => { if (hits[p]) why.push([`prio`, p, (x.title.match(new RegExp(`\\b${hits[p].replace(/[.*+?^${}()|[\]\\]/g, `\\$&`)}[A-Za-z]*`, `i`)) || [hits[p]])[0]]); });
     if (why.length) out.push({ f, i, m, x, why });
   }
   return out;
