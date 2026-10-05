@@ -11,9 +11,13 @@ const CX_TZ = `America/New_York`;
 function cxNow() {
   return Date.now();
 }
+/* Speed: these run thousands of times while the What's new rows are built. Each keeps one formatter, or remembers the answer for an
+   input it has seen, on the function itself (not in a const, which an earlier file calling it at load time could reach before it is set).
+   The text they return is unchanged. */
 function cxDayET(ts) {
   try {
-    const p = Object.fromEntries(new Intl.DateTimeFormat(`en-US`, { timeZone: CX_TZ, year: `numeric`, month: `2-digit`, day: `2-digit` }).formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+    const f = cxDayET.f || (cxDayET.f = new Intl.DateTimeFormat(`en-US`, { timeZone: CX_TZ, year: `numeric`, month: `2-digit`, day: `2-digit` }));
+    const p = Object.fromEntries(f.formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
     return `${p.year}-${p.month}-${p.day}`;
   } catch {
     return new Date(ts).toISOString().slice(0, 10);
@@ -27,15 +31,26 @@ function cxDays(fromIso, toIso) {
 }
 function cxShortDate(iso) {
   if (!iso) return ``;
-  const d = new Date(`${String(iso).slice(0, 10)}T12:00:00Z`);
-  return isNaN(d) ? String(iso) : d.toLocaleDateString(`en-US`, { month: `short`, day: `numeric`, timeZone: `UTC` });
+  const key = String(iso), day = key.slice(0, 10), seen = cxShortDate.m || (cxShortDate.m = new Map());
+  let out = seen.get(day);
+  if (out === undefined) {   // the answer depends only on the day; the formatter gives exactly what toLocaleDateString gives with the same options
+    const d = new Date(`${day}T12:00:00Z`);
+    out = isNaN(d) ? null : (cxShortDate.f || (cxShortDate.f = new Intl.DateTimeFormat(`en-US`, { month: `short`, day: `numeric`, timeZone: `UTC` }))).format(d);
+    seen.set(day, out);
+  }
+  return out === null ? key : out;
 }
 function cxClockET(ts) {
+  const seen = cxClockET.m || (cxClockET.m = new Map());
+  if (seen.has(ts)) return seen.get(ts);
+  let out;
   try {
-    return new Date(ts).toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `2-digit`, timeZone: CX_TZ }).replace(`AM`, `a.m.`).replace(`PM`, `p.m.`);
+    out = new Date(ts).toLocaleTimeString(`en-US`, { hour: `numeric`, minute: `2-digit`, timeZone: CX_TZ }).replace(`AM`, `a.m.`).replace(`PM`, `p.m.`);
   } catch {
     return ``;
   }
+  seen.set(ts, out);
+  return out;
 }
 
 /* ---------- freshness ---------- */
