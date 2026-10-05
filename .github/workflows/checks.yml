@@ -41,6 +41,7 @@ jobs:
           python scripts/test_links.py
           python scripts/test_us.py
           node scripts/test_us_model.js
+          node scripts/test_us_map.js
           python scripts/test_meetings.py
           node scripts/test_meetings.js
           python scripts/test_votes.py
