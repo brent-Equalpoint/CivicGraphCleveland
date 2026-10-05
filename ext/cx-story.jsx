@@ -84,6 +84,7 @@ function cxmCouncilStory() {
   frames.push({ k: `How members voted`, big: `${vs.votes} recorded votes name every member.`, small: `The City Record prints each member's vote when Council passes an ordinance or adopts a resolution. ${vs.split} of the ${vs.votes} had at least one nay. Each member's profile lists theirs. Absent is not a no.` });
   return { id: `council`, label: `Council`, ini: `CC`, name: `Cleveland City Council`, when: `15 members · 2026 so far`, deeper: { label: `See what is new in Council's record`, kind: `sheet`, sheet: `news`, panel: `news` }, source: { label: `Cleveland City Council's public record (Legistar)`, url: `https://cityofcleveland.legistar.com/Legislation.aspx` }, frames };
 }
+/* Not in the story rows for now (taken out Oct 5, 2026 at Brent's request). To bring it back, add cxmMayorStory(answers) to the list in cxmStories after cxmCouncilStory(). */
 function cxmMayorStory(answers) {
   const admin = cxLegIndex().admin;
   const qs = CX_MAYOR_Q.map((x) => ({ x, w: Wm.find((z) => z.id === x[1]), r: CX_REASONS[x[1]] })).filter((o) => o.w);
@@ -153,7 +154,7 @@ function cxmHoodStory(hood) {
   return { id: `hood`, label: hood.length > 11 ? `${hood.slice(0, 10)}…` : hood, ini: cxmInitials(hood.replace(/[-.]/g, ` `)), name: hood, when: `Your neighborhood`, deeper: { label: `Open My place`, kind: `tab`, tab: `place`, panel: `place` }, source: { label: `City of Cleveland ward maps (2014 and 2026), from the city's open data` }, frames };
 }
 function cxmStories(home, answers) {
-  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmMayorStory(answers), cxmRegisterStory(), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
+  return [home?.ward ? cxmWardStory(home.ward, answers) : null, cxmCouncilStory(), cxmRegisterStory(), cxmBallotStory(), ...cxmLevyStories(), home?.hood ? cxmHoodStory(home.hood) : null].filter(Boolean);
 }
 
 /* ---------- desktop Stories page (sidebar: Stories) ---------- */
