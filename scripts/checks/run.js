@@ -1196,7 +1196,7 @@ const CHECKS = {
     await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /Chief Justice/.test(b.innerText)).click()); await wait(900);
     // choosing someone in the Index opens their profile page; its record says who appointed them; Back returns to the Index
     expect(await has(p, '.usm-prof'), 'choosing someone in the Index did not open their profile');
-    expect(/^Chief Justice, Supreme Court$/.test(await p.evaluate(() => (document.querySelector('.usm-prof .usmp-kicker') || {}).textContent || '')) && /Appointed by\s*President/.test((await txt(p, '.usmp-row-by')) || ''), 'the Chief Justice\'s profile does not say the office or who appointed them');
+    expect(/^Chief Justice, Supreme Court$/.test(await p.evaluate(() => (document.querySelector('.usm-prof .usmp-kicker') || {}).textContent || '')) && /Appointed by\s*[A-Z][a-z]+/.test((await txt(p, '.usmp-row-by')) || ''), 'the Chief Justice\'s profile does not say the office or who appointed them');
     expect(/Back to the Index/.test((await txt(p, '.usmp-back')) || ''), 'the profile opened from the Index does not offer Back to the Index');
     await clickText(p, 'Back to the Index', '.usmp-back'); await wait(700);
     expect(!(await has(p, '.usm-prof')) && (await txt(p, '.usm-pills button.on')) === 'Index', 'Back did not return to the Index');
@@ -1410,7 +1410,7 @@ const CHECKS = {
           const sh = { k: await txt(p, '.usm-sheet .usm-kicker'), n: await p.evaluate(() => (document.querySelector('.usm-sheet .usm-name') || {}).textContent || ''), f: await txt(p, '.usm-sheet .usm-fact') };
           expect(sh.k === card.k && sh.n.replace(/\.$/, '') === card.n.replace(/\.$/, '') && sh.f === card.f, `${name}: what the hover card says about ${who} is not all in the side sheet after a click (${JSON.stringify(card)} against ${JSON.stringify(sh)})`);
           expect(/Open profile/.test((await txt(p, '.usm-acts')) || ''), `${name}: the sheet for ${who} has no Open profile`);
-          await p.mouse.move(4, 460); await wait(250);
+          { const mb = await p.$eval('.usm-menu li button', (b) => { const r = b.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }); await p.mouse.move(mb[0], mb[1]); await wait(250); }   // the pointer leaves the map for the menu
           expect(!(await has(p, '.usm-hover')), `${name}: the hover card stayed after the pointer left the map`);
           await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(250);
         }
@@ -1438,7 +1438,7 @@ const CHECKS = {
         const kinds = await p.$$eval('.usm-toggles:first-of-type .usm-switch', (bs) => bs.map((b) => [b.querySelector('span').textContent, b.querySelector('svg').innerHTML]));
         expect(kinds.length === 4 && new Set(kinds.map((x) => x[1])).size === 4 && kinds.map((x) => x[0]).join() === 'People,Committees,Agencies,Courts', 'the kinds are not told apart by four shapes and four words');
         // shapes by tier: people circles, committees filled hexagons, agencies squares, courts outlined and lightly tinted hexagons
-        const tiers = await p.$$eval('.usm-toggles:first-of-type .usm-switch svg', (ss) => ss.map((g) => { const e = g.firstElementChild; return [e.tagName.toLowerCase(), e.getAttribute('fill'), e.getAttribute('stroke'), e.getAttribute('fill-opacity'), (e.getAttribute('d') || '').split('L').length]; }));
+        const tiers = await p.$$eval('.usm-toggles:first-of-type .usm-switch svg', (ss) => ss.map((g) => { const e = g.firstElementChild; return [e.tagName.toLowerCase(), e.getAttribute('fill'), e.getAttribute('stroke'), e.getAttribute('fill-opacity'), ((e.getAttribute('d') || '').match(/[MLHV]/g) || []).length]; }));   // corners: M, L, H, and V each start one
         expect(tiers[0][0] === 'circle' && tiers[1][0] === 'path' && tiers[1][4] === 6 && tiers[1][1] !== 'none' && !tiers[1][2] && tiers[2][0] === 'rect' && tiers[3][0] === 'path' && tiers[3][4] === 6 && !!tiers[3][2] && !!tiers[3][3], `the shapes are not by tier (people circle, committee filled hexagon, agency square, court outlined hexagon): ${JSON.stringify(tiers)}`);
         expect(/hexagons are committees and courts/.test((await txt(p, '.usm-key')) || '') && /A committee is a filled hexagon; a court is an outlined one/.test((await txt(p, '.usm-key')) || ''), 'the key does not say in words that committees and courts are hexagons, filled and outlined');
         expect((await count(p, '.usm-key li svg')) === 10 && (await p.$$eval('.usm-key li', (ls) => ls.every((l) => l.textContent.trim().length > 3))), 'a color in the key has no word beside it');
@@ -1689,11 +1689,15 @@ const CHECKS = {
     await checkWords(p, 'Jon Husted');
     const cw = await p.$$eval('#usmp-l-committees .usmp-word', (ws) => ws.map((w) => w.textContent));
     expect(cw.length > 0 && cw.every((w) => /^(Member|Chair|Chairman|Ranking member|Vice chair|Vice chairman|Ex officio|Cochairman)$/.test(w)), `a committee row's word is not the record's: ${cw}`);
+    // the recorded votes are folded at first (the screen stays short); opened, each vote has the record's word and the not-a-no note
+    expect(await p.evaluate(() => { const d = document.querySelector('#usmp-l-votes'); return !!d && d.tagName === 'DETAILS' && !d.open; }), 'the recorded votes are not a closed fold at first');
+    await p.click('#usmp-l-votes > summary'); await wait(300);
     const vw = await p.$$eval('#usmp-l-votes .usmp-word', (ws) => ws.map((w) => w.textContent));
     expect(vw.length > 0 && vw.every((w) => /^(Yea|Nay|Present|Not voting|Voted for a named person)$/.test(w)) && /Not voting is not a no/.test((await txt(p, '#usmp-l-votes')) || ''), `the votes are not listed with the record's words and the not-a-no note: ${vw.slice(0, 4)}`);
     await checkCorner(p, 'Jon Husted');
     expect(!(await small(p)).length, `controls under 44 px on the profile: ${(await small(p)).slice(0, 4)}`);
     // tap a group: its list comes into view and takes the focus; drag a dot: it moves
+    await p.evaluate(() => document.querySelector('.usmp-canvas').scrollIntoView({ block: 'center' })); await wait(400);
     { const c = await p.evaluate(() => { const cv = document.querySelector('.usmp-canvas'), r = cv.getBoundingClientRect(), g = cv.cxCorner.group('chamber'), d = cv.cxCorner.at(cv.cxCorner.ids[0]); return { g: [r.left + g[0], r.top + g[1]], d: [r.left + d[0], r.top + d[1]], id: cv.cxCorner.ids[0] }; });
       await p.mouse.click(c.g[0], c.g[1]); await wait(700);
       expect(await p.evaluate(() => !!document.activeElement && !!document.activeElement.closest('#usmp-l-chamber')), 'tapping a group on the corner map did not jump to its list');

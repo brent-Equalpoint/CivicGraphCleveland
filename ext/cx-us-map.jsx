@@ -488,10 +488,10 @@ function cxUsProfile(g, M, data, vd, i) {
     rec(`areas`, `Policy areas voted in`, !vd ? `Loading the votes...` : areas.length ? areas : `None in our record yet`, vsrc);
     if (m.url) rec(`page`, `Official page`, m.url, src(`members`), { link: m.url });
     list(`committees`, `Committees`, full);
-    list(`subcommittees`, `Subcommittees`, subs, { map: !1 });
+    list(`subcommittees`, `Subcommittees`, subs, { map: !1, fold: !0 });
     const hub = g.byId.get(m.chamber === `senate` ? `h:senate` : `h:house`);
     list(`chamber`, `Chamber`, [{ i: hub.i, name: hub.name, sub: `Chamber of Congress`, word: terr ? `Delegate` : `Member` }]);
-    if (rows) list(`votes`, `Recorded votes`, rows.map((r) => ({ i: null, href: r.v.url, name: cxVoteWhat(r), sub: `${day(r.v.date)}. ${r.v.question || `Question not recorded`}.`, word: CX_CAST[r.c] })), { map: !1, note: `Newest first. Not voting is not a no. A vote is on one question.` });
+    if (rows) list(`votes`, `Recorded votes`, rows.map((r) => ({ i: null, href: r.v.url, name: cxVoteWhat(r), sub: `${day(r.v.date)}. ${r.v.question || `Question not recorded`}.`, word: CX_CAST[r.c] })), { map: !1, fold: !0, note: `Newest first. Not voting is not a no. A vote is on one question.` });
   } else if (n.kind === `committee`) {
     const c = n.c, mem = conn((o) => o.kind === `member`).sort(byName);
     const lead = (re) => mem.filter((x) => re.test(x.e.rel)).map((x) => x.n.name);
@@ -825,13 +825,14 @@ function CX_UsCorner({ g, M, P, still, phone, onGroup, onNode }) {
 function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap, onIndex, onOpen }) {
   const ref = u.useRef(null);
   const [all, setAll] = u.useState({});
-  const CAP = 6;
+  const CAP = 5;
   u.useEffect(() => { setAll({}); const el = ref.current; if (!el) return; el.scrollTop = 0; const h = el.querySelector(`#usmp-h`); if (h) h.focus({ preventScroll: !0 }); }, [P.i]);
   const smooth = still || cxUsmLess() ? `auto` : `smooth`;
   const jump = (key, i) => {
     const L = P.lists.find((x) => x.key === key);
     const go = () => {
       const sec = ref.current && ref.current.querySelector(`#usmp-l-${key}`); if (!sec) return;
+      if (sec.tagName === `DETAILS`) sec.open = !0;
       const row = i === undefined ? null : sec.querySelector(`[data-node="${g.nodes[i].id}"]`);
       (row || sec).scrollIntoView({ behavior: smooth, block: row ? `center` : `start` });
       const f = row || sec.querySelector(`h3`); if (f) f.focus({ preventScroll: !0 });
@@ -888,10 +889,9 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
           </section>
           <section className="usmp-conns" aria-labelledby="usmp-conns-h">
             <h2 id="usmp-conns-h">Connections</h2>
-            {P.lists.map((L) => (
-              <section key={L.key} id={`usmp-l-${L.key}`} className="usmp-list">
-                <h3 tabIndex={-1}>{L.title} <small>{L.rows.length.toLocaleString(`en-US`)}</small></h3>
-                {L.note && <p className="usmp-note">{L.note}</p>}
+            {P.lists.map((L) => {
+              const head = <h3 tabIndex={-1}>{L.title} <small>{L.rows.length.toLocaleString(`en-US`)}</small></h3>;
+              const body = <>{L.note && <p className="usmp-note">{L.note}</p>}
                 <ul>
                   {(all[L.key] ? L.rows : L.rows.slice(0, CAP)).map((r, k) => {
                     const inner = <><span className="usmp-cn"><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</span><b className="usmp-word">{r.word}</b></>;
@@ -903,9 +903,11 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
                     );
                   })}
                 </ul>
-                {L.rows.length > CAP && !all[L.key] && <button type="button" className="usm-more" onClick={() => setAll((a) => ({ ...a, [L.key]: !0 }))}>{`Show all ${L.rows.length.toLocaleString(`en-US`)}`}</button>}
-              </section>
-            ))}
+                {L.rows.length > CAP && !all[L.key] && <button type="button" className="usm-more" onClick={() => setAll((a) => ({ ...a, [L.key]: !0 }))}>{`Show all ${L.rows.length.toLocaleString(`en-US`)}`}</button>}</>;
+              // a long list of the record's own words (each recorded vote, each subcommittee seat) is folded: its title and count show, the rows open on request
+              return L.fold ? <details key={L.key} id={`usmp-l-${L.key}`} className="usmp-list usmp-fold"><summary>{head}</summary>{body}</details>
+                : <section key={L.key} id={`usmp-l-${L.key}`} className="usmp-list">{head}{body}</section>;
+            })}
           </section>
           <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. The terms of those sources have not yet been read by a person.`}</p>
         </div>
@@ -1176,7 +1178,8 @@ function CX_UsMap({ phone, onExit }) {
     cv.cxMap = { labels: boxes.map((b) => ({ i: b.i, kind: M.nodes[b.i].kind, name: g.nodes[b.i].name, text: b.lines.map((l) => l.text).join(` `), x: b.x, y: b.y, w: b.w, h: b.h })), hover: s.hover === null || s.hover === undefined ? null : g.nodes[s.hover].name, peopleOnScreen: onScreen.length, focus: F === null ? null : g.nodes[F].name, near: F === null ? [] : nb.map((z) => z.o), shown: shown.reduce((t, v) => t + v, 0), k, frames: (s.frames = (s.frames || 0) + 1), tx: T.x, ty: T.y, rings: M.slots.industries.slice(0, 4).filter((i) => shown[i]).map((i) => [X(i), Y(i), sr(i) + 8]), motion: c.motion, still: c.still, pts: () => { const o = []; for (let i = 0; i < N; i++) if (shown[i]) o.push([X(i), Y(i)]); return o; }, at: (name) => { const n = g.nodes.find((z) => z.name === name); return n && s.pos ? [T.x + k * P[n.i].x, T.y + k * P[n.i].y] : null; } };
     return anim;
   };
-  const request = () => { const s = S.current; if (!s.raf) s.raf = requestAnimationFrame((now) => { s.raf = 0; if (document.hidden) return; if (draw(now)) request(); }); };
+  // no drawing while the page is hidden or a profile covers the map (Calm and Live would otherwise keep moving it unseen)
+  const request = () => { const s = S.current; if (!s.raf) s.raf = requestAnimationFrame((now) => { s.raf = 0; if (document.hidden || profR.current.n) return; if (draw(now)) request(); }); };
 
   // ---- fitting to the screen, leaving room for the floating controls and the sheet
   const pads = () => {
@@ -1315,7 +1318,7 @@ function CX_UsMap({ phone, onExit }) {
       document.removeEventListener(`visibilitychange`, vis2); s.fitted = !1; s.zoom = null;
     };
   }, [home, sky, M]);
-  u.useEffect(() => { requestAnimationFrame(request); }, [sel, show, lines, chamber, stateF, motion, lang, sheet, panel]);   // after the panel or sheet is laid out, so no name is placed under it
+  u.useEffect(() => { requestAnimationFrame(request); }, [sel, show, lines, chamber, stateF, motion, lang, sheet, panel, prof.length === 0]);   // after the panel or sheet is laid out, so no name is placed under it; and again when a profile closes
   u.useEffect(() => { if (S.current.fitted) fit(!st.current.still); }, [show, chamber]);
 
   // ---- choosing something
