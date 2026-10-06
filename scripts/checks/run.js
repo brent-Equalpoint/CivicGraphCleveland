@@ -115,11 +115,12 @@ function cityHallApi() {
   const vm = require('vm');
   const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-meetings.jsx'), 'utf8'), lead = fs.readFileSync(path.join(ROOT, 'ext', 'cx-leaders.jsx'), 'utf8');
   const pure = src.slice(src.indexOf('/* what the Clerk'), src.indexOf('/* ---------- the screen'));
+  const live = fs.readFileSync(path.join(ROOT, 'ext', 'cx-live.jsx'), 'utf8'), wards = live.slice(live.indexOf('/* ---------- the ward matcher'), live.indexOf('/* ---------- end of the ward matcher'));   // the shared ward matcher
   const rules = lead.slice(lead.indexOf('/* ---------- Topic matching'), lead.indexOf('/* Legistar sponsor names'));
   const matters = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8')).matters;
   const byFile = new Map(matters.map((m) => [m.file, m]));
   const ctx = vm.createContext({ cxmPl: (n, a, b) => `${n} ${n === 1 ? a : b}`, cxmMatter: (f) => byFile.get(f) || null, cxHeadline: (t) => t });
-  vm.runInContext(`${pure}\n${rules}\n;this.api = { cxMtgSplit, cxMtgWeek, cxMtgDecided, cxMtgByKind, cxMtgWatch, cxMtgForYou, cxMtgIndex, cxMtgFind, cxMatch, priorityIds: () => Object.keys(CX_MATCH_RULES) };`, ctx);
+  vm.runInContext(`${wards}\n${pure}\n${rules}\n;this.api = { cxMtgSplit, cxMtgWeek, cxMtgDecided, cxMtgByKind, cxMtgWatch, cxMtgForYou, cxMtgIndex, cxMtgFind, cxMatch, priorityIds: () => Object.keys(CX_MATCH_RULES) };`, ctx);
   return { ...ctx.api, matters, data: JSON.parse(fs.readFileSync(path.join(SITE, 'meetings', 'meetings-2026.json'), 'utf8')) };
 }
 function cityHallLook(A) {

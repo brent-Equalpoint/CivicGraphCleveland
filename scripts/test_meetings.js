@@ -9,10 +9,13 @@ const fs = require('fs'), path = require('path'), vm = require('vm');
 const ROOT = path.join(__dirname, '..');
 const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-meetings.jsx'), 'utf8');
 const pure = src.slice(src.indexOf('/* what the Clerk'), src.indexOf('/* ---------- the screen'));
+// the ward matcher the page shares with the ward view and Records lives in ext/cx-live.jsx
+const live = fs.readFileSync(path.join(ROOT, 'ext', 'cx-live.jsx'), 'utf8');
+const wards = live.slice(live.indexOf('/* ---------- the ward matcher'), live.indexOf('/* ---------- end of the ward matcher'));
 const legis = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8')).matters;
 const byFile = new Map(legis.map((m) => [m.file, m]));
 const ctx = vm.createContext({ cxmPl: (n, a, b) => `${n} ${n === 1 ? a : b}`, cxmMatter: (f) => byFile.get(f) || null, cxHeadline: (t) => `HEAD: ${t}` });
-vm.runInContext(pure + '\n;this.api = { cxMtgAction, cxMtgKind, cxMtgSplit, cxMtgRanked, cxMtgOutcomes, cxMtgWhere, cxMtgLine, cxMtgStory, cxMtgDayWord, CX_MTG_ACTIONS, cxMtgGroup, cxMtgMix, cxMtgNote, cxMtgNoteParts, cxMtgWeek, cxMtgByKind, cxMtgWatch, cxMtgTally, cxMtgDecided, cxMtgWardsIn, cxMtgForYou, cxMtgNorm, cxMtgIndex, cxMtgFind };', ctx);
+vm.runInContext(wards + '\n' + pure + '\n;this.api = { cxMtgAction, cxMtgKind, cxMtgSplit, cxMtgRanked, cxMtgOutcomes, cxMtgWhere, cxMtgLine, cxMtgStory, cxMtgDayWord, CX_MTG_ACTIONS, cxMtgGroup, cxMtgMix, cxMtgNote, cxMtgNoteParts, cxMtgWeek, cxMtgByKind, cxMtgWatch, cxMtgTally, cxMtgDecided, cxWardsIn, cxWardTie, cxMtgForYou, cxMtgNorm, cxMtgIndex, cxMtgFind };', ctx);
 const A = ctx.api;
 const data = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'meetings-2026.json'), 'utf8'));
 let bad = 0;
@@ -117,9 +120,9 @@ eq([dec.date, dec.body], ['2026-09-28', 'City Council'], 'just decided is the la
 eq(A.cxMtgTally(dec).reduce((t, x) => t + x[1], 0), dec.items.length, 'the counts add up to every item, those with no action recorded included');
 if (A.cxMtgTally(dec).some(([l]) => /score|rank|percent|%/i.test(l))) fail('a count reads as a grade');
 // For you: wards named in the record, priorities by the keyword rules, each with its reason, never a score, in the Clerk's order
-eq([...A.cxMtgWardsIn('New License Application, C1. Luxe Eatstation 815 Superior Ave. (Ward 3)')], [3], 'a ward in brackets');
-eq([...A.cxMtgWardsIn('from the Neighborhood Equity Fund of Wards 1, 2 and 14')].sort((a, b) => a - b), [1, 2, 14], 'a list of wards');
-eq([...A.cxMtgWardsIn('Ward 123 and Ward 16 and Rewards 4')], [], 'a number that is not a ward');
+eq([...A.cxWardsIn('New License Application, C1. Luxe Eatstation 815 Superior Ave. (Ward 3)')], [3], 'a ward in brackets');
+eq([...A.cxWardsIn('from the Neighborhood Equity Fund of Wards 1, 2 and 14')].sort((a, b) => a - b), [1, 2, 14], 'a list of wards');
+eq([...A.cxWardsIn('Ward 123 and Ward 16 and Rewards 4')], [], 'a number that is not a ward');
 const fakeLook = { fundWards: (f) => (f === '1205-2026' ? [9] : []), addrWards: (f) => (f === '1229-2026' ? [9] : []), match: (t) => (/Good Food/.test(t) ? { growth: 'retail' } : {}) };
 const fy = A.cxMtgForYou([s.lead], 9, ['growth'], fakeLook);
 eq(fy.map((r) => [r.f, r.why.map((w) => w[1])]), [['1205-2026', ['Ward 9 in the ordinance text']], ['1229-2026', ['Address in Ward 9']], ['1230-2026', ['growth']]], 'For you lists why each item is there, in the Clerk\'s order');

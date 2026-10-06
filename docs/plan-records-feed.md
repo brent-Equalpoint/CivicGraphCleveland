@@ -1,6 +1,6 @@
 # Plan: one Records feed
 
-Status: proposed, nothing built, written 2026-10-06 for Brent and the team. It sits beside `docs/plan-agenda-calendar.md` (meetings), `docs/plan-permits-property-business.md` (permits, property, business, development), `docs/plan-votes-actions-positions.md` (the record page), and `docs/plan-mobile-restructure.md` (where it lives on a phone).
+Status: written 2026-10-06 for Brent and the team; Brent chose Option A of the mobile plan. Phase 1 (the feed builder) is built: `scripts/records_feed.py` writes 2,013 rows (1,393 legislation, 141 meetings, 479 roll calls) to `site/records/records-2026.json`, its front rows to `site/records/latest-2026.json` for Today, and both into the offline file as blocks read only when needed; `scripts/test_records.py` holds it to the record and to the shared ward matcher, which now lives in `ext/cx-live.jsx` (`cxWardsIn`, `CX_WARD_LOOK`, `cxWardTie`). Phases 2 and later: see below. It sits beside `docs/plan-agenda-calendar.md` (meetings), `docs/plan-permits-property-business.md` (permits, property, business, development), `docs/plan-votes-actions-positions.md` (the record page), and `docs/plan-mobile-restructure.md` (where it lives on a phone).
 
 ## Brent's ask
 

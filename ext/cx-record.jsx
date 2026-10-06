@@ -397,13 +397,8 @@ function cxWardRows(ward) {
   const out = [];
   for (const m of CX_LEG.matters) {
     if (m.type === `Ceremonial Resolution`) continue;
-    let why = null;
-    if (cxMtgWardsIn(m.title).has(ward)) why = `Names Ward ${ward}`;
-    else if (CX_MTG_LOOK.fundWards(m.file).includes(ward)) why = `Ward ${ward} in the ordinance text`;
-    else {
-      const addr = Object.entries(CX_PL.addresses || {}).find(([, r]) => r.ward2026 === ward && (r.files || []).includes(m.file));
-      if (addr) why = `Address in Ward ${ward}: ${addr[0]}`;
-    }
+    const tie = cxWardTie(m.file, m.title, ward);   // the shared ward matcher (ext/cx-live.jsx)
+    const why = !tie ? null : tie[0] === `names` ? `Names Ward ${ward}` : tie[0] === `money` ? `Ward ${ward} in the ordinance text` : `Address in Ward ${ward}: ${tie[1]}`;
     if (why) out.push({ m, why, d: m.passed || m.intro });
   }
   return out.sort((a, b) => (a.d < b.d ? 1 : a.d > b.d ? -1 : a.m.file < b.m.file ? -1 : 1));

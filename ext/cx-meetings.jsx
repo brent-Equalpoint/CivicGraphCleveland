@@ -139,16 +139,10 @@ function cxMtgLine(m, today) {
   const w = cxMtgDayWord(m.date, today), n = m.items.length;
   return { head: `${m.body} meets ${w === `today` || w === `tomorrow` ? w : /^[A-Z][a-z]+day$/.test(w) ? w : `on ${w}`}.`, sub: n ? `${n === 1 ? `One piece of legislation is` : `${n} pieces of legislation are`} on the agenda.` : `No legislation is listed on the agenda yet. The Clerk can add items before the meeting.` };
 }
-/* the Cleveland wards a title names: "Ward 7", "(Ward 3)", "Wards 1, 2 and 14" */
-function cxMtgWardsIn(title) {
-  const out = new Set();
-  for (const g of String(title || ``).matchAll(/\bWards?\s+(\d{1,2}(?!\d)(?:\s*(?:,\s*and|,|and|&)\s*\d{1,2}(?!\d))*)/gi)) for (const n of g[1].match(/\d+/g)) { const w = Number(n); if (w >= 1 && w <= 15) out.add(w); }
-  return out;
-}
 /* For you: the items on these meetings that name the person's ward in the record (the title, the ward money's own ordinance text, or an address in the
-   title that lies in the ward) or match one of their priorities by the keyword rules My priorities uses. Worked out on the device: the ward and the
-   priorities never leave it. An item is in or out, with the reason it is in; nothing is scored or ranked, and the list keeps the Clerk's order.
-   Ceremonial resolutions are left out. look = { fundWards(file), addrWards(file), match(title) -> { priority: word } }. */
+   title that lies in the ward: the shared ward matcher, cxWardTie in ext/cx-live.jsx) or match one of their priorities by the keyword rules My priorities
+   uses. Worked out on the device: the ward and the priorities never leave it. An item is in or out, with the reason it is in; nothing is scored or ranked,
+   and the list keeps the Clerk's order. Ceremonial resolutions are left out. look = { fundWards(file), addrWards(file), match(title) -> { priority: word } }. */
 function cxMtgForYou(meetings, ward, chosen, look) {
   const seen = new Set(), out = [];
   for (const m of meetings) for (const i of m.items) {
@@ -159,9 +153,8 @@ function cxMtgForYou(meetings, ward, chosen, look) {
     if (!x || cxMtgGroup(f) === `ceremonial`) continue;
     const why = [];
     if (ward) {
-      if (cxMtgWardsIn(x.title).has(ward)) why.push([`ward`, `Names Ward ${ward}`]);
-      else if (look.fundWards(f).includes(ward)) why.push([`ward`, `Ward ${ward} in the ordinance text`]);
-      else if (look.addrWards(f).includes(ward)) why.push([`ward`, `Address in Ward ${ward}`]);
+      const tie = cxWardTie(f, x.title, ward, look);
+      if (tie) why.push([`ward`, tie[0] === `names` ? `Names Ward ${ward}` : tie[0] === `money` ? `Ward ${ward} in the ordinance text` : `Address in Ward ${ward}`]);
     }
     const hits = (chosen || []).length ? look.match(x.title) : {};
     // the rule may be a stem ("universit"); show the title's own word that it matched ("University")
@@ -228,12 +221,7 @@ function cxMtgStory(data, today) {
 }
 
 /* ---------- the screen ---------- */
-/* what For you reads besides the meeting record: the ward money's own text and the geocoded title addresses (data/place-2026.json), and the priority keyword rules */
-const CX_MTG_LOOK = {
-  fundWards: (f) => ((CX_PL.funds || {})[f] || {}).wards || [],
-  addrWards: (f) => Object.values(CX_PL.addresses || {}).filter((r) => (r.files || []).includes(f)).map((r) => r.ward2026),
-  match: (t) => cxMatch(t),
-};
+/* what For you reads besides the meeting record is the shared ward matcher's CX_WARD_LOOK (ext/cx-live.jsx) */
 const CX_MTG_DAY3 = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`];
 /* the Clerk's notice as two pieces: what it says (official wording, kept as written) and the broadcast line (which can be translated) */
 function CxMtgNote({ note, tag = `p`, className }) {
@@ -370,7 +358,7 @@ function CxMtgOn({ m, onOpen }) {
 /* 4. For you: only from a ward or priorities the person set; worked out here, never sent, never a score */
 function CxMtgYou({ meetings, ward, chosen, onOpen, onPlace, onPrio }) {
   const set = !!ward || chosen.length > 0;
-  const list = u.useMemo(() => (set ? cxMtgForYou(meetings, ward, chosen, CX_MTG_LOOK) : []), [meetings, ward, chosen.join(`,`)]);
+  const list = u.useMemo(() => (set ? cxMtgForYou(meetings, ward, chosen, CX_WARD_LOOK) : []), [meetings, ward, chosen.join(`,`)]);
   const [all, setAll] = u.useState(!1);
   const shown = all ? list : list.slice(0, 5);
   return (
