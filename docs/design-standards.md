@@ -75,7 +75,7 @@ money or the ballot sit on the accent. Cards use tinted backgrounds. **Never a l
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)
 
 **Glass never sits on text.** A translucent surface (the guide's bubble on Explore: the style's `--navy2` at 78% over an 18 px blur, a hairline
-edge, and a soft shade) keeps its own words readable (5.7:1 or better laid over the page's own text color, with no credit for the blur; 10:1 and up
+edge, and a soft shade) keeps its own words readable (5.7:1 or better laid over the page's own text color, with no credit for the blur; 9.4:1 and up
 on the real pixels), but no glass keeps the text under it readable. So the surface is placed, not only made see-through: under the heading of the
 level it names, on no card question and no heading, inside the list and above the tab bar; when there is no such place it says nothing. It is
 hidden from screen readers, and a status line that is always there says the same words. With reduced transparency it is solid, with more

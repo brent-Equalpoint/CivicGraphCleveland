@@ -88,3 +88,10 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 4. **The Clerk's action words** ("recommended for approval") and the printed sentences ("Referred to the Directors of ...") stay in English, in quotation marks after "En el registro:" and "Tal como se publicó:", because they are the record's own words. Committee names stay in English as elsewhere.
 5. **"Pulled"** is "obtenido el {d}", as in the other source lines. **"City Record"** and **"Legistar"** stay in English.
 6. **Filters:** "Todos los tipos de registro", "Todos los tipos", "Todos los años", "Patrocinios ({n})", "Votos ({n})". The counts are per kind only; there is no total, in either language.
+
+## Explore on the phone: the guide, the rail, and the room cards (Oct 6, 2026)
+31 new entries in `i18n/manual.json` for `ext/cxm-explore.jsx`.
+1. **The rail's six ticks** are named in whole sentences: "Ir a su cuadra", "Ir a su distrito", "Ir a su ciudad", "Ir al condado y los tribunales", "Ir a Ohio y la nación", "Ir al panorama general" (they read "Ir a your block" when "Jump to" was translated alone).
+2. **The line under each room card** is one whole line for each singular and plural, for example "6 registros · 5 fuentes oficiales · 1 ley o propuesta" and "34 registros · 21 fuentes oficiales · 6 leyes o propuestas" (it read "5 fuente oficials").
+3. **The first sentence of each room's answer** (shown on the highlighted card) is the first sentence of the draft of that whole answer, word for word, so the card and the room say the same thing. "Public Health" stays in English inside "El departamento de Public Health de Cleveland", as in the whole answer.
+4. **The guide's lines** ("Esta es su cuadra. ...") were already in the dictionary; the bubble is now drawn in Spanish from its first frame. The guide's name (Erie, Terry, Cuy) is a name and stays as it is.
