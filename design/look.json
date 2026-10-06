@@ -676,8 +676,8 @@
    "borderTopColor": "rgb(185, 188, 198)"
   },
   ".mt-days [aria-selected=\"true\"]": {
-   "color": "rgb(236, 235, 231)",
-   "backgroundColor": "rgb(23, 23, 26)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "15px",
    "fontWeight": "600",
@@ -690,7 +690,7 @@
    "paddingLeft": "2px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgb(42, 42, 48)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".mt-days [aria-selected=\"false\"]": {
    "color": "rgb(185, 188, 198)",
@@ -1075,8 +1075,8 @@
  },
  "bento dark | desktop strip": {
   ".cx-folder[aria-selected=\"true\"]": {
-   "color": "rgb(237, 237, 239)",
-   "backgroundColor": "rgb(12, 12, 14)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -1089,7 +1089,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(255, 255, 255, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder[aria-selected=\"false\"]": {
    "color": "rgb(169, 171, 179)",
@@ -1831,7 +1831,7 @@
    "borderTopColor": "rgb(244, 238, 232)"
   },
   ".cxm-tabs button": {
-   "color": "rgb(255, 122, 56)",
+   "color": "rgb(76, 130, 255)",
    "backgroundColor": "rgba(0, 0, 0, 0)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "11px",
@@ -1845,7 +1845,7 @@
    "paddingLeft": "0px",
    "minHeight": "56px",
    "borderTopWidth": "0px",
-   "borderTopColor": "rgb(255, 122, 56)"
+   "borderTopColor": "rgb(76, 130, 255)"
   }
  },
  "original dark | phone ballot": {
@@ -2336,8 +2336,8 @@
    "borderTopColor": "rgb(201, 189, 178)"
   },
   ".mt-days [aria-selected=\"true\"]": {
-   "color": "rgb(244, 238, 232)",
-   "backgroundColor": "rgb(30, 26, 23)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "15px",
    "fontWeight": "600",
@@ -2350,7 +2350,7 @@
    "paddingLeft": "2px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgb(58, 50, 43)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".mt-days [aria-selected=\"false\"]": {
    "color": "rgb(201, 189, 178)",
@@ -2735,8 +2735,8 @@
  },
  "original dark | desktop strip": {
   ".cx-folder[aria-selected=\"true\"]": {
-   "color": "rgb(244, 238, 232)",
-   "backgroundColor": "rgb(20, 18, 16)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -2749,7 +2749,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(255, 255, 255, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder[aria-selected=\"false\"]": {
    "color": "rgb(183, 173, 165)",
@@ -2821,7 +2821,7 @@
   },
   ".cx-thumb": {
    "color": "rgb(170, 161, 154)",
-   "backgroundColor": "rgb(194, 65, 12)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "16px",
    "fontWeight": "400",
@@ -3996,8 +3996,8 @@
    "borderTopColor": "rgb(74, 79, 94)"
   },
   ".mt-days [aria-selected=\"true\"]": {
-   "color": "rgb(20, 22, 29)",
-   "backgroundColor": "rgb(255, 255, 255)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "15px",
    "fontWeight": "600",
@@ -4010,7 +4010,7 @@
    "paddingLeft": "2px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgb(217, 220, 230)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".mt-days [aria-selected=\"false\"]": {
    "color": "rgb(74, 79, 94)",
@@ -4395,8 +4395,8 @@
  },
  "bento light | desktop strip": {
   ".cx-folder[aria-selected=\"true\"]": {
-   "color": "rgb(16, 16, 18)",
-   "backgroundColor": "rgb(242, 242, 243)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -4409,7 +4409,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(20, 22, 29, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder[aria-selected=\"false\"]": {
    "color": "rgb(78, 79, 84)",
@@ -5151,7 +5151,7 @@
    "borderTopColor": "rgb(31, 24, 20)"
   },
   ".cxm-tabs button": {
-   "color": "rgb(168, 51, 10)",
+   "color": "rgb(31, 79, 214)",
    "backgroundColor": "rgba(0, 0, 0, 0)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "11px",
@@ -5165,7 +5165,7 @@
    "paddingLeft": "0px",
    "minHeight": "56px",
    "borderTopWidth": "0px",
-   "borderTopColor": "rgb(168, 51, 10)"
+   "borderTopColor": "rgb(31, 79, 214)"
   }
  },
  "original light | phone ballot": {
@@ -5656,8 +5656,8 @@
    "borderTopColor": "rgb(90, 77, 66)"
   },
   ".mt-days [aria-selected=\"true\"]": {
-   "color": "rgb(31, 24, 20)",
-   "backgroundColor": "rgb(255, 255, 255)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Schibsted Grotesk",
    "fontSize": "15px",
    "fontWeight": "600",
@@ -5670,7 +5670,7 @@
    "paddingLeft": "2px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgb(225, 214, 201)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".mt-days [aria-selected=\"false\"]": {
    "color": "rgb(90, 77, 66)",
@@ -6055,8 +6055,8 @@
  },
  "original light | desktop strip": {
   ".cx-folder[aria-selected=\"true\"]": {
-   "color": "rgb(31, 24, 20)",
-   "backgroundColor": "rgb(250, 246, 241)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -6069,7 +6069,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(20, 22, 29, 0.12)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder[aria-selected=\"false\"]": {
    "color": "rgb(90, 77, 66)",
@@ -6141,7 +6141,7 @@
   },
   ".cx-thumb": {
    "color": "rgb(170, 161, 154)",
-   "backgroundColor": "rgb(194, 65, 12)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "16px",
    "fontWeight": "400",

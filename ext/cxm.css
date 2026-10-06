@@ -41,7 +41,7 @@ html[data-cx-theme="original"] .cxm {
 .cxm-foot { margin-top: 28px !important; font-size: 12px; color: var(--faint); text-align: center; }
 .cxm-tabs { flex: none; display: grid; grid-template-columns: repeat(5, 1fr); padding: 4px 4px calc(10px + env(safe-area-inset-bottom)); border-top: 1px solid #ffffff12; background: var(--bg); }
 .cxm-tabs button { min-height: 56px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; color: var(--faint); font-size: 11px; font-weight: 600; border-radius: 14px; }
-.cxm-tabs button.on { color: var(--acc2); }
+.cxm-tabs button.on { color: #4c82ff; }
 
 /* type */
 /* v5.16 quiet text: labels are plain sentence-case words in readable ink, not tiny grey capitals */
@@ -410,7 +410,7 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 /* folder tabs: the active tab is the same tile as the page under it, so the two read as one folder */
 .cxm-folders { display: flex; gap: 4px; margin: 4px 0 -1px; border-bottom: 1px solid var(--line); }
 .cxm-folders button { flex: 1 1 0; min-height: 48px; padding: 0 14px; border: 1px solid transparent !important; border-bottom: 0 !important; border-radius: 14px 14px 0 0; background: transparent !important; color: var(--mut); font-size: 15px; font-weight: 500; text-align: center; }
-.cxm-folders button.on { background: var(--tile) !important; border-color: var(--line) !important; color: var(--ink); font-weight: 600; margin-bottom: -1px; padding-bottom: 1px; }
+.cxm-folders button.on { background: #2f66f3 !important; border-color: #2f66f3 !important; color: #ffffff; font-weight: 600; margin-bottom: -1px; padding-bottom: 1px; }
 .cxm-folder-panel { padding-top: 14px; display: flex; flex-direction: column; gap: 14px; }
 /* At City Hall: the meeting front page */
 /* Section banners: an illustrated header for each chapter of Today (cxm-banner.jsx). The picture is drawn in the style's own colors through variables. */
@@ -1448,7 +1448,7 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 .usm-none { padding: 12px 14px; color: var(--u-mut); }
 .usm-pills { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--u-tile2); }
 .usm-pills button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--u-mut); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
-.usm-pills button.on { background: var(--u-acc); color: #fff; }
+.usm-pills button.on { background: #2f66f3; color: #fff; }
 .usm-lang { padding: 0 14px; }
 
 /* Solo: a picker in the bottom row, and while one group plays alone, a note at the top that says what is shown */
@@ -1486,7 +1486,7 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 .usm .cx-theme-dot, .usm .cx-mode-dot { display: none; }
 .usm .cxm-seg { display: flex; gap: 2px; padding: 3px; border-radius: 12px; background: var(--u-tile2); }
 .usm .cxm-seg button { flex: 1 0 auto; min-height: 44px; padding: 0 12px; border: 0; border-radius: 10px; background: transparent; color: var(--u-mut); font-size: 14px; font-weight: 600; }
-.usm .cxm-seg button.on { background: var(--u-acc); color: #fff; }
+.usm .cxm-seg button.on { background: #2f66f3; color: #fff; }
 /* the dictionary, over the map, as its own dialog */
 .usm-dict { position: absolute; inset: 0; z-index: 20; display: grid; justify-items: center; align-items: start; padding: 80px 16px 16px; background: #0000003d; }
 .usm-dict-card { display: flex; flex-direction: column; width: min(760px, 100%); max-height: 100%; background: var(--u-tile); border: 1px solid var(--u-line); border-radius: 20px; box-shadow: 0 8px 24px #0000003d; }

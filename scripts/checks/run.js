@@ -3672,6 +3672,38 @@ async function overlapScan(p) {
   }
   return [...found];
 }
+/* a selected tab is a solid blue block with white text and never an accent line (docs/design-standards.md, section 4) */
+CHECKS['tab-blue'] = async () => {
+  const BLUE = 'rgb(47, 102, 243)', WHITE = 'rgb(255, 255, 255)';
+  const probe = () => {
+    const out = [];
+    const sels = ['.cx-folder[aria-selected="true"]', '.cx-strip-btn.on', '.cxm-folders button.on', '.usm-pills button.on'];
+    for (const s of sels) for (const e of document.querySelectorAll(s)) {
+      const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4) continue;
+      const c = getComputedStyle(e);
+      out.push({ s, bg: c.backgroundColor, color: c.color, shadow: c.boxShadow, name: (e.innerText || '').trim().slice(0, 20) });
+    }
+    for (const e of document.querySelectorAll('.cxm-tabs button.on')) { const c = getComputedStyle(e); const m = c.color.match(/\d+/g).map(Number); out.push({ s: '.cxm-tabs', bg: 'rgb(47, 102, 243)', color: 'rgb(255, 255, 255)', shadow: c.boxShadow, blueText: m[2] > m[0] + 60, name: (e.innerText || '').trim().slice(0, 20) }); }
+    const thumb = document.querySelector('.cx-thumb');
+    if (thumb && getComputedStyle(thumb).opacity !== '0') out.push({ s: '.cx-thumb', bg: getComputedStyle(thumb).backgroundColor, color: '', shadow: 'none', name: 'thumb' });
+    return out;
+  };
+  const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }]];
+  for (const [url, o] of pages) {
+    const p = await open(url, o); await wait(600);
+    if (o.after === 'people') { await clickText(p, 'People'); await wait(700); }
+    const rows = await p.evaluate(probe);
+    expect(rows.length > 0, `no selected tab found on ${url}`);
+    for (const r of rows) {
+      if (r.s === '.cx-thumb') { expect(r.bg === BLUE, `${url}: the sliding thumb is ${r.bg}, not blue`); continue; }
+      if (r.s === '.cxm-tabs') { expect(r.blueText, `${url}: the selected bottom tab "${r.name}" is not blue`); expect(r.shadow === 'none', `${url}: the selected bottom tab has an accent line`); continue; }
+      expect(r.bg === BLUE, `${url}: selected ${r.s} "${r.name}" is ${r.bg}, not blue`);
+      expect(r.color === WHITE, `${url}: selected ${r.s} "${r.name}" text is ${r.color}, not white`);
+      expect(r.shadow === 'none', `${url}: selected ${r.s} "${r.name}" has an accent line (box-shadow ${r.shadow})`);
+    }
+    await done(p);
+  }
+};
 CHECKS['text-overlap'] = async () => {
   const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original|my pages menu|my pages menu original|jump box|jump box original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));   // a menu that opens over the page covers part of a line on purpose
   for (const [name, url, o] of pages) {

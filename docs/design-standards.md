@@ -72,6 +72,8 @@ text `--ink #ecebe7`, muted `--mut #b9bcc6`, accent `--acc #2f66f3` (blue, Bento
 money or the ballot sit on the accent. Cards use tinted backgrounds. **Never a left accent stripe.** A status (Committed, Talking stage, and the like) is written in words, with no colored status dot beside it; a dot stays only where it is the key to a chart or the data itself (a legend, a vote). Both styles must work.
 (`axe` for contrast; the Original run covers the other palette)
 
+**Tabs and navigation: a rule.** A selected tab, pill, or navigation item is a solid blue block (`#2f66f3`) with white text, in both styles, light and dark, on every layout. **Never an accent line** (no bar, underline, or inset stripe in any color on a tab or nav item) and never an orange fill. The tab that is chosen is told apart by the fill and by weight 600, not by color alone. (`tab-blue`)
+
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)
 
 **Glass never sits on text.** A translucent surface (the guide's bubble on Explore: the style's `--navy2` at 78% over an 18 px blur, a hairline
@@ -125,7 +127,7 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
 reachable with a mouse alone, Jump to and My pages, the three main tabs and the way back from the United States map), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
-`explore-bubble` (on Explore at 390 and 320 px: the guide's bubble, the lit tick, and the highlighted heading name the highlighted card's level at every
+`tab-blue` (every selected tab, pill, and folder on the desktop strip and the phone is solid blue with white text, in both styles, light and dark, and none has an accent line), `explore-bubble` (on Explore at 390 and 320 px: the guide's bubble, the lit tick, and the highlighted heading name the highlighted card's level at every
 rest; the bubble covers no question or heading and stays in the list; 4.5:1 on the real pixels; at rest only, once a level, at most one after a fling,
 none going back up, gone 3 s after a jump to the top; Spanish from its first frame; reduced motion and reduced transparency; 44 px ticks, a bare tap
 moves nothing, a drag scrubs from where it took hold; cards keep their height; the rail's current place shows in light),

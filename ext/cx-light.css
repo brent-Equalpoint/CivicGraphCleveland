@@ -63,3 +63,4 @@ html[data-cx-mode="light"] .cxm-level-h circle.core { stroke: none; }
 @media (prefers-contrast: more) {
   html[data-cx-mode="light"] .cxm-rail-bubble { border: 2px solid var(--ink); }
 }
+html[data-cx-mode="light"] .cxm-tabs button.on { color: #1f4fd6; }
