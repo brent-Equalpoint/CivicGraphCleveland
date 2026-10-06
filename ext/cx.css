@@ -139,10 +139,6 @@
   .cx-tabs button { flex: 1 1 auto; }
 }
 
-/* Sidebar group label for civic-intelligence tools */
-.cx-sidebar-label { display: block; margin: 14px 4px 6px; font-size: 10px; letter-spacing: .14em; color: #9f9186; }
-.rail-collapsed .cx-sidebar-label { display: none; }
-
 /* Build stamp in the footer */
 .cx-build-stamp { color: #8f8177; font-size: 11px; }
 
@@ -438,9 +434,8 @@
 
 /* v5.7: the ballot's record panel slides in from the right. Tailwind's centering uses the translate property, which transform:none did not cancel. */
 .practice-drawer[data-slot="dialog-content"] { translate: none !important; top: 0 !important; left: auto !important; right: 0 !important; bottom: 0 !important; }
-/* v5.7: when a personal page (My ballot, My leaders...) is open, the room tab stops looking selected, so only one item is highlighted. */
-.atlas-sidebar:has(.atlas-sidebar-bottom button.active) .atlas-room-tab[data-slot="tabs-trigger"][data-state="active"] { background: transparent !important; color: inherit !important; box-shadow: none !important; }
-.atlas-sidebar:has(.atlas-sidebar-bottom button.active) .atlas-room-tab[data-slot="tabs-trigger"][data-state="active"] svg { color: inherit !important; }
+/* v5.7: when a personal page (My ballot, My leaders...) is open, the room tab stops looking selected, so only one item is highlighted.
+   Since the folder-tab strip, build.py marks that tab inactive itself (data-state and aria-selected), so no rule is needed here. */
 
 /* v5.12: why supporters backed it (shown after an answer) */
 .cx-why { margin: 14px 0 6px; padding: 14px 16px; border-radius: 12px; background: #7fa6ff14; }
@@ -606,7 +601,9 @@
 @keyframes cx-fadein { from { opacity: 0; } to { opacity: 1; } }
 @keyframes cx-pop { from { opacity: 0; transform: translateY(6px) scale(.97); } to { opacity: 1; transform: none; } }
 @keyframes cx-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
-.cx-enter, .auxiliary-page > section, .auxiliary-page > .civic-page { animation: cx-rise .35s cubic-bezier(.2,.7,.2,1) both; }
+/* a page opened from the strip settles in quickly (motion.quick, 4 px); opened from the keyboard it is simply there (ext/cx-nav.jsx turns it off) */
+@keyframes cx-page-in { from { opacity: 0; transform: translateY(4px); } to { opacity: 1; transform: none; } }
+.cx-enter, .auxiliary-page > section, .auxiliary-page > .civic-page { animation: cx-page-in .2s cubic-bezier(.2,.8,.2,1) both; }
 .constellation-dot image { pointer-events: none; }
 @media (prefers-reduced-motion: reduce) {
   .cx-hovercard, .cx-news-row, .cx-enter, .auxiliary-page > section, .auxiliary-page > .civic-page, .cx-fresh-chip i { animation: none !important; }
@@ -646,28 +643,48 @@
 .cx-stories .cx-story-all .cx-story-small { font-size: 17px; }
 @media (prefers-reduced-motion: reduce) { .cx-story-body * { animation: none !important; } }
 
-/* v5.27 desktop: the rooms as folder tabs above the graph, from "Your government" to "Civic ecosystem". The compiled app already lays these out as a row on a narrow
-   screen; this does it at every width of a computer. The old left sidebar becomes a strip across the top: the personal pages (My priorities, My constellation, My ballot,
-   Voter education) as a quiet row, then the room tabs sitting on the page below. The chosen tab joins the page, like a folder tab. */
 @media (min-width: 761px) {
+  /* v5.27 desktop: the rooms as folder tabs above the graph, from "Your government" to "Civic ecosystem". The compiled app already lays these out as a row on a narrow
+     screen; this does it at every width of a computer. The old left sidebar becomes a strip across the top: the personal pages (My priorities, My constellation, My ballot,
+     Voter education) as a quiet row, then the room tabs sitting on the page below. The chosen tab joins the page, like a folder tab.
+     A comment sits inside a block and before a rule with no color in it: bento.py and light.py read a comment as part of the next selector. */
   .atlas-workspace[data-slot=tabs], .rail-collapsed .atlas-workspace[data-slot=tabs] { display: block; }
   .atlas-workspace .atlas-sidebar { position: static; height: auto; min-height: 0; flex-direction: column; gap: 0; padding: 10px 26px 0; border-right: 0; border-bottom: 1px solid var(--atlas-border); }
   .atlas-workspace .rail-toggle { display: none; }
-  .atlas-workspace .atlas-sidebar-bottom { order: -1; display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; margin: 0 0 10px; padding: 0 0 4px; border: 0; overflow-x: auto; scrollbar-width: thin; }
-  .atlas-workspace .atlas-sidebar-bottom button { flex: none; width: auto; min-height: 40px; margin: 0; padding: 8px 12px; font-size: 13px; white-space: nowrap; }
+  /* My pages: a quiet row above the rooms, and first in the page's order too, so Tab goes the way the eye does (build.py puts the rooms after it) */
+  .atlas-workspace .atlas-sidebar-bottom { display: flex; flex-wrap: nowrap; align-items: center; gap: 8px; margin: 0 0 10px; padding: 0; border: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; scroll-padding-inline: 44px; }
+  .atlas-workspace .atlas-sidebar-bottom::-webkit-scrollbar { display: none; }
+  .atlas-workspace .atlas-sidebar-bottom button { flex: none; width: auto; min-height: 44px; margin: 0; padding: 8px 12px; font-size: .8125rem; white-space: nowrap; transition: transform .16s ease-out; }
+  .atlas-workspace .atlas-sidebar-bottom button:active { transform: scale(.97); }
+  html[data-cx-theme="original"] .atlas-workspace .atlas-sidebar-bottom button { color: #f4eee8; background: #ffffff0d; border-color: #ffffff2e; }
+  html[data-cx-theme="original"] .atlas-workspace .atlas-sidebar-bottom button.active { color: #fff; background: #c2410c; border-color: #c2410c; }
+  .atlas-workspace .atlas-sidebar-bottom button.active { font-weight: 600; }
   .atlas-workspace .atlas-sidebar-bottom p, .atlas-workspace .atlas-sidebar-bottom .atlas-version { display: none; }
   .rail-collapsed .atlas-sidebar-bottom span, .rail-collapsed .atlas-sidebar-bottom p { display: inline; }
-  .atlas-workspace .atlas-room-tabs[data-slot=tabs-list] { flex: none; flex-flow: row nowrap !important; justify-content: flex-start !important; align-items: flex-end; gap: 4px; width: 100%; max-width: none; margin-bottom: -1px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
+  .atlas-workspace .atlas-room-tabs[data-slot=tabs-list] { flex: none; flex-flow: row nowrap !important; justify-content: flex-start !important; align-items: flex-end; gap: 4px; width: 100%; max-width: none; margin-bottom: -1px; padding: 0; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; scroll-padding-inline: 44px; }
   .atlas-workspace .atlas-room-tabs[data-slot=tabs-list]::-webkit-scrollbar { display: none; }
-  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] { flex: none !important; width: auto; height: auto !important; min-height: 44px !important; margin-bottom: 0; padding: 10px 16px; gap: 8px; white-space: nowrap; font-size: 14px; border: 1px solid var(--atlas-border); border-bottom: 0; border-radius: 12px 12px 0 0; }
+  /* a room tab: shorter and behind the line until chosen; the chosen one is taller, in bolder words, and joins the page below (no line under it),
+     so the choice shows in shape and weight as well as color. The change is instant: a choice should not fade in. */
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] { flex: none !important; width: auto; height: auto !important; min-height: 44px !important; margin: 4px 0 0; padding: 10px 16px; gap: 8px; white-space: nowrap; font-size: .875rem; font-weight: 500; border: 1px solid var(--atlas-border); border-bottom: 0; border-radius: 12px 12px 0 0; transition: none; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger] svg:last-child:not(:first-child) { display: none; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger]::after { display: none; }
-  /* a personal page is open, so the room tab stops looking selected (v5.7 rule above): keep its words as readable as the other tabs */
-  html .atlas-workspace .atlas-sidebar:has(.atlas-sidebar-bottom button.active) .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { color: var(--atlas-muted) !important; }
-  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-bottom: 1px solid var(--atlas-bg); }
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { margin-top: 0; min-height: 48px !important; font-weight: 600; border-bottom: 1px solid var(--atlas-bg); }
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { background: var(--bb-blue); border-color: var(--bb-blue); color: #fff; }
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #fff; }
-  html[data-cx-theme="original"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-color: var(--atlas-orange); }
+  html[data-cx-theme="original"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { border-color: var(--atlas-orange); border-bottom-color: var(--atlas-bg); }
+  /* the focus ring sits inside the tab or button, so the sideways-scrolling row cannot cut it off */
+  .atlas-workspace :is(.atlas-room-tab[data-slot=tabs-trigger], .atlas-sidebar-bottom button):focus-visible { outline-offset: -4px; box-shadow: none; }
+  html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active]:focus-visible { outline-color: #fff; }
+  html[data-cx-theme="bento"] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #fff; }
+  html[data-cx-theme="original"] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #fff; }
+  /* the header search keeps a real width beside the header buttons (they wrap onto a second row instead) */
+  .atlas-header .atlas-search { flex: 1 1 240px; min-width: 200px; }
 }
+@media (min-width: 761px) and (hover: hover) and (pointer: fine) {
+  .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=inactive]:hover { background: #ffffff0d; color: var(--atlas-ink); }
+  .atlas-workspace .atlas-sidebar-bottom button:not(.active):hover { background: #ffffff14; }
+  /* hover shows only where there is a real pointer that hovers (a touch screen would leave it stuck on) */
+}
+@media (prefers-reduced-motion: reduce) { .atlas-workspace .atlas-sidebar-bottom button { transition: none; } .atlas-workspace .atlas-sidebar-bottom button:active { transform: none; } }
 .cx-stories-ring .cx-story-art { width: 100%; height: 100%; display: grid; place-items: center; color: #fff; }
 .cx-story-art svg { width: 72%; height: 72%; }

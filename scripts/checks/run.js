@@ -1831,6 +1831,87 @@ const CHECKS = {
       const small = await p.evaluate(() => [...document.querySelectorAll('button, a[href], select, input, [role=button], summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
+    // the desktop strip above the graph (rooms and My pages): every control in it is a full target too, at a small and a wide computer screen
+    for (const w of [1100, 1440]) {
+      const p = await open('/?panel=ballot#desktop', { width: w });
+      const small = await p.evaluate(() => [...document.querySelectorAll('.atlas-sidebar :is(button, a[href], [role=tab], [role=button], input)')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden') return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${(el.innerText || el.getAttribute('aria-label') || '').trim().slice(0, 30)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
+      expect(small.length === 0, `desktop strip at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+    }
+  },
+  /* The desktop strip above the graph (ext/cx-nav.jsx, ext/cx.css, build.py "desktop strip"): the chosen room is always in view, exactly one thing
+     looks and announces itself as chosen, Tab follows the screen, the arrows move the focus without opening rooms, the focus ring is never cut off,
+     the page never scrolls sideways, and the chosen state shows in light mode in both styles. */
+  async 'nav-desktop'() {
+    const NAV = {
+      // where the chosen room's tab is, against its row and the window
+      inView: () => { const t = document.querySelector('.atlas-room-tabs [role=tab][aria-selected="true"]'); if (!t) return { none: true }; const r = t.getBoundingClientRect(), row = t.closest('[role=tablist]').getBoundingClientRect(); return { label: t.innerText.trim(), ok: r.left >= row.left - 1 && r.right <= row.right + 1 && r.left >= 0 && r.right <= innerWidth, r: [Math.round(r.left), Math.round(r.right)], row: [Math.round(row.left), Math.round(row.right)] }; },
+      // what looks or announces itself as chosen in the strip
+      chosen: () => {
+        const strip = document.querySelector('.atlas-sidebar');
+        const sel = [...strip.querySelectorAll('[aria-selected="true"], [aria-current="page"], [aria-current="true"]')].filter((e) => e.getBoundingClientRect().width).map((e) => (e.innerText || e.getAttribute('aria-label') || '').trim());
+        const tabs = [...strip.querySelectorAll('.atlas-room-tabs [role=tab]')].filter((e) => e.getBoundingClientRect().width);
+        const look = (e) => { const c = getComputedStyle(e); return [c.backgroundColor, c.borderTopColor, c.fontWeight, c.color].join('|'); };
+        const looks = new Set(tabs.map(look));
+        return { sel, tabLooks: looks.size };
+      },
+      overflow: () => document.documentElement.scrollWidth - innerWidth,
+    };
+    for (const lang of ['en', 'es']) {
+      for (const w of [1100, 1440]) {
+        const p = await open('/?room=ecosystem#desktop', { width: w, pre: lang === 'es' ? () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } : undefined, settle: 1500 });
+        const v = await p.evaluate(NAV.inView);
+        expect(v.ok, `${lang} ${w}: ?room=ecosystem opened with its tab out of view (tab ${v.r}, row ${v.row})`);
+        expect((await p.evaluate(NAV.overflow)) <= 0, `${lang} ${w}: the page scrolls sideways`);
+        expect((await p.evaluate(() => scrollY)) === 0, `${lang} ${w}: bringing the tab into view moved the page down`);
+        await done(p);
+      }
+    }
+    // a personal page is open: only it looks and announces itself as chosen
+    const p = await open('/?room=council&panel=ballot#desktop', { width: 1440 });
+    const c = await p.evaluate(NAV.chosen);
+    expect(c.sel.length === 1 && /My ballot/.test(c.sel[0]), `with My ballot open, the strip announces ${JSON.stringify(c.sel)} as chosen (want only My ballot)`);
+    expect(c.tabLooks === 1, `with My ballot open, a room tab still looks different from the others (${c.tabLooks} looks)`);
+    await done(p);
+    // Tab follows the screen, and the strip has few stops
+    const t = await open('/?room=council#desktop', { width: 1440 });
+    await t.evaluate(() => document.querySelector('.atlas-search input').focus());
+    let seq = [];
+    for (let i = 0; i < 40; i++) {
+      await t.keyboard.press('Tab');
+      // where the stop sits in its row's own coordinates (a row that scrolls sideways moves as the focus walks along it)
+      const s = await t.evaluate(() => { const a = document.activeElement; const r = a.getBoundingClientRect(); let x = r.left; for (let e = a.parentElement; e; e = e.parentElement) { if (/(auto|scroll)/.test(getComputedStyle(e).overflowX)) { x += e.scrollLeft; break; } } return { inStrip: !!a.closest('.atlas-sidebar'), label: (a.innerText || a.getAttribute('aria-label') || '').trim().slice(0, 30), x, y: r.top }; });
+      if (s.inStrip) seq.push(s); else if (seq.length) break;
+    }
+    expect(seq.length > 0, 'Tab never reached the desktop strip');
+    const outOfOrder = seq.findIndex((s, i) => i && (s.y < seq[i - 1].y - 12 || (Math.abs(s.y - seq[i - 1].y) <= 12 && s.x < seq[i - 1].x - 2)));
+    expect(outOfOrder < 0, `Tab in the strip goes against the screen order at "${outOfOrder >= 0 ? seq[outOfOrder].label : ''}" (${seq.map((s) => s.label).join(', ')})`);
+    expect(seq.length <= 16, `the strip has ${seq.length} Tab stops`);
+    // the arrows move the focus and open nothing; Enter opens the focused room (one history entry)
+    await t.evaluate(() => document.querySelector('.atlas-room-tabs [role=tab][aria-selected="true"]').focus());
+    const h0 = await t.evaluate(() => history.length), url0 = await t.evaluate(() => location.search);
+    for (let i = 0; i < 6; i++) { await t.keyboard.press('ArrowRight'); await wait(60); }
+    await wait(400);
+    const after = await t.evaluate(() => ({ h: history.length, sel: document.querySelector('.atlas-room-tabs [role=tab][aria-selected="true"]').innerText.trim(), focus: document.activeElement.innerText.trim(), room: new URLSearchParams(location.search).get('room') }));
+    expect(after.h === h0 && after.sel === 'Council & wards' && after.room === 'council', `six arrow presses changed the room or the history (history ${h0} to ${after.h}, chosen ${after.sel}, address ${url0} to room ${after.room})`);
+    expect(after.focus !== 'Council & wards', 'the arrow keys did not move the focus');
+    // the focus ring sits inside the strip's rows, so nothing cuts it off
+    const ring = await t.evaluate(() => { const a = document.activeElement, cs = getComputedStyle(a), r = a.getBoundingClientRect(), row = a.closest('[role=tablist], nav, .atlas-sidebar').getBoundingClientRect(); const o = parseFloat(cs.outlineOffset) + parseFloat(cs.outlineWidth); return { style: cs.outlineStyle, top: r.top - o >= row.top - 0.5, bottom: r.bottom + o <= row.bottom + 0.5 }; });
+    expect(ring.style !== 'none' && ring.top && ring.bottom, `the focus ring on a room tab is cut off by its row (${JSON.stringify(ring)})`);
+    await t.keyboard.press('Enter'); await wait(500);
+    const opened = await t.evaluate(() => ({ h: history.length, room: new URLSearchParams(location.search).get('room') }));
+    expect(opened.room !== 'council' && opened.h === h0 + 1, `Enter did not open the focused room with one history entry (room ${opened.room}, history ${h0} to ${opened.h})`);
+    await done(t);
+    // the chosen room and the open page show in light mode, in both styles: a different fill or edge, and bolder words
+    for (const theme of ['bento', 'original']) {
+      const l = await open('/?room=council#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
+      const s = await l.evaluate(() => { const on = document.querySelector('.atlas-room-tabs [aria-selected="true"]'), off = document.querySelector('.atlas-room-tabs [aria-selected="false"]'); const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor || a.borderTopColor !== b.borderTopColor, weight: +a.fontWeight, offWeight: +b.fontWeight }; });
+      expect(s.differ && s.weight >= 600 && s.offWeight < 600, `light ${theme}: the chosen room does not stand out (${JSON.stringify(s)})`);
+      await done(l);
+      const m = await open('/?room=council&panel=ballot#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
+      const s2 = await m.evaluate(() => { const on = document.querySelector('.atlas-sidebar [aria-current="page"]'); if (!on) return { none: true }; const off = [...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
+      expect(!s2.none && s2.differ && s2.weight >= 600, `light ${theme}: the open page does not stand out (${JSON.stringify(s2)})`);
+      await done(m);
+    }
   },
 };
 
