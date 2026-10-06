@@ -70,4 +70,14 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
   Decide once, when the thing appears (`CX_DeskStrip` does it before the first paint).
 - **The desktop strip's rooms are the compiled Radix tabs.** `build.py` hides the other places' tabs (`data-cx-off`) and sets `aria-selected` and
   `data-state` itself; arrows only move the focus (`activationMode: manual`). Keep `?room=` and `?panel=` working through `CX_NAV`, not new state.
+- **The committee lines are not in the page.** `ext/cx-us-text.jsx` holds them between the US-TEXT markers as strict JSON (`CX_US_LINES`); `build.py`
+  takes the table out before compiling, checks each line rests on official words in `data/us-explainers-2026.json`, and serves both as
+  `site/us/explainers-2026.json`, which `cxUsxLoad()` fetches the first time a committee, a subcommittee, a role's official words, or a text view needs it.
+  Read a line with `cxUsxWhat(id)`; a component that shows lines uses `useCxUsx()` so it draws again when they arrive. Editing anything between the
+  markers clears the review mark (`--mark-us-text-reviewed`).
+- **A hidden span can make a fixed frame scroll.** The map's sheet had a "(opens in a new tab)" span (absolutely positioned, 1 px) far down a long
+  list; its nearest positioned ancestor was the map's stage, so the stage grew 1,100 px taller than the window and the no-bleed check saw the whole
+  map as cut off. The sheet's scrolling body is `position: relative`, which keeps such spans inside it.
+- **A note or story over the map takes its own step in history** (`openX`/`closeX` in `CX_UsMap`), checked first in `onPop`, so the back gesture closes
+  it and never the profile under it. The desktop app rewrites the address after that step, so the profile's `who=` is put back when a note closes.
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).

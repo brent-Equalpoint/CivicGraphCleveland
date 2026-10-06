@@ -1,6 +1,9 @@
 # Plan: explain every committee, and every position or seat someone holds
 
-Status: proposed, nothing built. Written 2026-10-05 for Brent and the team. It sits under `docs/plan-us-graph-master.md` (the map, the side sheet, the profile page) and follows `docs/plan-plain-text.md` (how much text, in what words).
+Status: phases 1 to 4 built on a branch (2026-10-05), not yet reviewed or released; phase 5 (positions and seats) not started. Our lines carry the
+"A person has not reviewed" notice until someone runs `python build.py --mark-us-text-reviewed "Name"`. Sources and their terms: `docs/source-notes-committees.md`.
+What was built: `scripts/fetch_explainers.py` and `scripts/us_explainer_config.py` (the official words, into `data/us-explainers-2026.json`), `ext/cx-us-text.jsx`
+(our lines, the role notes, and the story, between the US-TEXT markers), the browser check `us-explain`, and `scripts/test_us_explainers.py`. Written 2026-10-05 for Brent and the team. It sits under `docs/plan-us-graph-master.md` (the map, the side sheet, the profile page) and follows `docs/plan-plain-text.md` (how much text, in what words).
 
 ## The problem in one picture
 

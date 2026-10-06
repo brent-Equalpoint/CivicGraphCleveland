@@ -43,6 +43,7 @@ jobs:
           node scripts/test_us_model.js
           node scripts/test_us_map.js
           python scripts/test_meetings.py
+          python scripts/test_us_explainers.py
           node scripts/test_meetings.js
           python scripts/test_votes.py
           python scripts/test_cityrecord.py

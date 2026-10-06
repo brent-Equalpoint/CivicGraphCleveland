@@ -1916,6 +1916,141 @@ const CHECKS = {
     expect(await has(q, '.usm-settings'), 'Settings did not open from the profile page');
     await done(q);
   },
+  async 'us-explain'() {
+    // What each committee and subcommittee does, and what the committee roles mean (docs/plan-explain-committees-and-seats.md, ext/cx-us-text.jsx).
+    // Every committee and subcommittee in the record has our two lines or the official words or "No description on file", never nothing; no line
+    // ranks (powerful, important, top, best, most, leading) or has a dash; no "what it does" line passes 20 words, no "why it matters" 15, no pair 35;
+    // every place our lines show says whose words they are, which Congress, and that a person has not reviewed them, and the official words sit one
+    // tap down with their source and the day they were pulled. The sheet, the profile, the hover card, and the Index say the same first line. Every
+    // role word opens its note, and the note closes with Done, a tap outside, a swipe down, the back gesture, and Escape. The lines load when a
+    // committee first needs them, never when the app or the map opens. Nothing slides sideways on a phone.
+    const ES = process.env.CHECK_LANG === 'es';
+    const RANK = /\b(powerful|important|top|best|most|leading)\b/i, DASH = /[–—]/;
+    const words = (s) => String(s).trim().split(/\s+/).filter(Boolean).length;
+    const X = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'explainers-2026.json'), 'utf8'));
+    const land = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'landscape-2026.json'), 'utf8'));
+    // the whole record, from the file the page loads
+    const ids = land.committees.flatMap((c) => [c.id, ...c.subcommittees.map((s) => s.id)]);
+    let withLines = 0, officialOnly = 0, none = 0;
+    for (const id of ids) {
+      const r = X.committees[id], L = X.lines[id];
+      expect(!!r, `${id} has no row in the explainers file`); if (!r) continue;
+      expect(r.congress === land.congress, `${id} is for Congress ${r.congress}, not ${land.congress}`);
+      if (L) {
+        withLines++;
+        expect(L.length === 2 && L.every((x) => x && x.trim()), `${id} has an empty line`);
+        expect(!!r.text, `${id} has our lines but no official words they rest on`);
+        expect(words(L[0]) <= 20 && words(L[1]) <= 15 && words(L[0]) + words(L[1]) <= 35, `${id}'s lines are too long: ${words(L[0])} and ${words(L[1])} words`);
+        for (const s of L) { expect(!RANK.test(s), `${id} says "${(s.match(RANK) || [])[0]}"`); expect(!DASH.test(s), `${id} has a dash in our line`); }
+      } else if (r.text) officialOnly++;
+      else { none++; expect(r.note === 'No description on file', `${id} has no text and does not say "No description on file"`); }
+      if (r.text) { expect(!!(r.url && r.cite && r.pulled), `${id}'s official words have no source, part, or pulled day`); expect(!DASH.test(r.text), `${id}'s official words have an em or en dash`); }
+    }
+    expect(Object.keys(X.lines).every((k) => ids.includes(k)), 'the lines name a committee that is not in the record');
+    console.log(`    ${withLines} with our lines, ${officialOnly} with the official words only, ${none} with no description on file`);
+    // the lines are not loaded when the map opens
+    const d = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1800 });
+    await mapReady(d);
+    expect(!d.asked.some((u) => /explainers/.test(u)), 'the map asked for the committee lines before any committee was needed');
+    // the hover card on a committee says what it does
+    const hq = await mapAt(d, 'House Committee on Ways and Means');
+    await d.mouse.move(hq[0], hq[1]); await wait(300); await d.mouse.move(hq[0] + 1, hq[1]);
+    for (let t = 0; t < 30 && !(await has(d, '.usm-hover .usx-what')); t++) await wait(150);
+    const hover = await txt(d, '.usm-hover .usx-what');
+    expect(!!hover, 'the hover card on a committee does not say what it does');
+    expect(d.asked.some((u) => /\/us\/explainers-2026\.json$/.test(u)), 'pointing at a committee did not load its lines');
+    await d.mouse.move(5, 450); await wait(300);
+    await d.mouse.click(hq[0], hq[1]); await wait(1300);
+    const sheetWhat = await txt(d, '.usm-sheet .usx-what');
+    expect(!!sheetWhat && sheetWhat === hover, `the sheet and the hover card say different first lines: "${sheetWhat}" / "${hover}"`);
+    const sheetRev = await txt(d, '.usm-sheet .usx-review');
+    expect(!!sheetRev && (ES || /119th Congress/.test(sheetRev) && /not reviewed/.test(sheetRev)), `the sheet does not say whose words and which Congress, or that a person has not reviewed them: "${sheetRev}"`);
+    await d.evaluate(() => { const x = document.querySelector('.usm-sheet .usx-official'); if (x) x.open = true; }); await wait(200);
+    const off = await d.evaluate(() => { const o = document.querySelector('.usm-sheet .usx-official'); if (!o) return null; const a = o.querySelector('.usx-src a'); return { quote: (o.querySelector('.usx-quote') || {}).innerText || '', href: a ? a.href : '', src: (o.querySelector('.usx-src') || {}).innerText || '', lang: (o.querySelector('.usx-quote') || {}).lang }; });
+    expect(!!off && off.quote.length > 40 && /^https:\/\//.test(off.href) && /\d{4}/.test(off.src) && off.lang === 'en', `the committee's own words are not one tap down with a secure source, a pulled date, and lang="en": ${JSON.stringify(off).slice(0, 200)}`);
+    // the Index says the same first line
+    await d.evaluate(() => { const b = [...document.querySelectorAll('.usm-sheet .usm-acts button')].pop(); b.click(); }); await wait(1400);
+    const idx = await d.evaluate(() => { const b = document.querySelector('.us-list [data-node="c:HSWM"] small'); return b ? b.innerText : null; });
+    expect(idx === sheetWhat, `the Index says "${idx}" for Ways and Means, the sheet "${sheetWhat}"`);
+    expect(!!(await txt(d, '.us-index .usx-review')), 'the Index does not say whose words the committee lines are');
+    await done(d);
+    // the profile page: the same first line, the subcommittees open to their own lines, every role word opens its note, and the note closes four ways
+    const p = await open('/?panel=us&who=house-committee-on-ways-and-means#desktop', { width: 1440, height: 900, settle: 2600 });
+    for (let t = 0; t < 30 && !(await has(p, '.usm-prof .usx-what')); t++) await wait(150);
+    expect((await txt(p, '.usm-prof .usx-what')) === sheetWhat, 'the profile page says a different first line from the sheet');
+    expect(!!(await txt(p, '.usm-prof .usx-review')), 'the profile page does not show the review notice with our lines');
+    await p.evaluate(() => { document.querySelectorAll('.usm-prof .usmp-list .usm-more').forEach((b) => b.click()); }); await wait(300);
+    const subs = await p.$$eval('.usm-prof .usx-sub', (ds) => ds.map((x) => x.getAttribute('data-sub')));
+    expect(subs.length === land.committees.find((c) => c.id === 'HSWM').subcommittees.length, `the profile lists ${subs.length} subcommittees that open`);
+    await p.evaluate(() => { document.querySelectorAll('.usm-prof .usx-sub').forEach((x) => { x.open = true; }); }); await wait(500);
+    const subTexts = await p.$$eval('.usm-prof .usx-sub', (ds) => ds.map((x) => ({ id: x.getAttribute('data-sub'), what: (x.querySelector('.usx-what') || {}).innerText || '', none: !!x.querySelector('.usx-none'), off: !!x.querySelector('.usx-official') })));
+    for (const s of subTexts) expect(s.what || s.off || s.none, `subcommittee ${s.id} shows no text at all`);
+    const closeWays = async (pg, how, phone) => {
+      await pg.evaluate(() => { const b = document.querySelector('.usm-prof .usx-role, .usm-sheet:not(.usx-note) .usx-role'); if (b) b.click(); }); await wait(700);
+      const note = await pg.evaluate(() => { const n = document.querySelector('.usx-note'); return n ? { what: (n.querySelector('.usx-what') || {}).innerText || '', why: (n.querySelector('.usx-why') || {}).innerText || '', rev: (n.querySelector('.usx-review') || {}).innerText || '', focus: !!(document.activeElement && document.activeElement.closest('.usx-note')) } : null; });
+      expect(!!note && note.what && note.why && note.rev, `a role word did not open its note with two lines and the review notice (${how})`);
+      if (note) expect(note.focus, `the focus did not move into the note (${how})`);
+      if (how === 'Done') await pg.evaluate(() => document.querySelector('.usx-note .usm-done').click());
+      else if (how === 'outside') { if (phone) await pg.touchscreen.tap(195, 60); else await pg.mouse.click(300, 450); }
+      else if (how === 'Escape') await pg.keyboard.press('Escape');
+      else if (how === 'back') await pg.evaluate(() => history.back());
+      else if (how === 'swipe') {
+        const cdp = await pg.createCDPSession(); const tch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+        const top = await pg.$eval('.usx-note', (x) => x.getBoundingClientRect().top);
+        await tch('touchStart', [[195, top + 20]]); for (let k = 1; k <= 8; k++) { await tch('touchMove', [[195, top + 20 + k * 30]]); await wait(16); } await tch('touchEnd', []);
+      }
+      await wait(800);
+      expect(!(await has(pg, '.usx-note')), `the role note did not close with ${how}`);
+      expect(await has(pg, '.usm-prof, .usm-canvas'), `closing the role note with ${how} left the page`);
+    };
+    for (const how of ['Done', 'outside', 'Escape', 'back']) await closeWays(p, how, false);
+    expect(/[?&]who=house-committee-on-ways-and-means/.test(await p.evaluate(() => location.href)), 'closing a role note left the profile');
+    // every role word in the record has a note with two short lines
+    const usText = fs.readFileSync(path.join(ROOT, 'ext', 'cx-us-text.jsx'), 'utf8'), block = usText.slice(usText.indexOf('/* US-TEXT-START'), usText.indexOf('/* US-TEXT-END */'));
+    const vmc = require('vm').createContext({}); require('vm').runInContext(`${block}\n;this.R = CX_US_ROLE_TEXT;`, vmc);
+    const roleText = vmc.R, roleKeys = Object.keys(roleText);
+    for (const w of new Set(land.members.flatMap((m) => m.committees.map((c) => c.role)))) expect(roleKeys.some((k) => roleText[k].words.some((x) => x.toLowerCase() === w.toLowerCase())), `the role word "${w}" opens no note`);
+    for (const k of roleKeys) {
+      const r = roleText[k];
+      expect(words(r.what) <= 20 && words(r.why) <= 15 && words(r.what) + words(r.why) <= 35, `the ${k} note is too long`);
+      for (const s of [r.what, r.why, r.same]) { expect(!RANK.test(s), `the ${k} note says "${(s.match(RANK) || [])[0]}"`); expect(!DASH.test(s), `the ${k} note has a dash`); }
+    }
+    // how a committee works: a story, step by step, with a source on every step, and it closes
+    await p.evaluate(() => document.querySelector('.usm-prof .usx-how').click()); await wait(700);
+    expect(await has(p, '.usx-story .cxm-story'), '"How a committee works" did not open as a story');
+    const steps = [];
+    for (let k = 0; k < 8 && (await has(p, '.usx-story')); k++) {
+      steps.push(await p.evaluate(() => ({ big: (document.querySelector('.usx-story .cxm-story-big') || {}).innerText || '', src: !!document.querySelector('.usx-story .cxm-story-src2 a[href^="https://"]') })));
+      await p.keyboard.press('ArrowRight'); await wait(250);
+    }
+    expect(steps.length === 6 && steps.every((s) => s.big && s.src), `the story should have five steps and the rule, each with a source: ${JSON.stringify(steps).slice(0, 300)}`);
+    expect(!(await has(p, '.usx-story')), 'the story did not close after its last step');
+    await done(p);
+    // a subcommittee with no description on file says so; one with official words but no line shows them
+    const noneSub = ids.find((id) => id.length > 4 && !X.committees[id].text), offSub = ids.find((id) => id.length > 4 && X.committees[id].text && !X.lines[id]);
+    for (const [id, want] of [[noneSub, 'none'], [offSub, 'official']]) {
+      if (!id) continue;
+      const parent = land.committees.find((c) => c.id === id.slice(0, 4));
+      const slug = parent.name.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+      const s = await open(`/?panel=us&who=${slug}#desktop`, { width: 1440, height: 900, settle: 2600 });
+      await s.evaluate(() => { document.querySelectorAll('.usm-prof .usmp-list .usm-more').forEach((b) => b.click()); }); await wait(300);
+      await s.evaluate((id) => { const x = document.querySelector(`.usm-prof .usx-sub[data-sub="${id}"]`); if (x) x.open = true; }, id); await wait(600);
+      const r = await s.evaluate((id) => { const x = document.querySelector(`.usm-prof .usx-sub[data-sub="${id}"]`); return x ? { none: !!x.querySelector('.usx-none'), off: !!(x.querySelector('.usx-official[open] .usx-quote')), what: !!x.querySelector('.usx-what') } : null; }, id);
+      expect(!!r && (want === 'none' ? r.none && !r.what : r.off && !r.what), `${id} (${want}) does not show ${want === 'none' ? '"No description on file"' : 'its official words, open'}: ${JSON.stringify(r)}`);
+      await done(s);
+    }
+    // on a phone: the sheet's lines, the note closes with a swipe down too, and nothing slides sideways
+    const m = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 });
+    await mapReady(m);
+    const mq = await mapAt(m, 'House Committee on Ways and Means'); await m.touchscreen.tap(mq[0], mq[1]); await wait(800); if (await has(m, '.usm-chip')) { await m.tap('.usm-chip'); await wait(900); }
+    for (let t = 0; t < 30 && !(await has(m, '.usm-sheet .usx-what')); t++) await wait(150);
+    expect((await txt(m, '.usm-sheet .usx-what')) === sheetWhat, 'the phone sheet says a different first line');
+    for (const how of ['swipe', 'Done', 'outside', 'back']) await closeWays(m, how, true);
+    expect(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone page slides sideways');
+    const small = await m.evaluate(() => [...document.querySelectorAll('.usx-role, .usx-official > summary, .usx-how, .usx-subrow')].filter((e) => { const r = e.getBoundingClientRect(); return r.width && r.height && (r.height < 44 || r.width < 44); }).map((e) => e.className));
+    expect(!small.length, `controls under 44 px: ${small.slice(0, 4)}`);
+    await done(m);
+  },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);
     const d = await p.evaluate(() => ['.atlas-header', '.atlas-sidebar', '.sp-pick'].map((s) => (document.querySelector(s) ? getComputedStyle(document.querySelector(s)).display : 'none')));
@@ -2236,6 +2371,9 @@ const AXE_PAGES = [
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us committee profile', '/?panel=us&who=senate-committee-on-finance#desktop', { settle: 2600 }], ['phone us court profile', '/?panel=us&who=supreme-court-of-the-united-states#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us map settings', '/?panel=us#desktop', { settle: 1800, after: 'usmSettings' }],
+  // what a committee does (ext/cx-us-text.jsx): its sheet with the official words open, a role's note, the subcommittees opened, and the story
+  ['desktop us committee sheet', '/?panel=us#desktop', { settle: 1800, after: 'usCommittee' }], ['desktop us role note', '/?panel=us&who=house-committee-on-ways-and-means#desktop', { settle: 2600, after: 'usRole' }],
+  ['phone us committee subcommittees', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usSubs' }], ['phone us committee story', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usStory' }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
   ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone issue story', '/#phone', { mobile: true, easy: false, after: 'issueStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
   // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
@@ -2253,6 +2391,23 @@ const AXE_AFTER = {
     if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'liquor'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
   },
   usmSettings: () => { const b = document.querySelector('.usm-top .usm-set-btn'); if (b) b.click(); },
+  usCommittee: async () => {   // pick the Ways and Means Committee on the map, then open its own words
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const c = document.querySelector('.usm-canvas'), r = c.getBoundingClientRect(), q = c.cxMap.at('House Committee on Ways and Means');
+    c.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: r.left + q[0], clientY: r.top + q[1] })); await w(1400);
+    document.querySelectorAll('.usm-sheet .usx-official').forEach((d) => { d.open = true; });
+  },
+  usRole: async () => {   // a role's note over the profile, with its official words open
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.usm-prof .usx-role'); if (b) b.click(); await w(900);
+    document.querySelectorAll('.usx-note .usx-official').forEach((d) => { d.open = true; }); await w(600);
+  },
+  usSubs: async () => {   // every subcommittee opened to its own lines, and the committee's own words open
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    document.querySelectorAll('.usm-prof .usmp-list .usm-more').forEach((b) => b.click()); await w(300);
+    document.querySelectorAll('.usm-prof .usx-sub, .usm-prof .usx-official').forEach((d) => { d.open = true; }); await w(300);
+  },
+  usStory: async () => { const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = document.querySelector('.usm-prof .usx-how'); if (b) b.click(); await w(800); },
   pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
   jumpOpen: () => { const b = document.querySelector('.cx-jump-btn'); if (b) b.click(); },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },

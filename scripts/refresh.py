@@ -4,6 +4,9 @@
   python scripts/refresh.py          fetch all three sources, check them, log the changes
   python scripts/refresh.py --check  only run the safety checks on data/ as it stands
   python scripts/refresh.py --districts  rebuild data/districts-2026.json (street address ranges and districts; run by hand when maps change)
+  python scripts/refresh.py --explainers rebuild data/us-explainers-2026.json (what each committee and subcommittee handles, in its own official
+                                         words, and what the committee roles mean; scripts/fetch_explainers.py). The nightly run also does this
+                                         on Mondays, and on any night the committees in the federal record no longer match the file.
 
 Steps:
   1. keep a copy of today's data/*.json
@@ -23,7 +26,7 @@ import datetime, json, os, shutil, sys, tempfile
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 DATA = os.path.join(HERE, "..", "data")
-FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json", "people-2026.json", "us-landscape-2026.json", "us-votes-2026.json", "votes-2026.json")
+FILES = ("legistar-2026.json", "reasons-2026.json", "place-2026.json", "geo-2026.json", "people-2026.json", "us-landscape-2026.json", "us-votes-2026.json", "votes-2026.json", "us-explainers-2026.json")
 
 
 def load(d, name):
@@ -67,6 +70,10 @@ def check(old_dir, new_dir):
         co = load(old_dir, "votes-2026.json")
         if cr["counts"]["files"] < co["counts"]["files"]:
             bad.append(f"council votes: {cr['counts']['files']} files with a roll call, down from {co['counts']['files']} (the record only grows)")
+    ex = os.path.join(new_dir, "us-explainers-2026.json")   # what each committee handles: a row for every committee and subcommittee in the record
+    if os.path.exists(ex):
+        import fetch_explainers
+        bad += fetch_explainers.check(load(new_dir, "us-explainers-2026.json"), load(new_dir, "us-landscape-2026.json"))
     g = load(new_dir, "geo-2026.json")
     for k, want in (("wards2026", 15), ("wards2014", 17)):
         n = len(g["layers"].get(k, {}).get("features", []))
@@ -82,17 +89,23 @@ def main():
         import fetch_districts
         fetch_districts.main()
         return
+    if "--explainers" in sys.argv:   # the committees' own words; also runs below, weekly or when the committees change
+        import fetch_explainers
+        fetch_explainers.main()
+        return
     if "--check" in sys.argv:
         bad = check(None, DATA)
         print("\n".join(bad) or "data/ passes the safety checks")
         sys.exit(1 if bad else 0)
     keep = tempfile.mkdtemp(prefix="civic-prev-")
     for f in FILES:
-        shutil.copy(os.path.join(DATA, f), keep)
+        if os.path.exists(os.path.join(DATA, f)):
+            shutil.copy(os.path.join(DATA, f), keep)
 
     def restore(why):
         for f in FILES:
-            shutil.copy(os.path.join(keep, f), DATA)
+            if os.path.exists(os.path.join(keep, f)):
+                shutil.copy(os.path.join(keep, f), DATA)
         sys.exit(f"REFRESH STOPPED, previous data kept: {why}")
 
     import fetch_legistar, fetch_reasons, fetch_place, fetch_people, fetch_us, fetch_votes, fetch_cityrecord, changes
@@ -120,6 +133,17 @@ def main():
         fetch_meetings.main()
     except Exception as e:
         print(f"::warning title=Council meetings were not updated::{type(e).__name__}: {e}")
+    try:  # what each committee handles (official words): best effort, weekly, or at once when the committees in the record change.
+        import fetch_explainers   # If the sources fail, the file is brought into line with the record without the network (a new committee says "No description on file").
+        if datetime.date.today().weekday() == 0 or os.environ.get("CX_EXPLAINERS") or fetch_explainers.stale():
+            fetch_explainers.main()
+    except Exception as e:
+        print(f"::warning title=Committee explainers were not updated::{type(e).__name__}: {e}")
+        try:
+            if fetch_explainers.stale():
+                fetch_explainers.main(offline=True)
+        except Exception as e2:
+            print(f"::warning title=Committee explainers could not be brought into line with the record::{type(e2).__name__}: {e2}")
     bad = check(keep, DATA)
     if bad:
         restore("; ".join(bad))

@@ -440,6 +440,7 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics, start }) {
   // start: { door, grp, id } opens the Index where one node is listed, with that node in view (the map's "Explore in Index")
   const [door, setDoor] = u.useState(start && start.door ? start.door : `members`), [grp, setGrp] = u.useState(start && start.grp ? start.grp : ``), [more, setMore] = u.useState(25), [openState, setOpenState] = u.useState(``);
   const cur = doors.find((d) => d.id === door) || doors[0], gr = cur.groups.find((x) => x.id === grp) || cur.groups[0];
+  const X = useCxUsx(cur.id === `committees`);   // what each committee does, loaded when the committees door opens
   const needle = q.trim().toLowerCase();
   const pickDoor = (id) => { setDoor(id); setGrp(``); setMore(25); setOpenState(``); };
   let items = null, total = 0;
@@ -470,8 +471,9 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics, start }) {
       {items && (
         <>
           <p className="us-count" role="status">{total} shown. Choose one to see its connections.</p>
+          {cur.id === `committees` && X && !X.none && <p className="us-hint usx-review">{cxUsxReviewLine(X)}</p>}
           <ul className="us-list">
-            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" data-node={n.id} aria-current={start && start.id === n.id ? `true` : undefined} className={`${n.kind === `member` || n.kind === `president` ? `has-face` : ``} ${start && start.id === n.id ? `on` : ``}`} onClick={() => onOpen(n.i)}>{(n.kind === `member` || n.kind === `president`) && <CxFace id={cxUsFaceId(n)} name={n.name} size={44} />}<strong>{n.name}</strong><small>{cxUsWhere(n)}</small></button></li>)}
+            {items.slice(0, more).map((n) => <li key={n.id}><button type="button" data-node={n.id} aria-current={start && start.id === n.id ? `true` : undefined} className={`${n.kind === `member` || n.kind === `president` ? `has-face` : ``} ${start && start.id === n.id ? `on` : ``}`} onClick={() => onOpen(n.i)}>{(n.kind === `member` || n.kind === `president`) && <CxFace id={cxUsFaceId(n)} name={n.name} size={44} />}<strong>{n.name}</strong><small className={n.kind === `committee` && cxUsxWhat(n.c.id) ? `usx-what` : undefined}>{(n.kind === `committee` && cxUsxWhat(n.c.id)) || cxUsWhere(n)}</small></button></li>)}
           </ul>
           {total > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {total - more}</button></p>}
         </>
@@ -503,7 +505,8 @@ function CX_UsDoors({ data, g, visible, dim, q, onOpen, onTopics, start }) {
 function CX_UsTreeNode({ t, g, onOpen, depth }) {
   const kids = t.children || [];
   const open = (i) => <button type="button" onClick={() => onOpen(i)}>{t.label}</button>;
-  if (!kids.length) return <li>{t.node !== null && t.node !== undefined ? open(t.node) : <span>{t.label}</span>}{t.note && <small className="us-note"> {t.note}</small>}</li>;
+  const n = t.node !== null && t.node !== undefined ? g.nodes[t.node] : null, what = n && n.kind === `committee` ? cxUsxWhat(n.c.id) : ``;   // a committee says what it does
+  if (!kids.length) return <li>{n ? open(t.node) : <span>{t.label}</span>}{t.note && <small className="us-note"> {t.note}</small>}{what && <small className="us-note usx-what">{what}</small>}</li>;
   return (
     <li>
       <details open={depth < 1}>
@@ -516,7 +519,8 @@ function CX_UsTreeNode({ t, g, onOpen, depth }) {
 }
 function CX_UsTree({ data, g, onOpen }) {
   const tree = u.useMemo(() => cxUsTree(data, g), [data, g]);
-  return <div className="us-tree"><ul>{tree.map((t, i) => <CX_UsTreeNode key={i} t={t} g={g} onOpen={onOpen} depth={0} />)}</ul></div>;
+  const X = useCxUsx();   // what each committee does
+  return <div className="us-tree">{X && !X.none && <p className="us-hint usx-review">{cxUsxReviewLine(X)}</p>}<ul>{tree.map((t, i) => <CX_UsTreeNode key={i} t={t} g={g} onOpen={onOpen} depth={0} />)}</ul></div>;
 }
 
 function CX_UsGraph({ phone, start }) {

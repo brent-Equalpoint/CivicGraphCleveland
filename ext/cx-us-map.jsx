@@ -298,6 +298,9 @@ function cxUsMapSheet(g, M, data, i) {
   const src = (k) => M.sources[k];
   const out = { kicker: ``, name: n.name, sentence: ``, fact: ``, lists: [], src: src(`members`) };
   const st = (c) => cxStateName(c);
+  // a committee seat's word from the record (Chairman, Ranking member, Ex officio, Member) sits beside the row and opens what the post means
+  const seat = (x, sub) => ({ i: x.i, name: x.n.name, sub, word: cxUsmRole(x.e.rel), role: !0 });
+  const who = (x) => `${x.n.m.chamber === `senate` ? `Senator` : `Representative`}, ${st(x.n.m.state)}`;
   if (n.kind === `member`) {
     const m = n.m, seats = conn((o) => o.kind === `committee`).sort(byName), leads = seats.filter((x) => x.l.line === `lead`);
     const terr = CX_USM_TERR.has(m.state);
@@ -305,16 +308,18 @@ function cxUsMapSheet(g, M, data, i) {
     out.sentence = m.chamber === `senate` ? `Represents ${st(m.state)} in the Senate.` : terr ? `Represents ${st(m.state)} in the House.` : m.district ? `Represents ${st(m.state)}'s ${cxOrd(m.district)} district in the House.` : `Represents all of ${st(m.state)} in the House.`;
     const on = seats.length === 1 ? `Sits on 1 committee` : `Sits on ${seats.length} committees`;
     out.fact = !seats.length ? `No committee seat is listed.` : leads.length ? `${on} and leads ${leads.length}.` : `${on}.`;
-    if (seats.length) out.lists.push({ title: `Committees`, rows: seats.map((x) => row(x, role(x))) });
+    if (seats.length) out.lists.push({ title: `Committees`, rows: seats.map((x) => seat(x, x.n.c.chamber === `joint` ? `Joint committee` : `${x.n.c.chamber === `senate` ? `Senate` : `House`} committee`)) });
     out.src = src(`membership`);
   } else if (n.kind === `committee`) {
     const c = n.c, ch = c.chamber === `senate` ? `Senate` : `House`, mem = conn((o) => o.kind === `member`).sort(byName), leads = mem.filter((x) => x.l.line === `lead`);
     out.kicker = c.chamber === `joint` ? `Joint committee` : `Committee, ${ch}`;
     out.sentence = c.chamber === `joint` ? `A joint committee of Congress with ${c.members} listed members.` : c.chamber === `senate` ? `A Senate committee with ${c.members} listed members.` : `A House committee with ${c.members} listed members.`;
     out.fact = c.chair ? `Chair: ${c.chair}.` : `No chair is listed.`;
-    if (leads.length) out.lists.push({ title: `Who leads it`, rows: leads.map((x) => row(x, role(x))) });
-    if (mem.length) out.lists.push({ title: `Members`, rows: mem.map((x) => row(x, `${x.n.m.chamber === `senate` ? `Senator` : `Representative`}, ${st(x.n.m.state)}`)) });
-    if (c.subcommittees.length) out.lists.push({ title: `Subcommittees`, rows: c.subcommittees.map((s) => ({ i: null, name: s.name, sub: s.chair ? `Chair: ${s.chair}` : `` })) });
+    out.cid = c.id;
+    if (leads.length) out.lists.push({ title: `Who leads it`, rows: leads.map((x) => seat(x, who(x))) });
+    if (mem.length) out.lists.push({ title: `Members`, rows: mem.map((x) => row(x, who(x))) });
+    // each subcommittee opens its own two lines (what it does, why it matters) and its official words
+    if (c.subcommittees.length) out.lists.push({ title: `Subcommittees`, rows: c.subcommittees.map((s) => ({ i: null, xid: s.id, name: s.name, sub: s.chair ? `Chair: ${s.chair}` : `` })) });
     out.src = src(`membership`);
   } else if (n.kind === `agency`) {
     const a = n.a, up = a.parent_id ? g.byId.get(`a:${a.parent_id}`) : null, kids = conn((o) => o.kind === `agency` && o.a.parent_id === a.id).sort(byName);
@@ -469,8 +474,8 @@ function cxUsProfile(g, M, data, vd, i) {
     m.committees.forEach((c) => {
       const exact = g.byId.get(`c:${c.id}`), parent = exact || g.byId.get(`c:${c.id.slice(0, 4)}`);
       if (!parent) return;
-      if (exact) full.push({ i: parent.i, name: parent.name, sub: `${chamberWord(parent.c.chamber)} committee`, word: cxUsmRole(c.role) });
-      else { const s = parent.c.subcommittees.find((x) => x.id === c.id); if (s) subs.push({ i: null, name: s.name, sub: `Part of ${parent.name}`, word: cxUsmRole(c.role) }); }
+      if (exact) full.push({ i: parent.i, name: parent.name, sub: `${chamberWord(parent.c.chamber)} committee`, word: cxUsmRole(c.role), role: !0 });
+      else { const s = parent.c.subcommittees.find((x) => x.id === c.id); if (s) subs.push({ i: null, name: s.name, sub: `Part of ${parent.name}`, word: cxUsmRole(c.role), role: !0 }); }
     });
     P.sentence = [sh.sentence, `Current term since ${day(m.term_start)}.`, sh.fact];
     const rows = vd ? cxMemberVotes(vd, m) : null, cast = rows ? rows.filter((r) => r.c === `Y` || r.c === `N` || r.c === `P` || r.c === `O`) : null;
@@ -497,13 +502,15 @@ function cxUsProfile(g, M, data, vd, i) {
     const lead = (re) => mem.filter((x) => re.test(x.e.rel)).map((x) => x.n.name);
     P.glance = [{ n: c.members, label: `Members` }, { n: c.subcommittees.length, label: c.subcommittees.length === 1 ? `Subcommittee` : `Subcommittees` }, { n: new Set(mem.map((x) => x.n.m.state)).size, label: `States represented` }];
     rec(`chamber`, `Chamber`, c.chamber === `senate` ? `Senate` : c.chamber === `house` ? `House of Representatives` : `Joint, both chambers`, src(`committees`));
-    rec(`chair`, `Chair`, c.chair || `None listed`, src(`membership`));
-    const rk = lead(/^ranking member$/i); if (rk.length) rec(`ranking`, `Ranking member`, rk, src(`membership`));
+    rec(`chair`, `Chair`, c.chair || `None listed`, src(`membership`), { role: !0 });
+    const rk = lead(/^ranking member$/i); if (rk.length) rec(`ranking`, `Ranking member`, rk, src(`membership`), { role: !0 });
     rec(`members`, `Members`, String(c.members), src(`membership`));
     rec(`subs`, `Subcommittees`, c.subcommittees.length ? c.subcommittees.map((s) => s.name) : `None listed`, src(`committees`));
     if (c.url) rec(`page`, `Official page`, c.url, src(`committees`), { link: c.url });
-    list(`members`, `Members`, mem.map((x) => ({ i: x.i, name: x.n.name, sub: `${x.n.m.chamber === `senate` ? `Senator` : `Representative`}, ${cxStateName(x.n.m.state)}`, word: cxUsmRole(x.e.rel) })));
-    list(`subcommittees`, `Subcommittees`, c.subcommittees.map((s) => ({ i: null, name: s.name, sub: s.chair ? `Chair: ${s.chair}` : `No chair listed`, word: `Subcommittee` })), { map: !1 });
+    P.cid = c.id;
+    list(`members`, `Members`, mem.map((x) => ({ i: x.i, name: x.n.name, sub: `${x.n.m.chamber === `senate` ? `Senator` : `Representative`}, ${cxStateName(x.n.m.state)}`, word: cxUsmRole(x.e.rel), role: !0 })));
+    // each subcommittee opens to its own two lines and its official words (CX_UsxLines)
+    list(`subcommittees`, `Subcommittees`, c.subcommittees.map((s) => ({ i: null, xid: s.id, name: s.name, sub: s.chair ? `Chair: ${s.chair}` : `No chair listed`, word: `Subcommittee` })), { map: !1 });
     const hubs = conn((o) => o.kind === `hub`);
     list(`chamber`, `Chamber`, hubs.map((x) => ({ i: x.i, name: x.n.name, sub: `Chamber of Congress`, word: `Committee of` })));
   } else if (n.kind === `agency`) {
@@ -615,7 +622,7 @@ function CxUsmShape({ shape, color, line }) {
 /* The details sheet: on a computer it sits to the right of the map; on a phone it opens part way up, pulls up to near the top, and
    swipes down to close (the kit's sheet, vendor/relationship-map-kit/map/sheet.js). It also closes with Done, a tap on the map, and
    the back gesture (handled by the page). */
-function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh }) {
+function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub }) {
   const bodyRef = u.useRef(null);
   const [all, setAll] = u.useState({});
   u.useEffect(() => { setAll({}); if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [info.name]);
@@ -674,34 +681,42 @@ function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo,
   }, [phone, info.name, still]);
   const CAP = 12;
   return (
-    <aside className={`usm-sheet ${fresh ? `usm-fresh` : ``}`} ref={sheetRef} aria-labelledby="usm-sheet-h" data-phone={phone ? `1` : `0`}>
+    <aside className={`usm-sheet ${fresh ? `usm-fresh` : ``} ${cls}`} ref={sheetRef} aria-labelledby={hid} data-phone={phone ? `1` : `0`}>
       <div className="usm-sheet-top">
         {phone && <span className="usm-grab" aria-hidden="true" />}
         <p className="usm-kicker">{info.kicker}</p>
         <button type="button" className="usm-done" onClick={onClose}>Done</button>
       </div>
       <div className="usm-sheet-body" ref={bodyRef}>
-        <h2 id="usm-sheet-h" className="usm-name">{info.name}{!/[.!?]$/.test(info.name) && <span className="usm-dot">.</span>}</h2>
-        <p className="usm-sent">{info.sentence}</p>
-        <p className="usm-fact">{info.fact}</p>
+        <h2 id={hid} className="usm-name">{info.name}{!/[.!?]$/.test(info.name) && <span className="usm-dot">.</span>}</h2>
+        {lead}
+        {info.sentence ? <p className="usm-sent">{info.sentence}</p> : null}
+        {info.fact ? <p className="usm-fact">{info.fact}</p> : null}
         {info.lists.map((L) => (
           <section key={L.title} className="usm-list">
             <h3>{L.title} <small>{L.rows.length}</small></h3>
             <ul>
-              {(all[L.title] ? L.rows : L.rows.slice(0, CAP)).map((r, k) => (
-                <li key={`${r.name}-${k}`}>{r.i !== null && r.i !== undefined ? <button type="button" onClick={() => onPick(r.i)}><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</button> : <p><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</p>}</li>
-              ))}
+              {(all[L.title] ? L.rows : L.rows.slice(0, CAP)).map((r, k) => {
+                const body = <><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</>;
+                return (
+                  <li key={`${r.name}-${k}`} className={r.word ? `usx-rl` : undefined}>
+                    {r.i !== null && r.i !== undefined ? <button type="button" onClick={() => onPick(r.i)}>{body}</button>
+                      : r.xid && onSub ? <button type="button" className="usx-subrow" aria-haspopup="dialog" onClick={(e) => onSub(r.xid, e.currentTarget)}>{body}</button> : <p>{body}</p>}
+                    {r.word ? (r.role ? <CX_UsxRoleBtn word={r.word} onRole={onRole} cls="usm-word" /> : <b className="usm-word">{r.word}</b>) : null}
+                  </li>
+                );
+              })}
             </ul>
             {L.rows.length > CAP && !all[L.title] && <button type="button" className="usm-more" onClick={() => setAll({ ...all, [L.title]: !0 })}>{`Show all ${L.rows.length}`}</button>}
           </section>
         ))}
         {info.src && <p className="usm-src"><span>From </span><a href={info.src.url} target="_blank" rel="noreferrer">{info.src.label}<span className="sp-ext"> (opens in a new tab)</span></a><span>.</span></p>}
       </div>
-      <div className="usm-acts">
+      {!noActs && <div className="usm-acts">
         <button type="button" className="usm-btn usm-pri" onClick={onProfile}>Open profile</button>
         <button type="button" className="usm-btn" aria-pressed={soloOn} onClick={onSolo}>{soloOn ? `Show everything` : `Solo`}</button>
         <button type="button" className="usm-btn" onClick={onIndex}>Explore in Index</button>
-      </div>
+      </div>}
     </aside>
   );
 }
@@ -822,7 +837,7 @@ function CX_UsCorner({ g, M, P, still, phone, onGroup, onNode }) {
 }
 
 /* The profile page itself, over the map. back: the words on the back button. bar: the language and settings buttons. */
-function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap, onIndex, onOpen }) {
+function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap, onIndex, onOpen, onRole, onHow }) {
   const ref = u.useRef(null);
   const [all, setAll] = u.useState({});
   const CAP = 5;
@@ -853,6 +868,7 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
           {(P.kind === `member` || P.kind === `president`) && <CxFace id={P.face} name={P.name} size={phone ? 64 : 76} className="usmp-face" />}
           <p className="usmp-kicker">{P.kicker}</p>
           <h1 id="usmp-h" className="usmp-name" tabIndex={-1}>{P.name}{!/[.!?]$/.test(P.name) && <span className="usm-dot">.</span>}</h1>
+          {P.kind === `committee` && P.cid && <CX_UsxLines id={P.cid} onHow={onHow} />}
           <p className="usmp-sent">{P.sentence.map((s, k) => <u.Fragment key={k}>{k ? ` ` : null}<span>{s}</span></u.Fragment>)}</p>
           <p className="usmp-fact">{P.fact}</p>
           <div className="usmp-acts">
@@ -877,7 +893,7 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
             <dl>
               {P.record.map((r) => (
                 <div key={r.key} className={`usmp-row usmp-row-${r.key}`}>
-                  <dt>{r.label}</dt>
+                  <dt>{r.role ? <CX_UsxRoleBtn word={r.label} onRole={onRole} /> : r.label}</dt>
                   <dd>
                     {r.link ? <a href={r.link} target="_blank" rel="noreferrer" data-no-translate="">{host(r.link)}{ext}</a> : Array.isArray(r.value) ? <><ul>{(all[`r:${r.key}`] ? r.value : r.value.slice(0, CAP)).map((v) => <li key={v}>{v}</li>)}</ul>{r.value.length > CAP && !all[`r:${r.key}`] && <button type="button" className="usm-more" onClick={() => setAll((a) => ({ ...a, [`r:${r.key}`]: !0 }))}>{`Show all ${r.value.length}`}</button>}</> : <span className="usmp-val">{r.value}</span>}
                     {r.note && <span className="usmp-note">{r.note}</span>}
@@ -894,7 +910,21 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
               const body = <>{L.note && <p className="usmp-note">{L.note}</p>}
                 <ul>
                   {(all[L.key] ? L.rows : L.rows.slice(0, CAP)).map((r, k) => {
-                    const inner = <><span className="usmp-cn"><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</span><b className="usmp-word">{r.word}</b></>;
+                    const cn = <span className="usmp-cn"><span>{r.name}</span>{r.sub && <small>{r.sub}</small>}</span>;
+                    // a subcommittee opens to its own two lines and its official words
+                    if (r.xid) return (
+                      <li key={`${r.name}-${k}`} className="usx-subli">
+                        <details className="usx-sub" data-sub={r.xid}><summary>{cn}<b className="usmp-word">{r.word}</b></summary><CX_UsxLines id={r.xid} kind="sub" short /></details>
+                      </li>
+                    );
+                    // a committee seat's word from the record is its own button: it opens what the post means
+                    if (r.role) return (
+                      <li key={`${r.name}-${k}`} className="usx-rl">
+                        {r.i !== null && r.i !== undefined ? <button type="button" data-node={g.nodes[r.i].id} onClick={() => onOpen(r.i)}>{cn}</button> : <p>{cn}</p>}
+                        <CX_UsxRoleBtn word={r.word} onRole={onRole} cls="usmp-word" />
+                      </li>
+                    );
+                    const inner = <>{cn}<b className="usmp-word">{r.word}</b></>;
                     return (
                       <li key={`${r.name}-${k}`}>
                         {r.i !== null && r.i !== undefined ? <button type="button" data-node={g.nodes[r.i].id} onClick={() => onOpen(r.i)}>{inner}</button>
@@ -983,6 +1013,29 @@ function CX_UsMap({ phone, onExit }) {
   const profR = u.useRef({ n: 0, pushed: 0, skip: 0, then: null, focus: null });
   profR.current.n = prof.length;
   const [vd, setVd] = u.useState(CX_USV.v);   // the recorded votes, loaded only when a member's profile opens
+  useCxUsx(!1);   // listen for the committee lines (they load when a committee, a role, or a text view first needs them, not before)
+  // what a role word or a subcommittee means (a note in the same sheet the map uses), or the story "How a committee works", over everything.
+  // It takes one step in the browser's history, so the back gesture closes it; it also closes with Done, a tap outside, a swipe down, and Escape.
+  const [xo, setXo] = u.useState(null);   // { type: `role`, key, word } | { type: `sub`, id } | { type: `how` }
+  const xoR = u.useRef({ open: null, skip: 0, focus: null });
+  xoR.current.open = xo;
+  const xoSheetRef = u.useRef(null);
+  const openX = (o, from) => {
+    const r = xoR.current;
+    if (!r.open) { r.focus = from || document.activeElement; try { globalThis.history.pushState({ cxUsx: 1 }, ``, globalThis.location.href); } catch (e) { /* a sandboxed page has no history */ } }
+    setXo(o); cxUsxLoad();
+    setTimeout(() => { const b = rootRef.current && rootRef.current.querySelector(o.type === `how` ? `.usx-story .cxm-story-head > button` : `.usx-note .usm-done`); if (b) b.focus({ preventScroll: !0 }); }, 30);
+  };
+  const xoFocusBack = () => { const f = xoR.current.focus; xoR.current.focus = null; if (f && f.isConnected) setTimeout(() => { try { f.focus({ preventScroll: !0 }); } catch (e) { /* gone */ } }, 0); };
+  const closeX = () => {
+    const r = xoR.current; if (!r.open) return;
+    setXo(null); r.open = null; r.skip += 1;
+    try { globalThis.history.back(); } catch (e) { r.skip -= 1; }
+    xoFocusBack();
+  };
+  const onRole = (key, word, from) => openX({ type: `role`, key, word }, from);
+  const onSub = (id, from) => openX({ type: `sub`, id }, from);
+  const onHow = (e) => openX({ type: `how` }, e && e.currentTarget);
   const [motion, setMotion] = u.useState(() => {
     try { const v = globalThis.localStorage && globalThis.localStorage.getItem(`cx-us-motion`); if (v === `still` || v === `calm` || v === `live`) return v; } catch (e) { /* no storage: the default */ }
     return phone || cxUsmLess() ? `still` : `calm`;
@@ -992,6 +1045,7 @@ function CX_UsMap({ phone, onExit }) {
   const rootRef = u.useRef(null), cvRef = u.useRef(null), topRef = u.useRef(null), menuRef = u.useRef(null), soloRef = u.useRef(null), sheetRef = u.useRef(null), searchRef = u.useRef(null), stageRef = u.useRef(null), ctlRef = u.useRef(null);
   const S = u.useRef({ T: null, W: 0, H: 0, dpr: 1, pos: null, sim: null, raf: 0, flow: null, drag: null, cursor: null, t0: 0, wc: new Map(), fitted: !1, userMoved: !1, peek: 0, zoom: null, csel: null });
   const sky = page === `network` && view === `sky`;
+  u.useEffect(() => { if (page === `network` && view !== `sky`) cxUsxLoad(); }, [page, view]);   // the Index, Linked, and Tree show what each committee does
 
   // what the drawing needs to know, read fresh each frame
   const vis = u.useCallback((i) => {
@@ -1303,7 +1357,7 @@ function CX_UsMap({ phone, onExit }) {
     // the hover card (a computer with a mouse only): pointing at a person, committee, court, or agency shows who it is beside it.
     // Everything on it is also in the side sheet after a click, and on a phone there is none.
     const canHover = !phone && !!(globalThis.matchMedia && globalThis.matchMedia(`(hover: hover) and (pointer: fine)`).matches);
-    const hovSet = (j) => { if (j === (s.hover ?? null)) return; s.hover = j; setHover(j); cv.style.cursor = j !== null ? `pointer` : ``; request(); };
+    const hovSet = (j) => { if (j === (s.hover ?? null)) return; s.hover = j; setHover(j); if (j !== null && g.nodes[j].kind === `committee`) cxUsxLoad(); cv.style.cursor = j !== null ? `pointer` : ``; request(); };
     const hov = (e) => { if (!canHover || drag || e.buttons) return; const r = cv.getBoundingClientRect(), i = hitAt(e.clientX - r.left, e.clientY - r.top); hovSet(i !== null && M.nodes[i].kind !== `hub` ? i : null); };
     const hovOut = () => hovSet(null);
     const hovKey = (e) => { if (e.key === `Escape`) hovOut(); };
@@ -1362,6 +1416,9 @@ function CX_UsMap({ phone, onExit }) {
   }, [layer]);
   u.useEffect(() => {
     const onPop = () => {
+      const xr = xoR.current;   // a note or the story is the newest step while it is open
+      if (xr.skip) { xr.skip -= 1; return; }
+      if (xr.open) { xr.open = null; setXo(null); xoFocusBack(); return; }
       const pr = profR.current;
       if (pr.skip) { pr.skip -= 1; if (!pr.skip && pr.then) { const f = pr.then; pr.then = null; f(); } return; }
       if (pr.n > 0) {   // the back gesture on a profile: the one before it, or the map (and focus goes back where it was)
@@ -1392,13 +1449,13 @@ function CX_UsMap({ phone, onExit }) {
     const fix = () => { try { const u0 = new URL(globalThis.location.href); if (u0.searchParams.get(`who`) !== slug) { u0.searchParams.set(`who`, slug); globalThis.history.replaceState(globalThis.history.state, ``, u0.href); } } catch (e) { /* no history */ } };
     fix(); const t1 = setTimeout(fix, 400), t2 = setTimeout(fix, 1200);
     return () => { clearTimeout(t1); clearTimeout(t2); };
-  }, [profTop, g]);
+  }, [profTop, g, !!xo]);   // and again after a note over the profile closes (the desktop app rewrites the address when its history steps back)
   // a member's profile needs the recorded votes: they load then, not before
   u.useEffect(() => { if (profTop !== null && g && g.nodes[profTop].kind === `member` && !vd) { let live = !0; cxUsVotesLoad().then((d) => { if (live && d) setVd(d); }); return () => { live = !1; }; } return undefined; }, [profTop, g]);
   // while the profile or the dictionary is open, the map under it is out of reach (keyboard and screen reader)
   u.useEffect(() => {
-    const root = rootRef.current; if (!root || (!prof.length && !dictOn)) return undefined;
-    const keep = dictOn ? /usm-dict|usm-sr/ : /usm-prof|usm-settings|usm-dict|usm-sr/;
+    const root = rootRef.current; if (!root || (!prof.length && !dictOn && !xo)) return undefined;
+    const keep = xo ? /usx-|usm-sr/ : dictOn ? /usm-dict|usm-sr/ : /usm-prof|usm-settings|usm-dict|usm-sr/;
     const marked = [...root.children].filter((c) => !keep.test(String(c.className)) && !c.hasAttribute(`inert`));
     marked.forEach((c) => c.setAttribute(`inert`, ``));
     return () => marked.forEach((c) => c.removeAttribute(`inert`));
@@ -1448,8 +1505,9 @@ function CX_UsMap({ phone, onExit }) {
     if (K === `0`) { e.preventDefault(); fit(!0); }
   };
   const onRootKey = (e) => {
-    if (e.key === `/` && !(e.target.closest && e.target.closest(`input, select, textarea`))) { e.preventDefault(); setSearchOn(!0); setTimeout(() => searchRef.current && searchRef.current.focus(), 0); }
+    if (e.key === `/` && !xo && !(e.target.closest && e.target.closest(`input, select, textarea`))) { e.preventDefault(); setSearchOn(!0); setTimeout(() => searchRef.current && searchRef.current.focus(), 0); }
     else if (e.key === `Escape` && e.target === searchRef.current) { if (q) setQ(``); else e.target.blur(); }
+    else if (e.key === `Escape` && xo) { e.preventDefault(); closeX(); }
     else if (e.key === `Escape` && !(e.target.closest && e.target.closest(`input, select, textarea, canvas`))) { if (setOn) closeSettings(); else if (profR.current.n) closeProfiles(); else if (sheet) setSheet(!1); else if (panel) setPanel(!1); }
   };
   const setBtnRef = u.useRef(null), setPanelRef = u.useRef(null);
@@ -1515,11 +1573,14 @@ function CX_UsMap({ phone, onExit }) {
     const s = S.current; if (hover === null || !sky || prof.length || !s.T || !s.pos || !s.pos[hover] || !vis(hover)) return null;
     const hi = cxUsMapSheet(g, M, data, hover), k = s.T.k, zr = Math.max(0.8, Math.min(2.2, Math.pow(k, 0.6)));
     const px = s.T.x + k * s.pos[hover].x, py = s.T.y + k * s.pos[hover].y, rr = M.nodes[hover].r * zr * 1.3 + 14, w = 288;
-    const left = px + rr + w > s.W - 8 ? Math.max(8, px - rr - w) : px + rr, top = Math.max(8, Math.min(s.H - 180, py - 26));
+    const left = px + rr + w > s.W - 8 ? Math.max(8, px - rr - w) : px + rr, top = Math.max(8, Math.min(s.H - 220, py - 26));
+    const what = hi.cid ? cxUsxWhat(hi.cid) : ``;   // a committee: the "what it does" line only (the rest is in the sheet after a click)
     return (
       <div className="usm-hover" aria-hidden="true" style={{ left: Math.round(left), top: Math.round(top), width: w }}>
         <p className="usmp-kicker">{hi.kicker}</p>
         <p className="usm-hover-n">{hi.name}</p>
+        {what && <p className="usm-hover-w usx-what">{what}</p>}
+        {what && <p className="usm-hover-r">{cxUsxShortReview()}</p>}
         <p className="usm-hover-f">{hi.fact}</p>
         <p className="usm-hover-c">Click for their connections and profile.</p>
       </div>
@@ -1606,10 +1667,16 @@ function CX_UsMap({ phone, onExit }) {
       <div className="us-linked">
         {!cur && <p>Choose a person, committee, agency, or court on the map, in the Index, or in the Tree, and its connections are listed here.</p>}
         {cur && <><div className="us-who">{(cur.kind === `member` || cur.kind === `president`) && <CxFace id={cxUsFaceId(cur)} name={cur.name} size={64} />}<h2>{cur.name}</h2></div>
+          {cur.kind === `committee` && <CX_UsxLines id={cur.c.id} onHow={onHow} />}
           <ul className="us-facts">{cxUsFacts(g, cur).map((f, k) => <li key={k}>{f}</li>)}</ul>
           {cxUsLink(cur) && <p><a href={cxUsLink(cur)[1]} target="_blank" rel="noreferrer">{cxUsLink(cur)[0]}<span className="sp-ext"> (opens in a new tab)</span></a></p>}
           <p className="usm-linked-acts"><button type="button" className="usm-btn usm-pri" onClick={() => openProfile(cur.i)}>Open profile</button> <button type="button" className="cx-link-button" onClick={() => pick(cur.i, !0)}>Show in Sky</button></p>
-          {linkedLinks.length > 0 && <><h3>Connected to {linkedLinks.length}</h3><ul className="us-conn">{linkedLinks.slice(0, 80).map((l, k) => <li key={k}><button type="button" onClick={() => setSel(l.to)}>{l.name}</button> <small>{l.text}</small></li>)}</ul>{linkedLinks.length > 80 && <p>And {linkedLinks.length - 80} more.</p>}</>}</>}
+          {linkedLinks.length > 0 && <><h3>Connected to {linkedLinks.length}</h3><ul className="us-conn">{linkedLinks.slice(0, 80).map((l, k) => {
+            // a committee seat's word (Chairman, Member, Ex officio) opens what the post means; a committee says what it does
+            const seat = (cur.kind === `member` && l.kind === `committee`) || (cur.kind === `committee` && l.kind === `member`);
+            const what = l.kind === `committee` ? cxUsxWhat(g.nodes[l.to].c.id) : ``;
+            return <li key={k} className={seat ? `usx-rl` : undefined}><button type="button" onClick={() => setSel(l.to)}>{l.name}</button> {seat ? <CX_UsxRoleBtn word={cxUsmRole(l.rel)} onRole={onRole} cls="us-role" /> : <small>{l.text}</small>}{what && <small className="usx-sub">{what}</small>}</li>;
+          })}</ul>{linkedLinks.length > 80 && <p>And {linkedLinks.length - 80} more.</p>}</>}</>}
       </div>
     ) : null;
   const title = page === `people` ? `People` : page === `topics` ? `Votes by topic` : `Network`;
@@ -1637,7 +1704,16 @@ function CX_UsMap({ phone, onExit }) {
         bar={<><CX_LangButton cls="usm-lang" short={phone} />{setButton}</>}
         onMap={() => closeProfiles(() => { if (solo && !solo.keep.has(P.i)) setSolo(null); pick(P.i, !0); })}
         onIndex={() => { const n = g.nodes[P.i]; closeProfiles(() => { setIndexAt({ ...cxUsmDoorOf(n), id: n.id, at: Date.now() }); setPage(`network`); setView(`index`); setSheet(!1); }); }}
-        onOpen={openProfile} />}
+        onOpen={openProfile} onRole={onRole} onHow={onHow} />}
+      {xo && xo.type !== `how` && <button type="button" className="usm-scrim usx-scrim" aria-label="Close" tabIndex={-1} onClick={closeX} />}
+      {xo && xo.type === `role` && <CX_UsMapSheet cls="usx-note" hid="usx-note-h" noActs phone={phone} still={still} sheetRef={xoSheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={closeX}
+        info={{ kicker: `What the word means`, name: xo.word, sentence: ``, fact: ``, lists: [], src: null }} lead={<CX_UsxRoleBody rkey={xo.key} />} />}
+      {xo && xo.type === `sub` && (() => {
+        const pc = g.byId.get(`c:${xo.id.slice(0, 4)}`), s = pc && pc.c.subcommittees.find((x) => x.id === xo.id);
+        return <CX_UsMapSheet cls="usx-note" hid="usx-note-h" noActs phone={phone} still={still} sheetRef={xoSheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={closeX}
+          info={{ kicker: pc ? `Subcommittee of the ${pc.name}` : `Subcommittee`, name: s ? s.name : xo.id, sentence: ``, fact: s && s.chair ? `Chair: ${s.chair}.` : ``, lists: [], src: null }} lead={<CX_UsxLines id={xo.id} kind="sub" />} />;
+      })()}
+      {xo && xo.type === `how` && <CX_UsxStory onClose={closeX} />}
       {setOn && !phone && <CX_UsmSettings panelRef={setPanelRef} onClose={closeSettings} onDict={() => { setSetOn(!1); setDictOn(!0); }} />}
       {dictOn && <CX_UsmDict onClose={() => { setDictOn(!1); if (setBtnRef.current && setBtnRef.current.isConnected) setBtnRef.current.focus(); }} />}
       {sky && (
@@ -1659,7 +1735,8 @@ function CX_UsMap({ phone, onExit }) {
           {hoverCard}
           {panel && phone && <button type="button" className="usm-scrim" aria-label="Close Show" onClick={() => setPanel(!1)} />}
           {panel && showPanel}
-          {sheet && info && <CX_UsMapSheet info={info} phone={phone} still={still} sheetRef={sheetRef} fresh onPeek={(p) => { S.current.peek = p; }} onMove={request} onClose={() => setSheet(!1)} onPick={(i) => { if (solo && !solo.keep.has(i)) setSolo(null); pick(i, !0); }} onProfile={() => openProfile(sel)} onSolo={() => { if (solo && solo.spec.node === sel) setSolo(null); else soloNode(sel); }} soloOn={!!(solo && solo.spec.node === sel)} onIndex={openIndex} />}
+          {sheet && info && <CX_UsMapSheet info={info} phone={phone} still={still} sheetRef={sheetRef} fresh onPeek={(p) => { S.current.peek = p; }} onMove={request} onClose={() => setSheet(!1)} onPick={(i) => { if (solo && !solo.keep.has(i)) setSolo(null); pick(i, !0); }} onProfile={() => openProfile(sel)} onSolo={() => { if (solo && solo.spec.node === sel) setSolo(null); else soloNode(sel); }} soloOn={!!(solo && solo.spec.node === sel)} onIndex={openIndex}
+            lead={info.cid ? <CX_UsxLines id={info.cid} onHow={onHow} /> : null} onRole={onRole} onSub={onSub} />}
         </div>
       )}
       {!sky && <div className="us usm-text">{textView}</div>}

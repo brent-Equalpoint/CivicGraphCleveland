@@ -1468,6 +1468,57 @@ html[data-cx-mode] .usm .usmp-name:focus, html[data-cx-mode] .usm .usmp-list h3:
 .usm-hover-f { margin-top: 4px; font-size: 14px; line-height: 1.4; }
 .usm-hover-c { margin-top: 8px; color: var(--u-mut); font-size: 14px; }
 @media (max-width: 1000px) { .usmp { grid-template-columns: minmax(0, 1fr); } }
+/* What a committee does and why it matters (ext/cx-us-text.jsx): two lines under the name, a quiet note on whose words they are, and the
+   committee's own words one tap down. A committee role's word is its own button and opens what the post means in the same sheet. */
+.usx { display: grid; gap: 8px; margin: 4px 0 12px; }
+.usx-lines { display: grid; gap: 8px; margin: 0; }
+.usx-lines > div { display: grid; gap: 2px; }
+.usx-lines dt { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usx-lines dd { margin: 0; font-size: 17px; font-weight: 600; line-height: 1.4; color: var(--u-ink); overflow-wrap: anywhere; }
+.usx-lines .usx-why { font-weight: 500; }
+.usx-review, .usx-same, .usx-none, .usx-wait { margin: 0; color: var(--u-mut); font-size: 14px; line-height: 1.4; }
+.usx-none { color: var(--u-ink); font-weight: 600; }
+.usx-official { border: 1px solid var(--u-line); border-radius: 12px; background: var(--u-tile2); }
+.usx-official > summary { display: flex; align-items: center; min-height: 44px; padding: 0 14px; color: var(--u-soft); font-weight: 600; cursor: pointer; }
+.usx-official[open] > summary { border-bottom: 1px solid var(--u-line); }
+.usx-quote { display: grid; gap: 4px; padding: 10px 14px 0; font-size: 14px; line-height: 1.45; color: var(--u-ink); overflow-wrap: anywhere; }
+.usx-quote p { margin: 0; }
+.usx-src { margin: 0; padding: 8px 14px 12px; color: var(--u-mut); font-size: 14px; line-height: 1.4; overflow-wrap: anywhere; }
+.usx-src a { color: var(--u-soft); text-decoration: underline; text-underline-offset: 3px; }
+.usx-how { justify-self: start; }
+.usx-role { flex: none; display: inline-flex; align-items: center; justify-content: center; min-height: 44px; min-width: 44px; padding: 0 12px; border: 1px solid var(--u-line); border-radius: 999px; background: var(--u-tile2); color: var(--u-ink); font-size: 14px; font-weight: 700; text-decoration: underline; text-decoration-style: dotted; text-underline-offset: 3px; cursor: pointer; }
+.usx-role:hover, .usx-role:focus-visible { border-color: var(--u-soft); }
+.usm-list li.usx-rl, .usmp-list li.usx-rl, .us-conn li.usx-rl { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.usm-list li.usx-rl > button:not(.usx-role), .usm-list li.usx-rl > p, .usmp-list li.usx-rl > button:not(.usx-role), .usmp-list li.usx-rl > p { flex: 1 1 0; min-width: 0; }
+.usmp-list li.usx-rl > .usx-role { max-width: 50%; text-align: right; }
+.usm-word { flex: none; color: var(--u-ink); font-size: 14px; font-weight: 700; }
+.us-conn li.usx-rl .usx-sub { flex-basis: 100%; }
+.usx-sub, .us-conn small.usx-sub { color: var(--u-mut); font-size: 14px; }
+.usm-list li > .usx-subrow { display: grid; gap: 1px; width: 100%; min-height: 44px; padding: 6px 10px; border: 0; border-radius: 10px; background: transparent; text-align: left; }
+.usm-list li > .usx-subrow:hover, .usm-list li > .usx-subrow:focus-visible { background: var(--u-tile2); }
+.usmp-list li.usx-subli > details > summary { display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 8px 10px; border-radius: 10px; cursor: pointer; }
+.usmp-list li.usx-subli > details > summary:hover { background: var(--u-tile2); }
+.usmp-list li.usx-subli > details > summary::after { content: "+"; flex: none; width: 24px; color: var(--u-soft); font-size: 18px; font-weight: 700; text-align: center; }
+.usmp-list li.usx-subli > details[open] > summary::after { content: "\2212"; }
+.usmp-list li.usx-subli > details > summary::-webkit-details-marker { display: none; }
+.usmp-list li.usx-subli > details > .usx { margin: 4px 10px 12px; }
+.usx-short .usx-lines dd { font-size: 16px; }
+/* the note opens over everything in the map's own sheet; a tap outside it closes it */
+.usm .usx-scrim { z-index: 13; }
+.usm .usm-sheet.usx-note { z-index: 14; }
+.usm-hover-w { margin-top: 6px; font-size: 14px; font-weight: 600; line-height: 1.4; }
+.usm-hover-r { margin-top: 4px; color: var(--u-mut); font-size: 13px; }
+.usm .cxm-story-uswrap { position: absolute; inset: 0; z-index: 15; width: auto; max-width: none; height: auto; display: grid; place-items: center; padding: 16px; background: #0000003d; border: 0; }
+.usm-phone .cxm-story-uswrap { padding: 0; }
+.usm .cxm-story-uswrap > .cxm-overlay { position: relative; inset: auto; width: min(480px, 100%); height: min(780px, 100%); border-radius: 20px; }
+.usm-phone .cxm-story-uswrap > .cxm-overlay { width: 100%; height: 100%; border-radius: 0; }
+.cxm-story-ussrc a { display: inline-flex; align-items: center; min-height: 44px; }
+.usm .cxm-story-text { color: #fff; }
+.usm .cxm-story-text[aria-pressed="true"] { color: var(--acc); }
+.cxm-story-usreview { margin: 0; font-size: 14px; line-height: 1.4; color: #fff; }
+.cxm-story-usnav { display: flex; align-items: center; justify-content: space-between; gap: 10px; color: #fff; font-size: 14px; }
+.cxm-story-usnav .cxm-btn, .cxm-story-usnav .cxm-btn2 { min-height: 44px; min-width: 88px; padding: 0 18px; border-radius: 14px; border: 1px solid #ffffff66; font-weight: 700; }
+.cxm-story-usnav .cxm-btn2:disabled { opacity: 0.5; cursor: default; }
 .usm-panel-top { display: flex; align-items: center; justify-content: space-between; padding: 10px 10px 6px 16px; }
 .usm-panel-top h2 { font-size: 18px; font-weight: 700; }
 .usm-panel-body { flex: 1; overflow: auto; padding: 0 16px 16px; overscroll-behavior: contain; }
@@ -1500,7 +1551,7 @@ html[data-cx-mode] .usm .usmp-name:focus, html[data-cx-mode] .usm .usmp-list h3:
 .usm-sheet-top { display: flex; align-items: center; gap: 10px; padding: 12px 12px 4px 20px; }
 .usm-kicker { flex: 1; min-width: 0; color: var(--u-mut); font-size: 14px; font-weight: 600; }
 .usm-grab { position: absolute; left: 50%; top: 6px; width: 40px; height: 4px; margin-left: -20px; border-radius: 999px; background: var(--u-line); }
-.usm-sheet-body { flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 14px; overscroll-behavior: contain; }
+.usm-sheet-body { position: relative; flex: 1; min-height: 0; overflow-y: auto; padding: 0 20px 14px; overscroll-behavior: contain; }
 .usm-name { margin: 2px 0 8px; font-size: 32px; line-height: 1.06; letter-spacing: -0.035em; font-weight: 800; overflow-wrap: anywhere; }
 .usm-sent { font-size: 16px; font-weight: 500; line-height: 1.45; }
 .usm-fact { margin-top: 8px; font-size: 16px; font-weight: 700; line-height: 1.4; color: var(--u-soft); }
