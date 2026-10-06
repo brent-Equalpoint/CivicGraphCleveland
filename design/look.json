@@ -1247,8 +1247,8 @@
  },
  "bento dark | desktop strip main tab": {
   ".cx-folder-main[aria-selected=\"true\"]": {
-   "color": "rgb(237, 237, 239)",
-   "backgroundColor": "rgb(12, 12, 14)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -1261,7 +1261,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(255, 255, 255, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder:not(.cx-folder-main)[aria-selected=\"false\"]": {
    "color": "rgb(169, 171, 179)",
@@ -2907,8 +2907,8 @@
  },
  "original dark | desktop strip main tab": {
   ".cx-folder-main[aria-selected=\"true\"]": {
-   "color": "rgb(244, 238, 232)",
-   "backgroundColor": "rgb(20, 18, 16)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -2921,7 +2921,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(255, 255, 255, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder:not(.cx-folder-main)[aria-selected=\"false\"]": {
    "color": "rgb(183, 173, 165)",
@@ -4567,8 +4567,8 @@
  },
  "bento light | desktop strip main tab": {
   ".cx-folder-main[aria-selected=\"true\"]": {
-   "color": "rgb(16, 16, 18)",
-   "backgroundColor": "rgb(242, 242, 243)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -4581,7 +4581,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(20, 22, 29, 0.075)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder:not(.cx-folder-main)[aria-selected=\"false\"]": {
    "color": "rgb(78, 79, 84)",
@@ -6227,8 +6227,8 @@
  },
  "original light | desktop strip main tab": {
   ".cx-folder-main[aria-selected=\"true\"]": {
-   "color": "rgb(31, 24, 20)",
-   "backgroundColor": "rgb(250, 246, 241)",
+   "color": "rgb(255, 255, 255)",
+   "backgroundColor": "rgb(47, 102, 243)",
    "fontFamily": "Inter",
    "fontSize": "14px",
    "fontWeight": "600",
@@ -6241,7 +6241,7 @@
    "paddingLeft": "12px",
    "minHeight": "48px",
    "borderTopWidth": "1px",
-   "borderTopColor": "rgba(20, 22, 29, 0.12)"
+   "borderTopColor": "rgb(47, 102, 243)"
   },
   ".cx-folder:not(.cx-folder-main)[aria-selected=\"false\"]": {
    "color": "rgb(90, 77, 66)",
