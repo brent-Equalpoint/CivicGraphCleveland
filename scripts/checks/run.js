@@ -966,6 +966,9 @@ const CHECKS = {
     const t = await open('/#phone', { mobile: true, easy: false, pre: at('2026-10-05T15:00:00-04:00'), settle: 1500 });
     expect(await t.evaluate(() => { const b = document.querySelector('.cxm-story-btn'); return !!b && /Register/i.test(b.getAttribute('aria-label') || ''); }), 'in the week of the deadline the Register story is not first in the Today row');
     await done(t);
+    const late = await open('/#phone', { mobile: true, easy: false, pre: at('2026-10-06T10:00:00-04:00'), settle: 1500 });
+    expect(await late.evaluate(() => { const b = document.querySelector('.cxm-story-btn'); return !!b && !/Register/i.test(b.getAttribute('aria-label') || ''); }), 'the day after the deadline the Register story still leads the Today row');
+    await done(late);
     const after = await open('/?panel=ballot#phone', { mobile: true, easy: false, pre: at('2026-11-04T12:00:00-05:00'), settle: 1500 });
     expect(!(await after.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].some((x) => /register/i.test(x.innerText)))), 'the Register card is still on the Ballot after Election Day');
     await done(after);
