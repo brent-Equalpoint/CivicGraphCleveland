@@ -880,6 +880,7 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .rc-lead { font-size: 15px; line-height: 1.5; }
 .rc-sub { margin: 10px 0 4px; font-size: 15px; }
 .rc-none, .rc-review { font-size: 14px; line-height: 1.45; }
+.rc > p, .rc-ward > p { margin: 0 0 8px; }
 .rc-short { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
 .rc-row, .rc-word q, .rc-title, .rc-names { overflow-wrap: anywhere; }
 .rc-links { margin: 6px 0 10px; padding-left: 20px; }

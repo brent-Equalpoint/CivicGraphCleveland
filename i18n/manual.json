@@ -1865,7 +1865,8 @@
   "That record is not in the 2026 record": "Ese expediente no está en el registro de 2026",
   "No file was named.": "No se nombró ningún expediente.",
   "Use Jump to and type a file number, such as 906-2026.": "Use Ir a y escriba un número de expediente, como 906-2026.",
-  "A city record": "Un registro de la ciudad"
+  "A city record": "Un registro de la ciudad",
+  "listed under Recusal": "en la lista de Inhibición (Recusal)"
  },
  "masked": {
   "{n} days": "{n} días",

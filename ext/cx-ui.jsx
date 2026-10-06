@@ -419,6 +419,12 @@ function CX_LocalContext({ onGo, onPanel }) {
           </div>
         </>
       )}
+      {(!place || ward) && (
+        <section className="sp cx-ward-record" aria-labelledby="cx-ward-rec-h">
+          <h2 id="cx-ward-rec-h">Your ward's record</h2>
+          <CX_WardRecord ward={ward ? Number(ward[0]) : null} onFile={cxOpenLeg} onPerson={cxOpenProfile} head="h3" />
+        </section>
+      )}
       <details className="context-notes">
         <summary><CXI.Help size={16} /> What this page does not do</summary>
         <ul>

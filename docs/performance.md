@@ -179,3 +179,11 @@ was already at 537,347 (2.9% over the Oct 5 record, after the desktop strip); wh
 "How a committee works", and the sheet, profile, note, and story parts in `ext/cx-us-text.jsx`). The 218 committee lines and the official
 words (`site/us/explainers-2026.json`, about 80 KB gzip) are not in the page: they load the first time a committee, a subcommittee, a role's
 official words, or the Index, Linked, or Tree view needs them, never when the app or the map opens (the `us-explain` check fails if they do).
+
+Re-recorded on purpose Oct 6, 2026 (`docs/plan-votes-actions-positions.md`, phases 2 and 3): the app's code is 560,426 bytes gzip (from the
+record of 542,395; main had already grown about 1.6% with the alignment and privacy pages). Votes, actions, and positions add about 9 KB gzip:
+the shared record component, a person's list, and the ward view (`ext/cx-record.jsx`, 6.7 KB gzip alone) and their plain words
+(`ext/cx-votes-text.jsx`, 2 KB). The page's records grew 0.3 KB (the roll calls block carries the one Legistar roll call, the reasons for no names,
+and the five differences). The dated actions themselves (`site/council/record-2026.json`, 210 KB, about 11 KB gzip) are not in the page: they load
+the first time a record or a list needs them, never on Today (`votes-actions` and `perf-budget` fail if Today asks for them).
+

@@ -2835,6 +2835,7 @@ const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /(story|Historia[^"]*), (new|seen|nueva|vista)"\]/, why: 'initials in the story ring are decorative (aria-hidden); the name holds the visible word' },
   { rule: 'label-content-name-mismatch', target: /^\.seen$|\.cxm-story-btn/, why: 'a story ring already seen: axe names it by its class; same decorative initials as above' },
 ];
+const VA_WARD7_PRE = `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-7', hood: '', state: '', district: '' })); } catch (e) {} })()`;
 const AXE_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['phone united states map', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 }], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
   ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop profile with votes', '/?panel=profiles&seat=ward-13#desktop', {}], ['desktop profile with votes original', '/?panel=profiles&seat=ward-13#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
@@ -2860,6 +2861,11 @@ const AXE_PAGES = [
   // the privacy policy (ext/cx-privacy.jsx), the whole page
   ['desktop privacy', '/?panel=privacy#desktop', {}], ['desktop privacy original', '/?panel=privacy#desktop', { theme: 'original' }], ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }],
   // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
+  // votes, actions, and positions (ext/cx-record.jsx): a record page, a ceremonial line, a person's list opened, and the ward view with and without a ward
+  ['desktop record', '/?panel=leg&file=1044-2026#desktop', { settle: 1500 }], ['desktop record original', '/?panel=leg&file=1044-2026#desktop', { theme: 'original', settle: 1500 }], ['desktop record legistar', '/?panel=leg&file=4-2026#desktop', { settle: 1500 }],
+  ['phone record', '/?panel=leg&file=1044-2026#phone', { mobile: true, easy: false, settle: 1500 }], ['phone record ceremonial', '/?panel=leg&file=37-2026#phone', { mobile: true, easy: false }],
+  ['desktop profile votes and actions', '/?panel=profiles&seat=ward-5#desktop', { settle: 1400, after: 'personList' }], ['desktop ward record', '/?panel=context#desktop', { pre: VA_WARD7_PRE }],
+  ['phone ward record', '/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE, after: 'wardOpen' }], ['phone ward record none', '/?panel=place#phone', { mobile: true, easy: false, after: 'wardOpen' }],
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
@@ -2927,6 +2933,8 @@ const AXE_AFTER = {
     document.querySelectorAll('.usm-prof .ual details').forEach((d) => { d.open = true; }); await w(300);
   },
   pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
+  personList: () => { const b = document.querySelector('.sp .sp-actions button[aria-expanded]'); if (b) b.click(); },
+  wardOpen: () => { const h = document.querySelector('.cxm-drops .cxm-drop-head'); if (h) h.click(); },
   jumpOpen: () => { const b = document.querySelector('.cx-jump-btn'); if (b) b.click(); },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
   districtResult: async () => {   // open the finder (on the phone), type City Hall's address, and look for the districts
@@ -3041,6 +3049,8 @@ const CV_PAGES = [
   // how you line up: Compare members with step 2 on and answered, and a profile with the counts open
   ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
   ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }],
+  // votes, actions, and positions: a record page and the ward view
+  ['desktop record', '/?panel=leg&file=1044-2026#desktop', { settle: 1500 }], ['phone record', '/?panel=leg&file=1044-2026#phone', { mobile: true, easy: false, settle: 1500 }], ['phone ward record', '/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE, after: 'wardOpen' }],
 ];
 /* Words on each phone screen, counted as a person sees them (nothing folded is opened). A screen may not grow past its recorded count plus a small allowance, so
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
@@ -3378,6 +3388,176 @@ CHECKS['no-bleed'] = async () => {
   }
   expect(worst.length === 0, `text spills out of a room tile while scrolling Explore: ` + worst.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}" at step ${b.at}`).join('; '));
   await done(e);
+};
+
+/* Votes, actions, and positions on city records, people, and wards (ext/cx-record.jsx; docs/plan-votes-actions-positions.md, phases 2 and 3).
+   A passed file with names shows every member's recorded word, and its count line adds up to the data; a file without names says why in a sentence and
+   shows no vote as a no; every row has a date and a source; sponsorship rows say sponsorship; a member's list has no overall number and no ranking word;
+   the ward view works with and without a ward chosen on the device, and the ward never reaches the address, storage, a cookie, or a request; a ceremonial
+   resolution is one short line; the record data loads only when a record is opened; phone and desktop, Spanish, light mode in both styles, 44 px targets,
+   and a phone page exactly as wide as the screen. */
+const VA_SCORE = /\b(score[sd]?|scoring|rank(s|ed|ing)?|rating|grades?|percent(age)?|most active|least active|agrees? with|agreement|voting record|leaderboard|in all|overall|total)\b|%/i;
+const VA_WARD7 = `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-7', hood: '', state: '', district: '' })); } catch (e) {} })()`;
+/* what a record page shows about its vote: the count line and the names under each word */
+const VA_READ = () => {
+  const v = document.querySelector('.rc-actions .rc-vote');
+  if (!v) return null;
+  const names = {};
+  v.querySelectorAll('.rc-names').forEach((p) => { const h = p.querySelector('strong').innerText; const w = h.replace(/\s*\(\d+\):$/, ''); names[w] = [...p.querySelectorAll('a, span:not(:has(a))')].map((a) => a.innerText.replace(/^,\s*/, '').trim()).filter(Boolean); });
+  return { count: v.querySelector('.rc-count').innerText.trim(), names, rows: document.querySelectorAll('.rc-actions .rc-row').length,
+    srcs: [...document.querySelectorAll('.rc-actions .rc-row')].map((r) => ({ when: (r.querySelector('.rc-when') || {}).innerText || '', src: [...r.querySelectorAll('.rc-src')].map((s) => ({ t: s.innerText, a: (s.querySelector('a') || {}).href || '' })) })) };
+};
+/* our own words in a part of the page: the record's titles, quotations, and the names in it are taken out (a title may say "Agreement") */
+const VA_OWN = (sel) => { const e = document.querySelector(sel); if (!e) return ''; const c = e.cloneNode(true); c.querySelectorAll('.rc-title, .rc-short, q, .rc-names, .rc-who a').forEach((x) => x.remove()); document.body.appendChild(c); const t = c.innerText; c.remove(); return t; };
+const VA_SMALL = () => [...document.querySelectorAll('.rc button, .rc summary, .rc-chips button, .rc-more, .sp-actions button')].filter((el) => { const r = el.getBoundingClientRect(); return r.width && r.height && (r.height < 44 || r.width < 44); }).map((el) => `${el.tagName.toLowerCase()} "${(el.innerText || '').trim().slice(0, 30)}" ${Math.round(el.getBoundingClientRect().height)}px`);
+CHECKS['votes-actions'] = async () => {
+  const D = (f) => JSON.parse(fs.readFileSync(path.join(ROOT, 'data', f), 'utf8'));
+  const votes = D('votes-2026.json'), matters = D('legistar-2026.json').matters, people = D('people-2026.json').people;
+  const byFile = new Map(matters.map((m) => [m.file, m]));
+  const WORD = { yea: 'Yea', nay: 'Nay', absent: 'Absent', recused: 'Recusal', abstain: 'Abstain' };
+  // a passed 2026 file with a recusal (the word the parser learned), and one with a nay and an absence
+  const pick = (test) => Object.entries(votes.votes).find(([f, v]) => byFile.get(f) && byFile.get(f).status === 'Passed' && byFile.get(f).type !== 'Ceremonial Resolution' && test(v));
+  const samples = [pick((v) => Object.values(v.members).includes('recused')), pick((v) => v.tally.nay > 0 && Object.values(v.members).includes('absent'))].filter(Boolean);
+  expect(samples.length === 2, 'no sample file with a recusal, or none with a nay and an absence');
+  for (const [file, v] of samples) {
+    for (const lay of ['desktop', 'phone']) {
+      const p = await open(`/?panel=leg&file=${file}#${lay}`, lay === 'phone' ? { mobile: true, easy: false, settle: 1600 } : { settle: 1600 });
+      const got = await p.evaluate(VA_READ);
+      expect(!!got, `${lay} ${file}: the record shows no vote`);
+      if (got) {
+        const want = {}; for (const [n, w] of Object.entries(v.members)) (want[WORD[w]] = want[WORD[w]] || []).push(n);
+        for (const [w, list] of Object.entries(want)) expect(JSON.stringify((got.names[w] || []).slice().sort()) === JSON.stringify(list.slice().sort()), `${lay} ${file}: under ${w} the page shows ${JSON.stringify(got.names[w])}, the record ${JSON.stringify(list)}`);
+        const parts = Object.fromEntries(got.count.split(', ').map((x) => { const m = x.match(/^(\d+) (\w+)$/); return m ? [m[2], +m[1]] : [x, NaN]; }));
+        const sum = Object.values(parts).reduce((a, b) => a + b, 0);
+        expect(sum === Object.keys(v.members).length, `${lay} ${file}: the count line "${got.count}" adds to ${sum}, not ${Object.keys(v.members).length}`);
+        for (const [w, list] of Object.entries(want)) expect(parts[w] === list.length, `${lay} ${file}: the count line says ${parts[w]} ${w}, the record ${list.length}`);
+        expect(got.srcs.every((r) => /\d{4}$/.test(r.when.trim()) && r.src.length && r.src.every((s) => /^https:\/\//.test(s.a) && /pulled [A-Z][a-z]+ \d{1,2}, \d{4}/.test(s.t))), `${lay} ${file}: a row has no date, no source link, or no pulled date`);
+      }
+      const t = await p.evaluate(() => document.querySelector('.rc-actions').innerText + ' ' + document.querySelector('.rc-positions').innerText);
+      const own = (await p.evaluate(VA_OWN, '.rc-actions')) + ' ' + (await p.evaluate(VA_OWN, '.rc-positions'));
+      expect(!VA_SCORE.test(own), `${lay} ${file}: a score or ranking word: ${(own.match(VA_SCORE) || [])[0]}`);
+      expect(/Sponsorship is not a vote/.test(t), `${lay} ${file}: the sponsors are not marked as not a vote`);
+      expect(/A person has not reviewed them yet|were read against the record by/.test(t), `${lay} ${file}: no review notice on the plain words`);
+      expect(new RegExp(`(panel=leg&file=${file})`).test(await p.evaluate(() => location.search)), `${lay} ${file}: the address does not name the file`);
+      if (lay === 'phone') expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth && Math.round(document.querySelector('.cxm-sheet').getBoundingClientRect().width) <= innerWidth), `phone ${file}: the page is wider than the screen`);
+      const small = await p.evaluate(VA_SMALL); expect(small.length === 0, `${lay} ${file}: controls under 44px: ${small.slice(0, 4)}`);
+      await done(p);
+    }
+  }
+  // the City Record and Legistar: 4-2026's names come from Legistar and say so; a file where the two records differ says so
+  { const p = await open('/?panel=leg&file=4-2026#desktop', { settle: 1500 }); const t = (await txt(p, '.rc-actions')) || '';
+    expect(!votes.legistar_votes['4-2026'] || (/names come from Council's Legistar record/.test(t) && /14 Yea, 1 Nay/.test(t)), '4-2026 does not show its Legistar roll call with its source'); await done(p); }
+  if ((votes.differs || []).length) { const f = votes.differs[0].file; const p = await open(`/?panel=leg&file=${f}#desktop`, { settle: 1500 });
+    expect(/lists this vote differently for/.test((await txt(p, '.rc-actions')) || ''), `${f}: the two records differ and the page does not say so`); await done(p); }
+  // a file without names: says why in a sentence, and shows no vote and no nay
+  const open1 = matters.find((m) => m.status !== 'Passed' && m.type !== 'Ceremonial Resolution' && !votes.votes[m.file] && !(votes.legistar_votes || {})[m.file]);
+  for (const lay of ['desktop', 'phone']) {
+    const p = await open(`/?panel=leg&file=${open1.file}#${lay}`, lay === 'phone' ? { mobile: true, easy: false, settle: 1500 } : { settle: 1500 });
+    const none = (await txt(p, '.rc-actions .rc-none')) || '';
+    expect(/\.\s*A missing record is not a no\.$/.test(none.trim()) && none.split('.').length > 2, `${lay} ${open1.file}: no sentence says why there are no names: "${none}"`);
+    expect(!(await has(p, '.rc-actions .rc-vote')) && !/\bNay\b/.test((await txt(p, '.rc-actions')) || ''), `${lay} ${open1.file}: a file with no names shows a vote or a nay`);
+    await done(p);
+  }
+  // a ceremonial resolution is one short line on both layouts, never the full record
+  const cer = matters.find((m) => m.type === 'Ceremonial Resolution');
+  for (const lay of ['desktop', 'phone']) {
+    const p = await open(`/?panel=leg&file=${cer.file}#${lay}`, lay === 'phone' ? { mobile: true, easy: false } : {});
+    expect((await count(p, '.rc-short')) === 1 && !(await has(p, '.rc-actions')) && !(await has(p, '.rc-positions')), `${lay} ${cer.file}: a ceremonial resolution is not one short line`);
+    expect(await p.evaluate(() => { const e = document.querySelector('.rc-short'); return e && e.getBoundingClientRect().height < 140; }), `${lay} ${cer.file}: the short line is not short`);
+    await done(p);
+  }
+  // the record data waits until a record is opened, and is asked for once
+  { const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
+    expect(!p.asked.some((u) => /\/council\//.test(u)), 'Today asked for the council record data before any record was opened');
+    await done(p); }
+  // a member's list on the profile (desktop and phone): sponsorship rows say sponsorship; votes use the record's word; counts per kind, never an overall number
+  const seat = 'ward-5', name = people.find((x) => x.name === 'Richard A. Starr') ? 'Richard A. Starr' : null;
+  for (const lay of ['desktop', 'phone']) {
+    const p = lay === 'desktop' ? await open(`/?panel=profiles&seat=${seat}#desktop`, { settle: 1400 }) : await open(`/?panel=leg&file=${samples[1][0]}#phone`, { mobile: true, easy: false, settle: 1400 });
+    if (lay === 'phone') {   // on the phone: a sponsor's name on a record opens their card on People, and Profile opens the profile in a sheet
+      await p.evaluate(() => { const a = document.querySelector('.rc-actions .rc-who a'); a && a.click(); }); await wait(900);
+      const ok = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /^Profile$/.test((x.innerText || '').trim())); if (b) b.click(); return !!b; }); await wait(900);
+      expect(ok, 'phone: a sponsor\'s name does not lead to a Profile button');
+    }
+    const opened = await p.evaluate(() => { const b = document.querySelector('.sp .sp-actions button[aria-expanded]'); if (b) b.click(); return !!b; }); await wait(700);
+    expect(opened && await has(p, '.rc-person'), `${lay}: the profile has no Votes & actions list to open`);
+    const chips = await p.evaluate(() => [...document.querySelectorAll('.rc-person .rc-chips button')].map((b) => b.innerText.trim()));
+    expect(chips.filter((c) => /^All /.test(c)).every((c) => !/\d/.test(c)), `${lay}: an "All" choice shows a number (an overall number): ${chips}`);
+    expect(!chips.some((c) => /^\d{4} \(\d+\)$/.test(c)), `${lay}: the year shows a count, which with one year is an overall number`);
+    const body = await p.evaluate(VA_OWN, '.rc-person');
+    expect(!VA_SCORE.test(body), `${lay}: a score, ranking, or overall word in the list: ${(body.match(VA_SCORE) || [])[0]}`);
+    for (const [kind, re] of [['Sponsorships', /^Sponsorship: /], ['Votes', /^Vote: (Yea|Nay|Absent|Recusal|Abstain)$/]]) {
+      await p.evaluate((k) => { const b = [...document.querySelectorAll('.rc-person .rc-chips button')].find((x) => x.innerText.startsWith(k)); b && b.click(); }, kind); await wait(400);
+      const whats = await p.evaluate(() => [...document.querySelectorAll('.rc-person .rc-row .rc-what strong')].map((s) => s.innerText.trim()));
+      expect(whats.length > 0 && whats.every((w) => re.test(w)), `${lay}: ${kind} rows are not all labeled as such: ${whats.slice(0, 3)}`);
+      if (kind === 'Sponsorships') expect(whats.every((w) => !/vote/i.test(w)), `${lay}: a sponsorship row is called a vote`);
+      const dates = await p.evaluate(() => [...document.querySelectorAll('.rc-person .rc-row:not(.rc-row-short) .rc-when')].map((e) => Date.parse(e.innerText)));
+      expect(dates.every((d, i) => i === 0 || d <= dates[i - 1]), `${lay}: ${kind} rows are not newest first`);
+    }
+    if (lay === 'desktop' && name) {   // the Votes chip's count equals the member's roll calls in the data (City Record and Legistar)
+      const n = [...Object.values(votes.votes), ...votes.other, ...Object.values(votes.legistar_votes || {})].filter((v) => v.members[name]).length;
+      expect(chips.some((c) => c === `Votes (${n})`), `desktop: the Votes count is not the ${n} roll calls in the record: ${chips}`);
+    }
+    // a ceremonial resolution in the list is one short line
+    const cerChip = await p.evaluate(() => { const b = [...document.querySelectorAll('.rc-person .rc-chips button')].find((x) => /^All kinds/.test(x.innerText)); b && b.click(); const c = [...document.querySelectorAll('.rc-person .rc-chips button')].find((x) => /^Ceremonial Resolution/.test(x.innerText)); c && c.click(); return !!c; }); await wait(400);
+    if (cerChip) expect(await p.evaluate(() => [...document.querySelectorAll('.rc-person .rc-row')].every((r) => r.classList.contains('rc-row-short') && r.querySelectorAll('.rc-short').length === 1)), `${lay}: a ceremonial resolution in the list is not a short line`);
+    const small = await p.evaluate(VA_SMALL); expect(small.length === 0, `${lay} profile list: controls under 44px: ${small.slice(0, 4)}`);
+    if (lay === 'phone') expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth), 'phone profile list: the page is wider than the screen');
+    await done(p);
+  }
+  // the Mayor's list: what the administration sent, no vote, and the plain statement that the record prints no signature or veto
+  { const p = await open('/?panel=profiles&seat=mayor#desktop', { settle: 1400 });
+    await p.evaluate(() => { const b = document.querySelector('.sp .sp-actions button[aria-expanded]'); b && b.click(); }); await wait(600);
+    const t = (await txt(p, '.rc-person')) || '';
+    expect(/does not print the Mayor's signature or veto dates/.test(t) && /Sent to Council by the administration/.test(t) && !/Vote: /.test(t), 'the Mayor\'s list is missing what the administration sent or the statement about signatures, or shows a vote');
+    await done(p); }
+  // the ward view, with no ward chosen (it says what to set) and with Ward 7 chosen on the device (never in the address, storage, a cookie, or a request)
+  const leakFree = async (p, what) => {
+    const leak = await p.evaluate(() => /ward-7|Ward 7|ward=7/i.test(location.href + JSON.stringify(localStorage) + JSON.stringify(sessionStorage) + document.cookie));
+    expect(!leak, `${what}: the chosen ward reached the address, storage, or a cookie`);
+    expect(!p.asked.some((u) => /ward/i.test(u)), `${what}: a request named the ward: ${p.asked.filter((u) => /ward/i.test(u))}`);
+  };
+  { const p = await open('/?panel=context#desktop', { settle: 1300 });
+    expect(/Choose your ward to see its record/.test((await txt(p, '.cx-ward-record')) || ''), 'desktop: with no ward chosen, the ward view does not say what to set');
+    await p.select('#cx-place', 'ward-7'); await wait(800);
+    const t = (await txt(p, '.cx-ward-record')) || '', own = await p.evaluate(VA_OWN, '.cx-ward-record');
+    const rows = await p.evaluate(() => [...document.querySelectorAll('.cx-ward-record .rc-ward > .rc-list .rc-what strong')].map((s) => s.innerText));
+    expect(/Ward 7: /.test(t) && rows.length > 0 && rows.every((r) => /^(Names Ward 7|Ward 7 in the ordinance text|Address in Ward 7: .+)$/.test(r)), `desktop: the ward's records do not each show what matched: ${rows.slice(0, 3)}`);
+    expect(!VA_SCORE.test(own), `desktop ward view: a score or ranking word: ${(own.match(VA_SCORE) || [])[0]}`);
+    await leakFree(p, 'desktop ward view'); await done(p); }
+  { const p = await open('/?panel=place#phone', { mobile: true, easy: false, settle: 1300 });
+    await p.evaluate(() => { const h = document.querySelector('.cxm-drops .cxm-drop-head'); h && h.click(); }); await wait(500);
+    expect(/Choose your ward to see its record/.test((await txt(p, '.rc-ward')) || ''), 'phone: with no ward chosen, the ward view does not say what to set');
+    await p.evaluate(() => { const b = document.querySelector('.rc-ward .rc-more'); b && b.click(); }); await wait(600);
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-sheet button')].find((x) => /^Ward 7\b/.test((x.innerText || '').trim())); b && b.click(); }); await wait(900);
+    const rows = await p.evaluate(() => [...document.querySelectorAll('.rc-ward > .rc-list .rc-what strong')].map((s) => s.innerText));
+    expect(rows.length > 0 && rows.every((r) => /^(Names Ward 7|Ward 7 in the ordinance text|Address in Ward 7: .+)$/.test(r)), `phone: after choosing Ward 7, the ward's records do not show with what matched: ${rows.slice(0, 3)}`);
+    expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth), 'phone ward view: the page is wider than the screen');
+    const small = await p.evaluate(VA_SMALL); expect(small.length === 0, `phone ward view: controls under 44px: ${small.slice(0, 4)}`);
+    await leakFree(p, 'phone ward view'); await done(p); }
+  // Jump to finds a file by its number and opens its record page
+  { const p = await open('/?room=council#desktop', { settle: 1300 });
+    await p.keyboard.down('Control'); await p.keyboard.press('k'); await p.keyboard.up('Control'); await wait(300);
+    await p.type('.cx-jump input', samples[0][0]); await wait(300);
+    const opt = await p.evaluate(() => [...document.querySelectorAll('.cx-jump-opt')].map((o) => o.innerText));
+    expect(opt.some((o) => o.startsWith(samples[0][0])), `Jump to does not find ${samples[0][0]}: ${opt.slice(0, 3)}`);
+    await p.keyboard.press('Enter'); await wait(900);
+    expect(await has(p, '.rc-page .rc-actions') && (await p.evaluate(() => location.search)).includes(`file=${samples[0][0]}`), 'Jump to did not open the record page');
+    expect(!(await p.evaluate(() => JSON.stringify(localStorage))).includes(samples[0][0]), 'a file number typed into Jump to was kept in storage');
+    await done(p); }
+  // Spanish: the record and the list read in Spanish (the official words and names stay English)
+  { const p = await open(`/?panel=leg&file=${samples[1][0]}#phone`, { mobile: true, easy: false, settle: 1800, pre: () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } });
+    const t = (await txt(p, '.rc-actions')) || '';
+    expect(/Fuente:/.test(t) && /a favor \(Yea\)/.test(t) && /obtenido el/.test(t), `Spanish: the record does not read in Spanish: ${t.slice(0, 120)}`);
+    expect(!/Source:|, pulled|Our plain words/.test(t), 'Spanish: English left in the record\'s own words');
+    await done(p); }
+  // light mode, both styles: the record page passes the contrast rules
+  for (const theme of ['bento', 'original']) {
+    const p = await open(`/?panel=leg&file=${samples[0][0]}#desktop`, { mode: 'light', theme, settle: 1500 });
+    const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast' && /\.rc|\.sp|rc-|sp-/.test(x.target));
+    expect(bad.length === 0, `light ${theme}: contrast on the record page: ${bad.slice(0, 3).map((x) => x.target.slice(0, 60))}`);
+    await done(p);
+  }
 };
 
 (async () => {

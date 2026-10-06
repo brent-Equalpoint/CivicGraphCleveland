@@ -136,7 +136,7 @@ function CX_RecActions({ m, onPerson, onFile, head = `h3`, title = !0 }) {
   const none = cxRecNoNames(m);
   const H = head;
   return (
-    <section className="rc rc-actions" aria-label="Votes & actions">
+    <div className="rc rc-actions">
       {title && <H className="rc-h">Votes & actions</H>}
       {!done && <p className="rc-note" role="status">Loading the rest of the record.</p>}
       <ol className="rc-list">
@@ -156,7 +156,7 @@ function CX_RecActions({ m, onPerson, onFile, head = `h3`, title = !0 }) {
       </ol>
       {none && <p className="rc-none">{none}</p>}
       <p className="rc-review">{cxRecReview()}</p>
-    </section>
+    </div>
   );
 }
 
@@ -167,7 +167,7 @@ function CX_RecPositions({ m, onPerson, head = `h3`, title = !0 }) {
   const stated = (typeof CX_STATED !== `undefined` ? CX_STATED : []).filter((x) => x.file === m.file && x.reviewed);
   const H = head;
   return (
-    <section className="rc rc-positions" aria-label="Positions">
+    <div className="rc rc-positions">
       {title && <H className="rc-h">Positions</H>}
       <p className="rc-lead">{CX_VT.positionsLead}</p>
       <details className="rc-fold" open>
@@ -190,7 +190,7 @@ function CX_RecPositions({ m, onPerson, head = `h3`, title = !0 }) {
           {stated.map((x, k) => <div key={k} className="rc-row"><p className="rc-when">{cxLongDate(x.date)}</p><p><strong>{x.who}</strong>{x.role ? `, ${x.role}` : ``}</p><p className="rc-word"><q>{x.text}</q></p><CxRecSrc label={x.label} url={x.url} pulled={x.pulled} /></div>)}
         </details>
       )}
-    </section>
+    </div>
   );
 }
 
@@ -208,7 +208,7 @@ function CX_RecWhere({ m, meetings, head = `h3`, title = !0, base = !0 }) {
   const mtgs = R && !meetings ? (F.m || []).map(([mi]) => R.meetings[mi]).filter((x, i, a) => a.indexOf(x) === i) : [];
   const H = head;
   return (
-    <section className="rc rc-where" aria-label="Where to read it">
+    <div className="rc rc-where">
       {title && <H className="rc-h">Where to read it</H>}
       <ul className="rc-links">
         {base && <li><CxRecLink href={m.url}>{`Council's Legistar record, ${m.file}`}</CxRecLink></li>}
@@ -221,7 +221,7 @@ function CX_RecWhere({ m, meetings, head = `h3`, title = !0, base = !0 }) {
       </ul>
       {meetings}
       <p className="rc-note">{`Council's Legistar record pulled ${cxRecPulled(CX_LEG.retrieved_at)}. The City Record pulled ${cxRecPulled(CX_VOTES.retrieved_at)}.`}</p>
-    </section>
+    </div>
   );
 }
 
@@ -373,7 +373,7 @@ function CX_PersonRecord({ seatId, onFile, head = `h2`, title = !0, step = 20, l
   const H = head;
   const chip = (on, label, count, onClick) => <button key={label} type="button" className={on ? `on` : ``} aria-pressed={on} onClick={() => { onClick(); setN(step); }}>{count == null ? label : `${label} (${count})`}</button>;
   return (
-    <section className="rc rc-person" aria-label="Votes & actions">
+    <div className="rc rc-person">
       {title && <H className="rc-h">Votes & actions</H>}
       {lead && <p className="rc-lead">{isMayor ? CX_VT.personMayor : CX_VT.personLead}</p>}
       {isMayor && <p className="rc-note">{CX_VT.mayorActions}</p>}
@@ -388,7 +388,7 @@ function CX_PersonRecord({ seatId, onFile, head = `h2`, title = !0, step = 20, l
       ) : <p className="rc-none">Nothing in the record matches these choices. Choose All kinds or All types to see more.</p>}
       {shown.length > n && <button type="button" className="rc-more" onClick={() => setN(n + step)}>{`Show ${Math.min(step, shown.length - n)} more`}</button>}
       <p className="rc-review">{cxRecReview()}</p>
-    </section>
+    </div>
   );
 }
 
