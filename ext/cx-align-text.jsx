@@ -36,7 +36,7 @@ const CX_ALIGN_Q = {
    "id": "energy-water-heaters", "area": "Energy", "bill": "hjres20",
    "votes": { "senate": "s-119-1-207", "house": "h-119-1-53" },
    "q": "Do you support overturning the Energy Department's 2024 efficiency standard for gas-fired tankless water heaters used in homes?",
-   "does": "It cancels the amended energy conservation standard the department adopted in December 2024 for consumer gas-fired instantaneous (tankless) water heaters. The department had set it at the most efficiency it found technologically feasible and economically justified.",
+   "does": "It cancels the rule the department submitted in December 2024 that set amended energy conservation standards for consumer gas-fired instantaneous (tankless) water heaters, at the most efficiency the department found technologically feasible and economically justified.",
    "not": "",
    "cra": true,
    "src": { "label": "Congressional Research Service summary, as the law was enacted", "url": "https://www.govinfo.gov/bulkdata/BILLSUM/119/hjres/BILLSUM-119hjres20.xml", "read": "2026-10-06" }
@@ -45,7 +45,7 @@ const CX_ALIGN_Q = {
    "id": "energy-alaska-reserve", "area": "Energy", "bill": "sjres80",
    "votes": { "senate": "s-119-1-599", "house": "h-119-1-296" },
    "q": "Do you support overturning the 2022 management plan for the National Petroleum Reserve in Alaska, which closed nearly half of the reserve to oil and gas leasing?",
-   "does": "It cancels the Bureau of Land Management's 2022 plan for the reserve, about 23 million acres on Alaska's North Slope, and returns it to the 2020 plan. The 2022 plan had closed those areas to leasing to preserve other uses of the land, such as for wildlife and for the subsistence of nearby communities.",
+   "does": "It cancels the Bureau of Land Management's 2022 plan for the reserve, about 23 million acres on Alaska's North Slope, and returns it to the 2020 plan. The 2022 plan had closed those areas to leasing to preserve other uses of the land, such as for wildlife and for the subsistence of communities.",
    "not": "",
    "cra": true,
    "src": { "label": "Congressional Research Service summary, as the law was enacted", "url": "https://www.govinfo.gov/bulkdata/BILLSUM/119/sjres/BILLSUM-119sjres80.xml", "read": "2026-10-06" }
@@ -90,7 +90,7 @@ const CX_ALIGN_Q = {
    "id": "lands-boundary-waters", "area": "Public Lands and Natural Resources", "bill": "hjres140",
    "votes": { "senate": "s-119-2-84", "house": "h-119-2-38" },
    "q": "Do you support reopening about 225,500 acres of national forest land in northeastern Minnesota, near the Boundary Waters Canoe Area Wilderness, to mineral and geothermal leasing?",
-   "does": "It cancels Public Land Order 7917, which in 2023 withdrew this land in Cook, Lake, and Saint Louis Counties from mineral and geothermal leasing for 20 years to keep exploration and development away from the Rainy River watershed and the Boundary Waters. The land can again be leased.",
+   "does": "It cancels Public Land Order 7917, which in 2023 withdrew this land in Cook, Lake, and Saint Louis Counties from mineral and geothermal leasing for 20 years, to preserve the Rainy River watershed, the Boundary Waters, and the 1854 Ceded Territory of the Lake Superior Chippewa from possible effects of exploration and development. The land can again be leased.",
    "not": "",
    "cra": true,
    "src": { "label": "Congressional Research Service summary, as the law was enacted", "url": "https://www.govinfo.gov/bulkdata/BILLSUM/119/hjres/BILLSUM-119hjres140.xml", "read": "2026-10-06" }
@@ -203,7 +203,7 @@ const CX_ALIGN_Q = {
   {
    "id": "gov-dc-tax-law", "area": "Government Operations and Politics", "bill": "hjres142",
    "votes": { "senate": "s-119-2-37", "house": "h-119-2-56" },
-   "q": "Do you support overturning a 2025 District of Columbia law that kept several tax changes from the 2025 federal reconciliation act out of the District's income tax?",
+   "q": "Do you support overturning a 2025 District of Columbia law that kept several tax changes from the 2025 federal reconciliation act out of the District's tax law?",
    "does": "The District normally follows changes in federal tax law. Its council had opted out of changes such as the deductions for tips, overtime pay, car loan interest, and people 65 and older, and had restored a District child tax credit. The resolution cancels that law, so those federal changes apply in the District and the restored credit does not.",
    "not": "",
    "src": { "label": "Congressional Research Service summary, as the law was enacted", "url": "https://www.govinfo.gov/bulkdata/BILLSUM/119/hjres/BILLSUM-119hjres142.xml", "read": "2026-10-06" }
@@ -254,7 +254,8 @@ const CX_ALIGN_Q = {
   { "bill": "hr471", "why": "Many parts: wildfire planning, limits on environmental review, and limits on lawsuits." },
   { "bill": "hr21", "why": "We could not write it in words that the two sides of the debate would both accept as plain." },
   { "bill": "hr9238", "why": "A second short surveillance law extension in the same area; left out so one subject does not get two questions." },
-  { "bill": "sjres82", "why": "No Congressional Research Service summary was published when the sample was written." }
+  { "bill": "sjres82", "why": "No Congressional Research Service summary was published when the sample was written." },
+  { "bill": "hjres139", "why": "The balanced budget amendment pairs a spending limit with a two-thirds vote for tax increases: parts that people weigh differently." }
  ]
 };
 /* ALIGN-TEXT-END */
