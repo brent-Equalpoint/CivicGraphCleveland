@@ -186,6 +186,71 @@ def mark_us_text_reviewed(who):
     print(f"marked the committee lines reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def align_block():
+    """The sample questions for "how you line up" (docs/plan-alignment.md, step 2): everything between the ALIGN-TEXT markers in ext/cx-align-text.jsx."""
+    src = open(os.path.join(EXT, "cx-align-text.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* ALIGN-TEXT-START \*/.*?/\* ALIGN-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the ALIGN-TEXT markers are missing from ext/cx-align-text.jsx")
+    return src, m
+
+
+def align_fp():
+    """Fingerprint of the question set between the ALIGN-TEXT markers (the questions, what each bill does and does not do, the sources, the skips)."""
+    return hashlib.sha256(align_block()[1].group(0).encode()).hexdigest()[:16]
+
+
+def align_table(src, votes):
+    """The question table (strict JSON), checked against the recorded votes, and the source with the table taken out: the page fetches it from
+    /us/align-2026.json only when step 2 is on and opens, so the page itself does not carry it. A question may only point at a vote that is in
+    data/us-votes-2026.json, decided something (final), is in the chamber it is filed under, is on the question's own bill, and is that bill's
+    only deciding vote in that chamber; and the policy area must be the bill's own."""
+    m = re.search(r"const CX_ALIGN_Q = (\{.*?\n\});\n", src, re.S)
+    if not m:
+        sys.exit("build: the question table (const CX_ALIGN_Q = {...};) is missing from ext/cx-align-text.jsx")
+    try:
+        table = json.loads(m.group(1))
+    except ValueError as e:
+        sys.exit(f"build: the question table in ext/cx-align-text.jsx is not strict JSON: {e}")
+    by_id = {v["id"]: v for v in votes["votes"]}
+    seen = set()
+    for q in table["questions"]:
+        where = f"ALIGN CHECK FAILED [{q.get('id')}]"
+        if q["id"] in seen:
+            sys.exit(f"{where}: the id is used twice")
+        seen.add(q["id"])
+        bill = votes["bills"].get(q["bill"])
+        if not bill:
+            sys.exit(f"{where}: bill {q['bill']} is not in data/us-votes-2026.json")
+        if bill.get("policy_area") != q["area"]:
+            sys.exit(f"{where}: the bill's policy area is {bill.get('policy_area')!r}, not {q['area']!r}")
+        if not q["votes"]:
+            sys.exit(f"{where}: no vote is named")
+        for ch, vid in q["votes"].items():
+            v = by_id.get(vid)
+            if not v:
+                sys.exit(f"{where}: vote {vid} is not in data/us-votes-2026.json")
+            if v["chamber"] != ch or not v.get("final") or v.get("bill") != q["bill"]:
+                sys.exit(f"{where}: vote {vid} is not a deciding {ch} vote on {q['bill']}")
+        deciding = {}
+        for v in votes["votes"]:
+            if v.get("bill") == q["bill"] and v.get("final"):
+                deciding.setdefault(v["chamber"], []).append(v["id"])
+        if {ch: [vid] for ch, vid in q["votes"].items()} != deciding:
+            sys.exit(f"{where}: the bill's deciding votes are {deciding}, not {q['votes']}")
+    return table, src[:m.start()] + "const CX_ALIGN_Q = null;\n" + src[m.end():]
+
+
+def mark_alignment_reviewed(who):
+    """Record that a person read every sample question against its sources, today. Until this runs (and again if the text changes), step 2 of
+    "how you line up" stays hidden in the app."""
+    if not who:
+        sys.exit('usage: python build.py --mark-alignment-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "alignment-reviewed.json")
+    write(path, json.dumps({"fp": align_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the alignment question set reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def geo_svg(geo):
     """Project the ward and neighborhood layers to SVG paths (simple equirectangular at Cleveland's latitude)."""
     import math
@@ -479,6 +544,16 @@ def main():
         if not (isinstance(v, list) and len(v) == 2 and all(isinstance(x, str) and x.strip() for x in v)):
             sys.exit(f"build: the lines for {k} are not two sentences")
     log(f"data   {sha(ex_path)}  us-explainers-2026.json  ({ex['counts']['with_text']} committees and subcommittees with official text, {ex['counts']['none_on_file']} none on file; {len(us_lines)} with our lines)")
+    # "how you line up", step 2 (ext/cx-align-text.jsx): the sample questions, checked against the recorded votes; step 2 is shown only
+    # while a person's review (data/alignment-reviewed.json, from --mark-alignment-reviewed) still matches the text they read
+    al_path = os.path.join(ROOT, "data", "alignment-reviewed.json")
+    al = json.load(open(al_path, encoding="utf-8")) if os.path.exists(al_path) else {}
+    al_ok = al.get("fp") == align_fp()
+    log(f"alignment questions: {'reviewed by ' + al['by'] + ' on ' + al['checked'] + ', step 2 shown' if al_ok else 'NOT reviewed by a person (' + ('text changed since review' if al else 'never reviewed') + '), step 2 hidden'}")
+    ext_js += "/* ---- data/alignment-reviewed.json ---- */\nconst CX_ALIGN_REVIEW = " + json.dumps({"ok": al_ok, "by": al.get("by") if al_ok else None, "checked": al.get("checked") if al_ok else None}) + ";\n"
+    al_src, _ = align_block()
+    align_q, al_src_page = align_table(al_src, json.load(open(os.path.join(ROOT, "data", "us-votes-2026.json"), encoding="utf-8")))
+    log(f"alignment questions: {len(align_q['questions'])} in {len({q['area'] for q in align_q['questions']})} policy areas, each on a deciding vote in data/us-votes-2026.json")
     # v5.16 weekly link check (scripts/check_links.py): only links that failed twice running are shown to residents
     lk_path = os.path.join(ROOT, "data", "links-2026.json")
     lk = json.load(open(lk_path, encoding="utf-8")) if os.path.exists(lk_path) else {"checked_at": None, "broken": []}
@@ -516,12 +591,15 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
             jsx_path = os.path.join(work, name)
             write(jsx_path, us_src_page)
+        if name == "cx-align-text.jsx":   # the sample questions travel in /us/align-2026.json, fetched only when step 2 opens (align_table)
+            jsx_path = os.path.join(work, name)
+            write(jsx_path, al_src_page)
         out = run([tool("esbuild"), jsx_path, "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
         ext_js += f"\n/* ---- {name} ---- */\n" + out
@@ -1169,6 +1247,10 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     ex_body = json.dumps(ex_site, ensure_ascii=False, separators=(",", ":")) + "\n"
     write(os.path.join(SITE, "us", "explainers-2026.json"), ex_body)
     log(f"SITE   {sha(ex_body.encode())}  site/us/explainers-2026.json  (official words and our two lines for {len(us_lines)} committees and subcommittees)")
+    # "how you line up", step 2: the sample questions, fetched only when step 2 is on and opens (never on the first load, never while it is hidden)
+    al_body = json.dumps(align_q, ensure_ascii=False, separators=(",", ":")) + "\n"
+    write(os.path.join(SITE, "us", "align-2026.json"), al_body)
+    log(f"SITE   {sha(al_body.encode())}  site/us/align-2026.json  ({len(align_q['questions'])} sample questions for step 2 of how you line up)")
     mp = os.path.join(ROOT, "data", "meetings-2026.json")  # At City Hall: the Clerk's meeting record, fetched lazily on the hosted site
     if os.path.exists(mp):
         os.makedirs(os.path.join(SITE, "meetings"), exist_ok=True)
@@ -1221,5 +1303,7 @@ if __name__ == "__main__":
         mark_office_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-us-text-reviewed":
         mark_us_text_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-alignment-reviewed":
+        mark_alignment_reviewed(" ".join(sys.argv[2:]))
     else:
         main()

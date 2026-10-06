@@ -314,7 +314,7 @@ function CX_UsTopics({ data }) {
     </div>
   );
 }
-function CX_UsMine({ data, g, onSee, onTopics }) {
+function CX_UsMine({ data, g, onSee, onTopics, onCompare }) {
   const [st, setSt] = u.useState(CX_US_PLACE.state);
   const [di, setDi] = u.useState(CX_US_PLACE.district);
   const [vd, setVd] = u.useState(CX_USV.v);
@@ -351,7 +351,9 @@ function CX_UsMine({ data, g, onSee, onTopics }) {
         </ul>
       )}
       {mine && di === `` && mine.dists.length > 0 && <p className="us-hint">Choose a district to see your representative.</p>}
-      {mine && (mine.senators.length > 0 || mine.rep) && <><CX_UsAreaPicker vd={vd} /><CX_UsAreaCounts vd={vd} members={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} onTopics={onTopics} /></>}
+      {mine && (mine.senators.length > 0 || mine.rep) && (onCompare
+        ? <p className="us-hint"><button type="button" className="cx-link-button ual-go" onClick={onCompare}>Compare your members by policy area</button></p>
+        : <><CX_UsAreaPicker vd={vd} /><CX_UsAreaCounts vd={vd} members={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} onTopics={onTopics} /></>)}
       {mine && vd && (mine.senators.length > 0 || mine.rep) && <CX_UsVotes key={`${st}-${di}`} vd={vd} people={[...mine.senators, ...(mine.rep ? [mine.rep] : [])]} />}
       {!vd && <p className="us-hint">How they voted is not shown here. Roll call votes are public records, and a missing record is not a no.</p>}
     </div>

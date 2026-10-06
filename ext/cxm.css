@@ -1571,6 +1571,98 @@ html[data-cx-mode] .usm .usmp-name:focus, html[data-cx-mode] .usm .usmp-list h3:
 .usm-text .us-index, .usm-text .us-tree { max-height: none; overflow: visible; }
 .usm-text .us-list button.on { outline: 2px solid var(--u-soft); }
 
+/* How you line up (ext/cx-align.jsx): what a member voted on in the areas you pick, Compare members, and (once reviewed) the sample
+   questions. Words carry every meaning; color only follows the map's own palette. Counts per area only, in lists ordered by name or state. */
+.ual { display: grid; gap: 10px; margin-top: 18px; }
+.ual h2, .ual h3 { margin: 0; font-size: 18px; font-weight: 700; }
+.usm-sheet .ual h3 { font-size: 16px; }
+.ual-hint, .ual-lead { margin: 0; color: var(--u-mut); font-size: 14px; line-height: 1.45; }
+.ual-lead { color: var(--u-ink); font-size: 16px; }
+.ual-pick { border: 1px solid var(--u-line); border-radius: 12px; background: var(--u-tile2); }
+.ual-pick > summary { display: grid; gap: 2px; min-height: 44px; padding: 10px 14px; cursor: pointer; }
+.ual-pick > summary small { color: var(--u-mut); font-size: 14px; overflow-wrap: anywhere; }
+.ual-pick-t { font-weight: 700; }
+.ual-pick > .ual-hint { padding: 0 14px; }
+.ual-areas { display: grid; gap: 2px; max-height: 300px; overflow: auto; margin: 8px 0 0; padding: 0 6px 8px; border: 0; }
+.ual-areas label { display: flex; align-items: center; gap: 10px; min-height: 44px; padding: 0 8px; border-radius: 10px; font-size: 15px; cursor: pointer; }
+.ual-areas label.on { background: var(--u-tile); font-weight: 600; }
+.ual-areas input { flex: none; width: 22px; height: 22px; }
+.ual-areas span { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.ual-areas small { flex: none; color: var(--u-mut); font-size: 14px; }
+.ual-rows { display: grid; gap: 6px; }
+.ual-row { border: 1px solid var(--u-line); border-radius: 12px; }
+.ual-row > summary, .ual-row-flat { display: grid; gap: 2px; min-height: 44px; padding: 10px 14px; line-height: 1.4; }
+.ual-row > summary, .ual-pick > summary { position: relative; padding-right: 44px; list-style: none; cursor: pointer; }
+.ual-row > summary::-webkit-details-marker, .ual-pick > summary::-webkit-details-marker { display: none; }
+.ual-row > summary::after, .ual-pick > summary::after { content: "+"; position: absolute; top: 10px; right: 14px; width: 20px; color: var(--u-soft); font-size: 18px; font-weight: 700; text-align: center; }
+.ual-row[open] > summary::after, .ual-pick[open] > summary::after { content: "\2212"; }
+.ual-row > summary b, .ual-row-flat b { font-size: 16px; font-weight: 700; overflow-wrap: anywhere; }
+.ual-row > summary span, .ual-row-flat span { font-size: 15px; }
+.ual-row[open] > summary { border-bottom: 1px solid var(--u-line); }
+.ual-votes { display: grid; gap: 2px; padding: 6px 8px 8px; }
+.ual-vote { display: grid; gap: 2px; padding: 8px 6px; }
+.ual-vote + .ual-vote { border-top: 1px solid var(--u-line); }
+.ual-vt { display: grid; gap: 2px; font-size: 15px; line-height: 1.4; overflow-wrap: anywhere; }
+.ual-cast { font-size: 14px; font-weight: 700; color: var(--u-soft); }
+.ual-vm { color: var(--u-mut); font-size: 14px; line-height: 1.4; }
+.ual-links { display: flex; flex-wrap: wrap; gap: 0 14px; }
+.ual-links a, .ual-qv a { display: inline-flex; align-items: center; min-height: 44px; color: var(--u-soft); font-size: 14px; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.ual .usm-btn, .ual-compare .usm-btn { justify-self: start; }
+.ual-status { display: grid; gap: 4px; padding: 10px 12px; border-radius: 12px; background: var(--u-tile2); color: var(--u-ink); font-size: 14px; line-height: 1.4; }
+.ual-compare { display: grid; gap: 14px; max-width: 1180px; }
+.ual-compare > h2 { margin: 0; font-size: 24px; font-weight: 800; letter-spacing: -0.02em; }
+.ual-compare > p { margin: 0; }
+.ual-tools { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px 18px; }
+.ual-seg { display: grid; gap: 4px; }
+.ual-seg-l { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.ual-seg .cxm-seg button { flex: 0 0 auto; }
+.ual-fields { display: flex; flex-wrap: wrap; gap: 10px; }
+.ual-fields .usm-field { margin-top: 0; }
+.ual-count { color: var(--u-mut); font-size: 14px; }
+.ual-table-wrap { overflow-x: auto; border: 1px solid var(--u-line); border-radius: 14px; }
+.ual-table { width: 100%; border-collapse: collapse; font-size: 14px; line-height: 1.4; }
+.ual-table th, .ual-table td { padding: 10px 12px; border-bottom: 1px solid var(--u-line); text-align: left; vertical-align: top; }
+.ual-table thead th { color: var(--u-mut); font-weight: 600; background: var(--u-tile2); }
+.ual-table tbody th { min-width: 180px; font-weight: 600; }
+.ual-table td { min-width: 150px; }
+.ual-table td span, .ual-cards dd span { display: block; }
+.ual-c2 { margin-top: 4px; color: var(--u-soft); font-weight: 600; }
+.ual-name { display: grid; gap: 1px; width: 100%; min-height: 44px; padding: 4px 6px; border: 0; border-radius: 10px; background: transparent; color: var(--u-ink); text-align: left; }
+button.ual-name:hover, button.ual-name:focus-visible { background: var(--u-tile2); }
+.ual-name > span { font-weight: 700; overflow-wrap: anywhere; }
+.ual-name > small { color: var(--u-mut); font-size: 14px; font-weight: 500; }
+.ual-cards { display: grid; gap: 10px; }
+.ual-card { display: grid; gap: 6px; padding: 8px 8px 12px; border: 1px solid var(--u-line); border-radius: 14px; }
+.ual-card dl { display: grid; gap: 8px; margin: 0; padding: 0 6px; }
+.ual-card dt { font-size: 14px; font-weight: 700; }
+.ual-card dd { margin: 0; font-size: 14px; line-height: 1.4; }
+.ual-qsec { display: grid; gap: 12px; padding-top: 6px; border-top: 1px solid var(--u-line); }
+.ual-qsec > h3 { font-size: 22px; font-weight: 800; }
+.ual-qsec > h3:focus { outline: none; }
+.ual-qs { display: grid; gap: 14px; }
+.ual-qarea { display: grid; gap: 10px; }
+.ual-qa { margin: 6px 0 0; font-size: 18px; font-weight: 700; }
+.ual-q { display: grid; gap: 10px; padding: 14px 16px; border: 1px solid var(--u-line); border-radius: 14px; background: var(--u-tile2); }
+.ual-qk { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.ual-qq { margin: 0; font-size: 18px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.ual-qd { display: grid; gap: 8px; margin: 0; }
+.ual-qd dt { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.ual-qd dd { margin: 0; font-size: 15px; line-height: 1.5; overflow-wrap: anywhere; }
+.ual-qd dd a { color: var(--u-soft); }
+.ual-bill { color: var(--u-mut); font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.ual-qv > summary { display: flex; align-items: center; min-height: 44px; color: var(--u-soft); font-size: 14px; font-weight: 600; cursor: pointer; }
+.ual-qv ul { display: grid; gap: 4px; }
+.ual-qv li { font-size: 14px; line-height: 1.45; }
+.ual-answers { display: flex; flex-wrap: wrap; gap: 8px; margin: 0; padding: 0; border: 0; }
+.ual-answers legend { padding: 0; margin-bottom: 6px; color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.ual-answers label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 16px 0 12px; border: 1px solid var(--u-line); border-radius: 999px; background: var(--u-tile); font-weight: 600; cursor: pointer; }
+.ual-answers label.on { border-color: var(--u-soft); font-weight: 800; }
+.ual-answers input { flex: none; width: 20px; height: 20px; margin: 0; }
+.ual-answers label:focus-within { outline: 3px solid #f1b083; outline-offset: 2px; }
+.usm-text .ual-go { min-height: 44px; }
+.usm-phone .ual-compare > h2 { font-size: 22px; }
+.usm-phone .ual-q { padding: 12px; }
+
 /* the phone: one row of back, title, search and language, then the four views; the sheet and the Show panel slide up from the bottom */
 .usm-phone .usm-top { top: 8px; left: 8px; right: 8px; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; }
 .usm-phone .usm-pills { flex: 1; min-width: 0; padding: 0; background: transparent; }

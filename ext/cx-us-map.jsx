@@ -248,6 +248,8 @@ function cxUsMapLabels(cand, measure, W, H, max = 90, blocked = []) {
 /* ---------- the page (React) ---------- */
 /* The settled places the build worked out (scripts/us_map.js), fetched once on the hosted site with the record itself. */
 const CX_USM = { file: null, p: null, home: null };
+/* the page the next map opens on (People on the phone opens it at Compare members); read once, then cleared */
+const CX_USM_START = { page: `` };
 function cxUsMapPosLoad() {
   if (!CX_USM.p) {
     const web = typeof fetch === `function` && /^https?:$/.test(String(globalThis.location?.protocol || ``));
@@ -622,7 +624,7 @@ function CxUsmShape({ shape, color, line }) {
 /* The details sheet: on a computer it sits to the right of the map; on a phone it opens part way up, pulls up to near the top, and
    swipes down to close (the kit's sheet, vendor/relationship-map-kit/map/sheet.js). It also closes with Done, a tap on the map, and
    the back gesture (handled by the page). */
-function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub }) {
+function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, tail, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub }) {
   const bodyRef = u.useRef(null);
   const [all, setAll] = u.useState({});
   u.useEffect(() => { setAll({}); if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [info.name]);
@@ -710,6 +712,7 @@ function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo,
             {L.rows.length > CAP && !all[L.title] && <button type="button" className="usm-more" onClick={() => setAll({ ...all, [L.title]: !0 })}>{`Show all ${L.rows.length}`}</button>}
           </section>
         ))}
+        {tail}
         {info.src && <p className="usm-src"><span>From </span><a href={info.src.url} target="_blank" rel="noreferrer">{info.src.label}<span className="sp-ext"> (opens in a new tab)</span></a><span>.</span></p>}
       </div>
       {!noActs && <div className="usm-acts">
@@ -837,7 +840,7 @@ function CX_UsCorner({ g, M, P, still, phone, onGroup, onNode }) {
 }
 
 /* The profile page itself, over the map. back: the words on the back button. bar: the language and settings buttons. */
-function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap, onIndex, onOpen, onRole, onHow }) {
+function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap, onIndex, onOpen, onRole, onHow, align }) {
   const ref = u.useRef(null);
   const [all, setAll] = u.useState({});
   const CAP = 5;
@@ -888,6 +891,7 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
               {P.glanceNote && <p className="usmp-note">{P.glanceNote}</p>}
             </section>
           )}
+          {align}
           <section className="usmp-record" aria-labelledby="usmp-rec-h">
             <h2 id="usmp-rec-h">From the record</h2>
             <dl>
@@ -989,7 +993,11 @@ function CX_UsMap({ phone, onExit }) {
   // wide or tall: chosen from the window when the map opens, and again if the phone is turned (the map then glides to the other shape)
   const [shape, setShape] = u.useState(() => cxUsmShapeOf(globalThis.innerWidth || 0, globalThis.innerHeight || 0));
   u.useEffect(() => { if (!M) return undefined; const t = setTimeout(() => setHome(cxUsMapHome(g, M, file, shape)), home ? 0 : 30); return () => clearTimeout(t); }, [M, file, shape]);
-  const [page, setPage] = u.useState(`network`);
+  const [page, setPage] = u.useState(() => CX_USM_START.page || `network`);
+  // the page the map was opened on (People on the phone can open it straight at Compare members); its back button then goes back to People
+  const entryR = u.useRef(null);
+  if (entryR.current === null) { entryR.current = CX_USM_START.page || `network`; CX_USM_START.page = ``; }
+  const [cmpFocus, setCmpFocus] = u.useState(``);   // Compare members, opened at its questions ("Answer the questions")
   const [view, setView] = u.useState(`sky`);
   const [sel, setSel] = u.useState(null);
   const [sheet, setSheet] = u.useState(!1);
@@ -1229,7 +1237,8 @@ function CX_UsMap({ phone, onExit }) {
       });
     });
     x.globalAlpha = 1;
-    cv.cxMap = { labels: boxes.map((b) => ({ i: b.i, kind: M.nodes[b.i].kind, name: g.nodes[b.i].name, text: b.lines.map((l) => l.text).join(` `), x: b.x, y: b.y, w: b.w, h: b.h })), hover: s.hover === null || s.hover === undefined ? null : g.nodes[s.hover].name, peopleOnScreen: onScreen.length, focus: F === null ? null : g.nodes[F].name, near: F === null ? [] : nb.map((z) => z.o), shown: shown.reduce((t, v) => t + v, 0), k, frames: (s.frames = (s.frames || 0) + 1), tx: T.x, ty: T.y, rings: M.slots.industries.slice(0, 4).filter((i) => shown[i]).map((i) => [X(i), Y(i), sr(i) + 8]), motion: c.motion, still: c.still, pts: () => { const o = []; for (let i = 0; i < N; i++) if (shown[i]) o.push([X(i), Y(i)]); return o; }, at: (name) => { const n = g.nodes.find((z) => z.name === name); return n && s.pos ? [T.x + k * P[n.i].x, T.y + k * P[n.i].y] : null; } };
+    cv.cxMap = { labels: boxes.map((b) => ({ i: b.i, kind: M.nodes[b.i].kind, name: g.nodes[b.i].name, text: b.lines.map((l) => l.text).join(` `), x: b.x, y: b.y, w: b.w, h: b.h })), hover: s.hover === null || s.hover === undefined ? null : g.nodes[s.hover].name, peopleOnScreen: onScreen.length, focus: F === null ? null : g.nodes[F].name, near: F === null ? [] : nb.map((z) => z.o), shown: shown.reduce((t, v) => t + v, 0), k, frames: (s.frames = (s.frames || 0) + 1), tx: T.x, ty: T.y, rings: M.slots.industries.slice(0, 4).filter((i) => shown[i]).map((i) => [X(i), Y(i), sr(i) + 8]), motion: c.motion, still: c.still, pts: () => { const o = []; for (let i = 0; i < N; i++) if (shown[i]) o.push([X(i), Y(i)]); return o; },
+      look: () => { const o = []; for (let i = 0; i < N; i++) if (shown[i]) o.push([g.nodes[i].id, Math.round(X(i) * 100) / 100, Math.round(Y(i) * 100) / 100, Math.round(sr(i) * 100) / 100, cxUsmColor(M.nodes[i]), M.nodes[i].shape]); return o; }, at: (name) => { const n = g.nodes.find((z) => z.name === name); return n && s.pos ? [T.x + k * P[n.i].x, T.y + k * P[n.i].y] : null; } };
     return anim;
   };
   // no drawing while the page is hidden or a profile covers the map (Calm and Live would otherwise keep moving it unseen)
@@ -1586,10 +1595,12 @@ function CX_UsMap({ phone, onExit }) {
       </div>
     );
   })();
-  const backLabel = page === `people` ? `Back to People` : page === `topics` ? `Back to Votes by topic` : view === `index` ? `Back to the Index` : view === `tree` ? `Back to the Tree` : view === `linked` ? `Back to Linked` : `Back to the map`;
+  const backLabel = page === `people` ? `Back to People` : page === `topics` ? `Back to Votes by topic` : page === `compare` ? `Back to Compare members` : view === `index` ? `Back to the Index` : view === `tree` ? `Back to the Tree` : view === `linked` ? `Back to Linked` : `Back to the map`;
   const setButton = !phone ? <button type="button" className="usm-btn usm-set-btn" aria-expanded={setOn} aria-haspopup="dialog" onClick={openSettings}><CXI.Sliders size={16} /><span>Settings</span></button> : null;
   const openIndex = () => { if (cur) setIndexAt({ ...cxUsmDoorOf(cur), id: cur.id, at: Date.now() }); setPage(`network`); setView(`index`); setSheet(!1); };
   const goPage = (p) => { setPage(p); setSheet(!1); setPanel(!1); };
+  // Compare members (ext/cx-align.jsx), from the left menu, a member's sheet or profile, People, or the phone's Show panel; f: `questions` opens it at the questions
+  const goCompare = (f) => { setCmpFocus(f === `questions` ? `questions` : ``); goPage(`compare`); };
   const visibleText = (n) => { const i = n.i; if (M.nodes[i].kind === `hub`) return !0; return vis(i); };
   const PILLS = [[`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
   const pills = <div className="usm-pills" role="group" aria-label="View">{PILLS.map(([id, t]) => <button key={id} type="button" aria-pressed={page === `network` && view === id} className={page === `network` && view === id ? `on` : ``} onClick={() => { setPage(`network`); setView(id); setSheet(!1); }}>{t}</button>)}</div>;
@@ -1638,6 +1649,7 @@ function CX_UsMap({ phone, onExit }) {
         </div>
         <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. The terms of those sources have not yet been read by a person. Party is never shown on the map.`}</p>
         {phone && <button type="button" className="usm-btn usm-wide" onClick={() => goPage(`topics`)}>Votes by topic</button>}
+        {phone && <button type="button" className="usm-btn usm-wide" onClick={() => goCompare()}>Compare members</button>}
       </div>
     </div>
   );
@@ -1659,8 +1671,9 @@ function CX_UsMap({ phone, onExit }) {
       <button type="button" className="usm-x" aria-label="Show everything" onClick={() => setSolo(null)}>×</button>
     </div>
   );
-  const textView = page === `people` ? <CX_UsMine data={data} g={g} onSee={(n) => pick(n.i, !0)} onTopics={(area) => { CX_US_PICK.area = area; goPage(`topics`); }} />
+  const textView = page === `people` ? <CX_UsMine data={data} g={g} onSee={(n) => pick(n.i, !0)} onTopics={(area) => { CX_US_PICK.area = area; goPage(`topics`); }} onCompare={() => goCompare()} />
     : page === `topics` ? <CX_UsTopics data={data} />
+    : page === `compare` ? <CX_AlignCompare key={cmpFocus} data={data} phone={phone} focus={cmpFocus} onOpen={(i) => { setSel(i); openProfile(i); }} />
     : view === `index` ? <CX_UsDoors key={indexAt ? indexAt.at : `index`} data={data} g={g} visible={visibleText} dim={() => !1} q={q} start={indexAt} onOpen={(i) => { setSel(i); openProfile(i); }} onTopics={(area) => { CX_US_PICK.area = area; goPage(`topics`); }} />
     : view === `tree` ? <CX_UsTree data={data} g={g} onOpen={(i) => { setSel(i); openProfile(i); }} />
     : view === `linked` ? (
@@ -1679,7 +1692,7 @@ function CX_UsMap({ phone, onExit }) {
           })}</ul>{linkedLinks.length > 80 && <p>And {linkedLinks.length - 80} more.</p>}</>}</>}
       </div>
     ) : null;
-  const title = page === `people` ? `People` : page === `topics` ? `Votes by topic` : `Network`;
+  const title = page === `people` ? `People` : page === `topics` ? `Votes by topic` : page === `compare` ? `Compare members` : `Network`;
   return (
     <section className={`usm ${phone ? `usm-phone` : `usm-desk`} ${sheet ? `usm-has-sheet` : ``} ${full ? `usm-full` : ``}`} ref={rootRef} onKeyDown={onRootKey} aria-labelledby="usm-h">
       {!phone && (
@@ -1687,11 +1700,11 @@ function CX_UsMap({ phone, onExit }) {
           <button type="button" className="usm-back" onClick={() => (onExit ? onExit() : CX_NAV.panel && CX_NAV.panel(``))}><CXI.Back size={16} /><span>Cleveland</span></button>
           <h1 id="usm-h" className="usm-h1">United States<span className="usm-dot">.</span></h1>
           <p className="usm-sub">Pick anyone to see who they are tied to.</p>
-          <ul>{[[`network`, `Network`], [`people`, `People`], [`topics`, `Votes by topic`]].map(([id, t]) => <li key={id}><button type="button" aria-current={page === id ? `page` : undefined} className={page === id ? `on` : ``} onClick={() => goPage(id)}>{t}</button></li>)}</ul>
+          <ul>{[[`network`, `Network`], [`people`, `People`], [`topics`, `Votes by topic`], [`compare`, `Compare members`]].map(([id, t]) => <li key={id}><button type="button" aria-current={page === id ? `page` : undefined} className={page === id ? `on` : ``} onClick={() => goPage(id)}>{t}</button></li>)}</ul>
         </nav>
       )}
       <header className={`usm-top usm-float ${phone && searchOn ? `usm-searching` : ``}`} ref={topRef}>
-        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` ? goPage(`network`) : onExit && onExit())}><CXI.Back size={18} /></button>}
+        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` && !(page === entryR.current && onExit) ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` && !(page === entryR.current && onExit) ? goPage(`network`) : onExit && onExit())}><CXI.Back size={18} /></button>}
         {phone && <h2 id="usm-h" className={page === `network` ? `usm-sr` : `usm-h2`}>{page === `network` ? `United States` : title}</h2>}
         {page === `network` && (!phone || searchOn) && search}
         {phone && searchOn && page === `network` && <button type="button" className="usm-icon" aria-label="Close search" onClick={() => { setSearchOn(!1); setQ(``); }}><CXI.X size={18} /></button>}
@@ -1704,7 +1717,8 @@ function CX_UsMap({ phone, onExit }) {
         bar={<><CX_LangButton cls="usm-lang" short={phone} />{setButton}</>}
         onMap={() => closeProfiles(() => { if (solo && !solo.keep.has(P.i)) setSolo(null); pick(P.i, !0); })}
         onIndex={() => { const n = g.nodes[P.i]; closeProfiles(() => { setIndexAt({ ...cxUsmDoorOf(n), id: n.id, at: Date.now() }); setPage(`network`); setView(`index`); setSheet(!1); }); }}
-        onOpen={openProfile} onRole={onRole} onHow={onHow} />}
+        onOpen={openProfile} onRole={onRole} onHow={onHow}
+        align={P.kind === `member` ? <CX_AlignMember key={P.id} m={g.nodes[P.i].m} where="profile" onCompare={(f) => closeProfiles(() => goCompare(f))} /> : null} />}
       {xo && xo.type !== `how` && <button type="button" className="usm-scrim usx-scrim" aria-label="Close" tabIndex={-1} onClick={closeX} />}
       {xo && xo.type === `role` && <CX_UsMapSheet cls="usx-note" hid="usx-note-h" noActs phone={phone} still={still} sheetRef={xoSheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={closeX}
         info={{ kicker: `What the word means`, name: xo.word, sentence: ``, fact: ``, lists: [], src: null }} lead={<CX_UsxRoleBody rkey={xo.key} />} />}
@@ -1736,7 +1750,8 @@ function CX_UsMap({ phone, onExit }) {
           {panel && phone && <button type="button" className="usm-scrim" aria-label="Close Show" onClick={() => setPanel(!1)} />}
           {panel && showPanel}
           {sheet && info && <CX_UsMapSheet info={info} phone={phone} still={still} sheetRef={sheetRef} fresh onPeek={(p) => { S.current.peek = p; }} onMove={request} onClose={() => setSheet(!1)} onPick={(i) => { if (solo && !solo.keep.has(i)) setSolo(null); pick(i, !0); }} onProfile={() => openProfile(sel)} onSolo={() => { if (solo && solo.spec.node === sel) setSolo(null); else soloNode(sel); }} soloOn={!!(solo && solo.spec.node === sel)} onIndex={openIndex}
-            lead={info.cid ? <CX_UsxLines id={info.cid} onHow={onHow} /> : null} onRole={onRole} onSub={onSub} />}
+            lead={info.cid ? <CX_UsxLines id={info.cid} onHow={onHow} /> : null} onRole={onRole} onSub={onSub}
+            tail={cur && cur.kind === `member` ? <CX_AlignMember key={cur.id} m={cur.m} where="sheet" onCompare={goCompare} /> : null} />}
         </div>
       )}
       {!sky && <div className="us usm-text">{textView}</div>}
