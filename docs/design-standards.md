@@ -47,6 +47,12 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
   history entry. Exactly one thing in a navigation bar looks and announces itself as chosen. The chosen item is always in view, and a row
   that does not fit says how much more there is and can be reached with a mouse alone (a plain wheel, an "n more" button). A keyboard
   shortcut never fires while someone is typing in a field. (`nav-desktop`)
+- **On a computer, the main tabs share row one with the places.** Row one is one tablist ("Places and pages"): the six places, then, set apart
+  by a wider gap, the three main tabs United States, My ballot, and Voter education, in the same folder look. While a main tab's page is open it
+  is the one chosen and no place is; a page from My pages makes the My pages button the chosen thing instead. A new main tab is added to
+  `CX_MAIN_PAGES` and taken out of the menu, never shown in both. A page that covers the strip (the United States map) always keeps a visible
+  way back to it, including its loading and offline messages. Row one must show all nine tabs at 1100 px in English and at 1280 px in Spanish;
+  narrower, it fades and says how many more. (`nav-desktop`, `targets`)
 - **Every screen has a way out and a way back**, and returning lands where you left. (`stories-deeper`)
 - **Empty, blocked, and bad-link states say what happened, why, and one next step.** (`screen-states`)
 - **Easy mode keeps the plain version of everything**, without maps, filters, or controls that need explaining. (`easy-phone`, `easy-desktop`)
@@ -103,7 +109,7 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 `node scripts/design/audit.js` (the CSS is on the tokens) and `node scripts/checks/run.js` run all of them; `python scripts/release.py` runs them before anything ships.
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
-reachable with a mouse alone, Jump to and My pages), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
+reachable with a mouse alone, Jump to and My pages, the three main tabs and the way back from the United States map), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
 `spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
 /privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,

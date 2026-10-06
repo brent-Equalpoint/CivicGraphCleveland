@@ -644,7 +644,8 @@
 @media (prefers-reduced-motion: reduce) { .cx-story-body * { animation: none !important; } }
 
 @media (min-width: 761px) {
-  /* The desktop strip above the graph (ext/cx-nav.jsx). Row one: the places, from your block to the nation, as folder tabs on a line, and My ballot.
+  /* The desktop strip above the graph (ext/cx-nav.jsx). Row one: the places, from your block to the nation, as folder tabs on a line, and set apart
+     at the end of the same row the three main tabs (United States, My ballot, Voter education) in the same folder look.
      Row two, on the page below the line: the chosen place's rooms as a segmented control, Jump to, and the My pages menu. The old left sidebar
      (the compiled app's) becomes this strip; its row of 15 page buttons stays only for a narrow window.
      A comment sits inside a block and before a rule with no color in it: bento.py and light.py read a comment as part of the next selector. */
@@ -654,13 +655,13 @@
   .atlas-workspace .cx-row-pages { display: none; }
   .atlas-workspace .cx-strip-top { display: flex; align-items: flex-end; gap: 12px; min-width: 0; border-bottom: 1px solid var(--atlas-border); }
   .atlas-workspace .cx-strip-top > .cx-row-folders { flex: 1 1 auto; margin-bottom: -1px; }
-  .atlas-workspace .cx-strip-top > .cx-pages { align-self: center; padding: 2px 0 4px; }
   .atlas-workspace .cx-strip-bottom { display: flex; align-items: center; gap: 12px; min-width: 0; margin: 0 -26px; padding: 8px 26px; border-bottom: 1px solid var(--atlas-border); background: var(--atlas-bg); }
   .atlas-workspace .cx-strip-bottom > .cx-row-rooms { flex: 0 1 auto; display: flex; align-items: center; gap: 14px; margin-right: auto; }
   /* places: a folder tab is shorter and behind the line until chosen; the chosen one is taller, in bolder words, with an accent edge on top, and joins
      the page below (no line under it), so the choice shows in shape and weight as well as color. A choice is instant: it does not fade in. */
   .atlas-workspace .cx-folders { display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 4px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; }
   .atlas-workspace .cx-folders::-webkit-scrollbar { display: none; }
+  .atlas-workspace .cx-folder-gap { flex: 1 0 28px; }
   .atlas-workspace .cx-folder { flex: none; min-height: 44px; margin: 4px 0 0; padding: 10px 16px; border: 1px solid var(--atlas-border); border-bottom: 0; border-radius: 12px 12px 0 0; background: transparent; color: var(--atlas-muted); font: inherit; font-size: .875rem; font-weight: 500; line-height: 1.3; white-space: nowrap; cursor: pointer; transition: none; }
   .atlas-workspace .cx-folder[aria-selected="true"] { margin-top: 0; min-height: 48px; background: var(--atlas-bg); border-bottom: 1px solid var(--atlas-bg); color: var(--atlas-ink); font-weight: 600; }
   html[data-cx-theme="bento"] .atlas-workspace .cx-folder[aria-selected="true"] { box-shadow: inset 0 3px 0 var(--bb-blue); }
@@ -698,7 +699,7 @@
   .atlas-workspace .cx-rowmore-end { right: 0; }
   .atlas-workspace .cx-rowmore-back { transform: rotate(180deg); }
   .atlas-workspace .cx-row-folders .cx-rowmore { margin: 4px 0 auto; }
-  /* My ballot, Jump to, and My pages (ext/cx-nav.jsx, CX_DeskPages and CX_DeskJump): one style of button; the open page fills with the accent, in bolder words */
+  /* Jump to and My pages (ext/cx-nav.jsx, CX_DeskJump and CX_DeskPages): one style of button; the open page fills with the accent, in bolder words */
   .atlas-workspace .cx-pages { position: relative; display: flex; align-items: center; gap: 8px; flex: none; }
   .atlas-workspace .cx-strip-btn { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; margin: 0; padding: 0 14px; border-radius: 10px; border: 1px solid var(--atlas-border); background: transparent; color: var(--atlas-ink); font: inherit; font-size: .875rem; font-weight: 500; line-height: 1.2; white-space: nowrap; cursor: pointer; transition: transform .16s ease-out; }
   .atlas-workspace .cx-strip-btn:active { transform: scale(.97); }
@@ -738,7 +739,17 @@
 .cx-jump-clear { min-height: 44px; padding: 0 12px; border: 0; border-radius: 8px; background: transparent; color: var(--atlas-ink); font: inherit; font-size: .8125rem; font-weight: 600; cursor: pointer; }
 @keyframes cx-menu-in { from { opacity: 0; transform: scale(.98); } to { opacity: 1; transform: none; } }
 @media (min-width: 761px) and (max-width: 1279px) { .atlas-workspace .cx-jump-btn kbd { display: none; } }
-@media (max-width: 760px) { .cx-row-folders, .cx-strip-top > .cx-pages, .cx-strip-bottom > .cx-pages, .cx-jump-btn, .cx-folder-line, .cx-thumb, .cx-rowmore { display: none; } }
+@media (min-width: 761px) and (max-width: 1439px) {
+  .atlas-workspace .cx-folder { padding-left: 12px; padding-right: 12px; }
+  /* the nine folder tabs of row one get closer as the window narrows, on the space steps, so all nine fit at 1100 px in English and at 1280 px in Spanish
+     (below that the row fades and says how many more there are) */
+}
+@media (min-width: 761px) and (max-width: 1279px) {
+  .atlas-workspace .cx-folders { gap: 2px; }
+  .atlas-workspace .cx-folder { padding-left: 10px; padding-right: 10px; }
+  .atlas-workspace .cx-folder-gap { flex-basis: 22px; }
+}
+@media (max-width: 760px) { .cx-row-folders, .cx-strip-bottom > .cx-pages, .cx-jump-btn, .cx-folder-line, .cx-thumb, .cx-rowmore { display: none; } }
 @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
   .atlas-workspace .cx-folder[aria-selected="false"]:hover { background: #ffffff0d; color: var(--atlas-ink); }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=inactive]:hover { color: var(--atlas-ink); background: #ffffff0d !important; }

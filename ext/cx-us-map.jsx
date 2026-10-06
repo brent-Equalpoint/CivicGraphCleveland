@@ -1564,7 +1564,8 @@ function CX_UsMap({ phone, onExit }) {
   u.useEffect(() => { if (S.current.fitted && sel !== null && sky) requestAnimationFrame(() => focusFit(sel)); }, [sheet]);
 
   if (load === `loading` || (load === `ready` && !home)) return <section className={`usm ${phone ? `usm-phone` : `usm-desk`}`}><div className="usm-wait" role="status">{load === `loading` ? `Loading the federal record...` : `Arranging the map...`}</div></section>;
-  if (!data || !g) return <section className={`usm ${phone ? `usm-phone` : `usm-desk`}`}><div className="usm-wait" role="status"><p>The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.</p>{phone && onExit && <button type="button" className="usm-btn" onClick={onExit}>Back to People</button>}</div></section>;
+  // the map covers the window and the strip of tabs on a computer, so this message keeps a way back to them (the offline file has no map)
+  if (!data || !g) return <section className={`usm ${phone ? `usm-phone` : `usm-desk`}`}><div className="usm-wait" role="status"><p>The United States graph needs the hosted site. It is not part of the offline file, because it loads a data file of under a megabyte.</p>{phone && onExit && <button type="button" className="usm-btn" onClick={onExit}>Back to People</button>}{!phone && <button type="button" className="usm-btn" onClick={() => CX_NAV.panel && CX_NAV.panel(``)}>Back to Cleveland</button>}</div></section>;
 
   const cur = sel !== null ? g.nodes[sel] : null;
   const info = cur ? cxUsMapSheet(g, M, data, sel) : null;
