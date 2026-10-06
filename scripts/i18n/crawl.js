@@ -106,8 +106,8 @@ async function explore(p, into, scene, deadline, depth, visited, mobile) {
 async function scenes(B, base, layout) {
   const mobile = layout === 'phone';
   const list = mobile
-    ? ['/#phone', '/?room=voting#phone', '/?panel=place#phone', '/?panel=leaders#phone', '/?panel=constellation#phone', '/?panel=us#phone', '/?panel=us&view=graph#phone', '/?panel=ballot#phone', '/?panel=ledger#phone', '/?panel=bench#phone', '/?panel=news#phone', '/?panel=settings#phone', '/?panel=priorities#phone', '/?panel=meetings#phone']
-    : ['/#desktop', '/?room=voting#desktop', '/?panel=place#desktop', '/?panel=leaders#desktop', '/?panel=constellation#desktop', '/?panel=profiles#desktop', '/?panel=ballot#desktop', '/?panel=ledger#desktop', '/?panel=bench#desktop', '/?panel=news#desktop', '/?panel=stories#desktop', '/?panel=us#desktop', '/?panel=priorities#desktop'];
+    ? ['/#phone', '/?room=voting#phone', '/?panel=place#phone', '/?panel=leaders#phone', '/?panel=constellation#phone', '/?panel=us#phone', '/?panel=us&view=graph#phone', '/?panel=ballot#phone', '/?panel=ledger#phone', '/?panel=bench#phone', '/?panel=news#phone', '/?panel=settings#phone', '/?panel=priorities#phone', '/?panel=meetings#phone', '/?panel=privacy#phone']
+    : ['/#desktop', '/?room=voting#desktop', '/?panel=place#desktop', '/?panel=leaders#desktop', '/?panel=constellation#desktop', '/?panel=profiles#desktop', '/?panel=ballot#desktop', '/?panel=ledger#desktop', '/?panel=bench#desktop', '/?panel=news#desktop', '/?panel=stories#desktop', '/?panel=us#desktop', '/?panel=priorities#desktop', '/?panel=privacy#desktop'];
   const into = new Map();
   for (const url of list) {
     const ctx = await B.createBrowserContext(); const p = await ctx.newPage();

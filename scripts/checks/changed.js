@@ -35,7 +35,8 @@ const RULES = [
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', ...SWEEP]],
-  [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', ...SWEEP]],
+  [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
+  [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
