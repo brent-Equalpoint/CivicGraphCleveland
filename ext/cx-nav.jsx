@@ -1,7 +1,8 @@
-/* The desktop strip above the graph (screens wider than 760 px): places, rooms, Jump to, and My pages.
-   Row one: the places (folders, from your block to the nation) and My ballot. Row two: the chosen place's rooms as a segmented control,
-   Jump to, and the My pages menu. The compiled app draws the room tabs (a Radix tablist, ?room=) and the personal page buttons (?panel=,
-   kept for a narrow window); build.py mounts these parts inside the strip with the app's own state. */
+/* The desktop strip above the graph (screens wider than 760 px): places, main tabs, rooms, Jump to, and My pages.
+   Row one: one row of folder tabs, the places (from your block to the nation), then, set apart, the three main tabs United States, My ballot,
+   and Voter education. Row two: the chosen place's rooms as a segmented control, Jump to, and the My pages menu. The compiled app draws the room
+   tabs (a Radix tablist, ?room=) and the personal page buttons (?panel=, kept for a narrow window); build.py mounts these parts inside the strip
+   with the app's own state. */
 
 /* Bring a tab or button inside its sideways-scrolling row into view, clear of the fade and the "more" button at each end
    (scroll-padding-inline in ext/cx.css, 112 px). Only the row moves sideways: the page never moves up or down. */
@@ -32,14 +33,17 @@ function cxNavInputWatch() {
    moves it sideways while it can still move that way (and then hands the wheel back to the page), and a button at each end says how many are hidden
    there, so a mouse alone can reach everything. build.py puts CX_RowMore right after the row inside a .cx-row wrapper. The keyboard needs none of this:
    the arrow keys and Tab bring each tab into view, so the buttons are not Tab stops. */
-/* the button reads "Show 9 more rooms" ("Show" and the noun are for a screen reader; the screen shows "9 more"), so the name holds the words on it in English and in Spanish */
+/* the button reads "Show 9 more rooms" ("Show" and the noun are for a screen reader; the screen shows "9 more"), so the name holds the words on it in English
+   and in Spanish; one hidden reads "Show 1 more tab" */
 const CX_ROW_WORDS = {
-  rooms: [`rooms to the left`, `rooms`],
-  pages: [`pages to the left`, `pages`],
-  places: [`places to the left`, `places`],
+  rooms: [`rooms to the left`, `rooms`, `room to the left`, `room`],
+  pages: [`pages to the left`, `pages`, `page to the left`, `page`],
+  places: [`places to the left`, `places`, `place to the left`, `place`],
+  tabs: [`tabs to the left`, `tabs`, `tab to the left`, `tab`],
 };
+// what the "n more" buttons count: the tabs, not the parts drawn for the eye only (the rooms' sliding thumb, the gap before the main tabs)
 function cxRowItems(row) {
-  return [...row.children].filter((e) => !e.hidden && e.getBoundingClientRect().width > 0);
+  return [...row.children].filter((e) => !e.hidden && e.getAttribute(`aria-hidden`) !== `true` && e.getBoundingClientRect().width > 0);
 }
 function cxRowState(row) {
   const s = row.getBoundingClientRect(), max = row.scrollWidth - row.clientWidth;
@@ -97,24 +101,27 @@ function CX_RowMore({ unit }) {
     <span ref={ref} className="cx-rowmore-wrap">
       {st.a > 0 && (
         <button type="button" className="cx-rowmore cx-rowmore-start" tabIndex={-1} onClick={() => go(-1)}>
-          <CXI.Chevron size={16} aria-hidden="true" className="cx-rowmore-back" /><span className="sr-only">Show </span><b>{st.a}</b> <span>more</span><span className="sr-only">{` ${words[0]}`}</span>
+          <CXI.Chevron size={16} aria-hidden="true" className="cx-rowmore-back" /><span className="sr-only">Show </span><b>{st.a}</b> <span>more</span><span className="sr-only">{` ${words[st.a === 1 ? 2 : 0]}`}</span>
         </button>
       )}
       {st.b > 0 && (
         <button type="button" className="cx-rowmore cx-rowmore-end" tabIndex={-1} onClick={() => go(1)}>
-          <span className="sr-only">Show </span><b>{st.b}</b> <span>more</span><span className="sr-only">{` ${words[1]}`}</span><CXI.Chevron size={16} aria-hidden="true" />
+          <span className="sr-only">Show </span><b>{st.b}</b> <span>more</span><span className="sr-only">{` ${words[st.b === 1 ? 3 : 1]}`}</span><CXI.Chevron size={16} aria-hidden="true" />
         </button>
       )}
     </span>
   );
 }
 
-/* ---------- My pages: one menu for the 15 personal pages and the privacy policy ----------
-   Grouped the way a resident looks for them. Every entry opens its page through the same functions the old buttons called (CX_NAV.panel,
-   CX_NAV.priorities), so every ?panel= link still opens the same page. My ballot keeps its own button beside the menu until Election Day. */
+/* ---------- The main tabs, and My pages: one menu for the other personal pages and the privacy policy ----------
+   The three main tabs sit on row one after the places, set apart from them: the United States map (it is a large piece of its own), My ballot,
+   and Voter education. Each keeps the group it had in the menu as its line in Jump to, so "people" or "ballot" still finds it there.
+   The menu is grouped the way a resident looks for things. Every tab and entry opens its page through the same functions the old buttons called
+   (CX_NAV.panel, CX_NAV.priorities), so every ?panel= link still opens the same page (?panel=us, ?panel=ballot, ?panel=learn). */
+const CX_MAIN_PAGES = [[`us`, `United States`, `People`], [`ballot`, `My ballot`, `Ballot`], [`learn`, `Voter education`, `Ballot`]];
 const CX_PAGE_GROUPS = [
-  [`Ballot`, [[`ballot`, `My ballot`], [`learn`, `Voter education`], [`levies`, `Levies and taxes`], [`districts`, `Find my districts`]]],
-  [`People`, [[`leaders`, `My leaders`], [`profiles`, `Profiles`], [`constellation`, `My constellation`], [`us`, `United States`]]],
+  [`Ballot`, [[`levies`, `Levies and taxes`], [`districts`, `Find my districts`]]],
+  [`People`, [[`leaders`, `My leaders`], [`profiles`, `Profiles`], [`constellation`, `My constellation`]]],
   [`Where I live`, [[`place`, `Who decides here?`], [`context`, `My local context`]]],
   [`Today`, [[`stories`, `Stories`], [`news`, `What's new`]]],
   [`You`, [[`priorities`, `My priorities`], [`ledger`, `Decision ledger`], [`bench`, `How this is built`], [`privacy`, `Privacy policy`]]],
@@ -124,15 +131,10 @@ function cxNavOpenPage(id) {
   if (id === `priorities`) CX_NAV.priorities();
   else CX_NAV.panel(id);
 }
-/* My ballot keeps its own button until the election is over (CX_DATES, Eastern time) */
-function cxNavBallotShortcut() {
-  try { return cxElectionPhase() !== `after`; } catch (e) { return !0; }
-}
-/* only: `ballot` draws just the My ballot button (on the places row), `menu` just the My pages menu (on the rooms row) */
-function CX_DeskPages({ panel, prio, only }) {
+/* the My pages menu, on the rooms row; its button names the page that is open when that page is in the menu */
+function CX_DeskPages({ panel, prio }) {
   const cur = prio ? `priorities` : panel || ``;
-  const showBallot = cxNavBallotShortcut();
-  const inMenu = !!cur && !!CX_PAGE_NAME[cur] && !(showBallot && cur === `ballot`);
+  const inMenu = !!cur && !!CX_PAGE_NAME[cur];
   const [open, setOpen] = u.useState(!1);
   const [instant, setInstant] = u.useState(!1);
   const btn = u.useRef(null), box = u.useRef(null), wrap = u.useRef(null);
@@ -158,21 +160,15 @@ function CX_DeskPages({ panel, prio, only }) {
     if (n >= 0) { e.preventDefault(); items[n].focus(); }
   };
   const toggle = () => { setInstant(CX_NAV_INPUT.kbd); setOpen(!open); };
-  if (only === `ballot` && !showBallot) return null;
   return (
-    <div ref={wrap} className={`cx-pages${only ? ` cx-pages-part-${only}` : ``}`} onBlur={(e) => { if (open && wrap.current && !wrap.current.contains(e.relatedTarget)) setOpen(!1); }}>
-      {showBallot && only !== `menu` && (
-        <button type="button" className={`cx-strip-btn cx-ballot-btn${cur === `ballot` ? ` on` : ``}`} aria-current={cur === `ballot` ? `page` : undefined} onClick={() => cxNavOpenPage(`ballot`)}>
-          <CXI.Check size={16} /><span>My ballot</span>
-        </button>
-      )}
-      {only !== `ballot` && <button ref={btn} type="button" className={`cx-strip-btn cx-pages-btn${inMenu ? ` on` : ``}`} aria-expanded={open} aria-controls="cx-pages-menu" aria-current={inMenu ? `page` : undefined}
+    <div ref={wrap} className="cx-pages" onBlur={(e) => { if (open && wrap.current && !wrap.current.contains(e.relatedTarget)) setOpen(!1); }}>
+      <button ref={btn} type="button" className={`cx-strip-btn cx-pages-btn${inMenu ? ` on` : ``}`} aria-expanded={open} aria-controls="cx-pages-menu" aria-current={inMenu ? `page` : undefined}
         onClick={toggle} onKeyDown={(e) => { if (e.key === `ArrowDown` && !open) { e.preventDefault(); setInstant(!0); setOpen(!0); } }}>
         {inMenu && <span className="sr-only">My pages:</span>}
         <span>{inMenu ? CX_PAGE_NAME[cur] : `My pages`}</span>
         <CXI.Chevron size={16} className="cx-pages-chev" />
-      </button>}
-      {open && only !== `ballot` && (
+      </button>
+      {open && (
         <div ref={box} id="cx-pages-menu" className={`cx-pages-menu${instant ? ` cx-instant` : ``}`} onKeyDown={menuKey}>
           {CX_PAGE_GROUPS.map(([h, list], gi) => (
             <div key={h} className="cx-pages-group" role="group" aria-labelledby={`cx-pages-h${gi}`}>
@@ -245,7 +241,8 @@ function cxJumpFold(s) {
 function cxJumpEs(s) {
   try { return CX_I18N.lang === `es` ? cxI18nText(s) || `` : ``; } catch (e) { return ``; }
 }
-/* everything the box can open: 17 rooms, 15 pages, and the records in the rooms (each under the most specific room it is in) */
+/* everything the box can open: 17 rooms, 16 pages (the three main tabs and the 13 in My pages), and the records in the rooms (each under the most
+   specific room it is in) */
 function cxJumpIndex() {
   const lang = (typeof CX_I18N !== `undefined` && CX_I18N.lang) || `en`;
   if (cxJumpIndex.v && cxJumpIndex.lang === lang) return cxJumpIndex.v;
@@ -254,7 +251,7 @@ function cxJumpIndex() {
   levels.forEach((l) => l.rooms.forEach((r) => { folderOf[r.id] = l; }));
   const rooms = Uh.map((r) => ({ id: `room:${r.id}`, kind: `room`, room: r.id, name: r.label, sub: r.question, folder: folderOf[r.id],
     name0: cxJumpFold(`${r.label} ${cxJumpEs(r.label)}`), hay: cxJumpFold([r.label, r.question, r.answer, r.region, ...(r.terms || []), CX_JUMP_WORDS[r.id] || ``, cxJumpEs(r.label), cxJumpEs(r.question)].join(` `)) }));
-  const pages = CX_PAGE_GROUPS.flatMap(([g, list]) => list.map(([id, name]) => ({ id: `page:${id}`, kind: `page`, page: id, name, sub: g,
+  const pages = [...CX_MAIN_PAGES.map(([id, name, g]) => [g, [[id, name]]]), ...CX_PAGE_GROUPS].flatMap(([g, list]) => list.map(([id, name]) => ({ id: `page:${id}`, kind: `page`, page: id, name, sub: g,
     name0: cxJumpFold(`${name} ${cxJumpEs(name)}`), hay: cxJumpFold(`${name} ${g} ${cxJumpEs(name)}`) })));
   const recs = [], seen = new Set();
   for (const r of [...Uh.filter((x) => x.id !== `overview`), ...Uh.filter((x) => x.id === `overview`)]) {
@@ -399,31 +396,47 @@ function cxNavRove(e, sel) {
   const n = items[Math.max(0, Math.min(items.length - 1, i + map[e.key]))];
   if (n && n !== document.activeElement) n.focus();
 }
+/* Row one is one row of tabs, one Tab stop: the six places, a gap, and the three main tabs (CX_MAIN_PAGES). The arrows, Home, and End move the
+   focus along all nine; Enter or Space (or a press) opens. While a main tab's page is open, it is the one chosen and no place is; while a page
+   from My pages is open, nothing on this row is chosen (the My pages button is). */
 function CX_DeskFolders({ room, panel, prio, onRoom }) {
   const ls = cxNavLevels();
   const cur = cxNavFolderOf(room), page = !!(panel || prio);
+  const main = !prio && CX_MAIN_PAGES.some((m) => m[0] === panel) ? panel : ``;
   u.useEffect(() => { CX_FOLDER_LAST[cxNavFolderOf(room)] = room; }, [room]);
   const choose = (l) => {
     const to = cxNavFolderRoom(l);
     if (to === room && !page) return;
     onRoom(to);
   };
+  const openMain = (id) => { if (id !== main) cxNavOpenPage(id); };
+  // a press opens at once (like the room tabs); a click with no press (the keyboard, a screen reader) opens too; Enter and Space open
+  const acts = (go, chosen) => ({
+    onMouseDown: (e) => { if (e.button === 0 && !e.ctrlKey && !e.metaKey) go(); },
+    onClick: (e) => { if (e.detail === 0 && !chosen) go(); },
+    onKeyDown: (e) => { if (e.key === `Enter` || e.key === ` `) { e.preventDefault(); go(); } },
+  });
   return (
     <div className="cx-row cx-row-folders">
-      <div role="tablist" aria-label="Places" className="cx-folders" onKeyDown={(e) => cxNavRove(e, `[role=tab]`)}>
+      <div role="tablist" aria-label="Places and pages" className="cx-folders" onKeyDown={(e) => cxNavRove(e, `[role=tab]`)}>
         {ls.map((l) => {
           const on = l.id === cur;
           return (
-            <button key={l.id} type="button" role="tab" className="cx-folder" aria-selected={on && !page} data-on={on ? `` : undefined} aria-controls="cx-rooms-row" tabIndex={on ? 0 : -1}
-              onMouseDown={(e) => { if (e.button === 0 && !e.ctrlKey && !e.metaKey) choose(l); }}
-              onClick={(e) => { if (e.detail === 0 && (l.id !== cur || page)) choose(l); }}
-              onKeyDown={(e) => { if (e.key === `Enter` || e.key === ` `) { e.preventDefault(); choose(l); } }}>
+            <button key={l.id} type="button" role="tab" className="cx-folder" aria-selected={on && !page} data-on={on ? `` : undefined} aria-controls="cx-rooms-row" tabIndex={on && !main ? 0 : -1}
+              {...acts(() => choose(l), on && !page)}>
               {l.name}
             </button>
           );
         })}
+        <span className="cx-folder-gap" aria-hidden="true" />
+        {CX_MAIN_PAGES.map(([id, name]) => (
+          <button key={id} type="button" role="tab" className="cx-folder cx-folder-main" data-page={id} aria-selected={id === main} tabIndex={id === main ? 0 : -1}
+            {...acts(() => openMain(id), id === main)}>
+            {name}
+          </button>
+        ))}
       </div>
-      <CX_RowMore unit="places" />
+      <CX_RowMore unit="tabs" />
     </div>
   );
 }
@@ -481,7 +494,7 @@ function CX_DeskStrip({ room, panel, prio }) {
       if (!matchMedia(`(min-width: 761px)`).matches) return;
       cxNavReveal(strip.querySelector(`.atlas-room-tab[data-state="active"]`) || strip.querySelector(`.atlas-room-tab[tabindex="0"]`));
       cxNavReveal(strip.querySelector(`.atlas-sidebar-bottom [aria-current="page"]`));
-      cxNavReveal(strip.querySelector(`.cx-folder[data-on]`));
+      cxNavReveal(strip.querySelector(`.cx-folders [aria-selected="true"]`) || strip.querySelector(`.cx-folder[data-on]`));
     };
     const raf = requestAnimationFrame(show);
     let gone = !1;
@@ -501,7 +514,7 @@ function CX_DeskStrip({ room, panel, prio }) {
     ro.observe(strip);
     // a tab or page button that is cut off at the edge comes fully into view when it is clicked
     const onClick = (e) => {
-      const b = e.target.closest && e.target.closest(`.atlas-room-tab, .atlas-sidebar-bottom button`);
+      const b = e.target.closest && e.target.closest(`.atlas-room-tab, .atlas-sidebar-bottom button, .cx-folder`);
       if (b) requestAnimationFrame(() => cxNavReveal(b, !CX_NAV_INPUT.kbd));
     };
     strip.addEventListener(`click`, onClick);

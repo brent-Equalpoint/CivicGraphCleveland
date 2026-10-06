@@ -685,18 +685,18 @@ def main():
     # each row sits in a .cx-row wrapper with CX_RowMore after it: where a row still scrolls sideways it fades at the side with more, a mouse wheel moves it,
     # and an "n more" button at each end reaches what is hidden (ext/cx-nav.jsx)
     tools_end = "                    children: `Cleveland first · Research preview`,\n                  }),\n                ],\n              }),\n"
-    # On a computer (ext/cx-nav.jsx): row one has the places (CX_DeskFolders, the phone's zoom levels as folder tabs) and My ballot until Election Day;
-    # row two has the chosen place's rooms as a segmented control, "Jump to" (CX_DeskJump: a room, a page, or a record, found on the device; Ctrl+K,
-    # Cmd+K, or "/"), and the "My pages" menu in place of the 15 page buttons (CX_DeskPages). The row of page buttons stays for a narrow window.
+    # On a computer (ext/cx-nav.jsx): row one is one row of folder tabs (CX_DeskFolders): the places (the phone's zoom levels), then, set apart, the
+    # three main tabs United States, My ballot, and Voter education; row two has the chosen place's rooms as a segmented control, "Jump to" (CX_DeskJump:
+    # a room, a page, or a record, found on the device; Ctrl+K, Cmd+K, or "/"), and the "My pages" menu in place of the other page buttons
+    # (CX_DeskPages). The row of page buttons stays for a narrow window.
     src = patch(src, tools_end, tools_end + "              (0, W.jsx)(CX_RowMore, { unit: `pages` }),\n                ],\n              }),\n"
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-top`,\n                children: [\n"
-                "              (0, W.jsx)(CX_DeskFolders, { room: e.room, panel: F, prio: h, onRoom: Me }),\n"
-                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `ballot` }),\n                ],\n              }),\n"
+                "              (0, W.jsx)(CX_DeskFolders, { room: e.room, panel: F, prio: h, onRoom: Me }),\n                ],\n              }),\n"
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-bottom`,\n                children: [\n"
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                id: `cx-rooms-row`,\n                children: [\n" + tabs_block
                 + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n              (0, W.jsx)(CX_FolderLine, { room: e.room }),\n                ],\n              }),\n"
                 "              (0, W.jsx)(CX_DeskJump, { panel: F, onRoom: Me }),\n"
-                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `menu` }),\n                ],\n              }),\n", label="desktop strip: places, rooms, jump, my pages")
+                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h }),\n                ],\n              }),\n", label="desktop strip: places and main tabs, rooms, jump, my pages")
     # the personal pages are a navigation region named "My pages", and the open one says so (aria-current)
     src = patch(src, "              (0, W.jsxs)(`div`, {\n                className: `atlas-sidebar-bottom`,\n",
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-pages`,\n                children: [\n"
