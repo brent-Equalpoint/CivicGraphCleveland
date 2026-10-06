@@ -2304,6 +2304,11 @@ const CHECKS = {
     await (await p.$('.usi-more')).click(); await wait(700);
     expect((await txt(p, '.usi-names button .usi-nm')) !== first0 && /\b2\b/.test((await txt(p, '.usi-more')) || ''), 'the long list did not go to its second page');
     expect((await p.evaluate(OVERLAP)) <= 0.05, 'names overlap on the second page');
+    // stepping back from a name on page 2 returns to page 2 of the same list
+    { const f2 = await txt(p, '.usi-names button .usi-nm');
+      await p.evaluate(() => document.querySelector('.usi-names button').click()); await wait(900);
+      await p.goBack(); await wait(900); const b2 = await ixs(p);
+      expect(b2.stack.length === 0 && b2.active === 0 && b2.page === 1 && (await txt(p, '.usi-names button .usi-nm')) === f2, `stepping back did not return to page 2 of the same list: ${JSON.stringify([b2.stack, b2.active, b2.page])}`); }
     // the names are alphabetical by last name (never by how many ties)
     { const st = await ixs(p), nm = st.groups[0].items.map((x) => x.name), ln = nm.map((n) => lastOf.get(n) || n);
       expect(ln.every((x, i) => !i || ln[i - 1].localeCompare(x) <= 0), 'the members are not in alphabetical order by last name'); }
