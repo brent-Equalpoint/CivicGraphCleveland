@@ -2420,12 +2420,14 @@ const CHECKS = {
     const geo = await ph.evaluate(() => { const c = document.querySelector('.usi-col'), f = document.querySelector('.usm-text'); return { w: c.getBoundingClientRect().width, fw: f.getBoundingClientRect().width, vw: innerWidth, doc: document.documentElement.scrollWidth, sw: c.scrollWidth, cw: c.clientWidth }; });
     expect(Math.abs(geo.w - geo.vw) < 1 && Math.abs(geo.fw - geo.vw) < 1 && geo.doc <= geo.vw && geo.sw <= geo.cw, `the phone Index is not exactly the screen's width, or it scrolls sideways: ${JSON.stringify(geo)}`);
     expect((await count(ph, '.usi-list button')) === 60, `the phone list does not show 60 names first: ${await count(ph, '.usi-list button')}`);
-    await ph.tap('.usi-col .usi-more'); await wait(500);
-    expect((await count(ph, '.usi-list button')) === 120, 'Show more did not add 60 names');
+    // a tap lands where the button is once the column has stopped moving (in Spanish the words are still settling for a moment)
+    const tapMore = async () => { await ph.evaluate(() => { const m = document.querySelector('.usi-col .usi-more'); if (m) m.scrollIntoView({ block: 'center' }); }); await wait(500); if (await has(ph, '.usi-col .usi-more')) await ph.tap('.usi-col .usi-more'); await wait(600); };
+    await tapMore();
+    expect((await count(ph, '.usi-list button')) === 120 && (await ixs(ph)).stack.length === 0, `Show more did not add 60 names: ${await count(ph, '.usi-list button')}`);
     await ph.tap('.usi-chip[data-g="1"]'); await wait(500); s = await ixs(ph);
     expect(s.active === 1 && (await ph.evaluate(() => document.querySelector('.usi-chip[data-g="1"]').getAttribute('aria-checked'))) === 'true', 'a group button did not switch the list');
     await ph.tap('.usi-chip[data-g="0"]'); await wait(500);
-    await ph.tap('.usi-col .usi-more'); await wait(500);   // a new group starts at 60 again; show 120, then go far down the list
+    await tapMore();   // a new group starts at 60 again; show 120, then go far down the list
     await ph.evaluate(() => { document.querySelector('.usi-col').scrollTop = 3600; }); await wait(300);
     const top0 = await ph.evaluate(() => document.querySelector('.usi-col').scrollTop);
     const row = await ph.evaluateHandle(() => [...document.querySelectorAll('.usi-list button')].find((b) => { const q = b.getBoundingClientRect(); return q.top > 200 && q.bottom < innerHeight - 40; }));
