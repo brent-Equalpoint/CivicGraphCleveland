@@ -303,7 +303,7 @@ const CHECKS = {
     await clickText(p, 'Easy mode'); expect(await has(p, '.cxe') && !(await has(p, '.atlas-shell')), 'Easy mode did not replace the desktop shell');
     await clickText(p, 'What is on my ballot?'); await walkEasy(p); await clickText(p, 'Open my ballot'); await wait(700);
     expect(await has(p, '.atlas-shell'), 'Open my ballot did not return to the desktop site');
-    expect(/ballot/i.test((await txt(p, '.atlas-sidebar [aria-current="page"]')) || ''), 'the ballot panel is not the open page in the desktop strip');
+    expect(/ballot/i.test((await txt(p, '.cx-folders [aria-selected="true"]')) || ''), 'My ballot is not the main tab chosen in the desktop strip');
     await done(p);
   },
   async 'screen-states'() {
@@ -1502,7 +1502,7 @@ const CHECKS = {
     expect(await mapReady(p), 'the United States map did not draw');
     expect(await has(p, '.usm canvas.usm-canvas'), 'the United States page has no map canvas');
     expect(!(await has(p, '.us-tabs')) && !(await has(p, '.us-canvas')), 'the old Sky and its tabs are still on the page');
-    expect(/United States/.test((await txt(p, '.atlas-sidebar [aria-current="page"]')) || ''), 'United States is not the open page in the desktop strip');
+    expect((await p.evaluate(() => [...document.querySelectorAll('.cx-folders [aria-selected="true"]')].map((t) => t.innerText.trim()).join('|'))) === 'United States', 'United States is not the one main tab chosen in the desktop strip');
     expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic Compare members', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic, Compare members`);
     expect(((await txt(p, '.usm-pills')) || '').replace(/\s+/g, ' ').trim() === 'Sky Index Linked Tree', 'the views are not Sky, Index, Linked, Tree');
     await clickText(p, 'Show', '.usm-show-btn');
@@ -2512,15 +2512,15 @@ const CHECKS = {
     // a mouse alone reaches every room at 1100 px: each place by a click (with its row's "n more" button if the places do not fit), then each place's
     // last room, brought into view with the rooms row's "n more" button when the row does not fit; no scrollbar is needed anywhere
     const mo = await open('/?room=overview#desktop', { width: 1100 });
-    const places = await mo.evaluate(() => [...document.querySelectorAll('.cx-folders [role=tab]')].map((t) => t.innerText.trim()));
+    const places = await mo.evaluate(() => [...document.querySelectorAll('.cx-folders .cx-folder:not(.cx-folder-main)')].map((t) => t.innerText.trim()));
     expect(places.length === 6, `the places row has ${places.length} places`);
     for (const place of places) {
       for (let i = 0; i < 6; i++) {
-        const vis = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return r.left >= row.left - 1 && r.right <= row.right + 1; }, place);
+        const vis = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders .cx-folder:not(.cx-folder-main)')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return r.left >= row.left - 1 && r.right <= row.right + 1; }, place);
         if (vis || !(await has(mo, '.cx-row-folders .cx-rowmore-end'))) break;
         await mo.click('.cx-row-folders .cx-rowmore-end'); await wait(600);
       }
-      const at = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, place);
+      const at = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders .cx-folder:not(.cx-folder-main)')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, place);
       await mo.mouse.click(at[0], at[1]); await wait(500);
       for (let i = 0; i < 8 && (await has(mo, '.cx-row-rooms .cx-rowmore-end')); i++) { await mo.click('.cx-row-rooms .cx-rowmore-end'); await wait(600); }
       const last = await mo.evaluate(() => { const tabs = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width); const t = tabs[tabs.length - 1], r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return { label: t.innerText.trim(), id: (t.id || '').split('-trigger-').pop(), ok: r.right <= row.right + 1 && r.left >= row.left - 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
@@ -2537,7 +2537,7 @@ const CHECKS = {
     if (row0.over) {
       expect(row0.end && !row0.start && row0.more, `900: the rooms row scrolls but shows no fade or "more" button at its end (${JSON.stringify(row0)})`);
       const label = await nr.evaluate(() => document.querySelector('.cx-row-rooms .cx-rowmore-end').textContent.replace(/\s+/g, ' ').trim());
-      expect(/^Show \d+ more rooms$/.test(label || ''), `900: the "more" button reads "${label}" to a screen reader`);
+      expect(/^Show (1 more room|([2-9]|\d\d+) more rooms)$/.test(label || ''), `900: the "more" button reads "${label}" to a screen reader`);
       await nr.evaluate(() => { document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft = 0; scrollTo(0, 0); }); await wait(200);
       const at = await nr.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
       await nr.mouse.move(at[0], at[1]); await nr.mouse.wheel({ deltaY: 240 }); await wait(300);
@@ -2556,7 +2556,9 @@ const CHECKS = {
     expect(menu && menu.exp === 'true', 'My pages did not open its menu');
     if (menu) {
       expect(JSON.stringify(menu.heads) === JSON.stringify(['Ballot', 'People', 'Where I live', 'Today', 'You']), `the My pages headings are ${JSON.stringify(menu.heads)}`);
-      expect(menu.items.length === 16, `the My pages menu has ${menu.items.length} pages, not 16 (15 pages and the privacy policy)`);
+      expect(menu.items.length === 13, `the My pages menu has ${menu.items.length} pages, not 13 (12 pages and the privacy policy; the three main tabs are on row one)`);
+      const mains = menu.items.filter((t) => /^(United States|My ballot|Voter education)$/.test(t));
+      expect(!mains.length, `the My pages menu still lists ${JSON.stringify(mains)}, which are main tabs now`);
       expect(menu.fs === '13px' && !/mono/i.test(menu.ff) && menu.tt === 'none', `the My pages headings are not 13px sentence case in the text font (${menu.fs}, ${menu.ff}, ${menu.tt})`);
       expect(menu.small === 0, `${menu.small} entries in the My pages menu are under 44px tall`);
     }
@@ -2567,12 +2569,119 @@ const CHECKS = {
     const lv = await mp.evaluate(() => ({ panel: new URLSearchParams(location.search).get('panel'), btn: document.querySelector('.cx-pages-btn').innerText.trim(), cur: document.querySelector('.cx-pages-btn').getAttribute('aria-current'), menu: !!document.querySelector('#cx-pages-menu') }));
     expect(lv.panel === 'levies' && /Levies and taxes/.test(lv.btn) && lv.cur === 'page' && !lv.menu, `choosing Levies and taxes from My pages did not open it and name it on the button (${JSON.stringify(lv)})`);
     await done(mp);
-    // every ?panel= link still opens its page, and the strip names that page as the one open
+    // every ?panel= link still opens its page, and the strip names that page as the one open (a main tab is chosen in its row; a page in My pages names the menu's button)
     for (const [panel, name] of [['priorities', 'My priorities'], ['constellation', 'My constellation'], ['leaders', 'My leaders'], ['stories', 'Stories'], ['profiles', 'Profiles'], ['ballot', 'My ballot'], ['learn', 'Voter education'], ['levies', 'Levies and taxes'], ['districts', 'Find my districts'], ['context', 'My local context'], ['news', "What's new"], ['ledger', 'Decision ledger'], ['bench', 'How this is built'], ['place', 'Who decides here?'], ['privacy', 'Privacy policy']]) {
       const q = await open(`/?panel=${panel}#desktop`, { width: 1280, settle: 900 });
-      const c = await q.evaluate(() => [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].filter((e) => e.getBoundingClientRect().width).map((e) => e.innerText.trim()));
+      const c = await q.evaluate(() => [...document.querySelectorAll('.atlas-sidebar :is([aria-current="page"], [aria-selected="true"])')].filter((e) => e.getBoundingClientRect().width).map((e) => e.innerText.trim()));
       expect(c.length === 1 && c[0].endsWith(name) && (await has(q, '.auxiliary-page, .policy-page, .practice-page, .atlas-main[hidden]')), `?panel=${panel}: the strip names ${JSON.stringify(c)} as open (want ${name})`);
       await done(q);
+    }
+    // The main tabs (ext/cx-nav.jsx, CX_MAIN_PAGES): United States, My ballot, and Voter education on row one after the six places, set apart, in the same
+    // folder look; at 1100 and 1440 in English and Spanish they are there and reachable (all nine show, or the row fades and says how many more);
+    // each opens its own page and is the one chosen while it is open, with no place chosen; 44 px targets; Jump to finds them; and the United States
+    // map, which covers the strip, always has a way back to it (no dead end), also when the map cannot load (the offline file)
+    const MAIN = [['us', 'United States', 'Estados Unidos'], ['ballot', 'My ballot', 'Mi boleta'], ['learn', 'Voter education', 'Educación para votantes']];
+    const rowOne = () => {
+      const row = document.querySelector('.cx-folders'), rr = row.getBoundingClientRect();
+      const tabs = [...row.querySelectorAll('[role=tab]')].map((t) => { const r = t.getBoundingClientRect(), c = getComputedStyle(t); return { t: t.innerText.trim(), main: t.classList.contains('cx-folder-main'), sel: t.getAttribute('aria-selected'), page: t.getAttribute('data-page'), l: r.left, r: r.right, w: r.width, h: r.height, shown: r.left >= rr.left - 1 && r.right <= rr.right + 1, look: [c.borderTopLeftRadius, c.minHeight, c.fontSize, c.borderTopWidth].join('|') }; });
+      return { tabs, label: row.getAttribute('aria-label'), fits: row.scrollWidth <= row.clientWidth + 1, more: !!document.querySelector('.cx-row-folders .cx-rowmore'), fade: row.hasAttribute('data-more-end') || row.hasAttribute('data-more-start'), over: document.documentElement.scrollWidth - innerWidth };
+    };
+    for (const lang of ['en', 'es']) {
+      for (const w of [1100, 1440]) {
+        const p = await open('/?room=council#desktop', { width: w, pre: lang === 'es' ? () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } : undefined, settle: 1500 });
+        const r = await p.evaluate(rowOne);
+        const names = r.tabs.filter((t) => t.main).map((t) => t.t), want = MAIN.map((m) => (lang === 'es' ? m[2] : m[1]));
+        expect(r.tabs.length === 9 && r.tabs.slice(0, 6).every((t) => !t.main) && JSON.stringify(names) === JSON.stringify(want), `${lang} ${w}: row one is ${JSON.stringify(r.tabs.map((t) => t.t))}, not the six places and then ${JSON.stringify(want)}`);
+        if (r.tabs.length === 9) {
+          const gapIn = Math.max(...[1, 2, 3, 4, 5, 7, 8].map((i) => r.tabs[i].l - r.tabs[i - 1].r)), gapApart = r.tabs[6].l - r.tabs[5].r;
+          expect(gapApart >= 16 && gapApart > gapIn * 4, `${lang} ${w}: the main tabs are not set apart from the places (gap ${Math.round(gapApart)} px, between tabs ${Math.round(gapIn)} px)`);
+          const looks = new Set(r.tabs.filter((t) => t.sel !== 'true').map((t) => t.look));
+          expect(looks.size === 1, `${lang} ${w}: the main tabs do not have the places' folder look (${JSON.stringify([...looks])})`);
+          expect(r.tabs.every((t) => t.h >= 44 && t.w >= 44), `${lang} ${w}: a tab on row one is under 44 px: ${JSON.stringify(r.tabs.filter((t) => t.h < 44 || t.w < 44).map((t) => t.t))}`);
+        }
+        // all nine show where they fit (English at both widths, Spanish at 1440); otherwise the row says how many more and fades
+        if (lang === 'en' || w === 1440) expect(r.fits && r.tabs.every((t) => t.shown), `${lang} ${w}: row one does not show all nine tabs (${JSON.stringify(r.tabs.filter((t) => !t.shown).map((t) => t.t))} cut off)`);
+        else expect(r.fits || (r.more && r.fade), `${lang} ${w}: row one does not fit and shows no fade or "more" button`);
+        expect(r.over <= 0, `${lang} ${w}: the page scrolls sideways`);
+        expect(r.label === (lang === 'es' ? 'Lugares y páginas' : 'Places and pages'), `${lang} ${w}: row one is labeled "${r.label}"`);
+        // a press on each main tab opens its page; it is the one chosen (and in view), and no place is
+        for (const [id, en, es] of MAIN.slice(1)) {
+          const at = await p.evaluate((id) => { const t = document.querySelector(`.cx-folder-main[data-page="${id}"]`); const row = document.querySelector('.cx-folders'); row.scrollLeft = row.scrollWidth; const r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, id); await wait(200);
+          await p.mouse.click(at[0], at[1]); await wait(600);
+          const s = await p.evaluate(() => ({ panel: new URLSearchParams(location.search).get('panel'), chosen: [...document.querySelectorAll('.atlas-sidebar :is([aria-selected="true"], [aria-current="page"])')].filter((e) => e.getBoundingClientRect().width).map((e) => e.innerText.trim()), focusable: [...document.querySelectorAll('.cx-folders [tabindex="0"]')].map((e) => e.innerText.trim()) }));
+          const nm = lang === 'es' ? es : en;
+          expect(s.panel === id && JSON.stringify(s.chosen) === JSON.stringify([nm]) && JSON.stringify(s.focusable) === JSON.stringify([nm]), `${lang} ${w}: a click on ${nm} did not open ?panel=${id} with only it chosen (${JSON.stringify(s)})`);
+          const sh = await p.evaluate((id) => { const t = document.querySelector(`.cx-folder-main[data-page="${id}"]`), r = t.getBoundingClientRect(), rr = t.parentElement.getBoundingClientRect(); return r.left >= rr.left - 1 && r.right <= rr.right + 1; }, id);
+          expect(sh, `${lang} ${w}: ${nm} is chosen but not in view on row one`);
+        }
+        await done(p);
+      }
+    }
+    // the keyboard: one Tab stop for all nine; End and the arrows move the focus without opening anything; Enter opens the focused main tab
+    {
+      const k = await open('/?room=council#desktop', { width: 1440 });
+      await k.evaluate(() => document.querySelector('.cx-folders [tabindex="0"]').focus());
+      const h0 = await k.evaluate(() => history.length);
+      await k.keyboard.press('End'); await wait(100); await k.keyboard.press('ArrowRight'); await wait(100);
+      const e1 = await k.evaluate(() => ({ f: document.activeElement.innerText.trim(), panel: new URLSearchParams(location.search).get('panel'), h: history.length }));
+      expect(e1.f === 'Voter education' && !e1.panel && e1.h === h0, `End and ArrowRight on row one did not stop on Voter education without opening it (${JSON.stringify(e1)})`);
+      for (let i = 0; i < 3; i++) await k.keyboard.press('ArrowLeft');
+      await wait(100);
+      expect((await k.evaluate(() => document.activeElement.innerText.trim())) === 'The big picture', 'ArrowLeft from Voter education did not move across the gap to The big picture');
+      await k.keyboard.press('ArrowRight'); await k.keyboard.press('ArrowRight'); await wait(100);
+      await k.keyboard.press('Enter'); await wait(700);
+      const e2 = await k.evaluate(() => ({ panel: new URLSearchParams(location.search).get('panel'), f: document.activeElement.innerText.trim(), sel: (document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText }));
+      expect(e2.panel === 'ballot' && e2.sel === 'My ballot', `Enter on My ballot did not open it (${JSON.stringify(e2)})`);
+      await k.keyboard.press('Home'); await wait(100);
+      expect((await k.evaluate(() => document.activeElement.innerText.trim())) === 'Your block', 'Home on row one did not go to Your block');
+      await done(k);
+    }
+    // Jump to finds each main tab and opens it; the My pages button is not the chosen thing while a main tab is open
+    {
+      const j = await open('/?room=council#desktop', { width: 1440 });
+      for (const [id, name] of MAIN) {
+        await j.keyboard.down('Control'); await j.keyboard.press('k'); await j.keyboard.up('Control'); await wait(250);
+        await j.keyboard.type(name); await wait(250);
+        // rooms come first in the box, then pages: the main tab is among the pages
+        const opts = await j.evaluate(() => [...document.querySelectorAll('.cx-jump [role=option]')].map((o) => [o.querySelector('span').innerText.trim(), (o.closest('[role=group]').querySelector('.cx-jump-h') || {}).innerText]));
+        const at = opts.findIndex((o) => o[0] === name && o[1] === 'Pages');
+        expect(at >= 0, `Jump to does not find the page ${name} (${JSON.stringify(opts.slice(0, 5))})`);
+        for (let i = 0; i < at; i++) await j.keyboard.press('ArrowDown');
+        await j.keyboard.press('Enter'); await wait(800);
+        expect((await j.evaluate(() => new URLSearchParams(location.search).get('panel'))) === id, `Enter on ${name} in Jump to did not open ?panel=${id}`);
+        if (id !== 'us') expect(!(await j.evaluate(() => document.querySelector('.cx-pages-btn').hasAttribute('aria-current'))), `with ${name} open, the My pages button also says it is the open page`);
+        if (id === 'us') { await j.evaluate(() => document.querySelector('.usm-back').click()); await wait(700); }
+      }
+      await done(j);
+    }
+    // the United States map covers the window and the strip; a mouse click on its tab opens the map and picks nothing on it; the map's own
+    // "Cleveland" button (top of its left menu) brings the strip back with all nine tabs, and from there My ballot is one click; Ctrl+K works over the map
+    {
+      const um2 = await open('/?room=council#desktop', { width: 1440, settle: 1500 });
+      const at = await um2.evaluate(() => { const r = document.querySelector('.cx-folder-main[data-page="us"]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+      await um2.mouse.click(at[0], at[1]); await wait(400); await mapReady(um2); await wait(300);
+      const m0 = await um2.evaluate(() => ({ panel: new URLSearchParams(location.search).get('panel'), map: !!document.querySelector('.usm canvas.usm-canvas'), sheet: !!document.querySelector('.usm-sheet'), sel: (document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText, back: (document.querySelector('.usm-menu .usm-back') || {}).innerText }));
+      expect(m0.panel === 'us' && m0.map && !m0.sheet && m0.sel === 'United States', `a click on United States did not open the map with only it chosen, or the click also picked something on the map (${JSON.stringify(m0)})`);
+      expect(/Cleveland/.test(m0.back || ''), `the United States map has no way back to the strip (left menu back button: ${JSON.stringify(m0.back)})`);
+      await um2.keyboard.down('Control'); await um2.keyboard.press('k'); await um2.keyboard.up('Control'); await wait(300);
+      expect(await has(um2, '.cx-jump[role=dialog]'), 'Ctrl+K does not open Jump to over the United States map');
+      await um2.keyboard.press('Escape'); await wait(300);
+      await um2.click('.usm-menu .usm-back'); await wait(800);
+      const m1 = await um2.evaluate(() => { const row = document.querySelector('.cx-folders'), rr = row.getBoundingClientRect(); const tabs = [...row.querySelectorAll('[role=tab]')]; const hit = tabs.map((t) => { const r = t.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !!e && t.contains(e) && r.left >= rr.left - 1 && r.right <= rr.right + 1; }); return { map: !!document.querySelector('.usm'), n: tabs.length, reach: hit.every(Boolean), panel: new URLSearchParams(location.search).get('panel'), inert: !!document.querySelector('.atlas-sidebar[inert], .atlas-sidebar :is([inert])') || !!(document.querySelector('.atlas-sidebar') || {}).closest?.('[inert]') }; });
+      expect(!m1.map && m1.n === 9 && m1.reach && !m1.panel && !m1.inert, `the map's Cleveland button did not bring back the strip with all nine tabs in reach (${JSON.stringify(m1)})`);
+      const at2 = await um2.evaluate(() => { const r = document.querySelector('.cx-folder-main[data-page="ballot"]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+      await um2.mouse.click(at2[0], at2[1]); await wait(700);
+      expect((await um2.evaluate(() => new URLSearchParams(location.search).get('panel'))) === 'ballot', 'after leaving the map, a click on My ballot did not open it');
+      await done(um2);
+      // when the map cannot load (the offline file, or no network), its message still has a way back to the strip
+      const off = await open('/?panel=us#desktop', { width: 1440, settle: 1500, pre: () => { const f = window.fetch; window.fetch = (u, o) => (/\/us\/landscape-2026\.json/.test(String(u)) ? Promise.resolve(new Response('', { status: 404 })) : f(u, o)); } });
+      const b = await off.evaluate(() => { const x = [...document.querySelectorAll('.usm-wait button')].find((e) => /Back to Cleveland/.test(e.innerText)); if (!x) return null; const r = x.getBoundingClientRect(); return { h: r.height, w: r.width }; });
+      expect(!!b && b.h >= 44, `the United States page's "needs the hosted site" message has no 44 px way back to the strip (${JSON.stringify(b)})`);
+      if (b) {
+        await clickText(off, 'Back to Cleveland', '.usm-wait button'); await wait(700);
+        expect(!(await has(off, '.usm')) && (await off.evaluate(() => document.querySelectorAll('.cx-folders [role=tab]').length)) === 9, 'Back to Cleveland on the map\'s message did not bring back the strip');
+      }
+      await done(off);
     }
     // Jump to: Ctrl+K opens it anywhere; it finds bus, electricity, and judge on the device; Enter opens; Escape gives the focus back;
     // "/" does nothing in a text field or on the United States map; the recent list keeps ids only, never what was typed
@@ -2626,7 +2735,7 @@ const CHECKS = {
     // Places: the folders are the phone's levels, in order; a link opens the right folder; a folder opens the room last used in it; the arrows stop at the ends
     // and skip the hidden rooms of other places
     const pl = await open('/?room=transport#desktop', { width: 1440 });
-    const f0 = await pl.evaluate(() => ({ folders: [...document.querySelectorAll('.cx-folders [role=tab]')].map((t) => t.innerText.trim()), on: (document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText, rooms: [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width).map((t) => t.innerText.trim()) }));
+    const f0 = await pl.evaluate(() => ({ folders: [...document.querySelectorAll('.cx-folders .cx-folder:not(.cx-folder-main)')].map((t) => t.innerText.trim()), on: (document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText, rooms: [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width).map((t) => t.innerText.trim()) }));
     expect(JSON.stringify(f0.folders) === JSON.stringify(['Your block', 'Your ward', 'Your city', 'County and courts', 'Ohio and the nation', 'The big picture']), `the places are ${JSON.stringify(f0.folders)}`);
     expect(f0.on === 'Your block' && JSON.stringify(f0.rooms) === JSON.stringify(['Local decisions', 'Housing & land', 'Public safety', 'Transit & streets']), `?room=transport opened ${f0.on} with ${JSON.stringify(f0.rooms)}`);
     await pl.evaluate(() => { const t = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].find((x) => x.innerText.trim() === 'Public safety'); t.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })); t.click(); }); await wait(500);
@@ -2642,10 +2751,13 @@ const CHECKS = {
     expect(endR.t === 'Transit & streets' && endR.vis, `ArrowRight in Your block ended on "${endR.t}", not the last room of the place`);
     await pl.keyboard.press('Home'); await wait(150);
     expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'Local decisions', 'Home did not go to the first room of the place');
-    // the folders: arrows move along and stop at the ends; Enter opens
+    // the folders: arrows move along and stop at the ends (the last tab is the main tab Voter education); Enter opens
     await pl.evaluate(() => document.querySelector('.cx-folders [tabindex="0"]').focus());
     await pl.keyboard.press('End'); await wait(100); await pl.keyboard.press('ArrowRight'); await wait(100);
-    expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'The big picture', 'End and ArrowRight in the places row did not stop at The big picture');
+    expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'Voter education', 'End and ArrowRight on row one did not stop at Voter education');
+    for (let i = 0; i < 3; i++) await pl.keyboard.press('ArrowLeft');
+    await wait(100);
+    expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'The big picture', 'ArrowLeft from the main tabs did not reach The big picture');
     const hb = await pl.evaluate(() => history.length);
     await pl.keyboard.press('Enter'); await wait(500);
     expect((await pl.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'overview' && (await pl.evaluate(() => history.length)) === hb + 1, 'Enter on The big picture did not open Your government with one history entry');
@@ -2703,10 +2815,17 @@ const CHECKS = {
       const s = await l.evaluate(() => { const on = document.querySelector('.atlas-room-tabs [aria-selected="true"]'), off = document.querySelector('.atlas-room-tabs [aria-selected="false"]'); const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor || a.borderTopColor !== b.borderTopColor, weight: +a.fontWeight, offWeight: +b.fontWeight }; });
       expect(s.differ && s.weight >= 600 && s.offWeight < 600, `light ${theme}: the chosen room does not stand out (${JSON.stringify(s)})`);
       await done(l);
-      const m = await open('/?room=council&panel=ballot#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
+      const m = await open('/?room=council&panel=levies#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
       const s2 = await m.evaluate(() => { const on = [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].find((e) => e.getBoundingClientRect().width); if (!on) return { none: true }; const off = [...document.querySelectorAll('.atlas-sidebar .cx-strip-btn'), ...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); if (!off) return { none: true, alone: true }; const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
       expect(!s2.none && s2.differ && s2.weight >= 600, `light ${theme}: the open page does not stand out (${JSON.stringify(s2)})`);
       await done(m);
+      // an open main tab stands out the way a chosen place does: its own fill or edge, taller, and bolder words; no place looks chosen
+      for (const [panel, name] of [['ballot', 'My ballot'], ['learn', 'Voter education']]) {
+        const mt = await open(`/?room=council&panel=${panel}#desktop`, { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
+        const s3 = await mt.evaluate(() => { const on = document.querySelector('.cx-folders [aria-selected="true"]'), off = [...document.querySelectorAll('.cx-folders [aria-selected="false"]')]; if (!on) return { none: true }; const a = getComputedStyle(on), looks = new Set(off.map((t) => { const c = getComputedStyle(t); return [c.backgroundColor, c.fontWeight, c.boxShadow].join('|'); })); const b = getComputedStyle(off[0]); return { name: on.innerText.trim(), differ: a.backgroundColor !== b.backgroundColor || a.boxShadow !== b.boxShadow, taller: on.getBoundingClientRect().height > off[0].getBoundingClientRect().height, weight: +a.fontWeight, offLooks: looks.size }; });
+        expect(!s3.none && s3.name === name && s3.differ && s3.taller && s3.weight >= 600 && s3.offLooks === 1, `light ${theme}: ${name}, open, does not stand out as the chosen tab, or a place still looks chosen (${JSON.stringify(s3)})`);
+        await done(mt);
+      }
     }
   },
 };
@@ -2971,7 +3090,9 @@ const LOOK_PAGES = [
   ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
   // the desktop strip above the graph (ext/cx-nav.jsx): a chosen and a plain place, a chosen and a plain room, the thumb, and the strip's buttons
-  ['desktop strip', '/?room=transport#desktop', {}, null, ['.cx-folder[aria-selected="true"]', '.cx-folder[aria-selected="false"]', '.atlas-room-tabs[data-slot=tabs-list]', '.cx-row-rooms [role=tab][aria-selected="true"]', '.cx-row-rooms [role=tab][aria-selected="false"]:not([data-cx-off])', '.cx-thumb', '.cx-ballot-btn', '.cx-jump-btn', '.cx-jump-btn kbd', '.cx-pages-btn']],
+  ['desktop strip', '/?room=transport#desktop', {}, null, ['.cx-folder[aria-selected="true"]', '.cx-folder[aria-selected="false"]', '.atlas-room-tabs[data-slot=tabs-list]', '.cx-row-rooms [role=tab][aria-selected="true"]', '.cx-row-rooms [role=tab][aria-selected="false"]:not([data-cx-off])', '.cx-thumb', '.cx-folder-main[aria-selected="false"]', '.cx-jump-btn', '.cx-jump-btn kbd', '.cx-pages-btn']],
+  // a main tab open (My ballot): it takes the chosen folder look, and the places do not
+  ['desktop strip main tab', '/?panel=ballot#desktop', {}, null, ['.cx-folder-main[aria-selected="true"]', '.cx-folder:not(.cx-folder-main)[aria-selected="false"]']],
   // the privacy policy (ext/cx-privacy.jsx): the profile page's type with the draft line, the short version, and the list of what is saved
   ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
   ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
