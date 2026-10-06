@@ -2,14 +2,17 @@
    resident's front door. Scrolling down zooms out. Each room keeps its desktop content: question,
    answer, guided view (Start, Meaning, Power, Proof), records with their four tabs, connections. */
 
+// the levels, in sentence case (the desktop strip reads the same list in cx-nav.jsx)
 const CXM_LEVELS = [
-  [`block`, `YOUR BLOCK`, `Where decisions land first`, `This is your block. Housing, streets, and safety start here.`, [`housing`, `transport`, `safety`, `local-decisions`]],
-  [`ward`, `YOUR WARD`, `One council member per ward`, `Your ward. One council member speaks for it.`, [`council`]],
-  [`city`, `YOUR CITY`, `Mayor, budget, utilities, schools`, `The whole city now. The mayor's office and the budget live here.`, [`administration`, `money`, `energy`, `education`, `health`]],
-  [`county`, `COUNTY AND COURTS`, `Judges and elections`, `Zooming out to the county. Your judges live up here.`, [`courts`, `voting`]],
-  [`state`, `OHIO AND THE NATION`, `Columbus and Washington`, `Ohio and Washington. Big decisions, farther from your porch.`, [`state-federal`]],
-  [`big`, `THE BIG PICTURE`, `How it all connects`, `The big picture. How every piece fits together.`, [`overview`, `municipalities`, `ecosystem`, `history`]],
+  [`block`, `Your block`, `Where decisions land first`, `This is your block. Housing, streets, and safety start here.`, [`housing`, `transport`, `safety`, `local-decisions`]],
+  [`ward`, `Your ward`, `One council member per ward`, `Your ward. One council member speaks for it.`, [`council`]],
+  [`city`, `Your city`, `Mayor, budget, utilities, schools`, `The whole city now. The mayor's office and the budget live here.`, [`administration`, `money`, `energy`, `education`, `health`]],
+  [`county`, `County and courts`, `Judges and elections`, `Zooming out to the county. Your judges live up here.`, [`courts`, `voting`]],
+  [`state`, `Ohio and the nation`, `Columbus and Washington`, `Ohio and Washington. Big decisions, farther from your porch.`, [`state-federal`]],
+  [`big`, `The big picture`, `How it all connects`, `The big picture. How every piece fits together.`, [`overview`, `municipalities`, `ecosystem`, `history`]],
 ];
+// what each tick on the rail is called: a whole sentence each, so a translation never joins "Jump to" to a name
+const CXM_LEVEL_JUMP = [`Jump to your block`, `Jump to your ward`, `Jump to your city`, `Jump to the county and courts`, `Jump to Ohio and the nation`, `Jump to the big picture`];
 function cxmLevelRooms() {
   const placed = new Set(CXM_LEVELS.flatMap((l) => l[4]));
   return CXM_LEVELS.map((l, i) => ({ id: l[0], label: l[1], sub: l[2], line: l[3], rooms: [...l[4].map((id) => Uh.find((r) => r.id === id)).filter(Boolean), ...(i === CXM_LEVELS.length - 1 ? Uh.filter((r) => !placed.has(r.id)) : [])] }));
@@ -18,22 +21,88 @@ function cxmFirstSentence(t) {
   const m = String(t).match(/^.*?[.!?](\s|$)/);
   return m ? m[0].trim() : String(t);
 }
+/* The line under a room card. Each wording is one whole line (singular and plural written out), so a translation never glues pieces together. */
 function cxmRoomPulse(r) {
-  const off = r.nodes.filter((n) => n.evidence === `official`).length;
-  const leg = r.nodes.filter((n) => n.kind === `legislation`).length;
-  return `${cxmPl(r.nodes.length, `record`, `records`)} · ${off} official source${off === 1 ? `` : `s`}${leg ? ` · ${cxmPl(leg, `law or proposal`, `laws or proposals`)}` : ``}`;
+  const n = r.nodes.length, o = r.nodes.filter((x) => x.evidence === `official`).length, l = r.nodes.filter((x) => x.kind === `legislation`).length;
+  const k = `${n === 1 ? 1 : `n`}${o === 1 ? 1 : `n`}${l > 1 ? `n` : l}`;
+  if (k === `nn0`) return `${n} records · ${o} official sources`;
+  if (k === `nn1`) return `${n} records · ${o} official sources · ${l} law or proposal`;
+  if (k === `nnn`) return `${n} records · ${o} official sources · ${l} laws or proposals`;
+  if (k === `n10`) return `${n} records · ${o} official source`;
+  if (k === `n11`) return `${n} records · ${o} official source · ${l} law or proposal`;
+  if (k === `n1n`) return `${n} records · ${o} official source · ${l} laws or proposals`;
+  if (k === `1n0`) return `${n} record · ${o} official sources`;
+  if (k === `1n1`) return `${n} record · ${o} official sources · ${l} law or proposal`;
+  if (k === `110`) return `${n} record · ${o} official source`;
+  return `${n} record · ${o} official source · ${l} law or proposal`;
 }
 
-/* shared scroll state for the guide rail */
-const CXM_RAIL = { focus: null, level: 0, prog: 0, ticks: null, subs: new Set() };
+/* Where you are on Explore, shared by the list and the rail. The level is the level of the card on the reading line (45% down the list),
+   so the lit tick, the highlighted heading, the highlighted card, and the guide's bubble always name the same place. ticks[j] is the point
+   of the scroll (0 to 1) where a card of level j first takes the reading line. The list and the rail draw again only when the card, the level,
+   or the ticks change (subs); the guide and the fill move every frame by transform, outside React (moves). Nothing here is saved. */
+const CXM_RAIL = { focus: null, level: 0, prog: 0, ticks: null, subs: new Set(), moves: new Set() };
+function cxmRailKey() { return `${CXM_RAIL.focus}|${CXM_RAIL.level}|${(CXM_RAIL.ticks || []).join()}`; }
 function cxmRailSet(o) {
+  const was = cxmRailKey();
   Object.assign(CXM_RAIL, o);
-  CXM_RAIL.subs.forEach((f) => f());
+  CXM_RAIL.moves.forEach((f) => f());
+  if (cxmRailKey() !== was) CXM_RAIL.subs.forEach((f) => f());
 }
-function useCxmRail() {
+// pick: what this component draws from the state; it draws again only when that changes
+function useCxmRail(pick) {
   const [, force] = u.useState(0);
-  u.useEffect(() => { const f = () => force((n) => n + 1); CXM_RAIL.subs.add(f); return () => CXM_RAIL.subs.delete(f); }, []);
+  u.useEffect(() => {
+    let last = pick(CXM_RAIL);
+    const f = () => { const v = pick(CXM_RAIL); if (v !== last) { last = v; force((n) => n + 1); } };
+    CXM_RAIL.subs.add(f);
+    f();
+    return () => CXM_RAIL.subs.delete(f);
+  }, []);
   return CXM_RAIL;
+}
+/* The rail is a scale of the six levels, evenly spaced so every tick is a full 44 px target. The guide follows the scroll with no easing:
+   between two ticks it moves in step with the scroll between the points where those two levels take the reading line, so it passes a tick
+   exactly when that level becomes the one you are reading. y is the place on the rail (0 top, 1 bottom); p the scroll (0 to 1). */
+function cxmRailKnots(ticks) {
+  const n = CXM_LEVELS.length, t = ticks && ticks.length === n ? ticks : CXM_LEVELS.map((_, j) => j / n);
+  return { xs: [...t, 1], ys: [...t.map((_, j) => j / n), 1] };
+}
+function cxmRailY(p, ticks) {
+  const { xs, ys } = cxmRailKnots(ticks);
+  if (p <= xs[0]) return 0;
+  for (let k = 1; k < xs.length; k++) if (p <= xs[k]) { const dx = xs[k] - xs[k - 1]; return dx > 1e-6 ? ys[k - 1] + ((ys[k] - ys[k - 1]) * (p - xs[k - 1])) / dx : ys[k]; }
+  return 1;
+}
+function cxmRailP(y, ticks) {
+  const { xs, ys } = cxmRailKnots(ticks);
+  for (let k = 1; k < ys.length; k++) if (y <= ys[k]) return xs[k - 1] + ((xs[k] - xs[k - 1]) * (y - ys[k - 1])) / (ys[k] - ys[k - 1]);
+  return 1;
+}
+/* Where the guide's bubble may sit, in the rail's own pixels: under the heading of the level it names, inside that level and inside the list
+   (above the tab bar), touching no card's question, no level heading, and not the end of the list (6 px clear of each), and off the highlighted
+   card's answer if it can be. null when there is no such place: the guide then says nothing, and the heading still names the level. */
+function cxmBubbleSpot(main, rail, b, level) {
+  const sec = main && rail && b ? main.querySelectorAll(`section[data-level]`)[level] : null;
+  if (!sec) return null;
+  const pad = 6, head = sec.querySelector(`.cxm-level-h`).getBoundingClientRect(), sr = sec.getBoundingClientRect(), mr = main.getBoundingClientRect(), rr = rail.getBoundingClientRect(), br = b.getBoundingClientRect();
+  const x0 = br.left - pad, x1 = br.right + pad, H = br.height;
+  const lines = (sel) => [...main.querySelectorAll(sel)].flatMap((e) => {
+    const out = [], w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) if (q.width && q.height) out.push(q); }
+    return out;
+  }).filter((q) => q.right > x0 && q.left < x1);
+  const hard = [...lines(`.cxm-roomtile-q, .cxm-end`), ...[...main.querySelectorAll(`.cxm-level-h`)].map((h) => h.getBoundingClientRect()).filter((q) => q.right > x0 && q.left < x1)];
+  const soft = lines(`.cxm-roomtile.focus .cxm-roomtile-p.hook`);
+  const clear = (list, y) => list.every((q) => q.bottom + pad <= y || q.top - pad >= y + H);
+  const from = Math.max(head.bottom + pad, mr.top + 8), to = Math.min(sr.bottom, mr.bottom - 8) - H;
+  let first = null;
+  for (let y = from; y <= to; y += 2) {
+    if (!clear(hard, y)) continue;
+    if (clear(soft, y)) return Math.round(y - rr.top);
+    if (first === null) first = y;
+  }
+  return first === null ? null : Math.round(first - rr.top);
 }
 
 function CxmExplore() {
@@ -42,32 +111,40 @@ function CxmExplore() {
 }
 function CxmRooms() {
   const { mainRef, setRoom, openSheet, setOverlay } = useCxm();
-  const rail = useCxmRail();
+  const rail = useCxmRail((r) => `${r.focus}|${r.level}`);
   const levels = u.useMemo(() => cxmLevelRooms(), []);
+  const pageRef = u.useRef(null);
   u.useEffect(() => {
     const el = mainRef.current;
     if (!el) return;
     let raf = 0;
     const measure = () => {
       raf = 0;
-      const rect = el.getBoundingClientRect(), mid = rect.top + rect.height * 0.45;
-      let best = CXM_RAIL.focus, bd = 1e9;
-      el.querySelectorAll(`[data-room]`).forEach((t) => { const r = t.getBoundingClientRect(), d = Math.abs((r.top + r.bottom) / 2 - mid); if (d < bd) { bd = d; best = t.getAttribute(`data-room`); } });
-      const max = Math.max(1, el.scrollHeight - el.clientHeight);
-      let lvl = 0; const ticks = [];
-      el.querySelectorAll(`section[data-level]`).forEach((s, j) => { ticks.push(Math.min(1, s.offsetTop / max)); if (s.getBoundingClientRect().top <= rect.top + 56) lvl = j; });
-      const o = { focus: best, prog: Math.min(1, el.scrollTop / max), ticks };
-      if (lvl !== CXM_RAIL.level) { o.level = lvl; o.bubble = Date.now(); }
-      cxmRailSet(o);
+      const top = el.getBoundingClientRect().top, line = el.clientHeight * 0.45, st = el.scrollTop, max = Math.max(1, el.scrollHeight - el.clientHeight);
+      // every card's middle, in the list's own coordinates, with its level; the highlighted card is the one nearest the reading line
+      const cards = [];
+      el.querySelectorAll(`section[data-level]`).forEach((s, j) => s.querySelectorAll(`[data-room]`).forEach((t) => { const r = t.getBoundingClientRect(); cards.push([r.top - top + st + r.height / 2, j, t.getAttribute(`data-room`)]); }));
+      let focus = null, level = 0, bd = 1e9;
+      for (const [c, j, id] of cards) { const d = Math.abs(c - st - line); if (d < bd) { bd = d; focus = id; level = j; } }
+      // a level takes the reading line when its first card becomes nearer to the line than the card before it
+      const ticks = [];
+      CXM_LEVELS.forEach((_, j) => {
+        const k = cards.findIndex((x) => x[1] === j), at = k > 0 ? (cards[k - 1][0] + cards[k][0]) / 2 - line : 0;
+        ticks.push(Math.round(Math.min(1, Math.max(j ? ticks[j - 1] : 0, at / max)) * 1e4) / 1e4);
+      });
+      cxmRailSet({ focus, level, prog: Math.min(1, st / max), ticks });
     };
     const onScroll = () => { if (!raf) raf = requestAnimationFrame(measure); };
     el.addEventListener(`scroll`, onScroll, { passive: !0 });
-    cxmRailSet({ level: 0, bubble: Date.now() });
-    setTimeout(measure, 60);
-    return () => { el.removeEventListener(`scroll`, onScroll); if (raf) cancelAnimationFrame(raf); };
+    // the cards change height when the fonts arrive, the language changes, or the window turns
+    const ro = typeof ResizeObserver === `function` ? new ResizeObserver(onScroll) : null;
+    if (ro) { ro.observe(el); if (pageRef.current) ro.observe(pageRef.current); }
+    cxmRailSet({ focus: null, level: 0, prog: 0, ticks: null });
+    const t0 = setTimeout(measure, 60);
+    return () => { el.removeEventListener(`scroll`, onScroll); if (ro) ro.disconnect(); clearTimeout(t0); if (raf) cancelAnimationFrame(raf); };
   }, []);
   return (
-    <div className="cxm-page cxm-rise cxm-rooms">
+    <div className="cxm-page cxm-rise cxm-rooms" ref={pageRef}>
       <CxmH1>Explore</CxmH1>
       <p className="cxm-mut">Scroll down to zoom out, from your block all the way to Washington. {Uh.length} rooms, each answering one question.</p>
       <button type="button" className="cxm-searchbar" onClick={() => openSheet(`search`)}><CXI.Search size={18} /> Search records, people, laws, terms</button>
@@ -89,12 +166,16 @@ function CxmRooms() {
           </div>
           {lv.rooms.map((r) => {
             const f = rail.focus === r.id;
+            // the record count and the answer's first sentence share one place, so the card keeps its height when it is highlighted
             return (
               <button key={r.id} type="button" data-room={r.id} className={`cxm-roomtile ${f ? `focus` : ``}`} onClick={() => setRoom(r.id)}>
                 <span className="cxm-roomtile-q">{r.question}</span>
                 <span className="cxm-roomtile-foot">
                   <span className="cxm-kicker">{r.label}</span>
-                  {f ? <span key="h" className="cxm-fade cxm-roomtile-p hook">{cxmFirstSentence(r.answer)}</span> : <span key="p" className="cxm-roomtile-p">{cxmRoomPulse(r)}</span>}
+                  <span className="cxm-roomtile-pp">
+                    <span className={`cxm-roomtile-p${f ? ` off` : ``}`} aria-hidden={f ? `true` : undefined}>{cxmRoomPulse(r)}</span>
+                    <span className={`cxm-roomtile-p hook ${f ? `cxm-fade` : `off`}`} aria-hidden={f ? undefined : `true`}>{cxmFirstSentence(r.answer)}</span>
+                  </span>
                 </span>
               </button>
             );
@@ -105,26 +186,115 @@ function CxmRooms() {
     </div>
   );
 }
+/* The guide on the rail. It speaks at rest, never while the list moves: 160 ms after the last scroll, if you moved down onto a level it has
+   not named yet on this visit (kept in memory only) and you are past the top of the page, it names that level once, under that level's
+   heading, for 2.4 s, and it goes as soon as the list moves 24 px. A screen reader hears the same words from one status line that is always
+   there; the bubble itself is hidden from it. The rail runs from the top of the list to its bottom; a bare touch on it does nothing, and it
+   scrubs only from the guide (drawn above the ticks, so a drag can start on it) or after a 10 px drag, from where the finger took hold. */
 function CxmRail() {
   const { mainRef, guide } = useCxm();
-  const rail = useCxmRail();
-  const [bubble, setBubble] = u.useState(!1);
-  const drag = u.useRef(!1);
-  u.useEffect(() => { if (!rail.bubble || (mainRef.current?.scrollTop || 0) < 60) return; setBubble(!0); const t = setTimeout(() => setBubble(!1), 2400); return () => clearTimeout(t); }, [rail.bubble]);
-  const along = (p, extra = 0) => `calc((100% - 36px) * ${p.toFixed(3)} + ${extra}px)`;
-  const ticks = rail.ticks || CXM_LEVELS.map((_, i) => i / CXM_LEVELS.length);
-  const scrub = (e) => { const el = mainRef.current; if (!el) return; const r = e.currentTarget.getBoundingClientRect(); const ratio = Math.max(0, Math.min(1, (e.clientY - r.top - 18) / Math.max(1, r.height - 36))); el.scrollTop = ratio * (el.scrollHeight - el.clientHeight); };
-  const jump = (i) => { const el = mainRef.current; const s = el?.querySelectorAll(`section[data-level]`)[i]; if (s) el.scrollTo({ top: s.offsetTop + 2, behavior: `smooth` }); };
+  const [lang] = useCxLang();
+  const rail = useCxmRail((r) => `${r.level}|${(r.ticks || []).join()}`);
+  const box = u.useRef(null), cuy = u.useRef(null), fill = u.useRef(null), bub = u.useRef(null), drag = u.useRef(null);
+  const T = u.useRef({ rest: 0, hide: 0, last: 0, shownAt: null, spoken: new Set() }).current;
+  const [frame, setFrame] = u.useState(null);
+  const [say, setSay] = u.useState(null);   // { level, phase: measure, in, or out, top }
+  const [sr, setSr] = u.useState(null);   // the level the status line names, or null
+  const n = CXM_LEVELS.length;
+  const still = () => !!globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches;
+  const tr = (s) => (lang === `es` ? cxUsmTr(s) : s);
+  const langOf = (s) => (lang === `es` && tr(s) === s ? `en` : undefined);
+  // the guide and the fill follow the scroll each frame
+  const move = () => {
+    const r = box.current; if (!r) return;
+    const y = cxmRailY(CXM_RAIL.prog, CXM_RAIL.ticks), len = Math.max(0, r.clientHeight - 36);
+    if (cuy.current) cuy.current.style.transform = `translateY(${(len * y).toFixed(1)}px)`;
+    if (fill.current) fill.current.style.transform = `scaleY(${y.toFixed(4)})`;
+  };
+  u.useEffect(() => { CXM_RAIL.moves.add(move); return () => CXM_RAIL.moves.delete(move); }, []);
+  u.useLayoutEffect(move, [frame, rail.ticks]);
+  // from the top of the list to its bottom, so the rail covers neither the Updated strip nor the tab bar
+  u.useLayoutEffect(() => {
+    const el = mainRef.current; if (!el) return;
+    const fit = () => { const host = el.offsetParent; if (!host) return; const top = el.offsetTop + 10, bottom = host.clientHeight - el.offsetTop - el.offsetHeight + 10; setFrame((f) => (f && f.top === top && f.bottom === bottom ? f : { top, bottom })); };
+    fit();
+    const ro = typeof ResizeObserver === `function` ? new ResizeObserver(fit) : null;
+    if (ro) ro.observe(el);
+    globalThis.addEventListener(`resize`, fit);
+    return () => { if (ro) ro.disconnect(); globalThis.removeEventListener(`resize`, fit); };
+  }, []);
+  const hide = () => {
+    clearTimeout(T.hide); T.shownAt = null; setSr(null);
+    // the way it came, unless no animation will run (reduced motion): then at once, because no animationend will come
+    setSay((s) => { if (!s) return s; if (s.phase !== `in`) return null; const a = bub.current ? getComputedStyle(bub.current).animationName : `none`; return still() || !a || a === `none` ? null : { ...s, phase: `out` }; });
+  };
+  u.useEffect(() => {
+    const el = mainRef.current; if (!el) return;
+    T.last = el.scrollTop;
+    const rest = () => {
+      const st = el.scrollTop, down = st > T.last + 1;
+      T.last = st;
+      const level = CXM_RAIL.level;
+      if (down && st >= 60 && !T.spoken.has(level)) setSay({ level, phase: `measure`, top: 0 });
+    };
+    const onScroll = () => {
+      if (T.shownAt !== null && Math.abs(el.scrollTop - T.shownAt) > 24) hide();
+      clearTimeout(T.rest);
+      T.rest = setTimeout(rest, 160);
+    };
+    el.addEventListener(`scroll`, onScroll, { passive: !0 });
+    return () => { el.removeEventListener(`scroll`, onScroll); clearTimeout(T.rest); clearTimeout(T.hide); };
+  }, []);
+  // drawn once unseen, measured, then placed (or dropped when there is no clear place)
+  u.useLayoutEffect(() => {
+    if (!say || say.phase !== `measure`) return;
+    const top = cxmBubbleSpot(mainRef.current, box.current, bub.current, say.level);
+    if (top === null) { setSay(null); return; }
+    T.spoken.add(say.level); T.shownAt = mainRef.current.scrollTop;
+    setSay({ ...say, phase: `in`, top });
+    setSr(say.level);
+    clearTimeout(T.hide); T.hide = setTimeout(hide, 2400);
+  }, [say]);
+  const jump = (i) => {
+    const el = mainRef.current, card = el && el.querySelectorAll(`section[data-level]`)[i]?.querySelector(`[data-room]`);
+    if (!card) return;
+    const r = card.getBoundingClientRect(), y = r.top - el.getBoundingClientRect().top + el.scrollTop + r.height / 2 - el.clientHeight * 0.45;
+    el.scrollTo({ top: Math.max(0, Math.min(el.scrollHeight - el.clientHeight, y)), behavior: still() ? `auto` : `smooth` });
+  };
+  const cuyAt = () => { const r = box.current.getBoundingClientRect(); return r.top + 18 + Math.max(0, r.height - 36) * cxmRailY(CXM_RAIL.prog, CXM_RAIL.ticks); };
+  const scrub = (y) => {
+    const el = mainRef.current, r = box.current.getBoundingClientRect();
+    const at = Math.max(0, Math.min(1, (y - drag.current.grab - r.top - 18) / Math.max(1, r.height - 36)));
+    el.scrollTop = cxmRailP(at, CXM_RAIL.ticks) * (el.scrollHeight - el.clientHeight);
+  };
+  const onDown = (e) => {
+    if (e.target.closest(`[data-tick]`)) return;
+    const c = cuyAt();
+    drag.current = { id: e.pointerId, y0: e.clientY, grab: e.clientY - c, on: !!e.target.closest(`.cxm-rail-guide`) || Math.abs(e.clientY - c) <= 18 };
+    try { e.currentTarget.setPointerCapture(e.pointerId); } catch {}
+  };
+  const onMove = (e) => {
+    const d = drag.current; if (!d || d.id !== e.pointerId) return;
+    if (!d.on) { if (Math.abs(e.clientY - d.y0) < 10) return; d.on = !0; d.grab = e.clientY - cuyAt(); }
+    scrub(e.clientY);
+  };
+  const onUp = () => { drag.current = null; };
+  const name = CXM_GUIDES[guide] || `Erie`, line = say ? CXM_LEVELS[say.level][3] : ``;
   return (
-    <div className="cxm-rail" onPointerDown={(e) => { if (e.target.closest(`[data-tick]`)) return; drag.current = !0; try { e.currentTarget.setPointerCapture(e.pointerId); } catch {} scrub(e); }}
-      onPointerMove={(e) => drag.current && scrub(e)} onPointerUp={() => (drag.current = !1)} onPointerCancel={() => (drag.current = !1)}>
+    <div className="cxm-rail" ref={box} style={frame ? { top: frame.top, bottom: frame.bottom } : undefined} onPointerDown={onDown} onPointerMove={onMove} onPointerUp={onUp} onPointerCancel={onUp}>
       <i className="cxm-rail-track" aria-hidden="true" />
-      <i className="cxm-rail-fill" aria-hidden="true" style={{ height: along(rail.prog) }} />
-      {ticks.map((t, i) => (
-        <button key={i} type="button" data-tick="1" className={`cxm-tick ${rail.level === i ? `on` : ``}`} style={{ top: along(t, 18) }} aria-label={`Jump to ${CXM_LEVELS[i][1].toLowerCase()}`} onClick={() => jump(i)}><i /></button>
+      <i className="cxm-rail-fill" ref={fill} aria-hidden="true" />
+      {CXM_LEVELS.map((lv, i) => (
+        <button key={lv[0]} type="button" data-tick={i} className={`cxm-tick${rail.level === i ? ` on` : ``}`} style={{ top: `calc(18px + (100% - 36px) * ${(i / n).toFixed(4)})` }} aria-label={CXM_LEVEL_JUMP[i]} aria-current={rail.level === i ? `location` : undefined} onClick={() => jump(i)}><i /></button>
       ))}
-      <span className="cxm-rail-guide" aria-hidden="true" style={{ top: along(rail.prog) }}><CxmGuide kind={guide} size={36} /></span>
-      {bubble && <span className="cxm-rail-bubble cxm-pop" role="status" style={{ top: along(rail.prog) }}><b>{CXM_GUIDES[guide] || `Erie`}</b>{CXM_LEVELS[rail.level][3]}</span>}
+      <span className="cxm-rail-guide" ref={cuy} aria-hidden="true"><CxmGuide kind={guide} size={36} /></span>
+      {say && (
+        <span ref={bub} className={`cxm-rail-bubble${say.phase === `in` ? ` cxm-bubble-in` : say.phase === `out` ? ` cxm-bubble-out` : ``}`} aria-hidden="true" data-no-translate="" data-level={say.level} lang={langOf(line)}
+          style={{ top: say.top, visibility: say.phase === `measure` ? `hidden` : undefined }} onAnimationEnd={(e) => { if (e.target === e.currentTarget) setSay((s) => (s && s.phase === `out` ? null : s)); }}>
+          <CxmGuide kind={guide} size={20} /><b>{name}</b>{` `}{tr(line)}
+        </span>
+      )}
+      <p className="cxm-sr" role="status" aria-live="polite" aria-atomic="true" data-no-translate="" lang={sr === null ? undefined : langOf(CXM_LEVELS[sr][3])}>{sr === null ? `` : tr(CXM_LEVELS[sr][3])}</p>
     </div>
   );
 }

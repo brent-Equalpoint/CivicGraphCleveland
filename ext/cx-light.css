@@ -53,3 +53,13 @@ html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-room-tab[data-
 html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #ffffff; }
 html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active]:focus-visible, html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #ffffff; }
 html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .cx-strip-btn.on:focus-visible { outline-color: #ffffff; }
+/* the Explore rail on the phone (ext/cxm-explore.jsx): the generated light rules for the track, the idle ticks, and the idle rings came later and
+   painted the fill, the current tick, and the current ring the same pale gray as the track; the current place keeps the accent in light */
+html[data-cx-mode="light"] .cxm-rail-track { background: var(--line); }
+html[data-cx-mode="light"] .cxm-tick i { background: var(--faint); }
+html[data-cx-mode="light"] .cxm-rail-fill, html[data-cx-mode="light"] .cxm-tick.on i { background: var(--acc2); }
+html[data-cx-mode="light"] .cxm-level-h circle.on { stroke: var(--acc2); }
+html[data-cx-mode="light"] .cxm-level-h circle.core { stroke: none; }
+@media (prefers-contrast: more) {
+  html[data-cx-mode="light"] .cxm-rail-bubble { border: 2px solid var(--ink); }
+}
