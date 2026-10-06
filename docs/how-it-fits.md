@@ -80,6 +80,14 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
   Decide once, when the thing appears (`CX_DeskStrip` does it before the first paint).
 - **The desktop strip's rooms are the compiled Radix tabs.** `build.py` hides the other places' tabs (`data-cx-off`) and sets `aria-selected` and
   `data-state` itself; arrows only move the focus (`activationMode: manual`). Keep `?room=` and `?panel=` working through `CX_NAV`, not new state.
+- **Row one of the desktop strip holds places and main tabs in one tablist.** `CX_DeskFolders` draws the six places, a gap (`.cx-folder-gap`,
+  `aria-hidden`), and the main tabs from `CX_MAIN_PAGES` (`us`, `ballot`, `learn`), which open through `CX_NAV.panel` like every page. A main page is
+  either a tab or in `CX_PAGE_GROUPS` (the My pages menu), never both; Jump to reads both lists. Anything in a sideways row that is drawn only for the
+  eye must be `aria-hidden`, or the "n more" buttons count it as a hidden tab (`cxRowItems`). The tabs get closer below 1440 and 1280 px (media
+  queries in `ext/cx.css`); a longer label or a new tab needs the widths measured again at 1100 and 1280 px in both languages (`nav-desktop`).
+- **The United States map covers the strip on a computer** (`.usm` is fixed over the window and makes everything behind it `inert`). Its left
+  menu's "Cleveland" button (`CX_NAV.panel('')`) is the way back to the strip, and its "needs the hosted site" message has Back to Cleveland;
+  any new full-window state of the map needs the same, or the main tabs become a dead end.
 - **The committee lines are not in the page.** `ext/cx-us-text.jsx` holds them between the US-TEXT markers as strict JSON (`CX_US_LINES`); `build.py`
   takes the table out before compiling, checks each line rests on official words in `data/us-explainers-2026.json`, and serves both as
   `site/us/explainers-2026.json`, which `cxUsxLoad()` fetches the first time a committee, a subcommittee, a role's official words, or a text view needs it.
