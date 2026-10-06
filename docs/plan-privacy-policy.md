@@ -26,7 +26,7 @@ Every reassurance repeated beside a switch or a box is a sentence people have to
 - **What the host can see.** Our host (Vercel) receives ordinary web requests and may log things like your IP address and the page asked for, as any web host does. We do not add anything about you to those requests. (To confirm with the host's own policy before publishing.)
 - **Reporting a mistake.** Reports go through a public GitHub issue, so they are public; do not include anything personal. A free GitHub account is needed. (From the existing wording on profiles.)
 - **Sources.** Official public records, with dates pulled; news and interpretation wait for a person.
-- **Who runs it.** An Equalpoint project, hosted on Equalpoint's Vercel plan. (Corrected Oct 6: not Futureland.)
+- **Who runs it.** "This is an Equalpoint project." and nothing more (Brent, Oct 6).
 - **Children, accessibility, contact.** To be decided: a contact for privacy questions.
 - **Changes.** The date the policy last changed, and a plain note of what changed.
 

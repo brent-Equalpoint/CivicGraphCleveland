@@ -66,7 +66,7 @@ brings the draft line back until someone approves again.
 | `report` | Report a mistake or ask about privacy by a public GitHub issue; an account is needed; leave out anything personal. | `cxReportLink()` in `ext/cx-seat.jsx`, `.github/ISSUE_TEMPLATE/mistake.yml`. | `privacy-policy` (the link opens the repository's new issue form in a new tab), reading (GitHub's own rules) |
 | `sources` | Records come from official public sources and show the day pulled. | `scripts/refresh.py` and the fetchers; dates on every record. | `scripts/refresh.py`, reading |
 | `sources` | Official records update by themselves; news is never added automatically; our own words say whether a person checked them. | The nightly workflow runs only `scripts/refresh.py`; review flags in `build.py`. | `levies`, `us-explain`, reading |
-| `who` | An Equalpoint project, hosted on Equalpoint's Vercel plan. | From `docs/plan-privacy-policy.md` and the owner's notes. | reading (Brent and a lawyer to confirm the wording) |
+| `who` | This is an Equalpoint project. | From `docs/plan-privacy-policy.md` and the owner's notes. | reading (Brent and a lawyer to confirm the wording) |
 | `children` | No accounts; the site asks no one, including children, for a name, an age, or contact details. | No such field anywhere. | reading |
 | `access` | Built for a keyboard and a screen reader; an automated accessibility check runs before each release; not yet tested by a person who uses a screen reader. | `scripts/release.py` runs the browser checks. | `axe`, `targets`, `privacy-policy` |
 | `access` | The Spanish is a draft until a Spanish speaker reads it. | `i18n/review-notes.md`. | `spanish-switch`, `scripts/test_i18n.py` |

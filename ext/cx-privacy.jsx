@@ -85,7 +85,7 @@ const CX_POLICY = {
    "Official records update by themselves. News is never added automatically. Text that explains a record in our own words says whether a person has checked it."
   ]},
   {"id": "who", "heading": "Who runs this site", "body": [
-   "The Cleveland Civic Graph is an Equalpoint project. It is hosted on Equalpoint's Vercel plan."
+   "This is an Equalpoint project."
   ]},
   {"id": "children", "heading": "Children", "body": [
    "The site has no accounts and asks no one, including children, for a name, an age, or contact details."
