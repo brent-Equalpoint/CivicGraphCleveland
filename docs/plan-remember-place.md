@@ -14,7 +14,7 @@ Nothing personal leaves the browser. Place, answers and priorities never go into
   - the federal state and district they chose.
 - It never holds the typed address, and never the districts the address finder works out.
 - On the next visit the saved place is read back before the first screen, so My place, People, and the federal profiles open on it.
-- Settings has "Forget my place", which removes the entry and turns the switch off. Clearing practice data also clears it.
+- Settings has "Forget my place", which removes the entry and turns the switch off. Clearing practice data also clears it. (As built, Oct 6, 2026: turning the switch off forgets the place; "Clear my practice data" does not. The privacy policy says what the build does.)
 - A saved place expires after 120 days, or the week after Election Day, whichever is first. Old or broken data is ignored, never a crash.
 - If the browser blocks storage (a private window), the app says "This browser could not save your place" and carries on for the visit.
 

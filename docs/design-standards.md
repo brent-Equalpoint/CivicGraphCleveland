@@ -29,7 +29,8 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
 | Every claim has a source link. Interpretive text carries a review flag and says a person has not reviewed it until one has. | `levies`, `build.py --mark-*-reviewed` |
 | Official records update by themselves; anything interpretive (news, reasons, office text, levy write-ups) needs a named person. | `refresh.py --check`, review flags |
 | Official wording (ballot questions, ordinance text) is shown as printed. Our summary is labeled as ours. | reading **(no check yet)** |
-| Personal input (place, answers, priorities, a home value) stays in the page. It never goes into a link or a request. | `shell`, reading **(no network check for new inputs yet)** |
+| Personal input (place, answers, priorities, a home value) stays in the page. It never goes into a link or a request. | `shell`, `privacy-policy` (the place, a priority, and a typed address in no request, link, or cookie through the app's flows), `districts`, reading **(no network check for every new input yet)** |
+| Everything the app saves in the browser is named on the privacy policy, with what it holds and how it is removed. | `scripts/test_privacy.py` (every storage call in the code), `privacy-policy` (what the app really writes) |
 | A source that disagrees with the official record is not used, and the difference is noted. | reading |
 
 ## 3. UX standards (how it behaves)
@@ -103,7 +104,8 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
 reachable with a mouse alone, Jump to and My pages), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
-`spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `us-explain` (every committee,
+`spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
+/privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,
 hover card, and Index say the same first line; the review notice and the official words with their source and date; a role note closes four ways).
 
