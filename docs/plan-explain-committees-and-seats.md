@@ -74,7 +74,7 @@ Then the facts we already have, as small rows: chair, ranking member, size, subc
 4. **Committee text, in the app.** The plain-English line for each committee and subcommittee, written from the official text, in the sheet, hover card, profile, Index, Linked and Tree. The `text-budget` check keeps it short. (Medium.)
 5. **Positions and seats.** Leadership posts, the executive branch (President, Vice President, cabinet, agency heads), the courts (Chief Justice, justices, chief judges, senior status), and the seat line for every member. (Medium.)
 6. **Spanish.** Our lines translated as a draft; the official wording stays English, as it does for the ballot. (Small.)
-7. **Checks.** A check that fails if any committee, subcommittee, role word or post shows no text and no "none on file"; that no explanation contains a ranking word ("powerful", "important", "top", "best"); that every explanation names its source and date; that no line passes 25 words; and that the sheet, profile, hover card and Index say the same thing. (Small.)
+7. **Checks.** A check that fails if any committee, subcommittee, role word or post shows no text and no "none on file"; that no explanation contains a ranking word ("powerful", "important", "top", "best"); that every explanation names its source and date; that no "what it does" line passes 20 words, no "why it matters" line passes 15, and no pair passes 35; and that the sheet, profile, hover card and Index say the same thing. (Small.)
 8. **Review.** A person reads all our lines against the official text and runs `--mark-us-text-reviewed`. Until then the unreviewed notice shows. (Needs a person; I estimate under two hours for the 49 committees and about 40 posts, plus the subcommittees.)
 
 ## Rules this keeps
