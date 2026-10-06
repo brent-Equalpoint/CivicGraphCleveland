@@ -461,7 +461,7 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
@@ -471,9 +471,56 @@ def main():
     # 4. patches
     log("Applying patches:")
     src = patch(src, "export { Qh as default };", "export { CX_Root as default };", label="phone app: root switch")
-    # v5.27 desktop: the rooms are folder tabs above the graph (ext/cx.css), so the arrow keys that move between them are left and right, not up and down
+    # v5.27 desktop: the rooms are folder tabs above the graph (ext/cx.css), so the arrow keys that move between them are left and right, not up and down.
+    # The arrows only move the focus; Enter or Space opens the room (an arrow press used to open every room it passed, add a history entry, and redraw the map).
     src = patch(src, "        onValueChange: Me,\n        orientation: `vertical`,\n        className: `atlas-workspace`,",
-                "        onValueChange: Me,\n        orientation: `horizontal`,\n        className: `atlas-workspace`,", label="desktop: room tabs keys")
+                "        onValueChange: Me,\n        orientation: `horizontal`,\n        activationMode: `manual`,\n        className: `atlas-workspace`,", label="desktop: room tabs keys")
+    # The strip above the graph (ext/cx-nav.jsx): a plain block, not an unlabeled aside; CX_DeskStrip keeps the chosen room and page in view.
+    src = patch(src, "          (0, W.jsxs)(`aside`, {\n            className: `atlas-sidebar`,\n            children: [\n",
+                "          (0, W.jsxs)(`div`, {\n            className: `atlas-sidebar`,\n            children: [\n"
+                "              (0, W.jsx)(CX_DeskStrip, { room: e.room, panel: F, prio: h }),\n", label="desktop strip: mount")
+    # While a personal page is open, no room tab looks or announces itself as chosen (only the open page does), so the screen shows one thing chosen.
+    # The room tabs also come after the personal pages in the page, the order they are seen in, so Tab goes the way the eye does.
+    tabs_old = ("              (0, W.jsx)(ms, {\n                className: `atlas-room-tabs`,\n                \"aria-label\": `Parts of the civic system`,\n"
+                "                children: Uh.map((t) => {\n                  let n = hm[t.icon] ?? ce;\n                  return (0, W.jsxs)(\n                    hs,\n                    {\n"
+                "                      value: t.id,\n                      \"aria-label\": t.label,\n                      className: `atlas-room-tab`,\n")
+    tabs_end = ("                        t.id === e.room && !h && (0, W.jsx)(w, { size: 14 }),\n                      ],\n                    },\n"
+                "                    t.id,\n                  );\n                }),\n              }),\n")
+    if src.count(tabs_old) != 1 or src.count(tabs_end) != 1:
+        sys.exit("PATCH FAILED [desktop strip: rooms after my pages]: markers not found exactly once")
+    i0 = src.index(tabs_old); i1 = src.index(tabs_end, i0) + len(tabs_end)
+    tabs_block = src[i0:i1].replace("                      className: `atlas-room-tab`,\n",
+                                    "                      className: `atlas-room-tab`,\n"
+                                    "                      \"aria-selected\": t.id === e.room && !h && !F,\n"
+                                    "                      \"data-state\": t.id === e.room && !h && !F ? `active` : `inactive`,\n"
+                                    "                      \"data-cx-off\": cxNavFolderOf(t.id) !== cxNavFolderOf(e.room) || void 0,\n", 1)
+    # only the chosen place's room tabs show (data-cx-off hides the rest, ext/cx.css); the row stops at its ends; the thumb of the segmented control sits behind the tabs
+    tabs_block = tabs_block.replace("                \"aria-label\": `Parts of the civic system`,\n                children: Uh.map((t) => {\n",
+                                    "                \"aria-label\": `Parts of the civic system`,\n                loop: !1,\n"
+                                    "                children: [(0, W.jsx)(CX_RoomThumb, { room: e.room, page: !!(h || F) }, `cx-thumb`), ...Uh.map((t) => {\n", 1)
+    if not tabs_block.endswith("                }),\n              }),\n") or "CX_RoomThumb" not in tabs_block or "data-cx-off" not in tabs_block:
+        sys.exit("PATCH FAILED [desktop strip: rooms segmented]: the room tabs block changed")
+    tabs_block = tabs_block[:-len("                }),\n              }),\n")] + "                })],\n              }),\n"
+    src = src[:i0] + src[i1:]
+    # each row sits in a .cx-row wrapper with CX_RowMore after it: where a row still scrolls sideways it fades at the side with more, a mouse wheel moves it,
+    # and an "n more" button at each end reaches what is hidden (ext/cx-nav.jsx)
+    tools_end = "                    children: `Cleveland first · Research preview`,\n                  }),\n                ],\n              }),\n"
+    # On a computer (ext/cx-nav.jsx): row one has the places (CX_DeskFolders, the phone's zoom levels as folder tabs) and My ballot until Election Day;
+    # row two has the chosen place's rooms as a segmented control, "Jump to" (CX_DeskJump: a room, a page, or a record, found on the device; Ctrl+K,
+    # Cmd+K, or "/"), and the "My pages" menu in place of the 15 page buttons (CX_DeskPages). The row of page buttons stays for a narrow window.
+    src = patch(src, tools_end, tools_end + "              (0, W.jsx)(CX_RowMore, { unit: `pages` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-top`,\n                children: [\n"
+                "              (0, W.jsx)(CX_DeskFolders, { room: e.room, panel: F, prio: h, onRoom: Me }),\n"
+                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `ballot` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-bottom`,\n                children: [\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                id: `cx-rooms-row`,\n                children: [\n" + tabs_block
+                + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n              (0, W.jsx)(CX_FolderLine, { room: e.room }),\n                ],\n              }),\n"
+                "              (0, W.jsx)(CX_DeskJump, { panel: F, onRoom: Me }),\n"
+                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `menu` }),\n                ],\n              }),\n", label="desktop strip: places, rooms, jump, my pages")
+    # the personal pages are a navigation region named "My pages", and the open one says so (aria-current)
+    src = patch(src, "              (0, W.jsxs)(`div`, {\n                className: `atlas-sidebar-bottom`,\n",
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-pages`,\n                children: [\n"
+                "              (0, W.jsxs)(`nav`, {\n                \"aria-label\": `My pages`,\n                className: `atlas-sidebar-bottom`,\n", label="desktop strip: my pages nav")
     # v5.15 dates know what day it is (passed / today / next); the text must match the compiled guide
     d0 = ("                    [\n                      [`Oct 5`, `Registration deadline`],\n                      [`Oct 6`, `Early voting begins`],\n"
           "                      [`Oct 27`, `Mail ballot application due by 8:30 p.m.`],\n                      [`Nov 1`, `Early in-person voting ends at 5 p.m.`],\n"
@@ -536,7 +583,6 @@ def main():
                 "                      (0, W.jsx)(`span`, { children: `Voter education` }),\n                    ],\n                  }),\n"
                 "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `My local context`,\n                    className: F === `context` ? `active` : ``,\n"
                 "                    onClick: () => cxPanel(`context`),\n                    children: [(0, W.jsx)(CXI.Pin, { size: 18 }), (0, W.jsx)(`span`, { children: `My local context` })],\n                  }),\n"
-                "                  (0, W.jsx)(`span`, { className: `cx-sidebar-label`, children: `CIVIC INTELLIGENCE` }),\n"
                 "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `What's new`,\n                    className: F === `news` ? `active` : ``,\n"
                 "                    onClick: () => cxPanel(`news`),\n                    children: [(0, W.jsx)(CXI.Sparkles, { size: 18 }), (0, W.jsx)(`span`, { children: `What's new` })],\n                  }),\n"
                 "                  (0, W.jsxs)(`button`, {\n                    \"aria-label\": `Decision ledger`,\n                    className: F === `ledger` ? `active` : ``,\n"
@@ -683,6 +729,16 @@ def main():
                 "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n"
                 "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n",
                 label="aux page: districts")
+    # the open personal page says so to a screen reader (aria-current="page"), on every one of the 15 page buttons
+    n_cur = 0
+    def cur(m):
+        nonlocal n_cur
+        n_cur += 1
+        return m.group(0) + f"\n{m.group(1)}\"aria-current\": {m.group(2)} ? `page` : void 0,"
+    src = re.sub(r"( +)className: (F === `\w+`|h) \? `active` : ``,", cur, src)
+    if n_cur != 15:
+        sys.exit(f"PATCH FAILED [desktop strip: open page is current]: expected 15, found {n_cur}")
+    log(f"  patch ok: desktop strip: open page is current ({n_cur})")
     # v5.16 drawer: a way from a council member's or the Mayor's map record to their formal profile
     src = patch(src,
                 "                                (0, W.jsx)(`h2`, {\n                                  id: `record-title`,\n                                  children: U.name,\n                                }),\n",

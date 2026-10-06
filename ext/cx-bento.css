@@ -27,7 +27,6 @@ html[data-cx-theme="bento"] .atlas-eyebrow,
 html[data-cx-theme="bento"] .atlas-map-heading span,
 html[data-cx-theme="bento"] .atlas-snapshot,
 html[data-cx-theme="bento"] .drawer-toolbar > span,
-html[data-cx-theme="bento"] .cx-sidebar-label,
 html[data-cx-theme="bento"] .simple-guide-kicker { font-family: var(--bb-mono); font-weight: 500; letter-spacing: .06em; }
 html[data-cx-theme="bento"] .atlas-eyebrow { color: #9dbaff; }
 

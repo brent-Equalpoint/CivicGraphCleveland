@@ -90,11 +90,12 @@ async function explore(p, into, scene, deadline, depth, visited, mobile) {
     if (Date.now() > deadline) return;
     const key = scene + '|' + it.sig + '|' + depth;
     if (visited.has(key)) continue; visited.add(key);
-    const before = await p.evaluate(() => location.href + '|' + document.querySelectorAll('.cxm-sheet, .cxm-overlay, .cx-drawer, [role=dialog]').length);
+    const before = await p.evaluate(() => location.href + '|' + document.querySelectorAll('.cxm-sheet, .cxm-overlay, .cx-drawer, [role=dialog], #cx-pages-menu').length);
     try { await p.mouse.click(it.x, it.y); } catch { continue; }
     await wait(260);
     await harvest(p, into, scene);
-    const after = await p.evaluate(() => location.href + '|' + document.querySelectorAll('.cxm-sheet, .cxm-overlay, .cx-drawer, [role=dialog]').length);
+    const after = await p.evaluate(() => location.href + '|' + document.querySelectorAll('.cxm-sheet, .cxm-overlay, .cx-drawer, [role=dialog], #cx-pages-menu').length);
+    // a sheet, a dialog, or the desktop My pages menu opened (or the address changed): look inside it too
     if (after !== before && depth < 2) await explore(p, into, scene + ' > ' + it.label, deadline, depth + 1, visited, mobile);
     // close what was opened
     for (const sel of CLOSERS) { const c = await p.$(sel); if (c) { try { await c.click(); await wait(160); } catch {} } }

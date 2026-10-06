@@ -1028,7 +1028,32 @@
   "The other questions on every ballot in the county": "Las otras preguntas en todas las boletas del condado",
   "Short stories for State Issue 3 and county Issues 12, 13, and 14: what each asks, and what people on each side say.": "Historias breves sobre el Asunto Estatal 3 y los Asuntos del condado 12, 13 y 14: qué pregunta cada uno y qué dice la gente de cada lado.",
   "Read the short story": "Leer la historia breve",
-  "What it asks, what changes, and what people on each side say, with sources.": "Qué pregunta, qué cambia y qué dice la gente de cada lado, con fuentes."
+  "What it asks, what changes, and what people on each side say, with sources.": "Qué pregunta, qué cambia y qué dice la gente de cada lado, con fuentes.",
+  "My pages": "Mis páginas",
+  "more": "más",
+  "rooms": "salas",
+  "rooms to the left": "salas a la izquierda",
+  "pages": "páginas",
+  "pages to the left": "páginas a la izquierda",
+  "places": "lugares",
+  "places to the left": "lugares a la izquierda",
+  "Where I live": "Donde vivo",
+  "My pages:": "Mis páginas:",
+  "Jump to": "Ir a",
+  "Jump to a room, page, or record": "Ir a una sala, una página o un registro",
+  "A room, a page, or a record": "Una sala, una página o un registro",
+  "Places to go": "Lugares a donde ir",
+  "Recent": "Recientes",
+  "Clear recent": "Borrar recientes",
+  "Pages": "Páginas",
+  "<1>↑</1> <2>↓</2> to move, <3>Enter</3> to open, <4>Esc</4> to close": "<1>↑</1> <2>↓</2> para moverse, <3>Enter</3> para abrir, <4>Esc</4> para cerrar",
+  "Places": "Lugares",
+  "Your block": "Su cuadra",
+  "Your ward": "Su distrito",
+  "Your city": "Su ciudad",
+  "County and courts": "Condado y tribunales",
+  "Ohio and the nation": "Ohio y la nación",
+  "The big picture": "El panorama general"
  },
  "masked": {
   "{n} days": "{n} días",
@@ -1324,7 +1349,8 @@
   "Judge, {*}": "Juez o jueza, {*}",
   "Associate Justice, {*}": "Juez asociado o jueza asociada, {*}",
   "Chief Justice, {*}": "Presidente del tribunal, {*}",
-  "{n} and {n}": "{n} y {n}"
+  "{n} and {n}": "{n} y {n}",
+  "No room or page matches \"{*}\". Try a word like bus, school, or vote.": "Ninguna sala ni página coincide con \"{*}\". Pruebe una palabra como autobús, escuela o voto."
  },
  "keep": [
   "1234 E 116th St, Cleveland",
