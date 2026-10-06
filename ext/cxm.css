@@ -1382,7 +1382,7 @@ html[data-cx-theme="original"] .usm { --u-bg: #141210; --u-tile: #1e1a17; --u-ti
 .usm-results small, .usm-list small { color: var(--u-mut); font-size: 14px; }
 .usm-none { padding: 12px 14px; color: var(--u-mut); }
 .usm-pills { display: flex; gap: 2px; padding: 3px; border-radius: 999px; background: var(--u-tile2); }
-.usm-pills button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--u-mut); font-weight: 600; }
+.usm-pills button { min-height: 44px; padding: 0 16px; border: 0; border-radius: 999px; background: transparent; color: var(--u-mut); font-weight: 600; display: inline-flex; align-items: center; justify-content: center; text-align: center; }
 .usm-pills button.on { background: var(--u-acc); color: #fff; }
 .usm-lang { padding: 0 14px; }
 
@@ -1687,7 +1687,7 @@ button.ual-name:hover, button.ual-name:focus-visible { background: var(--u-tile2
 /* the phone: one row of back, title, search and language, then the four views; the sheet and the Show panel slide up from the bottom */
 .usm-phone .usm-top { top: 8px; left: 8px; right: 8px; flex-wrap: wrap; gap: 4px; padding: 4px; border-radius: 999px; }
 .usm-phone .usm-pills { flex: 1; min-width: 0; padding: 0; background: transparent; }
-.usm-phone .usm-pills button { flex: 1 1 auto; min-width: 44px; padding: 0 6px; font-size: 14px; }
+.usm-phone .usm-pills button { flex: 1 1 auto; min-width: 52px; padding: 0 8px; font-size: 14px; border-radius: 16px; }
 .usm-phone .usm-search { flex: 1; min-width: 0; }
 .usm-phone .usm-search input { width: 100%; padding-right: 14px; }
 .usm-phone .usm-results { left: -48px; right: -96px; width: auto; }
