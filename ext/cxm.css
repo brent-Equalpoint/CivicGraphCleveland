@@ -1656,6 +1656,88 @@ html[data-cx-mode] .usm .usmp-name:focus, html[data-cx-mode] .usm .usmp-list h3:
 .usm-text { position: absolute; top: 80px; left: 232px; right: 12px; bottom: 12px; z-index: 1; overflow: auto; padding: 18px 22px 28px; border-radius: 20px; background: var(--u-tile); border: 1px solid var(--u-line); max-width: none; }
 .usm-text .us-index, .usm-text .us-tree { max-height: none; overflow: visible; }
 .usm-text .us-list button.on { outline: 2px solid var(--u-soft); }
+/* The Index (ext/cx-us-index.jsx) from Brent's VC Fest Index kit. Computers: a globe on the left and the groups in a column with the names
+   fanned out on the right. Phones and narrow windows: one column. Only the map's own variables carry color so light mode and both styles follow */
+.usm-text.usi-host { padding: 0; overflow: hidden; }
+.usi { position: absolute; inset: 0; color: var(--u-ink); }
+.usi-stage { position: absolute; inset: 0; }
+.usi-col .usi-stage { position: relative; inset: auto; }
+.usi-svg { position: absolute; inset: 0; overflow: visible; pointer-events: none; color: var(--u-mut); }
+.usi-wire { fill: none; stroke: var(--u-mut); stroke-opacity: .3; stroke-width: 1; }
+.usi-wire.on { stroke: var(--u-ink); stroke-opacity: .55; }
+.usi-ray { fill: none; stroke: var(--u-mut); stroke-opacity: .45; stroke-width: 1; transition: stroke-width .2s; }
+.usi-ray.hot { stroke: var(--u-soft); stroke-opacity: .9; stroke-width: 2; }
+.usi-ray.muted { stroke-dasharray: 3 5; }
+.usi-mk-ink { stroke: var(--u-mut); }
+.usi-mk-fill { fill: var(--u-mut); }
+.usi-comet { fill: none; stroke: var(--u-soft); stroke-width: 2; stroke-linecap: round; stroke-dasharray: 36 2000; animation: usi-run 3.2s linear infinite; }
+@keyframes usi-run { from { stroke-dashoffset: 36; } to { stroke-dashoffset: -420; } }
+.usi-orb { position: absolute; display: block; }
+.usi-head { position: absolute; z-index: 1; display: grid; justify-items: center; gap: 6px; text-align: center; }
+.usi-kicker { color: var(--u-mut); font-size: 14px; font-weight: 600; line-height: 1.35; }
+.usi-title { margin: 0; font-size: 22px; font-weight: 800; line-height: 1.2; letter-spacing: -0.02em; overflow-wrap: anywhere; }
+html[data-cx-mode] .usm .usi-title:focus, .usm .usi-title:focus { outline: none; }
+.usi-what { font-size: 15px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.usi-rev, .usi-lead { color: var(--u-mut); font-size: 14px; line-height: 1.4; }
+.usi-ring { display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 2px; }
+.usi-ring b { font-size: 16px; font-weight: 700; color: var(--u-soft); }
+.usi-count { flex: none; color: var(--u-soft); }
+.usi-acts { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 6px; }
+.usi-hint { position: absolute; top: 16px; right: 18px; z-index: 1; max-width: 340px; color: var(--u-mut); font-size: 14px; line-height: 1.4; text-align: right; }
+.usi-crumbs { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.usi-wide .usi-crumbs { position: absolute; top: 12px; left: 16px; z-index: 2; max-width: calc(100% - 400px); }
+.usi-crumbs ol { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.usi-crumbs li { display: flex; align-items: center; gap: 6px; min-width: 0; }
+.usi-crumbs button, .usi-crumbs b { display: inline-flex; align-items: center; min-height: 44px; max-width: 280px; padding: 4px 14px; border-radius: 999px; font-size: 14px; font-weight: 700; line-height: 1.25; text-align: left; overflow-wrap: anywhere; }
+.usi-crumbs button { border: 1px solid var(--u-line); background: var(--u-tile2); color: var(--u-ink); }
+.usi-crumbs button:hover { border-color: var(--u-soft); }
+.usi-crumbs b { background: var(--u-acc); color: #fff; }
+.usi-sep { color: var(--u-mut); }
+.usi-crumbs .usi-start { border-color: transparent; background: transparent; color: var(--u-soft); text-decoration: underline; text-underline-offset: 3px; }
+.usi-card { position: absolute; display: grid; grid-template-columns: 36px minmax(0, 1fr) 44px; align-items: center; gap: 12px; padding: 0 12px 0 14px; border: 1px solid var(--u-line); border-radius: 18px; background: var(--u-tile2); color: var(--u-ink); text-align: left; transition: border-color .2s; }
+.usi-card:hover { border-color: var(--u-soft); }
+.usi-card.on { background: var(--u-acc); border-color: var(--u-acc); color: #fff; }
+.usi-ti { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; background: var(--u-tile); color: var(--u-mut); }
+.usi-cl { display: grid; gap: 3px; min-width: 0; }
+.usi-lb { font-size: 15px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+.usi-ct { color: var(--u-mut); font-size: 14px; font-weight: 600; line-height: 1.3; }
+.usi-card .usi-count { color: var(--u-mut); }
+.usi-card.on .usi-ct, .usi-card.on .usi-count { color: inherit; }
+.usi-names { margin: 0; padding: 0; list-style: none; }
+.usi-lab { position: absolute; z-index: 1; transform: translateY(-50%); display: flex; flex-wrap: wrap; align-items: baseline; align-content: center; column-gap: 10px; min-height: 44px; padding: 8px 10px; border: 0; border-radius: 10px; background: transparent; color: var(--u-ink); text-align: left; }
+button.usi-lab:hover, button.usi-lab:focus-visible { background: var(--u-tile2); }
+.usi-lab b { min-width: 0; font-size: 15px; font-weight: 700; line-height: 20px; overflow-wrap: anywhere; }
+.usi-note { color: var(--u-mut); font-size: 14px; font-weight: 600; line-height: 18px; overflow-wrap: anywhere; }
+.usi-lab.muted b, .usi-row.muted b { color: var(--u-mut); font-weight: 600; }
+.usi-lab.usi-more b { color: var(--u-soft); font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.usi-ghost { position: absolute; z-index: 3; pointer-events: none; color: var(--u-ink); font-size: 15px; font-weight: 800; white-space: nowrap; }
+.usi-none { padding: 24px; }
+/* phones and narrow windows: the same thing as one column you scroll */
+.usi-col { overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; padding: 14px 16px calc(32px + env(safe-area-inset-bottom)); }
+.usi-col .usi-crumbs { margin-bottom: 14px; }
+.usi-top { display: flex; align-items: flex-start; gap: 14px; }
+.usi-top .usi-orb { position: static; flex: none; width: 96px; height: 96px; }
+.usi-col .usi-head { position: static; flex: 1; min-width: 0; justify-items: start; text-align: left; }
+.usi-col .usi-ring, .usi-col .usi-acts { justify-content: flex-start; }
+.usi-chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 16px 0 6px; }
+.usi-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 14px; border: 1px solid var(--u-line); border-radius: 999px; background: var(--u-tile2); color: var(--u-ink); font-size: 15px; font-weight: 700; text-align: left; }
+.usi-chip.on { background: var(--u-acc); border-color: var(--u-acc); color: #fff; }
+.usi-n { color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usi-chip.on .usi-n { color: inherit; }
+.usi-list { position: relative; margin: 10px 0 0; padding: 0 0 0 26px; list-style: none; }
+.usi-list::before { content: ""; position: absolute; top: 8px; bottom: 8px; left: 9px; width: 1px; background: var(--u-line); }
+.usi-row { position: relative; display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; margin: 0; padding: 8px 4px 8px 0; border: 0; border-top: 1px solid var(--u-line); background: transparent; color: var(--u-ink); text-align: left; }
+button.usi-row:hover, button.usi-row:focus-visible { background: var(--u-tile2); }
+.usi-mk { position: absolute; top: 50%; left: -26px; display: grid; place-items: center; width: 20px; height: 20px; transform: translateY(-50%); background: var(--u-tile); color: var(--u-mut); }
+.usi-rt { display: flex; flex: 1; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 10px; min-width: 0; }
+.usi-rt b { min-width: 0; font-size: 15px; font-weight: 700; line-height: 1.35; overflow-wrap: anywhere; }
+.usi-go { flex: none; color: var(--u-mut); }
+.usi-col .usi-more { margin-top: 14px; }
+/* the details card for a subcommittee opened from the Index */
+.usi-why { margin-top: 12px; }
+.usi-why h3 { margin-bottom: 4px; color: var(--u-mut); font-size: 14px; font-weight: 600; }
+.usi-why p { font-size: 16px; line-height: 1.4; overflow-wrap: anywhere; }
+.usi-card-acts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 
 /* How you line up (ext/cx-align.jsx): what a member voted on in the areas you pick, Compare members, and (once reviewed) the sample
    questions. Words carry every meaning; color only follows the map's own palette. Counts per area only, in lists ordered by name or state. */
@@ -1770,6 +1852,7 @@ button.ual-name:hover, button.ual-name:focus-visible { background: var(--u-tile2
 .usm-phone .usm-acts { padding-bottom: calc(12px + env(safe-area-inset-bottom)); }
 .usm-phone .usm-acts .usm-btn { flex: 1 1 auto; padding: 0 12px; }
 .usm-phone .usm-text { top: 72px; left: 0; right: 0; bottom: 0; padding: 14px 16px 28px; border-radius: 20px 20px 0 0; }
+.usm-phone .usm-text.usi-host { padding: 0; border-left-width: 0; border-right-width: 0; }
 @media (max-width: 1100px) { .usm-desk .usm-search input { width: 170px; } .usm-desk .usm-solo select { width: 220px; } .usm-desk .usm-solo-note { max-width: calc(100% - 300px); } }
 @media (max-width: 359px) { .usm-phone .usm-pills { order: 5; flex: 1 1 100%; } .usm-phone .usm-pills button { padding: 0 3px; } .usm-phone .usm-top { border-radius: 20px; } .usm-phone .usm-ctl { flex-wrap: wrap; } .usm-phone .usm-solo { order: -1; flex: 1 1 100%; } .usm-phone .usm-solo-note, .usm-phone .usm-text { top: 124px; } }
 @media (prefers-reduced-motion: reduce) { .usm * { transition: none !important; animation: none !important; } }

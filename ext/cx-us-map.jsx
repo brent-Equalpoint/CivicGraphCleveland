@@ -277,18 +277,6 @@ function cxUsmIsland() { return document.documentElement.getAttribute(`data-cx-t
 function cxUsmLess() { return !!(globalThis.matchMedia && globalThis.matchMedia(`(prefers-reduced-motion: reduce)`).matches); }
 const CX_USM_TERR = new Set([`DC`, `PR`, `GU`, `VI`, `AS`, `MP`]);
 
-/* where a node is listed in the Index: its door and group (the same doors as cxUsDoors) */
-function cxUsmDoorOf(n) {
-  if (n.kind === `member`) return { door: `members`, grp: n.m.chamber };
-  if (n.kind === `committee`) return { door: `committees`, grp: n.c.chamber };
-  if (n.kind === `agency`) return { door: `executive`, grp: n.a.parent_id ? `sub` : `top` };
-  if (n.kind === `president`) return { door: `executive`, grp: n.p.current ? `current` : `former` };
-  if (n.kind === `cabinet`) return { door: `executive`, grp: `cabinet` };
-  if (n.kind === `court`) return { door: `courts`, grp: n.c.type };
-  if (n.kind === `judge`) return { door: `courts`, grp: `judges` };
-  return { door: n.id === `h:exec` ? `executive` : n.id === `h:court` ? `courts` : `members`, grp: n.id === `h:house` ? `house` : n.id === `h:senate` ? `senate` : `` };
-}
-
 /* What the sheet says about one node: a kicker, the name, one plain sentence, one fact line, and lists, all read from the record.
    Party is not here: it is a dated, sourced fact on the profile (the Linked view), never on the map or its sheet. */
 function cxUsMapSheet(g, M, data, i) {
@@ -624,7 +612,7 @@ function CxUsmShape({ shape, color, line }) {
 /* The details sheet: on a computer it sits to the right of the map; on a phone it opens part way up, pulls up to near the top, and
    swipes down to close (the kit's sheet, vendor/relationship-map-kit/map/sheet.js). It also closes with Done, a tap on the map, and
    the back gesture (handled by the page). */
-function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, tail, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub }) {
+function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, tail, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub, tall }) {
   const bodyRef = u.useRef(null);
   const [all, setAll] = u.useState({});
   u.useEffect(() => { setAll({}); if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [info.name]);
@@ -648,7 +636,7 @@ function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo,
       const step = (now) => { const k = Math.min(1, (now - t0) / ms), e = 1 - Math.pow(1 - k, 4); apply(from + d * e); if (k < 1) SH.raf = requestAnimationFrame(step); else { SH.raf = 0; if (then) then(); } };
       SH.raf = requestAnimationFrame(step);
     };
-    detents(); apply(SH.peek); onPeek(SH.peek);
+    detents(); apply(tall ? SH.full : SH.peek); onPeek(SH.peek);   // tall: a card that is the whole content (the Index's details) opens all the way up
     let st = null;
     const ts = (e) => {
       if (e.touches.length > 1) { st = null; return; }
@@ -1012,8 +1000,13 @@ function CX_UsMap({ phone, onExit }) {
   const [chamber, setChamber] = u.useState({ senate: !0, house: !0 });
   const [stateF, setStateF] = u.useState(``);
   const [solo, setSolo] = u.useState(null);   // { spec, label, keep }
-  const [indexAt, setIndexAt] = u.useState(null);
   const [say, setSay] = u.useState(``);
+  // the Index (ext/cx-us-index.jsx): the names opened, oldest first ([] is its front page). Each one is a step in the browser's history, so
+  // Back, the back gesture, Escape, and Backspace step back one name at a time. The steps are counted here (pushed), because the desktop app
+  // rewrites the history entry it lands on after a back step; each step also carries its depth (cxUsi) so Forward goes back in.
+  const [ix, setIx] = u.useState([]);
+  const ixR = u.useRef({ stack: [], pushed: 0, skip: 0, then: null, fwd: [], t: [], on: !1 });
+  ixR.current.on = page === `network` && view === `index`;
   // the profile page: the profiles open, oldest first ([] is the map). A link may name one (?who=bernie-moreno): the person, never the viewer.
   const whoAt = u.useRef(null);
   if (whoAt.current === null) { try { whoAt.current = new URLSearchParams(globalThis.location.search).get(`who`) || ``; } catch (e) { whoAt.current = ``; } }
@@ -1025,7 +1018,7 @@ function CX_UsMap({ phone, onExit }) {
   // what a role word or a subcommittee means (a note in the same sheet the map uses), or the story "How a committee works", over everything.
   // It takes one step in the browser's history, so the back gesture closes it; it also closes with Done, a tap outside, a swipe down, and Escape.
   const [xo, setXo] = u.useState(null);   // { type: `role`, key, word } | { type: `sub`, id } | { type: `how` }
-  const xoR = u.useRef({ open: null, skip: 0, focus: null });
+  const xoR = u.useRef({ open: null, skip: 0, focus: null, then: null });
   xoR.current.open = xo;
   const xoSheetRef = u.useRef(null);
   const openX = (o, from) => {
@@ -1035,11 +1028,13 @@ function CX_UsMap({ phone, onExit }) {
     setTimeout(() => { const b = rootRef.current && rootRef.current.querySelector(o.type === `how` ? `.usx-story .cxm-story-head > button` : `.usx-note .usm-done`); if (b) b.focus({ preventScroll: !0 }); }, 30);
   };
   const xoFocusBack = () => { const f = xoR.current.focus; xoR.current.focus = null; if (f && f.isConnected) setTimeout(() => { try { f.focus({ preventScroll: !0 }); } catch (e) { /* gone */ } }, 0); };
-  const closeX = () => {
-    const r = xoR.current; if (!r.open) return;
-    setXo(null); r.open = null; r.skip += 1;
-    try { globalThis.history.back(); } catch (e) { r.skip -= 1; }
-    xoFocusBack();
+  // then: what to do once its history step is gone (a new step taken before that would be lost), in place of giving the focus back
+  const closeX = (then) => {
+    const r = xoR.current, f = typeof then === `function` ? then : null;
+    if (!r.open) { if (f) f(); return; }
+    setXo(null); r.open = null; r.skip += 1; r.then = f;
+    try { globalThis.history.back(); } catch (e) { r.skip -= 1; r.then = null; if (f) f(); }
+    if (!f) xoFocusBack();
   };
   const onRole = (key, word, from) => openX({ type: `role`, key, word }, from);
   const onSub = (id, from) => openX({ type: `sub`, id }, from);
@@ -1414,9 +1409,37 @@ function CX_UsMap({ phone, onExit }) {
     }
   };
 
+  // ---- the Index's steps in history. ixGo opens one more name; ixUp steps back one (through history, so Forward works); ixTo goes back to an
+  // earlier step (a crumb); ixLeave takes every step out of history before the map, a profile, or another page takes one of its own (then).
+  const ixStamp = () => {   // the desktop app rewrites the entry a back step lands on, 180 ms later; the step's depth is written on it again
+    const r = ixR.current; r.t.forEach((t) => clearTimeout(t));
+    r.t = [0, 300, 900].map((ms) => setTimeout(() => { try { const s0 = globalThis.history.state || {}; if (r.on && s0.cxUsi !== r.stack.length) globalThis.history.replaceState({ ...s0, cxUsi: r.stack.length }, ``, globalThis.location.href); } catch (e) { /* no history */ } }, ms));
+  };
+  const ixPush = (stack) => {
+    const r = ixR.current;
+    try { globalThis.history.pushState({ cxUsi: stack.length }, ``, globalThis.location.href); r.pushed += 1; } catch (e) { /* a sandboxed page has no history */ }
+    r.stack = stack; r.fwd = []; setIx(stack);
+  };
+  const ixGo = (key) => { const r = ixR.current; if (!key || r.stack[r.stack.length - 1] === key) return; ixPush([...r.stack, key]); };
+  const ixTo = (depth) => {
+    const r = ixR.current, k = r.stack.length - depth; if (k <= 0) return;
+    r.stack = r.stack.slice(0, depth); r.fwd = []; setIx(r.stack);
+    const j = Math.min(k, r.pushed);
+    if (j > 0) { r.pushed -= j; r.skip += 1; try { globalThis.history.go(-j); } catch (e) { r.skip -= 1; } }
+  };
+  const ixUp = () => { const r = ixR.current; if (!r.stack.length) return !1; if (r.pushed > 0) { try { globalThis.history.back(); return !0; } catch (e) { /* no history */ } } ixTo(r.stack.length - 1); return !0; };
+  const ixLeave = (then) => {
+    const r = ixR.current, k = r.pushed, f = typeof then === `function` ? then : null;
+    r.stack = []; r.fwd = []; r.pushed = 0; setIx([]);
+    if (k > 0) { r.skip += 1; r.then = f; try { globalThis.history.go(-k); } catch (e) { r.skip -= 1; r.then = null; if (f) f(); } }
+    else if (f) f();
+  };
+  // the sheet takes its own step too: close it first, and do the next thing once that step is gone
+  const sheetThen = (then) => { const b = back.current; if (b.pushed === `sheet`) { b.then = then; setSheet(!1); } else { setSheet(!1); then(); } };
+
   // ---- the back gesture closes the open sheet or panel instead of leaving the page (the kit's history layers)
   const layer = sheet ? `sheet` : phone && panel ? `panel` : ``;
-  const back = u.useRef({ pushed: ``, skip: 0 });
+  const back = u.useRef({ pushed: ``, skip: 0, then: null });
   u.useEffect(() => {
     const b = back.current;
     if (layer && !b.pushed) { try { globalThis.history.pushState({ cxUsm: layer }, ``, globalThis.location.href); b.pushed = layer; } catch (e) { /* a sandboxed page has no history */ } }
@@ -1424,9 +1447,9 @@ function CX_UsMap({ phone, onExit }) {
     else if (layer && b.pushed && b.pushed !== layer) b.pushed = layer;
   }, [layer]);
   u.useEffect(() => {
-    const onPop = () => {
+    const onPop = (ev) => {
       const xr = xoR.current;   // a note or the story is the newest step while it is open
-      if (xr.skip) { xr.skip -= 1; return; }
+      if (xr.skip) { xr.skip -= 1; if (!xr.skip && xr.then) { const f = xr.then; xr.then = null; f(); } return; }
       if (xr.open) { xr.open = null; setXo(null); xoFocusBack(); return; }
       const pr = profR.current;
       if (pr.skip) { pr.skip -= 1; if (!pr.skip && pr.then) { const f = pr.then; pr.then = null; f(); } return; }
@@ -1436,8 +1459,21 @@ function CX_UsMap({ phone, onExit }) {
         setProf((s) => s.slice(0, -1)); return;
       }
       const b = back.current;
-      if (b.skip) { b.skip -= 1; return; }
-      if (b.pushed) { const was = b.pushed; b.pushed = ``; if (was === `sheet`) setSheet(!1); else setPanel(!1); }
+      if (b.skip) { b.skip -= 1; if (!b.skip && b.then) { const f = b.then; b.then = null; f(); } return; }
+      if (b.pushed) { const was = b.pushed; b.pushed = ``; if (was === `sheet`) setSheet(!1); else setPanel(!1); return; }
+      // the Index: one name back (or, after a back step, Forward one name in again)
+      const ir = ixR.current;
+      if (ir.skip) { ir.skip -= 1; if (!ir.skip && ir.then) { const f = ir.then; ir.then = null; f(); } ixStamp(); return; }
+      const st = ev && ev.state, d = st && typeof st.cxUsi === `number` ? st.cxUsi : null, n = ir.stack.length;
+      if (!ir.on) {   // a step of an Index that is no longer showing: step back past the rest of them quietly, so no back press is wasted
+        if (ir.pushed > 0) { const k = ir.pushed - 1; ir.pushed = 0; ir.stack = []; ir.fwd = []; setIx([]); if (k > 0) { ir.skip += 1; try { globalThis.history.go(-k); } catch (e) { ir.skip -= 1; } } }
+        return;
+      }
+      if (d !== null && d > n && ir.fwd.length) { ir.stack = [...ir.stack, ir.fwd.pop()]; ir.pushed += 1; setIx(ir.stack); ixStamp(); return; }
+      if (n && ir.pushed > 0 && (d === null || d < n)) {
+        const k = d === null ? 1 : Math.min(n, n - d);
+        ir.fwd.push(...ir.stack.slice(n - k).reverse()); ir.stack = ir.stack.slice(0, n - k); ir.pushed -= k; setIx(ir.stack); ixStamp();
+      }
     };
     globalThis.addEventListener(`popstate`, onPop);
     return () => globalThis.removeEventListener(`popstate`, onPop);
@@ -1598,24 +1634,25 @@ function CX_UsMap({ phone, onExit }) {
   })();
   const backLabel = page === `people` ? `Back to People` : page === `topics` ? `Back to Votes by topic` : page === `compare` ? `Back to Compare members` : view === `index` ? `Back to the Index` : view === `tree` ? `Back to the Tree` : view === `linked` ? `Back to Linked` : `Back to the map`;
   const setButton = !phone ? <button type="button" className="usm-btn usm-set-btn" aria-expanded={setOn} aria-haspopup="dialog" onClick={openSettings}><CXI.Sliders size={16} /><span>Settings</span></button> : null;
-  const openIndex = () => { if (cur) setIndexAt({ ...cxUsmDoorOf(cur), id: cur.id, at: Date.now() }); setPage(`network`); setView(`index`); setSheet(!1); };
-  const goPage = (p) => { setPage(p); setSheet(!1); setPanel(!1); };
+  // Explore in Index: the Index opens on this one's own page, with its front page one step back
+  const openIndex = () => { const id = cur ? cur.id : ``; sheetThen(() => ixLeave(() => { setPage(`network`); setView(`index`); if (id) ixPush([id]); })); };
+  const indexOn = page === `network` && view === `index`;
+  const goPage = (p) => { const f = () => { setPage(p); setSheet(!1); setPanel(!1); }; if (ixR.current.on && p !== page) ixLeave(f); else f(); };
   // Compare members (ext/cx-align.jsx), from the left menu, a member's sheet or profile, People, or the phone's Show panel; f: `questions` opens it at the questions
   const goCompare = (f) => { setCmpFocus(f === `questions` ? `questions` : ``); goPage(`compare`); };
-  const visibleText = (n) => { const i = n.i; if (M.nodes[i].kind === `hub`) return !0; return vis(i); };
   const PILLS = [[`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
-  const pills = <div className="usm-pills" role="group" aria-label="View">{PILLS.map(([id, t]) => <button key={id} type="button" aria-pressed={page === `network` && view === id} className={page === `network` && view === id ? `on` : ``} onClick={() => { setPage(`network`); setView(id); setSheet(!1); }}>{t}</button>)}</div>;
+  const pills = <div className="usm-pills" role="group" aria-label="View">{PILLS.map(([id, t]) => <button key={id} type="button" aria-pressed={page === `network` && view === id} className={page === `network` && view === id ? `on` : ``} onClick={() => { const f = () => { setPage(`network`); setView(id); setSheet(!1); }; const r = ixR.current; if (r.on && id === `index`) ixTo(0); else if (r.on) ixLeave(f); else f(); }}>{t}</button>)}</div>;
   const search = (
     <div className="usm-search">
       <label><span className="usm-sr">Find a person, committee, agency, or court</span>
         <input ref={searchRef} type="search" value={q} aria-keyshortcuts="/" onChange={(e) => setQ(e.target.value)} placeholder="Find someone" autoComplete="off" /></label>
       {!phone && <kbd aria-hidden="true">/</kbd>}
-      {results.length > 0 && sky && (
+      {results.length > 0 && (sky || indexOn) && (
         <ul className="usm-results" aria-label="Search results">
-          {results.map((n) => <li key={n.id}><button type="button" onClick={() => { setQ(``); if (phone) setSearchOn(!1); if (solo && !solo.keep.has(n.i)) setSolo(null); pick(n.i, !0); }}><strong>{n.name}</strong><small>{kindWord(n)}{n.m ? `, ${cxStateName(n.m.state)}` : ``}</small></button></li>)}
+          {results.map((n) => <li key={n.id}><button type="button" onClick={() => { setQ(``); if (phone) setSearchOn(!1); if (indexOn) { ixGo(n.id); return; } if (solo && !solo.keep.has(n.i)) setSolo(null); pick(n.i, !0); }}><strong>{n.name}</strong><small>{kindWord(n)}{n.m ? `, ${cxStateName(n.m.state)}` : ``}</small></button></li>)}
         </ul>
       )}
-      {needle.length >= 2 && !results.length && sky && <p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
+      {needle.length >= 2 && !results.length && (sky || indexOn) && <p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
     </div>
   );
   const showPanel = (
@@ -1675,7 +1712,11 @@ function CX_UsMap({ phone, onExit }) {
   const textView = page === `people` ? <CX_UsMine data={data} g={g} onSee={(n) => pick(n.i, !0)} onTopics={(area) => { CX_US_PICK.area = area; goPage(`topics`); }} onCompare={() => goCompare()} />
     : page === `topics` ? <CX_UsTopics data={data} />
     : page === `compare` ? <CX_AlignCompare key={cmpFocus} data={data} phone={phone} focus={cmpFocus} onOpen={(i) => { setSel(i); openProfile(i); }} />
-    : view === `index` ? <CX_UsDoors key={indexAt ? indexAt.at : `index`} data={data} g={g} visible={visibleText} dim={() => !1} q={q} start={indexAt} onOpen={(i) => { setSel(i); openProfile(i); }} onTopics={(area) => { CX_US_PICK.area = area; goPage(`topics`); }} />
+    : view === `index` ? <CX_UsIndex data={data} g={g} M={M} phone={phone} motion={motion} still={still} stack={ix} onGo={ixGo} onUp={ixUp} onTo={ixTo}
+      onCard={(it, IP, el) => openX({ type: `card`, sub: it.sub, from: IP.kind === `member` ? IP.title : ``, word: IP.kind === `member` ? it.note : `` }, el)}
+      onProfile={(i) => { setSel(i); openProfile(i); }}
+      onMap={(IP) => ixLeave(() => { setPage(`network`); setView(`sky`); if (IP.state) soloPick(`s:${IP.state}`); else if (IP.area) soloPick(`a:${IP.area}`); else { if (solo && !solo.keep.has(IP.i)) setSolo(null); pick(IP.i, !0); } })}
+      onTopics={(area) => ixLeave(() => { CX_US_PICK.area = area; setPage(`topics`); setSheet(!1); setPanel(!1); })} />
     : view === `tree` ? <CX_UsTree data={data} g={g} onOpen={(i) => { setSel(i); openProfile(i); }} />
     : view === `linked` ? (
       <div className="us-linked">
@@ -1698,14 +1739,14 @@ function CX_UsMap({ phone, onExit }) {
     <section className={`usm ${phone ? `usm-phone` : `usm-desk`} ${sheet ? `usm-has-sheet` : ``} ${full ? `usm-full` : ``}`} ref={rootRef} onKeyDown={onRootKey} aria-labelledby="usm-h">
       {!phone && (
         <nav className="usm-menu usm-float" ref={menuRef} aria-label="United States">
-          <button type="button" className="usm-back" onClick={() => (onExit ? onExit() : CX_NAV.panel && CX_NAV.panel(``))}><CXI.Back size={16} /><span>Cleveland</span></button>
+          <button type="button" className="usm-back" onClick={() => ixLeave(() => (onExit ? onExit() : CX_NAV.panel && CX_NAV.panel(``)))}><CXI.Back size={16} /><span>Cleveland</span></button>
           <h1 id="usm-h" className="usm-h1">United States<span className="usm-dot">.</span></h1>
           <p className="usm-sub">Pick anyone to see who they are tied to.</p>
           <ul>{[[`network`, `Network`], [`people`, `People`], [`topics`, `Votes by topic`], [`compare`, `Compare members`]].map(([id, t]) => <li key={id}><button type="button" aria-current={page === id ? `page` : undefined} className={page === id ? `on` : ``} onClick={() => goPage(id)}>{t}</button></li>)}</ul>
         </nav>
       )}
       <header className={`usm-top usm-float ${phone && searchOn ? `usm-searching` : ``}`} ref={topRef}>
-        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` && !(page === entryR.current && onExit) ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` && !(page === entryR.current && onExit) ? goPage(`network`) : onExit && onExit())}><CXI.Back size={18} /></button>}
+        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` && !(page === entryR.current && onExit) ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` && !(page === entryR.current && onExit) ? goPage(`network`) : onExit && ixLeave(onExit))}><CXI.Back size={18} /></button>}
         {phone && <h2 id="usm-h" className={page === `network` ? `usm-sr` : `usm-h2`}>{page === `network` ? `United States` : title}</h2>}
         {page === `network` && (!phone || searchOn) && search}
         {phone && searchOn && page === `network` && <button type="button" className="usm-icon" aria-label="Close search" onClick={() => { setSearchOn(!1); setQ(``); }}><CXI.X size={18} /></button>}
@@ -1717,7 +1758,7 @@ function CX_UsMap({ phone, onExit }) {
       {P && <CX_UsProfile g={g} M={M} P={P} phone={phone} still={still} pulled={pulled} back={backLabel} onBack={() => closeProfiles()}
         bar={<><CX_LangButton cls="usm-lang" short={phone} />{setButton}</>}
         onMap={() => closeProfiles(() => { if (solo && !solo.keep.has(P.i)) setSolo(null); pick(P.i, !0); })}
-        onIndex={() => { const n = g.nodes[P.i]; closeProfiles(() => { setIndexAt({ ...cxUsmDoorOf(n), id: n.id, at: Date.now() }); setPage(`network`); setView(`index`); setSheet(!1); }); }}
+        onIndex={() => { const id = g.nodes[P.i].id; closeProfiles(() => { if (ixR.current.on) ixGo(id); else sheetThen(() => ixLeave(() => { setPage(`network`); setView(`index`); ixPush([id]); })); }); }}
         onOpen={openProfile} onRole={onRole} onHow={onHow}
         align={P.kind === `member` ? <CX_AlignMember key={P.id} m={g.nodes[P.i].m} where="profile" onCompare={(f) => closeProfiles(() => goCompare(f))} /> : null} />}
       {xo && xo.type !== `how` && <button type="button" className="usm-scrim usx-scrim" aria-label="Close" tabIndex={-1} onClick={closeX} />}
@@ -1727,6 +1768,18 @@ function CX_UsMap({ phone, onExit }) {
         const pc = g.byId.get(`c:${xo.id.slice(0, 4)}`), s = pc && pc.c.subcommittees.find((x) => x.id === xo.id);
         return <CX_UsMapSheet cls="usx-note" hid="usx-note-h" noActs phone={phone} still={still} sheetRef={xoSheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={closeX}
           info={{ kicker: pc ? `Subcommittee of the ${pc.name}` : `Subcommittee`, name: s ? s.name : xo.id, sentence: ``, fact: s && s.chair ? `Chair: ${s.chair}.` : ``, lists: [], src: null }} lead={<CX_UsxLines id={xo.id} kind="sub" />} />;
+      })()}
+      {xo && xo.type === `card` && (() => {
+        // the Index's details card, for a name with no page of its own (a subcommittee): what it does, why it is linked to the page it was opened
+        // from, who sits on it with the record's word, the committee's official website, and its profile
+        const pc = g.byId.get(`c:${xo.sub.slice(0, 4)}`), s = pc && pc.c.subcommittees.find((x) => x.id === xo.sub);
+        const seat = (n) => (n.m.committees.find((c) => c.id === xo.sub) || {}).role;
+        const mem = s ? g.nodes.filter((n) => n.kind === `member` && seat(n)).sort(cxUsiAbc).map((n) => ({ i: n.i, name: n.name, sub: cxUsiWho(n), word: cxUsmRole(seat(n)) })) : [];
+        return <CX_UsMapSheet cls="usx-note usi-info" hid="usx-note-h" noActs tall phone={phone} still={still} sheetRef={xoSheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={closeX}
+          info={{ kicker: pc ? `Subcommittee of the ${pc.name}` : `Subcommittee`, name: s ? s.name : xo.sub, sentence: ``, fact: s && s.chair ? `Chair: ${s.chair}.` : ``, lists: mem.length ? [{ title: `Members`, rows: mem }] : [], src: M.sources.membership }}
+          onPick={(i) => closeX(() => ixGo(g.nodes[i].id))}
+          lead={<><CX_UsxLines id={xo.sub} kind="sub" />{xo.from && xo.word ? <div className="usi-why"><h3>Why it is linked</h3><p><span {...CX_USI_REC}>{xo.from}</span><span>: </span><b>{xo.word}</b></p></div> : null}</>}
+          tail={pc ? <div className="usi-card-acts"><button type="button" className="usm-btn usm-pri" onClick={() => closeX(() => openProfile(pc.i))}>Open the committee's profile</button>{pc.c.url && <a className="usm-btn" href={pc.c.url} target="_blank" rel="noreferrer">Official website<span className="sp-ext"> (opens in a new tab)</span></a>}</div> : null} />;
       })()}
       {xo && xo.type === `how` && <CX_UsxStory onClose={closeX} />}
       {setOn && !phone && <CX_UsmSettings panelRef={setPanelRef} onClose={closeSettings} onDict={() => { setSetOn(!1); setDictOn(!0); }} />}
@@ -1755,7 +1808,7 @@ function CX_UsMap({ phone, onExit }) {
             tail={cur && cur.kind === `member` ? <CX_AlignMember key={cur.id} m={cur.m} where="sheet" onCompare={goCompare} /> : null} />}
         </div>
       )}
-      {!sky && <div className="us usm-text">{textView}</div>}
+      {!sky && <div className={`us usm-text ${indexOn ? `usi-host` : ``}`}>{textView}</div>}
       <p className="usm-sr" role="status" aria-live="polite">{Array.isArray(say) ? say.filter(Boolean).map((t, k) => <span key={k}>{k ? <span>, </span> : null}<span>{t}</span></span>) : say}</p>
     </section>
   );

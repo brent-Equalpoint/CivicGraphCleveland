@@ -1611,34 +1611,42 @@ const CHECKS = {
     await clickText(p, 'Show', '.usm-show-btn');
     expect(/Preview/.test((await txt(p, '.usm-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.usm-preview')) || ''), 'the map does not say its source terms are unconfirmed');
     await clickText(p, 'Done', '.usm-panel .usm-done');
-    // the Index: six doors, each adding up to the record
-    await clickText(p, 'Index', '.usm-pills button');
-    expect((await count(p, '.us-door')) === 6, `the Index offers ${await count(p, '.us-door')} ways in, not six`);
-    expect(/^100 shown/.test((await txt(p, '.us-count')) || ''), `the Senate group does not show 100: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'House', '.us-groups button'); expect(/^439 shown/.test((await txt(p, '.us-count')) || ''), 'the House group does not show 439');
-    expect((await count(p, '.us-list > li')) === 25, 'the member list is not paged by 25');
-    await clickText(p, 'Committees', '.us-door'); await wait(300); expect(/^21 shown/.test((await txt(p, '.us-count')) || ''), `Senate committees: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'Executive branch', '.us-door'); await wait(300); expect(/^2 shown/.test((await txt(p, '.us-count')) || ''), `the President and Vice President: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'Top-level agencies', '.us-groups button'); await wait(300); expect(/^124 shown/.test((await txt(p, '.us-count')) || ''), `top-level agencies: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'Courts and judges', '.us-door'); await wait(300); expect(/^1 shown/.test((await txt(p, '.us-count')) || ''), `the Supreme Court: ${await txt(p, '.us-count')}`);
-    await clickText(p, 'Judges', '.us-groups button'); await wait(300); expect(/^8\d\d shown/.test((await txt(p, '.us-count')) || ''), `the sitting judges: ${await txt(p, '.us-count')}`);
-    await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /Chief Justice/.test(b.innerText)).click()); await wait(900);
-    // choosing someone in the Index opens their profile page; its record says who appointed them; Back returns to the Index
-    expect(await has(p, '.usm-prof'), 'choosing someone in the Index did not open their profile');
+    // the Index (ext/cx-us-index.jsx; its own check is us-index): the six groups; a court, then the Chief Justice; Open profile opens their profile
+    // page, whose record says who appointed them; Back returns to the same Index page
+    const ix = () => p.evaluate(() => { const r = document.querySelector('.usi'); return r && r.cxIndex ? { stack: r.cxIndex.stack, title: r.cxIndex.title, groups: r.cxIndex.groups.map((g) => [g.key, g.count]) } : null; });
+    const ixName = async (re) => {   // a name on this page of the list, or on a later one ("and n more" turns the page)
+      for (let k = 0; k < 12; k++) {
+        if (await p.evaluate((r) => { const b = [...document.querySelectorAll('.usi-names button')].find((x) => new RegExp(r).test((x.querySelector('.usi-nm') || {}).textContent || '')); if (b) b.click(); return !!b; }, re)) break;
+        if (!(await p.evaluate(() => { const m = document.querySelector('.usi-more'); if (m) m.click(); return !!m; }))) break;
+        await wait(300);
+      }
+      await wait(900);
+    };
+    const ixGroup = async (key) => { await p.evaluate((k) => { const r = document.querySelector('.usi'), gi = r.cxIndex.groups.findIndex((g) => g.key === k), b = r.querySelector(`.usi-card[data-g="${gi}"]`); if (b) b.click(); }, key); await wait(500); };
+    await clickText(p, 'Index', '.usm-pills button'); await wait(900);
+    expect(((await ix()) || { groups: [] }).groups.length === 6, `the Index offers ${((await ix()) || { groups: [] }).groups.length} groups, not six`);
+    await ixGroup('courts'); await ixName('^Supreme Court of the United States$');
+    expect(((await ix()) || {}).title === 'Supreme Court of the United States', 'the Supreme Court did not open in the Index');
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.usi-names button')].find((x) => ((x.querySelector('.usi-note') || {}).textContent || '') === 'Chief Justice'); if (b) b.click(); }); await wait(900);
+    expect(/^John Glover Roberts/.test(((await ix()) || {}).title || ''), 'the Chief Justice did not open from the Supreme Court\'s page (his row says "Chief Justice")');
+    await p.evaluate(() => document.querySelector('.usi-acts .usm-pri').click()); await wait(1200);
+    expect(await has(p, '.usm-prof'), 'Open profile in the Index did not open their profile');
     expect(/^Chief Justice, Supreme Court$/.test(await p.evaluate(() => (document.querySelector('.usm-prof .usmp-kicker') || {}).textContent || '')) && /Appointed by\s*[A-Z][a-z]+/.test((await txt(p, '.usmp-row-by')) || ''), 'the Chief Justice\'s profile does not say the office or who appointed them');
     expect(/Back to the Index/.test((await txt(p, '.usmp-back')) || ''), 'the profile opened from the Index does not offer Back to the Index');
-    await clickText(p, 'Back to the Index', '.usmp-back'); await wait(700);
-    expect(!(await has(p, '.usm-prof')) && (await txt(p, '.usm-pills button.on')) === 'Index', 'Back did not return to the Index');
-    await clickText(p, 'Linked', '.usm-pills button'); await wait(300);
+    await clickText(p, 'Back to the Index', '.usmp-back'); await wait(900);
+    expect(!(await has(p, '.usm-prof')) && (await txt(p, '.usm-pills button.on')) === 'Index' && /^John Glover Roberts/.test(((await ix()) || {}).title || ''), 'Back did not return to the same Index page');
+    await clickText(p, 'Linked', '.usm-pills button'); await wait(600);
     expect(/Chief Justice/.test((await txt(p, '.us-linked')) || '') && /Appointed by this President/.test((await txt(p, '.us-linked')) || ''), 'a judge in the Linked view does not say who appointed them');
-    await clickText(p, 'Index', '.usm-pills button'); await wait(300);
-    await clickText(p, 'States', '.us-door'); await wait(300);
-    expect((await count(p, '.us-list > li')) === 56, 'the States door does not list 56 states and territories');
-    await p.evaluate(() => [...document.querySelectorAll('.us-list > li > button')].find((b) => /^Ohio/.test(b.innerText)).click()); await wait(250);
-    expect(/Husted/.test((await txt(p, '.us-sub')) || '') && /Moreno/.test((await txt(p, '.us-sub')) || ''), 'Ohio does not list its two senators');
-    await clickText(p, 'Policy areas', '.us-door'); await wait(900);
-    expect((await count(p, '.us-list > li')) > 25, 'the Policy areas door lists too few areas');
-    await p.evaluate(() => document.querySelector('.us-list > li > button').click()); await wait(700);
+    await clickText(p, 'Index', '.usm-pills button'); await wait(700);
+    await ixGroup('states');
+    expect((((await ix()) || { groups: [] }).groups.find((g) => g[0] === 'states') || [])[1] === 56, 'the States group does not list 56 states and territories');
+    await ixName('^Ohio$');
+    { const o = await ix(); expect(!!o && o.title === 'Ohio' && /Husted/.test((await txt(p, '.usi-names')) || '') && /Moreno/.test((await txt(p, '.usi-names')) || ''), 'Ohio does not list its two senators'); }
+    await p.keyboard.press('Escape'); await wait(700);
+    await ixGroup('areas'); await wait(900);
+    expect(((((await ix()) || { groups: [] }).groups.find((g) => g[0] === 'areas') || [])[1] || 0) > 25, 'the Policy areas group lists too few areas');
+    await p.evaluate(() => document.querySelector('.usi-names button').click()); await wait(1000);
+    await p.evaluate(() => document.querySelector('.usi-acts .usm-pri').click()); await wait(900);
     expect(/Votes by topic/.test((await txt(p, '.us-topics h2')) || '') && (await p.evaluate(() => document.querySelector('.us-topics select').value)) !== '', 'a policy area did not open its votes');
     expect((await txt(p, '.usm-menu li button.on')) === 'Votes by topic', 'Votes by topic is not marked in the left menu');
     // People: a state and a district give two senators and a representative, kept off the address bar
@@ -1700,8 +1708,8 @@ const CHECKS = {
     await clickText(p, 'Back to the map', '.usmp-back'); await wait(700);
     await clickText(p, 'Sky', '.usm-pills button'); await mapReady(p);
     await pickBy('Moreno');
-    await clickText(p, 'Explore in Index', '.usm-acts button'); await wait(700);
-    expect((await txt(p, '.usm-pills button.on')) === 'Index' && /Bernie Moreno/.test((await txt(p, '.us-list button.on')) || '') && /Senate/.test((await txt(p, '.us-groups button.on')) || ''), 'Explore in Index did not open the Index at the senator');
+    await clickText(p, 'Explore in Index', '.usm-acts button'); await wait(1100);
+    { const o = await ix(); expect((await txt(p, '.usm-pills button.on')) === 'Index' && !!o && o.stack.length === 1 && o.title === 'Bernie Moreno', `Explore in Index did not open the Index on the senator's page: ${JSON.stringify(o && [o.stack, o.title])}`); }
     // the keyboard on the map: ] moves, Enter opens, Escape closes and then clears
     await clickText(p, 'Sky', '.usm-pills button'); await mapReady(p);
     await p.focus('.usm-canvas'); await p.keyboard.press('Escape'); await p.keyboard.press('Escape'); await wait(200);
@@ -1743,11 +1751,11 @@ const CHECKS = {
     // back from a text view, the map is drawn at full size again (a new canvas starts at the browser's default 300 by 150)
     expect(await p.$eval('.usm-canvas', (c) => c.width >= c.clientWidth && c.height >= c.clientHeight), 'the map is drawn at the wrong size after coming back from a text view');
     await clickText(p, 'Still', '.usm-motion button'); await wait(300);
-    // the chamber filter reaches the text views too
+    // the map's filters shape the map only: the Index holds the whole record, so a Senate-only map still has every member in the Index
     await clickText(p, 'House', '.usm-chips button'); await wait(300);
     await clickText(p, 'Done', '.usm-panel .usm-done');
-    await clickText(p, 'Index', '.usm-pills button');
-    await clickText(p, 'House', '.us-groups button'); expect(/^0 shown/.test((await txt(p, '.us-count')) || ''), 'the Senate-only filter still shows House members in the Index');
+    await clickText(p, 'Index', '.usm-pills button'); await wait(900);
+    { const o = await ix(); expect(!!o && (o.groups.find((g) => g[0] === 'members') || [])[1] > 500, 'with the map filtered to the Senate, the Index lost the House'); }
     await clickText(p, 'Tree', '.usm-pills button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
     await done(p);
     // the phone: Federal is a folder tab in People, shown as profiles; the map opens full screen from it
@@ -1759,8 +1767,8 @@ const CHECKS = {
     await clickText(ph, 'Explore Congress as a graph', 'button'); await wait(1200);
     expect((await has(ph, '.usm-phone .usm-canvas')) && (await mapReady(ph)), 'Explore Congress as a graph did not open the map');
     expect(/view=graph/.test(await ph.evaluate(() => location.search)), 'the Graph view is not in the link');
-    await ph.tap('.usm-pills button:nth-child(2)'); await wait(600);
-    expect((await count(ph, '.us-door')) === 6 && (await count(ph, '.us-list > li')) === 25, 'the phone Index lacks the six doors or the first 25 names');
+    await ph.tap('.usm-pills button:nth-child(2)'); await wait(900);
+    expect((await count(ph, '.usi-chip')) === 6 && (await count(ph, '.usi-list button')) === 60, 'the phone Index lacks the six groups or the first 60 names');
     { const small = await ph.evaluate(() => [...document.querySelectorAll('.usm button, .usm a[href], .usm select, .usm input, .usm summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline') || (el.tagName === 'INPUT' && el.type === 'checkbox')) return false; return r.height < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}:${(el.textContent || '').slice(0, 20)}`));
       expect(small.length === 0, `phone United States: controls under 44px: ${small.slice(0, 5)}`); }
     await ph.tap('.usm-pills button:nth-child(1)'); await wait(900); await mapReady(ph);
@@ -2152,8 +2160,8 @@ const CHECKS = {
     await clickText(p, 'Show on the map', '.usmp-acts button'); await wait(1400);
     expect(!(await has(p, '.usm-prof')) && (await mapState(p)).focus === 'Jon Husted' && (await has(p, '.usm-sheet')), 'Show on the map did not pick them on the map');
     await clickText(p, 'Open profile', '.usm-acts button'); await waitProf(p, 'Jon Husted');
-    await clickText(p, 'Explore in Index', '.usmp-acts button'); await wait(1000);
-    expect((await txt(p, '.usm-pills button.on')) === 'Index' && /Jon Husted/.test((await txt(p, '.us-list button.on')) || ''), 'Explore in Index did not open the Index at them');
+    await clickText(p, 'Explore in Index', '.usmp-acts button'); await wait(1400);
+    expect((await txt(p, '.usm-pills button.on')) === 'Index' && (await p.evaluate(() => { const r = document.querySelector('.usi'); return !!r && !!r.cxIndex && r.cxIndex.title === 'Jon Husted' && r.cxIndex.stack.length === 1; })), 'Explore in Index did not open the Index on their page');
     await done(p);
     // a link that names the person opens their profile, on a computer and on phones; it is exactly the screen's width and cannot slide sideways
     for (const [name, url, o] of [['desktop', '/?panel=us&who=bernie-moreno#desktop', { width: 1440, height: 900 }], ['phone 390', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false }], ['phone 360', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, width: 360, height: 740 }]]) {
@@ -2242,6 +2250,249 @@ const CHECKS = {
     expect(await has(q, '.usm-settings'), 'Settings did not open from the profile page');
     await done(q);
   },
+  /* The Index (ext/cx-us-index.jsx), ported from Brent's VC Fest Index kit, with the kit's own assertions (index-kit/src/test_index.py) where
+     they apply. The front page lists the six groups with counts that equal the record (worked out here from site/us/, not from the app's code).
+     Picking a group and then a name moves that name to the middle with its groups, in the record's order (never by count); each row's word is
+     the record's (Chair, Member, Appointed by), and no strength, score, ranking, or party word appears in our own words, in English or Spanish.
+     Escape, Backspace, Back, and the back gesture step back one name at a time and return to the same group, list page, and scroll; Forward goes
+     back in; the crumbs and Back to the start work; the keyboard reaches everything (arrows, Home, End stop at the ends of the groups; Tab
+     reaches the names; Enter opens; the new title takes the focus and is announced). Long lists page on a computer ("and n more") and show 60 more
+     on a phone. A subcommittee opens a details card (its two lines, why it is linked, its committee's website and profile) that closes with Done,
+     a tap outside, Escape, and the back gesture without leaving the Index. Open profile and Show on the map work, and Explore in Index comes
+     back to the page. The selected pill and group are solid accent with white text, with no bar on one side. The globe turns only when motion
+     allows. On a phone it is one column, exactly the screen's width, with no sideways scroll. Every target is 44 px. Runs in CHECK_MODE,
+     CHECK_THEME, and CHECK_LANG. */
+  async 'us-index'() {
+    const ES = process.env.CHECK_LANG === 'es';
+    const d = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'landscape-2026.json'), 'utf8'));
+    const vd = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'votes-2026.json'), 'utf8'));
+    const areas = new Set();
+    vd.votes.forEach((v) => { if (!v.final) return; const b = v.bill ? vd.bills[v.bill] : null; areas.add(b && b.policy_area ? b.policy_area : v.kind === 'nomination' ? 'Nominations' : 'No policy area listed'); });
+    const ex = d.executive || {};
+    const want = { members: d.members.length, committees: d.committees.length, executive: (ex.presidents || []).length + (ex.vice_president ? 1 : 0) + (ex.cabinet || []).length + d.agencies.length,
+      courts: d.judiciary.courts.length + d.judiciary.judges.length, areas: areas.size, states: new Set(d.members.map((m) => m.state)).size };
+    const lastOf = new Map(d.members.map((m) => [m.name, m.last]));
+    const ORDER = { member: ['committees', 'subcommittees', 'state', 'chamber'], committee: ['leaders', 'senate', 'house', 'subcommittees', 'chamber'], agency: ['parent', 'parts', 'led'], court: ['judges', 'up', 'lower', 'appointed'], judge: ['court', 'by'] };
+    const ROLE = /^(Member|Chair|Chairman|Chairwoman|Ranking member|Vice chair|Vice chairman|Vice chairwoman|Ex officio|Cochairman)$/;
+    const OURS = /\b(strong|some|light|fits?|match(es|ed)?|aligned|scores?|percent|rank|ranked|best)\b|%/i;
+    const OURS_ES = /\b(fuertes?|algun[oa]s?|liger[oa]|leve|ajustes?|encaja|coincid\w*|alinead\w*|puntuaci[oó]n|puntaje|porcentaje|clasificaci[oó]n|mejor(es)?)\b|%|por ciento/i;
+    const PARTY = /\b(Republican|Democrat|Democratic|Independent|party|partido|republican[oa]|dem[oó]crata|independiente)\b/i;
+    const ixs = (p) => p.evaluate(() => { const r = document.querySelector('.usi'); return r && r.cxIndex ? JSON.parse(JSON.stringify(r.cxIndex)) : null; });
+    const ixWait = async (p, f, ms = 6000) => { for (let t = 0; t < ms / 150; t++) { const s = await ixs(p); if (s && f(s)) return s; await wait(150); } return ixs(p); };
+    const ixOpen = async (p) => { await p.evaluate(() => { const b = [...document.querySelectorAll('.usm-pills button')][1]; if (b) b.click(); }); return ixWait(p, (s) => s.groups.length > 0); };
+    // our words, not the record's names; each piece of text kept apart (textContent glues "map" and "Strong" into one word no pattern can see)
+    const ours = (p) => p.evaluate(() => { const r = document.querySelector('.usi'); if (!r) return ''; const c = r.cloneNode(true); c.querySelectorAll('.usi-nm, [data-no-translate]').forEach((e) => e.remove()); const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), out = []; let n; while ((n = w.nextNode())) out.push(n.nodeValue); return out.join(' ').replace(/\s+/g, ' '); });
+    const words = async (p, where) => {
+      const t = await ours(p), s = await ixs(p);
+      const bad = t.match(OURS) || (ES ? t.match(OURS_ES) : null); expect(!bad, `${where}: the Index says "${bad && bad[0]}"`);
+      // our words and every row's word (a record's own name, such as a committee named for a party, is the record's)
+      expect(!PARTY.test(t) && !PARTY.test(JSON.stringify(s ? s.groups.map((g) => [g.label, g.items.map((it) => it.note)]) : [])), `${where}: a party word is in the Index`);
+      expect(!/[–—]/.test(t), `${where}: a dash in the Index`);
+    };
+    const small = (p, scope) => p.evaluate((sc) => [...document.querySelectorAll(sc)].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${(el.innerText || '').trim().slice(0, 24)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
+    const OVERLAP = () => { const r = [...document.querySelectorAll('.usi-lab')].map((e) => e.getBoundingClientRect()).sort((a, b) => a.top - b.top); let worst = 0; for (let i = 1; i < r.length; i++) { const h = Math.min(r[i].height, r[i - 1].height); worst = Math.max(worst, (r[i - 1].bottom - r[i].top) / h); } return Math.round(worst * 100) / 100; };
+    const nameBtn = async (p, re) => { const h = await p.evaluateHandle((r) => [...document.querySelectorAll('.usi-names button, .usi-list button')].find((b) => { const n = b.querySelector('.usi-nm'); return !!n && new RegExp(r).test(n.textContent); }) || null, re); return h.asElement(); };
+    const findIn = async (p, q) => { await p.evaluate(() => { if (!document.querySelector('.usm-search input')) { const b = document.querySelector('.usm-top .usm-icon[aria-haspopup], .usm-top button[aria-label="Search"], .usm-top button[aria-label="Buscar"]'); if (b) b.click(); } }); await wait(300); await p.click('.usm-search input', { clickCount: 3 }); await p.type('.usm-search input', q); await wait(400); await p.evaluate(() => { const b = document.querySelector('.usm-results button'); if (b) b.click(); }); await wait(900); };
+    const hexRgb = (h) => { h = h.replace('#', ''); return `rgb(${parseInt(h.slice(0, 2), 16)}, ${parseInt(h.slice(2, 4), 16)}, ${parseInt(h.slice(4, 6), 16)})`; };
+
+    // ---------- a computer ----------
+    const p = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1500 });
+    await mapReady(p);
+    let s = await ixOpen(p);
+    s = await ixWait(p, (x) => x.groups.length === 6 && x.groups[4].count > 0, 12000);   // the policy areas come with the votes
+    expect(!!s && s.stack.length === 0, 'the Index did not open on its front page');
+    expect(!!s && s.groups.map((g) => g.key).join() === 'members,committees,executive,courts,areas,states', `the front page's groups are ${s && s.groups.map((g) => g.key)}, not the six in the record's order`);
+    if (!ES) expect(!!s && s.groups.map((g) => g.label).join('|') === 'Members of Congress|Committees|Executive branch|Courts and judges|Policy areas|States', `the front page's groups are named ${s && s.groups.map((g) => g.label)}`);
+    for (const g of (s ? s.groups : [])) expect(g.count === want[g.key], `the front page counts ${g.count} in ${g.label}; the record has ${want[g.key]}`);
+    const rings = await p.$$eval('.usi-card', (cs) => cs.map((c) => Number(((c.querySelector('.usi-count text') || {}).textContent || '').replace(/,/g, ''))));
+    expect(rings.length === 6 && rings.every((n, k) => n === (s ? s.groups[k].count : -1)), `the count rings say ${rings}, not the group counts`);
+    await words(p, 'the front page');
+    // the chosen pill and the chosen group: solid accent, white words, no bar on one side
+    const look = await p.evaluate(() => { const q = (el) => { const c = getComputedStyle(el); return { bg: c.backgroundColor, fg: c.color, l: c.borderLeftWidth, r: c.borderRightWidth, sh: c.boxShadow }; }; return { acc: getComputedStyle(document.querySelector('.usm')).getPropertyValue('--u-acc').trim(), pill: q(document.querySelector('.usm-pills button.on')), card: q(document.querySelector('.usi-card.on')) }; });
+    for (const k of ['pill', 'card']) expect(look[k].bg === hexRgb(look.acc) && look[k].fg === 'rgb(255, 255, 255)' && look[k].l === look[k].r && !/inset/.test(look[k].sh), `the chosen ${k === 'pill' ? 'view pill' : 'group'} is not solid accent with white words and even sides: ${JSON.stringify(look[k])} (accent ${look.acc})`);
+    // the kit's computer checks: groups shown, names fan out, cards fit their words, names never overlap, a long list pages
+    expect((await count(p, '.usi-card')) === 6 && (await count(p, '.usi-names button')) > 5, 'the groups or the names are not shown');
+    expect(await p.evaluate(() => [...document.querySelectorAll('.usi-card')].every((c) => c.querySelector('.usi-cl').scrollHeight <= c.clientHeight && c.getBoundingClientRect().bottom <= document.querySelector('.usi').getBoundingClientRect().bottom + 1)), 'a group card does not fit its words');
+    expect((await p.evaluate(OVERLAP)) <= 0.05, `names overlap on the front page (${await p.evaluate(OVERLAP)})`);
+    const shown0 = await count(p, '.usi-names button'), more0 = ((await txt(p, '.usi-more')) || '').trim();
+    const mn = (more0.match(/\d[\d,]*/g) || []).map((x) => Number(x.replace(/,/g, '')));
+    expect(mn.length === 3 && mn[0] === want.members - shown0 && mn[1] === 1 && (ES || /^and \d+ more · page 1 of \d+$/.test(more0)), `the long list does not say "and ${want.members - shown0} more · page 1 of n": "${more0}"`);
+    const first0 = await txt(p, '.usi-names button .usi-nm');
+    await (await p.$('.usi-more')).click(); await wait(700);
+    expect((await txt(p, '.usi-names button .usi-nm')) !== first0 && /\b2\b/.test((await txt(p, '.usi-more')) || ''), 'the long list did not go to its second page');
+    expect((await p.evaluate(OVERLAP)) <= 0.05, 'names overlap on the second page');
+    // stepping back from a name on page 2 returns to page 2 of the same list
+    { const f2 = await txt(p, '.usi-names button .usi-nm');
+      await p.evaluate(() => document.querySelector('.usi-names button').click()); await wait(900);
+      await p.goBack(); await wait(900); const b2 = await ixs(p);
+      expect(b2.stack.length === 0 && b2.active === 0 && b2.page === 1 && (await txt(p, '.usi-names button .usi-nm')) === f2, `stepping back did not return to page 2 of the same list: ${JSON.stringify([b2.stack, b2.active, b2.page])}`); }
+    // the names are alphabetical by last name (never by how many ties)
+    { const st = await ixs(p), nm = st.groups[0].items.map((x) => x.name), ln = nm.map((n) => lastOf.get(n) || n);
+      expect(ln.every((x, i) => !i || ln[i - 1].localeCompare(x) <= 0), 'the members are not in alphabetical order by last name'); }
+    // a group, then a name: it moves to the middle with its groups (a pointer click)
+    await (await p.$('.usi-card[data-g="1"]')).click(); await wait(600);
+    s = await ixs(p); expect(s.active === 1, 'choosing Committees did not show the committees');
+    const com = await txt(p, '.usi-names button .usi-nm');
+    await (await p.$('.usi-names button')).click(); await wait(1000);
+    s = await ixs(p);
+    expect(s.stack.length === 1 && s.title === com, `a committee did not move to the middle: ${JSON.stringify(s.stack)} "${s.title}"`);
+    expect(await p.evaluate(() => document.activeElement && document.activeElement.id === 'usi-h'), 'the new page\'s title did not take the focus');
+    expect(new RegExp(ES ? 'Ahora' : 'Now showing').test((await txt(p, '.usi [aria-live]')) || '') && ((await txt(p, '.usi [aria-live]')) || '').includes(com), `the move was not announced: "${await txt(p, '.usi [aria-live]')}"`);
+    expect((await count(p, '.usi-crumbs button')) >= 1 && !(await has(p, '.usi-start')), 'one step in: the crumbs are missing, or Back to the start shows (the first crumb does that)');
+    expect(s.groups.map((g) => g.key).every((k, i, a) => !i || ORDER.committee.indexOf(a[i - 1]) < ORDER.committee.indexOf(k)), `a committee's groups are not in the record's order: ${s.groups.map((g) => g.key)}`);
+    for (const g of s.groups.filter((x) => ['leaders', 'senate', 'house'].includes(x.key))) expect(g.items.every((it) => ROLE.test(it.note)), `${g.label}: a row's word is not the record's: ${g.items.map((it) => it.note).filter((w) => !ROLE.test(w)).slice(0, 3)}`);
+    { const mem = s.groups.filter((g) => g.key === 'senate' || g.key === 'house').reduce((t, g) => t + g.count, 0), ring = Number(((await txt(p, '.usi-ring .usi-count text')) || '').replace(/,/g, ''));
+      expect(mem > 0 && ring === mem, `the ring by the title says ${ring}; the committee lists ${mem} members`); }
+    await words(p, `${com}'s page`);
+    expect(!(await small(p, '.usi button, .usi a[href]')).length, `controls under 44 px in the Index: ${(await small(p, '.usi button, .usi a[href]')).slice(0, 4)}`);
+    // Escape steps back to the same group and list, with the focus on the name you came from; Forward goes back in; Back comes out
+    await p.keyboard.press('Escape'); await wait(800);
+    s = await ixs(p);
+    expect(s.stack.length === 0 && s.active === 1, `Escape did not step back to the committees: ${JSON.stringify([s.stack, s.active])}`);
+    expect(await p.evaluate((n) => { const a = document.activeElement; return !!a && !!a.querySelector && (a.querySelector('.usi-nm') || {}).textContent === n; }, com), 'stepping back did not put the focus on the name you came from');
+    await p.goForward(); await wait(900); s = await ixs(p);
+    expect(s.stack.length === 1 && s.title === com, 'Forward did not go back in');
+    await p.goBack(); await wait(900); s = await ixs(p);
+    expect(s.stack.length === 0 && s.active === 1, 'Back did not step out one name');
+    // two steps in, then Back to the start; and the browser's Back one step at a time
+    await (await p.$('.usi-names button')).click(); await wait(900);
+    await (await p.$('.usi-names button')).click(); await wait(900);
+    s = await ixs(p); expect(s.stack.length === 2 && (await has(p, '.usi-start')), 'two steps in, Back to the start is missing');
+    await (await p.$('.usi-start')).click(); await wait(900); s = await ixs(p);
+    expect(s.stack.length === 0, 'Back to the start did not go to the front page');
+    // the keyboard: the groups are one stop (arrows, Home, End, stopping at the ends), Tab reaches the names, Enter opens, Backspace steps back
+    await p.focus('.usi-card[aria-checked="true"]'); await p.keyboard.press('Home'); await wait(250);
+    await p.keyboard.press('ArrowDown'); await wait(250);
+    s = await ixs(p); expect(s.active === 1 && (await p.evaluate(() => document.activeElement.dataset.g)) === '1', 'the down arrow did not move to the next group');
+    await p.keyboard.press('End'); await wait(250); await p.keyboard.press('ArrowDown'); await wait(250);
+    s = await ixs(p); expect(s.active === 5, 'End did not go to the last group, or the arrow went past it');
+    await p.keyboard.press('Home'); await wait(250); s = await ixs(p); expect(s.active === 0, 'Home did not go to the first group');
+    await p.keyboard.press('Tab'); await wait(150);
+    expect(await p.evaluate(() => !!document.activeElement.closest('.usi-names')), 'Tab from the groups did not reach the names');
+    const kn = await p.evaluate(() => document.activeElement.querySelector('.usi-nm').textContent);
+    await p.keyboard.press('ArrowDown'); await wait(100); await p.keyboard.press('ArrowUp'); await wait(100);
+    await p.keyboard.press('Enter'); await wait(900); s = await ixs(p);
+    expect(s.stack.length === 1 && s.title === kn && (await p.evaluate(() => document.activeElement.id === 'usi-h')), `Enter did not open "${kn}" with its title focused`);
+    expect(s.groups.map((g) => g.key).every((k, i, a) => !i || ORDER.member.indexOf(a[i - 1]) < ORDER.member.indexOf(k)), `a member's groups are not in the record's order: ${s.groups.map((g) => g.key)}`);
+    await words(p, `${kn}'s page`);
+    await p.keyboard.press('Backspace'); await wait(800); s = await ixs(p);
+    expect(s.stack.length === 0, 'Backspace did not step back');
+    // a details card: a subcommittee, from a senator's page
+    await findIn(p, 'Husted'); s = await ixs(p);
+    expect(s.stack.length >= 1 && s.title === 'Jon Husted', `searching in the Index did not open Jon Husted's page: "${s.title}"`);
+    const subG = s.groups.findIndex((g) => g.key === 'subcommittees');
+    expect(subG >= 0, 'Jon Husted\'s page has no Subcommittees group');
+    await (await p.$(`.usi-card[data-g="${subG}"]`)).click(); await wait(600);
+    const sub = await txt(p, '.usi-names button .usi-nm');
+    await (await p.$('.usi-names button')).click(); await wait(1200);
+    expect(await has(p, '.usi-info'), 'a subcommittee did not open its details card');
+    const card = (await txt(p, '.usi-info')) || '';
+    expect(card.includes(sub) && card.includes('Jon Husted') && (ES || /Why it is linked/.test(card)) && /^https?:\/\/[^/]+\.gov\//.test(await p.evaluate(() => { const a = document.querySelector('.usi-info .usi-card-acts a'); return a ? a.href : ''; })), `the details card lacks the name, why it is linked, or the committee's official website: ${card.slice(0, 160)}`);   // the record's own address (some are http)
+    expect(await p.evaluate(() => !!document.activeElement.closest('.usi-info')), 'the details card did not take the focus');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the details card: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    expect(!(await small(p, '.usi-info button, .usi-info a[href]')).length, `controls under 44 px on the details card: ${(await small(p, '.usi-info button, .usi-info a[href]')).slice(0, 4)}`);
+    const depth = s.stack.length;
+    await p.keyboard.press('Escape'); await wait(700); s = await ixs(p);
+    expect(!(await has(p, '.usi-info')) && s.stack.length === depth, 'Escape did not close only the details card');
+    expect(await p.evaluate((n) => (document.activeElement.querySelector && (document.activeElement.querySelector('.usi-nm') || {}).textContent) === n, sub), 'closing the card did not give the focus back to its row');
+    await (await nameBtn(p, `^${sub.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`)).click(); await wait(900);
+    await p.goBack(); await wait(900); s = await ixs(p);
+    expect(!(await has(p, '.usi-info')) && s.stack.length === depth, 'the back gesture did not close only the details card');
+    await (await nameBtn(p, `^${sub.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`)).click(); await wait(900);
+    await p.evaluate(() => { const b = document.querySelector('.usi-info .usi-card-acts .usm-pri'); if (b) b.click(); }); await wait(1600);
+    expect(await has(p, '.usm-prof') && /Committee/.test((await txt(p, '.usm-prof h1')) || ''), 'the card\'s profile button did not open the committee\'s profile');
+    await p.click('.usmp-back'); await wait(900); s = await ixs(p);
+    expect(!(await has(p, '.usm-prof')) && s.title === 'Jon Husted', 'Back from that profile did not return to the Index page');
+    // Open profile, Show on the map, and Explore in Index back to the same page
+    await p.evaluate(() => document.querySelector('.usi-acts .usm-pri').click()); await wait(1600);
+    expect(/^Jon Husted\.?$/.test(((await txt(p, '.usm-prof h1')) || '').trim()), 'Open profile did not open Jon Husted\'s profile');
+    await p.click('.usmp-back'); await wait(900); s = await ixs(p);
+    expect(!!s && s.title === 'Jon Husted', 'Back from the profile did not return to the Index page');
+    await p.evaluate(() => [...document.querySelectorAll('.usi-acts .usm-btn')].pop().click()); await wait(1800);
+    expect(!(await has(p, '.usi')) && (await mapReady(p)) && (await mapState(p)).focus === 'Jon Husted' && (await has(p, '.usm-sheet')), 'Show on the map did not pick Jon Husted on the map');
+    await p.evaluate(() => [...document.querySelectorAll('.usm-sheet .usm-acts button')].pop().click()); await wait(1200);
+    s = await ixs(p);
+    expect(!!s && s.stack.length === 1 && s.title === 'Jon Husted', 'Explore in Index did not open the Index on Jon Husted\'s page');
+    await p.goBack(); await wait(900); s = await ixs(p);
+    expect(!!s && s.stack.length === 0, 'Back from a page opened by Explore in Index did not go to the front page');
+    // the globe turns while motion allows (Calm, a computer's default)
+    { const a = await p.$eval('.usi-orb', (c) => [c.dataset.turning, c.toDataURL()]); await wait(700); const b = await p.$eval('.usi-orb', (c) => c.toDataURL());
+      expect(a[0] === '1' && a[1] !== b, 'the globe does not turn on a computer with motion on'); }
+    await done(p);
+
+    // reduced motion: the globe holds still, nothing animates
+    const r = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1500, media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await mapReady(r); await ixOpen(r); await wait(400);
+    { const a = await r.$eval('.usi-orb', (c) => [c.dataset.turning, c.toDataURL()]); await wait(700); const b = await r.$eval('.usi-orb', (c) => c.toDataURL());
+      expect(a[0] === '0' && a[1] === b, 'with Reduce Motion the globe still turns'); }
+    await (await r.$('.usi-names button')).click(); await wait(200);
+    expect(await r.evaluate(() => document.getAnimations().filter((x) => x.playState === 'running' && x.effect && x.effect.target && x.effect.target.closest && x.effect.target.closest('.usi')).length === 0), 'something in the Index animates under Reduce Motion');
+    await done(r);
+
+    // ---------- a phone ----------
+    const ph = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 });
+    await mapReady(ph);
+    await ph.tap('.usm-pills button:nth-child(2)'); s = await ixWait(ph, (x) => x.groups.length === 6);
+    expect(await has(ph, '.usi-col') && !(await has(ph, '.usi-card')), 'the phone Index is not one column');
+    const geo = await ph.evaluate(() => { const c = document.querySelector('.usi-col'), f = document.querySelector('.usm-text'); return { w: c.getBoundingClientRect().width, fw: f.getBoundingClientRect().width, vw: innerWidth, doc: document.documentElement.scrollWidth, sw: c.scrollWidth, cw: c.clientWidth }; });
+    expect(Math.abs(geo.w - geo.vw) < 1 && Math.abs(geo.fw - geo.vw) < 1 && geo.doc <= geo.vw && geo.sw <= geo.cw, `the phone Index is not exactly the screen's width, or it scrolls sideways: ${JSON.stringify(geo)}`);
+    expect((await count(ph, '.usi-list button')) === 60, `the phone list does not show 60 names first: ${await count(ph, '.usi-list button')}`);
+    // a tap lands where the button is once the column has stopped moving (in Spanish the words are still settling for a moment)
+    const tapMore = async () => { await ph.evaluate(() => { const m = document.querySelector('.usi-col .usi-more'); if (m) m.scrollIntoView({ block: 'center' }); }); await wait(500); if (await has(ph, '.usi-col .usi-more')) await ph.tap('.usi-col .usi-more'); await wait(600); };
+    await tapMore();
+    expect((await count(ph, '.usi-list button')) === 120 && (await ixs(ph)).stack.length === 0, `Show more did not add 60 names: ${await count(ph, '.usi-list button')}`);
+    await ph.tap('.usi-chip[data-g="1"]'); await wait(500); s = await ixs(ph);
+    expect(s.active === 1 && (await ph.evaluate(() => document.querySelector('.usi-chip[data-g="1"]').getAttribute('aria-checked'))) === 'true', 'a group button did not switch the list');
+    await ph.tap('.usi-chip[data-g="0"]'); await wait(500);
+    await tapMore();   // a new group starts at 60 again; show 120, then go far down the list
+    await ph.evaluate(() => { document.querySelector('.usi-col').scrollTop = 3600; }); await wait(300);
+    const top0 = await ph.evaluate(() => document.querySelector('.usi-col').scrollTop);
+    const row = await ph.evaluateHandle(() => [...document.querySelectorAll('.usi-list button')].find((b) => { const q = b.getBoundingClientRect(); return q.top > 200 && q.bottom < innerHeight - 40; }));
+    const rowName = await row.evaluate((b) => b.querySelector('.usi-nm').textContent);
+    await row.asElement().tap(); await wait(1000); s = await ixs(ph);
+    expect(s.stack.length === 1 && s.title === rowName, `a tap did not go one step in: "${s.title}"`);
+    expect((await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth)), 'a phone page scrolls sideways');
+    await words(ph, `${rowName}'s page on a phone`);
+    expect(!(await small(ph, '.usi button, .usi a[href]')).length, `phone controls under 44 px: ${(await small(ph, '.usi button, .usi a[href]')).slice(0, 4)}`);
+    await ph.goBack(); await wait(1000); s = await ixs(ph);
+    const top1 = await ph.evaluate(() => document.querySelector('.usi-col').scrollTop);
+    expect(s.stack.length === 0 && Math.abs(top1 - top0) < 4 && (await count(ph, '.usi-list button')) === 120, `the back gesture did not return to the same list and scroll: ${JSON.stringify([s.stack, top0, top1])}`);
+    // the details card on a phone opens at the bottom and closes with Done, a tap outside, and the back gesture, keeping the page
+    await findIn(ph, 'Husted'); s = await ixs(ph);
+    const sg = s.groups.findIndex((g) => g.key === 'subcommittees');
+    await ph.tap(`.usi-chip[data-g="${sg}"]`); await wait(500);
+    const openCard = async () => { await ph.evaluate(() => document.querySelector('.usi-list button').scrollIntoView({ block: 'center' })); await wait(200); await ph.tap('.usi-list button'); await wait(1000); };
+    await openCard();
+    expect(await has(ph, '.usi-info') && (await ph.evaluate(() => Math.abs(document.querySelector('.usi-info').getBoundingClientRect().bottom - innerHeight) < 2)), 'the details card did not open at the bottom of the phone');
+    await ph.tap('.usi-info .usm-done'); await wait(700);
+    expect(!(await has(ph, '.usi-info')) && (await ixs(ph)).title === 'Jon Husted', 'Done did not close the card');
+    await openCard(); await ph.touchscreen.tap(195, 120); await wait(700);
+    expect(!(await has(ph, '.usi-info')), 'a tap outside did not close the card');
+    await openCard(); await ph.goBack(); await wait(800);
+    expect(!(await has(ph, '.usi-info')) && (await ixs(ph)).title === 'Jon Husted', 'the back gesture did not close only the card');
+    await done(ph);
+    // narrow phones at the largest targets: nothing wider than the screen, every target 44 px
+    for (const w of [320]) {
+      const n = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, width: w, height: 640, settle: 1800, media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+      await mapReady(n); await n.tap('.usm-pills button:nth-child(2)'); await ixWait(n, (x) => x.groups.length === 6);
+      expect(await n.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.querySelector('.usi-col').scrollWidth <= document.querySelector('.usi-col').clientWidth), `${w} wide: the Index is wider than the screen`);
+      expect(!(await small(n, '.usi button, .usi a[href]')).length, `${w} wide: controls under 44 px: ${(await small(n, '.usi button, .usi a[href]')).slice(0, 4)}`);
+      expect((await n.$eval('.usi-orb', (c) => c.dataset.turning)) === '0', `${w} wide: the globe turns under Reduce Motion`);
+      await done(n);
+    }
+    // the same words in Spanish: no strength, score, ranking, or party word there either
+    if (!ES) {
+      const e = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1800, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} })()` });
+      await mapReady(e); await ixOpen(e); await wait(600);
+      for (const where of ['front', 'page']) {
+        const t = await ours(e);
+        const bad = t.match(OURS_ES) || t.match(/\b(strong|fits?|match(es|ed)?|aligned|scores?|percent|ranked|best)\b/i);
+        expect(!bad && !PARTY.test(t), `in Spanish the Index (${where}) says "${bad && bad[0]}"`);
+        if (where === 'front') { await (await e.$('.usi-names button')).click(); await wait(1000); }
+      }
+      await done(e);
+    }
+  },
   async 'us-explain'() {
     // What each committee and subcommittee does, and what the committee roles mean (docs/plan-explain-committees-and-seats.md, ext/cx-us-text.jsx).
     // Every committee and subcommittee in the record has our two lines or the official words or "No description on file", never nothing; no line
@@ -2294,11 +2545,11 @@ const CHECKS = {
     await d.evaluate(() => { const x = document.querySelector('.usm-sheet .usx-official'); if (x) x.open = true; }); await wait(200);
     const off = await d.evaluate(() => { const o = document.querySelector('.usm-sheet .usx-official'); if (!o) return null; const a = o.querySelector('.usx-src a'); return { quote: (o.querySelector('.usx-quote') || {}).innerText || '', href: a ? a.href : '', src: (o.querySelector('.usx-src') || {}).innerText || '', lang: (o.querySelector('.usx-quote') || {}).lang }; });
     expect(!!off && off.quote.length > 40 && /^https:\/\//.test(off.href) && /\d{4}/.test(off.src) && off.lang === 'en', `the committee's own words are not one tap down with a secure source, a pulled date, and lang="en": ${JSON.stringify(off).slice(0, 200)}`);
-    // the Index says the same first line
-    await d.evaluate(() => { const b = [...document.querySelectorAll('.usm-sheet .usm-acts button')].pop(); b.click(); }); await wait(1400);
-    const idx = await d.evaluate(() => { const b = document.querySelector('.us-list [data-node="c:HSWM"] small'); return b ? b.innerText : null; });
+    // the Index says the same first line, on the committee's own page (Explore in Index opens it there)
+    await d.evaluate(() => { const b = [...document.querySelectorAll('.usm-sheet .usm-acts button')].pop(); b.click(); }); await wait(1600);
+    const idx = await d.evaluate(() => { const r = document.querySelector('.usi'), b = document.querySelector('.usi .usi-what'); return r && r.cxIndex && r.cxIndex.stack[0] === 'c:HSWM' && b ? b.innerText : null; });
     expect(idx === sheetWhat, `the Index says "${idx}" for Ways and Means, the sheet "${sheetWhat}"`);
-    expect(!!(await txt(d, '.us-index .usx-review')), 'the Index does not say whose words the committee lines are');
+    expect(!!(await txt(d, '.usi .usi-rev')), 'the Index does not say whose words the committee lines are');
     await done(d);
     // the profile page: the same first line, the subcommittees open to their own lines, every role word opens its note, and the note closes four ways
     const p = await open('/?panel=us&who=house-committee-on-ways-and-means#desktop', { width: 1440, height: 900, settle: 2600 });
@@ -3233,6 +3484,10 @@ const AXE_PAGES = [
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us committee profile', '/?panel=us&who=senate-committee-on-finance#desktop', { settle: 2600 }], ['phone us court profile', '/?panel=us&who=supreme-court-of-the-united-states#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us map settings', '/?panel=us#desktop', { settle: 1800, after: 'usmSettings' }],
+  // the Index (ext/cx-us-index.jsx): its front page, a senator's page, a committee's page, and a subcommittee's details card
+  ['desktop us index', '/?panel=us#desktop', { settle: 1800, after: 'usIndex' }], ['desktop us index person', '/?panel=us#desktop', { settle: 1800, after: 'usIndexPerson' }],
+  ['desktop us index card', '/?panel=us#desktop', { settle: 1800, after: 'usIndexCard' }], ['phone us index', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndex' }],
+  ['phone us index committee', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndexCommittee' }], ['phone us index card', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndexCard' }],
   // what a committee does (ext/cx-us-text.jsx): its sheet with the official words open, a role's note, the subcommittees opened, and the story
   ['desktop us committee sheet', '/?panel=us#desktop', { settle: 1800, after: 'usCommittee' }], ['desktop us role note', '/?panel=us&who=house-committee-on-ways-and-means#desktop', { settle: 2600, after: 'usRole' }],
   ['phone us committee subcommittees', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usSubs' }], ['phone us committee story', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usStory' }],
@@ -3266,6 +3521,31 @@ const AXE_AFTER = {
     if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'liquor'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
   },
   usmSettings: () => { const b = document.querySelector('.usm-top .usm-set-btn'); if (b) b.click(); },
+  // the Index: open it from its pill; a senator's page through the search box; a committee's page; a subcommittee's details card
+  usIndex: async () => { const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][1]; if (b) b.click(); for (let t = 0; t < 40 && !document.querySelector('.usi-card, .usi-chip'); t++) await w(150); await w(500); },
+  usIndexPerson: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][1]; if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.usi-card, .usi-chip'); t++) await w(150);
+    let i = document.querySelector('.usm-search input'); if (!i) { const s = document.querySelector('.usm-top button[aria-label="Search"], .usm-top button[aria-label="Buscar"]'); if (s) s.click(); await w(300); i = document.querySelector('.usm-search input'); }
+    if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Husted'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(500); const r = document.querySelector('.usm-results button'); if (r) r.click(); }
+    await w(1200);
+  },
+  usIndexCommittee: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][1]; if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.usi-card, .usi-chip'); t++) await w(150);
+    const g = document.querySelector('[data-g="1"]'); if (g) g.click(); await w(500);
+    const n = document.querySelector('.usi-names button, .usi-list button'); if (n) n.click(); await w(1200);
+  },
+  usIndexCard: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][1]; if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.usi-card, .usi-chip'); t++) await w(150);
+    let i = document.querySelector('.usm-search input'); if (!i) { const s = document.querySelector('.usm-top button[aria-label="Search"], .usm-top button[aria-label="Buscar"]'); if (s) s.click(); await w(300); i = document.querySelector('.usm-search input'); }
+    if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Husted'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(500); const r = document.querySelector('.usm-results button'); if (r) r.click(); }
+    await w(1200);
+    const root = document.querySelector('.usi'), gi = root && root.cxIndex ? root.cxIndex.groups.findIndex((x) => x.key === 'subcommittees') : -1;
+    const g = document.querySelector(`[data-g="${gi}"]`); if (g) g.click(); await w(500);
+    const n = document.querySelector('.usi-names button, .usi-list button'); if (n) n.click(); await w(1400);
+  },
   usCommittee: async () => {   // pick the Ways and Means Committee on the map, then open its own words
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     const c = document.querySelector('.usm-canvas'), r = c.getBoundingClientRect(), q = c.cxMap.at('House Committee on Ways and Means');
@@ -3453,6 +3733,8 @@ const CV_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}],
   ['desktop us', '/?panel=us#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop stories', '/?panel=stories#desktop', {}],
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
+  // the Index: kinds by shape and word, a senator's page on a computer and the front page on a phone
+  ['desktop us index person', '/?panel=us#desktop', { settle: 1800, after: 'usIndexPerson' }], ['phone us index', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndex' }],
   // how you line up: Compare members with step 2 on and answered, and a profile with the counts open
   ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
   ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }],
