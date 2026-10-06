@@ -68,6 +68,6 @@ brings the draft line back until someone approves again.
 | `sources` | Official records update by themselves; news is never added automatically; our own words say whether a person checked them. | The nightly workflow runs only `scripts/refresh.py`; review flags in `build.py`. | `levies`, `us-explain`, reading |
 | `who` | This is an Equalpoint project. | From `docs/plan-privacy-policy.md` and the owner's notes. | reading (Brent and a lawyer to confirm the wording) |
 | `children` | No accounts; the site asks no one, including children, for a name, an age, or contact details. | No such field anywhere. | reading |
-| `access` | Built for a keyboard and a screen reader; an automated accessibility check runs before each release; not yet tested by a person who uses a screen reader. | `scripts/release.py` runs the browser checks. | `axe`, `targets`, `privacy-policy` |
+| `access` | Built for a keyboard and a screen reader; an automated accessibility check runs before each release; not yet tested by a person who uses a screen reader. | `scripts/release.py` runs the browser checks. In every lane, `--fast` too, it runs `privacy-policy`, which runs axe on this page (on a phone, a computer, and at 320 px). | `axe`, `targets`, `privacy-policy` |
 | `access` | The Spanish is a draft until a Spanish speaker reads it. | `i18n/review-notes.md`. | `spanish-switch`, `scripts/test_i18n.py` |
 | `changes` | The page is dated and lists its changes, newest first. | `CX_POLICY.changed`. | `scripts/test_privacy.py`, `privacy-policy` (the date shows) |

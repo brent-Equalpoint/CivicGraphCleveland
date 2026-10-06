@@ -1,5 +1,9 @@
-# Checks that run on every push to main and on every pull request.
-# The same checks run by hand with scripts/release.py, so a change is held to one standard either way.
+# The full gate on GitHub: on every push to main, on every pull request, and by hand.
+# The same checks python scripts/release.py runs, so a change is held to one standard either way. After a fast release
+# (python scripts/release.py --fast --push) this is the safety net: the fast lane ran only part of the browser checks, and this runs all
+# of them, with light mode in Bento and in Original. The browser checks are split across three machines (run.js --shard k/3), two at a
+# time on each, so the whole suite fits in the time limit. If anything fails on main, the commit is marked red and the issue
+# "Checks failed on main" names the failing checks; when main passes again, the issue is closed with a note.
 name: Checks
 
 on:
@@ -13,12 +17,14 @@ permissions:
 
 concurrency:
   group: checks-${{ github.ref }}
-  cancel-in-progress: true
+  # a newer push to a pull request replaces the older run; every push to main keeps its own verdict
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  checks:
+  build:
+    name: Builds, unit tests, data safety
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
 
@@ -34,7 +40,7 @@ jobs:
       - name: Packages
         run: npm ci
 
-      - name: Unit tests (Bench, approval gate, link checker)
+      - name: Unit tests (Bench, approval gate, link checker, and the rest)
         run: |
           python scripts/test_bench.py
           python scripts/test_bench_gate.py
@@ -55,6 +61,7 @@ jobs:
           node scripts/test_design.js
           python scripts/test_i18n.py
           python scripts/test_privacy.py
+          node scripts/test_release_plan.js
 
       - name: Data safety check
         run: python scripts/refresh.py --check
@@ -71,17 +78,100 @@ jobs:
       - name: The committed site is exactly what the build produces
         run: git diff --exit-code -- site
 
-      - name: Browser checks and accessibility audit
+  browser:
+    name: Browser checks, part ${{ matrix.part }} of 3
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Packages
+        run: npm ci
+
+      - name: Build
+        run: python build.py
+
+      - name: Browser checks and accessibility audit, with light mode in Bento and Original
         env:
           CHROME_PATH: /usr/bin/google-chrome
           CI: "true"
-        run: node scripts/checks/run.js
+          CHECK_JOBS: "2"
+        run: node scripts/checks/run.js --light --shard ${{ matrix.part }}/3 --report check-results.json
 
+      - name: Keep the results for the report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: check-results-${{ matrix.part }}
+          path: check-results.json
+          if-no-files-found: ignore
+          retention-days: 14
 
-      - name: Light mode layout, contrast, and color-vision checks
+  report:
+    name: Tell the team (main only)
+    needs: [build, browser]
+    if: always() && github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: check-results-*
+          path: results
+
+      - name: Open or comment on the issue when something failed; close it when main passes again
         env:
-          CHROME_PATH: /usr/bin/google-chrome
-          CI: "true"
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          BUILD: ${{ needs.build.result }}
+          BROWSER: ${{ needs.browser.result }}
         run: |
-          CHECK_MODE=light CHECK_THEME=bento node scripts/checks/run.js --only axe,no-bleed,story-fit,color-vision,targets,titles-never-cut,print
-          CHECK_MODE=light CHECK_THEME=original node scripts/checks/run.js --only axe,no-bleed,story-fit,color-vision,targets,titles-never-cut,print
+          title="Checks failed on main"
+          url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          sha="${GITHUB_SHA::7}"
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ "$BUILD" = "success" ] && [ "$BROWSER" = "success" ]; then
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "The full gate passed on main at commit $sha ($(date -u +%Y-%m-%d)). Closing. Run: $url"
+              gh issue close "$existing"
+            fi
+            exit 0
+          fi
+          {
+            echo "The full gate failed on main at commit $sha ($(date -u +%Y-%m-%d))."
+            echo
+            if [ "$BUILD" != "success" ]; then echo "- The builds, unit tests, or data safety check: $BUILD"; fi
+            for k in 1 2 3; do
+              f="results/check-results-$k/check-results.json"
+              if [ -f "$f" ]; then
+                jq -r '.failed[] | "- \(.check) [\(.pass)]: \(.lines | join(" / "))"' "$f"
+              elif [ "$BROWSER" != "success" ]; then
+                echo "- Browser checks, part $k of 3: no result (the part timed out or stopped before it could report)"
+              fi
+            done
+            echo
+            echo "Open the run for the whole output: $url"
+            echo "If this commit was shipped with the fast lane (python scripts/release.py --fast --push), it is already live: fix it, or revert it, and ship the fix with the full gate (python scripts/release.py --push)."
+          } > body.md
+          cat body.md >> "$GITHUB_STEP_SUMMARY"
+          if [ -n "$existing" ]; then
+            gh issue comment "$existing" --body-file body.md
+          else
+            gh issue create --title "$title" --body-file body.md
+          fi

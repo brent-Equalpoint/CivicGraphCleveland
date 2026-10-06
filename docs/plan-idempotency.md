@@ -25,7 +25,8 @@ Already true, with the evidence:
 | Bench `packets.py` | deterministic, "safe to rerun" | its own header |
 | Corrections | the log is append only and the app reads the latest decision per issue | `scripts/corrections.py` |
 | The app | it sends nothing to any server, so a resident cannot submit anything twice; "Use these on my ballot" sets, it does not add; switching Spanish off restores the exact English | `spanish-switch`, `districts`, no POST in `ext/` or `build.py` |
-| `release.py` | stops before the push on any failure; safe to run again | run twice on Oct 2 |
+| `release.py` | stops before the push on any failure; safe to run again. The saved pass names its lane: a full pass stands for `--fast`, a fast pass (with the checks it ran) never stands for the full gate | run twice on Oct 2; both lanes rerun on Oct 6 |
+| The browser checks side by side | each check runs in its own process, Chrome, profile, and server port; the report is in the table's order whatever finishes first | three full runs at 4 at a time gave the same results as one at a time (Oct 6) |
 
 Not true, or not checked:
 

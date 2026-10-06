@@ -32,10 +32,27 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | Anything saved in the browser (a new `localStorage` or `sessionStorage` name, a cache) | the code, then its line in the privacy policy's list (`ext/cx-privacy.jsx`) and a row in `docs/privacy-claims.md` | `python scripts/test_privacy.py`, `--only privacy-policy`; the policy's words need a person's approval again |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
-| Ship | commit (one line, what changed for a resident) | `python scripts/release.py --push` |
+| Ship | commit (one line, what changed for a resident) | `python scripts/release.py --push` (the full gate), or `--fast --push` for a change the reviewer reads live (below) |
 
 Both styles (Bento, Original), both layouts, dark and light, English and Spanish must keep working. Checks run dark by default:
-`CHECK_MODE=light`, `CHECK_THEME=original`, `CHECK_LANG=es`.
+`CHECK_MODE=light`, `CHECK_THEME=original`, `CHECK_LANG=es` (or `run.js --light`, `--spanish` for the named lists in `scripts/checks/lists.js`).
+
+## Shipping: the full gate and the fast lane
+
+`python scripts/release.py` is the full gate: two clean builds with the same hash, every unit test and `refresh.py --check` (side by side),
+every browser check plus the light-mode list in Bento and in Original (all in one pool, `--jobs N` or `CHECK_JOBS`, default min(4, half the
+processors)), the committed-site check, and with `--push` the live-site check. `--no-push` never pushes.
+
+`python scripts/release.py --fast --push` is for changes Brent reviews on the live site himself: copy, small UI and CSS tweaks, interpretive
+text with its notice, a data refresh, docs. It never skips the builds, the unit tests, `refresh.py --check`, the committed-site check, or the
+browser checks in `ALWAYS` (`security-policy`, `privacy-policy`, `remember-place`, `districts`, `shell`, `offline-shell`, `update-wins`). Beyond
+those it runs what `node scripts/checks/changed.js --release --since origin/main` plans from the diff since the last release: the checks the
+change can affect, light mode only when the look can have changed (a stylesheet, `bento.py`, `light.py`, a color or inline style in `ext/`,
+or `--fresh`), Spanish when `i18n/` changed; records and docs need no extra check. It refuses, and says why, for `build.py` (the patches and
+`with_csp`), `refresh.py` and the fetchers, `design/tokens.json`, the Spanish pipeline, `vercel.json`, the privacy and storage paths (and any
+changed line in `ext/` that saves in the browser or asks a server), the gate and workflows, the packages, or more than 25 changed files
+(site/, docs, and photos not counted). After a fast push, the Checks workflow runs the full gate on GitHub in three parts; if anything fails
+the commit is red and the issue "Checks failed on main" names the failing checks (it closes itself when main passes again).
 
 ## Traps (each one cost time)
 
@@ -48,6 +65,17 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **Release step 5 needs everything committed.** Commit first. A full pass is saved per exact input and day, so the rerun after committing is quick (`--fresh` forces all).
 - **Chrome "Session with given id not found"** is a browser hiccup, not the app. `run.js` retries opening a page once for that message; `changed.js` reruns a check that failed only that way. A check that ends only in a crash is run once more; an assertion that failed is never retried. Any other error is real.
 - **Run the right checks while working.** `node scripts/checks/changed.js` runs only the checks your changed files can affect (`--plan` shows them, `--thorough` adds light and Spanish). A shared file, or one it does not know, runs everything. It never replaces `release.py`.
+- **Checks run side by side.** `run.js` runs several checks at once, each in its own process with its own Chrome, profile, and server port,
+  and prints the results in the table's order. A check must not write a shared file or need a quiet machine; one that cannot share goes in
+  `SERIAL` in `scripts/checks/lists.js`, with the reason. `--jobs 1` runs them one by one in one process, as before.
+- **On Windows, a Chrome told to close can take two minutes to exit** when several run at once (three were seen waiting and then exiting at
+  the same moment). With one Chrome per check that held each job long after its result, and a 10-minute suite took 16. `closeChrome` in
+  `run.js` waits 8 seconds for a clean close, then ends Chrome's processes and removes its temporary profile. The results are printed first.
+- **`axe`, `text-overlap`, and `no-bleed` share their page loads** when they run together (`TOGETHER` in `lists.js`): each page of
+  `AXE_PAGES` is opened once, read by the spill scan, then axe, then the overlap scan (which scrolls, so it goes last). A page is added to
+  `AXE_PAGES` once for all three; a check's own extra screens stay in its own function.
+- **A new kind of file needs a line in `changed.js`** for the fast lane: in `REFUSE` if it needs the full gate, in `FAST_RULES` or `RULES`
+  for the checks it can affect. A file nothing there knows runs every check, and `scripts/test_release_plan.js` holds the plans to their word.
 - **Sheets and overlays are registered by name** (`CXM_SHEETS`, `overlay.type` in `cxm-core.jsx`); the URL map `P` there must keep old `?panel=` links working.
 - **A backtick path that starts `/portraits/` is rewritten by the build** (`asset paths`, expected 18). Build a new portrait path by joining strings, as `CxFace` does.
 - **Photos need Pillow** (`pip install pillow`). `fetch_portraits.py` skips with a warning without it, and the nightly job installs it.
