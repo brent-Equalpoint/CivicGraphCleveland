@@ -146,7 +146,7 @@ COMMITTEES = {
     "SSJU": ("rule_xxv", "the Judiciary"),
     "SLET": ("page", "ethics_s", r"(?=The Committee has three main functions)", r"\n", "Senate Select Committee on Ethics website, About Us"),
     "SLIN": ("page", "ssci", r"(?=Mission: The Committee was created)", r"\n", "Senate Select Committee on Intelligence website, About the Committee"),
-    "SPAG": ("page", "aging", r"(?=The Senate Special Committee on Aging was first established)", r"\n", "Senate Special Committee on Aging website, History"),
+    "SPAG": ("page", "aging", r"(?=The Senate Special Committee on Aging was first established)", r"\n(?!Throughout its)", "Senate Special Committee on Aging website, History"),
     "SCNC": ("page", "drug", r"\nPurpose\n", r"\nHistory\n", "Senate Caucus on International Narcotics Control website, About"),
 }
 # a note shown with a row's official text when the rule itself says something is different from its own wording

@@ -184,6 +184,81 @@ class RunningTwice(unittest.TestCase):
         self.assertEqual(fx.check(snap, land), [])
 
 
+TEXT_SRC = open(os.path.join(ROOT, "ext", "cx-us-text.jsx"), encoding="utf-8").read()
+BLOCK = re.search(r"/\* US-TEXT-START.*?US-TEXT-END \*/", TEXT_SRC, re.S).group(0)
+LINES = json.loads(re.search(r"const CX_US_LINES = (\{.*?\n\});\n", BLOCK, re.S).group(1))
+ROLE_TEXT = {k: dict(re.findall(r"(words|what|why|same): (`[^`]*`|\[[^\]]*\])", body))
+             for k, body in re.findall(r"\n  (\w+): \{ (words: \[.*?) \},", BLOCK)}
+HOW = re.findall(r"\{ k: `([^`]*)`, big: `([^`]*)`, small: `([^`]*)`, step: `(\w+)` \}", BLOCK)
+RANKING = re.compile(r"\b(powerful|important|importance|top|best|most|leading|key|major|critical|vital|crucial|influential|biggest|largest)\b", re.I)
+PARTY = re.compile(r"\b(Republican|Democrat|Democratic|GOP|conservative|liberal)\b", re.I)
+
+
+def n_words(s):
+    return len(s.split())
+
+
+class OurLines(unittest.TestCase):
+    """The plain lines in ext/cx-us-text.jsx (phases 3 and 4): two short lines each, grounded, never a ranking, no dash, flagged for review."""
+
+    def test_every_line_is_for_a_committee_in_the_record_that_has_official_words(self):
+        for k in LINES:
+            self.assertIn(k, DATA["committees"], k)
+            self.assertTrue(DATA["committees"][k].get("text"), f"{k} has lines but no official words on file to rest on")
+
+    def test_every_committee_has_its_two_lines_and_most_subcommittees_do(self):
+        for c in LAND["committees"]:
+            self.assertIn(c["id"], LINES, c["id"])
+        with_text = [k for k, r in DATA["committees"].items() if r["kind"] == "subcommittee" and r.get("text")]
+        self.assertGreaterEqual(sum(1 for k in with_text if k in LINES), len(with_text) - 5)
+
+    def test_each_pair_is_one_short_sentence_each_within_the_limits(self):
+        for k, (what, why) in LINES.items():
+            self.assertLessEqual(n_words(what), 20, f"{k} what: {what}")
+            self.assertLessEqual(n_words(why), 15, f"{k} why: {why}")
+            self.assertLessEqual(n_words(what) + n_words(why), 35, k)
+            for s in (what, why):
+                self.assertTrue(s.endswith("."), f"{k}: {s}")
+                self.assertNotRegex(s, "[–—]|--", k)
+                self.assertNotRegex(s, RANKING, k)
+                self.assertNotRegex(s, PARTY, k)
+
+    def test_the_role_notes_cover_every_role_word_in_the_record(self):
+        self.assertEqual(sorted(ROLE_TEXT), sorted(DATA["roles"]))
+        words = {w.lower() for v in ROLE_TEXT.values() for w in re.findall(r"`([^`]*)`", v["words"])}
+        for m in LAND["members"]:
+            for x in m["committees"]:
+                self.assertIn(x["role"].lower(), words, x["role"])
+
+    def test_each_role_note_is_two_short_lines_with_no_ranking_and_no_dash(self):
+        for k, v in ROLE_TEXT.items():
+            what, why, same = (v[f].strip("`") for f in ("what", "why", "same"))
+            self.assertLessEqual(n_words(what), 20, k)
+            self.assertLessEqual(n_words(why), 15, k)
+            self.assertLessEqual(n_words(what) + n_words(why), 35, k)
+            for s in (what, why, same):
+                self.assertNotRegex(s, "[–—]", k)
+                self.assertNotRegex(s, RANKING, k)
+        self.assertIn("Chair, Chairman, and Chairwoman are the same post", ROLE_TEXT["chair"]["same"])
+
+    def test_how_a_committee_works_is_five_steps_and_the_rule_each_on_official_words(self):
+        self.assertEqual([h[3] for h in HOW], ["referral", "hearing", "markup", "report", "floor", "floor"])
+        self.assertEqual(HOW[-1][1], "A committee's vote is not the chamber's vote.")
+        for k, big, small, step in HOW:
+            self.assertTrue(any(t.get("text") for t in DATA["process"][step]), step)
+            self.assertNotRegex(big + small, "[–—]")
+
+    def test_the_lines_are_reviewed_only_through_the_build_command(self):
+        with open(os.path.join(ROOT, "build.py"), encoding="utf-8") as fh:
+            build = fh.read()
+        self.assertIn("--mark-us-text-reviewed", build)
+        self.assertIn("US-TEXT-START", TEXT_SRC)
+        rv = os.path.join(ROOT, "data", "us-text-reviewed.json")
+        if os.path.exists(rv):   # if a person has marked them, the record names who
+            with open(rv, encoding="utf-8") as fh:
+                self.assertTrue(json.load(fh).get("by"))
+
+
 class TheCheckCatches(unittest.TestCase):
     """The checks fail on what they are for, or a clean result means nothing."""
 

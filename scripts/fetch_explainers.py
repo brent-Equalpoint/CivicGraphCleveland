@@ -269,7 +269,8 @@ def build(landscape, pages, previous, today, C=None):
                 row = {**sbase, "text": None, "note": NONE_NOTE, "checked": sp["none"]}
             else:
                 t = sub_passage(pages, sp)
-                row = {**sbase, "text": t, "cite": sp.get("what") or "The committee's own page", "source": "us_committee_pages", "url": sp["url"], "pulled": today} if t else {
+                cite = "The committee's rules, printed on govinfo.gov" if "govinfo.gov" in sp["url"] else "The committee's own website"
+                row = {**sbase, "text": t, "cite": cite, "page": sp.get("what") or "", "source": "us_committee_pages", "url": sp["url"], "pulled": today} if t else {
                     **sbase, "text": None, "note": NONE_NOTE, "checked": f"{sp['url']} did not answer or no longer has the passage."}
             rows[s["id"]] = keep(row, prev_rows.get(s["id"]), (sp or {}).get("url", ""))
 

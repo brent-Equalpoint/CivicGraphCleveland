@@ -173,3 +173,9 @@ dictionary); the map's two files 101.8 KB (fails past +25%); the map's first dra
 same in every run). When the map's first drawing is done (about 250 to 300 ms after the page starts on the checks' server) is printed,
 and only warns past twice that. Proven: 40 KB of incompressible text added to the CSS fails it (code 524.5 KB); a page that makes
 Today download the federal votes fails it; the real build passes, in English and in Spanish.
+
+Re-recorded on purpose Oct 6, 2026 (`docs/plan-explain-committees-and-seats.md`, phases 3 and 4): the app's code is 542,395 bytes gzip. Main
+was already at 537,347 (2.9% over the Oct 5 record, after the desktop strip); what a committee does adds 5.0 KB gzip (the six role notes,
+"How a committee works", and the sheet, profile, note, and story parts in `ext/cx-us-text.jsx`). The 218 committee lines and the official
+words (`site/us/explainers-2026.json`, about 80 KB gzip) are not in the page: they load the first time a committee, a subcommittee, a role's
+official words, or the Index, Linked, or Tree view needs them, never when the app or the map opens (the `us-explain` check fails if they do).

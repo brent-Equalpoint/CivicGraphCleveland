@@ -7,7 +7,8 @@ the same way as `docs/source-terms-review.md`. Which passage of which page is in
 
 Result: all 49 committees and 171 of the 181 subcommittees have official text in `data/us-explainers-2026.json`; 10 subcommittees say
 "No description on file" (listed at the end). Two runs of the fetcher on the live sources wrote the identical file
-(SHA-256 `204f4a3135ed87c1aff86745eb4d287c675fb4a79818061595fd3cb60c951054`).
+(SHA-256 `6ce66900c0620c12dea50271d559e55137a23685b255fdaf938d872e99f8b751`). The pulled dates in the data are days in UTC, the convention of the other federal records, so pages read
+on the evening of Oct 5, 2026 (Eastern) are stamped Oct 6.
 
 ## The sources
 

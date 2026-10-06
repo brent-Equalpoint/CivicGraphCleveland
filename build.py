@@ -150,6 +150,42 @@ def mark_levies_reviewed(who):
     print(f"marked the levy write-ups reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def us_text_block():
+    """The plain lines about committees, subcommittees, and committee roles: everything between the US-TEXT markers in ext/cx-us-text.jsx."""
+    src = open(os.path.join(EXT, "cx-us-text.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* US-TEXT-START.*?US-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the US-TEXT markers are missing from ext/cx-us-text.jsx")
+    return src, m
+
+
+def us_text_fp():
+    """Fingerprint of the plain lines between the US-TEXT markers (the role notes, the story, and every committee's two lines)."""
+    return hashlib.sha256(us_text_block()[1].group(0).encode()).hexdigest()[:16]
+
+
+def us_text_lines(src):
+    """The committee and subcommittee lines (the US-LINES table, strict JSON) and the source with the table taken out: the page loads them
+    with the official words from /us/explainers-2026.json when a committee first opens, so the page itself does not carry them."""
+    m = re.search(r"const CX_US_LINES = (\{.*?\n\});\n", src, re.S)
+    if not m:
+        sys.exit("build: the US-LINES table (const CX_US_LINES = {...};) is missing from ext/cx-us-text.jsx")
+    try:
+        lines = json.loads(m.group(1))
+    except ValueError as e:
+        sys.exit(f"build: the US-LINES table in ext/cx-us-text.jsx is not strict JSON: {e}")
+    return lines, src[:m.start()] + "const CX_US_LINES = null;\n" + src[m.end():]
+
+
+def mark_us_text_reviewed(who):
+    """Record that a person read the committee, subcommittee, and role lines against their official words, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-us-text-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "us-text-reviewed.json")
+    write(path, json.dumps({"fp": us_text_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the committee lines reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def geo_svg(geo):
     """Project the ward and neighborhood layers to SVG paths (simple equirectangular at Cleveland's latitude)."""
     import math
@@ -424,6 +460,25 @@ def main():
     lv_ok = lv.get("fp") == levy_fp()
     log(f"levy text: {'reviewed by ' + lv['by'] + ' on ' + lv['checked'] if lv_ok else 'NOT reviewed by a person (' + ('text changed since review' if lv else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/levies-reviewed.json ---- */\nconst CX_LEVY_REVIEW = " + json.dumps({"ok": lv_ok, "by": lv.get("by") if lv_ok else None, "checked": lv.get("checked") if lv_ok else None}) + ";\n"
+    # the plain lines about committees and committee roles (ext/cx-us-text.jsx): reviewed by a person only while their fingerprint still matches what that person read
+    ut_path = os.path.join(ROOT, "data", "us-text-reviewed.json")
+    ut = json.load(open(ut_path, encoding="utf-8")) if os.path.exists(ut_path) else {}
+    ut_ok = ut.get("fp") == us_text_fp()
+    log(f"committee lines: {'reviewed by ' + ut['by'] + ' on ' + ut['checked'] if ut_ok else 'NOT reviewed by a person (' + ('text changed since review' if ut else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/us-text-reviewed.json ---- */\nconst CX_US_TEXT_REVIEW = " + json.dumps({"ok": ut_ok, "by": ut.get("by") if ut_ok else None, "checked": ut.get("checked") if ut_ok else None}) + ";\n"
+    us_src, _ = us_text_block()
+    us_lines, us_src_page = us_text_lines(us_src)
+    ex_path = os.path.join(ROOT, "data", "us-explainers-2026.json")
+    ex = json.load(open(ex_path, encoding="utf-8"))
+    for k, v in us_lines.items():   # a line must rest on official words this record holds; no line for a committee with none on file
+        row = ex["committees"].get(k)
+        if not row:
+            sys.exit(f"build: ext/cx-us-text.jsx has lines for {k}, which is not in data/us-explainers-2026.json")
+        if not row.get("text"):
+            sys.exit(f"build: ext/cx-us-text.jsx has lines for {k}, but no official text is on file for it to rest on")
+        if not (isinstance(v, list) and len(v) == 2 and all(isinstance(x, str) and x.strip() for x in v)):
+            sys.exit(f"build: the lines for {k} are not two sentences")
+    log(f"data   {sha(ex_path)}  us-explainers-2026.json  ({ex['counts']['with_text']} committees and subcommittees with official text, {ex['counts']['none_on_file']} none on file; {len(us_lines)} with our lines)")
     # v5.16 weekly link check (scripts/check_links.py): only links that failed twice running are shown to residents
     lk_path = os.path.join(ROOT, "data", "links-2026.json")
     lk = json.load(open(lk_path, encoding="utf-8")) if os.path.exists(lk_path) else {"checked_at": None, "broken": []}
@@ -461,9 +516,13 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
-        out = run([tool("esbuild"), os.path.join(EXT, name), "--loader:.jsx=jsx",
+        jsx_path = os.path.join(EXT, name)
+        if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
+            jsx_path = os.path.join(work, name)
+            write(jsx_path, us_src_page)
+        out = run([tool("esbuild"), jsx_path, "--loader:.jsx=jsx",
                    "--jsx-factory=u.createElement", "--jsx-fragment=u.Fragment", "--target=es2020"])
         ext_js += f"\n/* ---- {name} ---- */\n" + out
     log(f"extension compiled: {len(ext_js)} bytes")
@@ -1100,6 +1159,16 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     # the settled United States graph (scripts/us_map.js): the same physics and seed the page uses, run once here so every device opens the same map at once
     run(["node", os.path.join(ROOT, "scripts", "us_map.js"), os.path.join(ROOT, "data", "us-landscape-2026.json"), os.path.join(SITE, "us", "map-2026.json")])
     log(f"SITE   {sha(os.path.join(SITE, 'us', 'map-2026.json'))}  site/us/map-2026.json  (where each node of the United States graph settles)")
+    # what each committee and subcommittee does, and what the committee roles mean: the official words (data/us-explainers-2026.json) and our two
+    # lines for each (ext/cx-us-text.jsx), fetched only when a committee, a subcommittee, a role's official words, or a text view first needs them
+    keep_row = ("kind", "parent", "chamber", "name", "congress", "text", "note", "checked", "cite", "url", "pulled", "rule_note")
+    ex_site = {"congress": ex["congress"], "updated": ex["updated"],
+               "committees": {k: {f: r[f] for f in keep_row if f in r} for k, r in ex["committees"].items()},
+               "roles": ex["roles"], "process": ex["process"], "sources": {k: {"name": v["name"], "url": v["url"]} for k, v in ex["sources"].items()},
+               "lines": us_lines}
+    ex_body = json.dumps(ex_site, ensure_ascii=False, separators=(",", ":")) + "\n"
+    write(os.path.join(SITE, "us", "explainers-2026.json"), ex_body)
+    log(f"SITE   {sha(ex_body.encode())}  site/us/explainers-2026.json  (official words and our two lines for {len(us_lines)} committees and subcommittees)")
     mp = os.path.join(ROOT, "data", "meetings-2026.json")  # At City Hall: the Clerk's meeting record, fetched lazily on the hosted site
     if os.path.exists(mp):
         os.makedirs(os.path.join(SITE, "meetings"), exist_ok=True)
@@ -1150,5 +1219,7 @@ if __name__ == "__main__":
         mark_levies_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-office-reviewed":
         mark_office_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-us-text-reviewed":
+        mark_us_text_reviewed(" ".join(sys.argv[2:]))
     else:
         main()
