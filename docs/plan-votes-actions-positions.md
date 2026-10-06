@@ -1,6 +1,6 @@
 # Plan: votes, actions, and positions on every record, for the city, wards, county, and courts
 
-Status: proposed, nothing built. Written 2026-10-06 for Brent and the team. It builds on what the city record already does (the "Votes & actions" timeline on a legislation record, the City Record roll calls) and extends the same idea to the county and the courts, with the same rules. It sits beside `docs/plan-profiles.md` (people pages), `docs/plan-city-hall-page.md` (meetings) and `docs/plan-explain-committees-and-seats.md` (what bodies and roles are).
+Status: phases 1 to 3 built on Oct 6, 2026 (on a branch, not released); see the Status section at the end. Written 2026-10-06 for Brent and the team. It builds on what the city record already does (the "Votes & actions" timeline on a legislation record, the City Record roll calls) and extends the same idea to the county and the courts, with the same rules. It sits beside `docs/plan-profiles.md` (people pages), `docs/plan-city-hall-page.md` (meetings) and `docs/plan-explain-committees-and-seats.md` (what bodies and roles are).
 
 ## The goal in one paragraph
 
@@ -101,3 +101,60 @@ A person's page (Councilmember, County Councilmember, County Executive, Mayor, j
 5. **Ward view:** best practice, chosen by me: the ward's Council member's own actions and votes, plus city records that name the ward (with the matching word shown). Nothing about the viewer's ward is inferred; a resident chooses a ward on the device.
 6. **Order:** city complete, then people and wards, then county, then official positions, then courts.
 7. **Reviewer:** Brent. He reads the plain sentences and any stated positions against their sources and runs the review commands himself. Until he does, everything ships with the "A person has not reviewed this" notice.
+
+## Status (Oct 6, 2026: phases 1 to 3 built, on a branch, not released)
+
+**Phase 1, inventory and probes.** `docs/source-notes-votes.md` holds the city's numbers and why the gap was there, what Legistar's own endpoints
+return (with an example), the committee and Mayor's actions the record has, and a read-only probe of the Cuyahoga County Council (legislation and
+minutes), the County Executive, the Eighth District Court of Appeals, the Supreme Court of Ohio, and the federal Northern District of Ohio and
+Sixth Circuit, each with its address, the day read, what is machine-readable, the terms found, completeness, and risks. Nine sources are registered
+in `scripts/us_sources.py` as `review_required` (Brent confirms terms): `city_record_actions`, `council_legistar_votes`, `county_council_legislation`,
+`county_council_minutes`, `county_executive_actions`, `ohio_8th_district_appeals_opinions`, `ohio_supreme_court_opinions`, `federal_ndohio_opinions`,
+`federal_6th_circuit_opinions`. Congress.gov still answers scripts with a 403 challenge page.
+
+**Coverage of the city's member-by-member votes.** Before: 417 of 451 passed 2026 files had names; 34 did not. After: **451 of 451**.
+- 33 files passed on Sept. 28, 2026: their roll calls are in the City Record of Oct. 2, 2026, which every nightly run since Oct 2 refused because
+  file 1044-2026 prints a "Recusal" list the parser did not know. The parser now reads it (stored as `recused`, its printed count checked, never a no).
+- 4-2026, the Rules of Order: the City Record prints its vote as a sentence; the names come from Council's Legistar record (`legistar_votes`; 14 Yea,
+  1 Nay, the same as the sentence), and the record says so.
+- Passed files with no names: none today. If one appears, `no_names` in `data/votes-2026.json` gives its reason (`issue_not_out`, `legistar_held`, or
+  `not_printed`) and the record says it in a sentence; the build and `refresh.py --check` fail if a passed file has neither names nor a reason.
+- Legistar holds member votes for 164 Council agenda items at 11 meetings (Jan. 5 to May 18); 156 match the City Record exactly, 5 do not (all
+  May 18, Joseph T. Jones: Yea in Legistar, Absent in the City Record, whose printed tally agrees with Absent). The City Record's vote is shown and the
+  record names the difference. Committee votes by name exist in no source read.
+
+**Phase 2, city complete.** `scripts/fetch_cityrecord.py` (parser 2, run by `python scripts/refresh.py --votes` and by the nightly refresh) reads
+40 City Record issues into `data/votes-2026.json`: 467 roll calls on passage or adoption, 11 other votes, and, new, 300 referrals ("Referred to the
+Directors of ...; Committees on ..."), 260 committee and department approvals printed before a final vote, and 429 effective dates ("Passed ...
+Effective ..."), each tied to its entry and meeting with the issue as its source; 4 lines that could not be tied to one file are held and listed.
+A second run of the fetcher wrote the identical file. `scripts/council_record.py` builds the dated actions for 1,165 files (the Clerk's agendas and
+outcomes, the action histories, and the City Record's lines; 210 KB, about 11 KB compressed) into `site/council/record-2026.json`, loaded only when
+a record or a list first needs it (in the offline file, a block read only then). Mayor's actions: neither record prints a signature or a veto; the
+"Took effect" row gives the City Record's effective date and says it does not say who signed. One shared record component (`ext/cx-record.jsx`):
+what it is; Votes & actions, oldest first, each row with its date, what happened (our plain words and the record's own word), who acted (sponsors and
+members linked to their profiles), and its source with the day pulled, a vote row with every member under the printed word and a count line; Positions,
+"In the record" (sponsors with "Sponsorship is not a vote", the record's own title as its stated purpose, and the reports printed before the final
+vote) and "Stated outside the record" (built, hidden while `CX_STATED` is empty); and where to read it. It is the phone's record sheet (`CxmLeg`,
+`CxmLegHistory`), the Explore record's Votes & actions and Positions tabs, the desktop record page (`?panel=leg&file=906-2026`, new; the phone opens
+the same link), and the map drawer's tabs for the six city files on the map. Jump to finds a file by its number. A ceremonial resolution is one
+line (date, title, outcome, and the vote count line if any), on its own sheet or page and in every list. Search and At City Hall open records as before.
+
+**Phase 3, people and wards.** Every profile (15 council members and the Mayor, desktop page and phone sheet) has Votes & actions: a dated list,
+newest first, of sponsorships ("Sponsorship: the first name on the file", "joined as a co-sponsor", "signed for a city department"), votes in the
+record's word (Yea, Nay, Absent, Recusal) with the question and the count line, and for the Mayor what the administration sent, with the plain
+statement that the record prints no signature or veto dates. The list is built only when opened, 20 rows at a time. Council's record has no policy
+areas, so it filters by kind of record, type of legislation, and year, and says so; counts are per kind and type only, never a total, never on
+"All" or the year, and nothing is ordered by a count. The ward view (My place on the phone, My local context on a computer) shows, for the ward
+chosen on the device, the ward member's list and the city records that name the ward, using At City Hall's matcher ("Names Ward 7", "Ward 7 in the
+ordinance text", "Address in Ward 7: ..."); with no ward it says what to set. The ward never goes into the address, storage, a cookie, or a request.
+
+**Hidden or waiting.**
+- The plain words between the VOTES-TEXT markers (`ext/cx-votes-text.jsx`): Brent reads them against the record and runs
+  `python build.py --mark-votes-text-reviewed "Name"`. Until then every record and list says a person has not reviewed them.
+- Stated positions: none; the fold appears when a named person adds and reviews an entry.
+- The terms of every source in `docs/source-notes-votes.md`; which record is right for the five May 18 votes; a Spanish speaker for the new Spanish
+  (`i18n/review-notes.md`).
+- WHEREAS clauses are captured for only 23 files (`data/reasons-2026.json`) and are not shown; the record's title is its stated purpose here.
+- County (phase 4), positions entry and review (phase 5), and courts (phase 6) are not started; the probes say what each source allows.
+
+**Checks.** New `votes-actions` browser check (a record's names under each printed word and a count line that adds up, a file with no names says why and shows no nay, sponsorship rows say sponsorship, no overall number or ranking word in a list, the ward view with and without a ward and the ward in no address, storage, or request, ceremonial lines, lazy loading, Jump to, Spanish, light in both styles), `scripts/test_votes_actions.py` (17 tests), and 15 new tests in `scripts/test_cityrecord.py`. On the final build all 51 browser checks, the light passes in both styles, the Spanish layout passes, every unit test, and `refresh.py --check` pass. Two clean builds gave the same single file, `b0e8e7131d8a2afda377d5ba198df31bcc2e268777d01cb3ef6a4fed4ba4b1ae`, and `site/index.html` `fdbe8a004f376f6017a3dd2175e423ed5b109db7859b832dc5582c7c4435ce31`.

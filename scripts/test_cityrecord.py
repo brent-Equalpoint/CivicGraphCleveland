@@ -78,6 +78,119 @@ class Parse(unittest.TestCase):
         votes, _, _ = run(entry("16-2026", result="Laid on the table. Yeas 5. Nays 0."))
         self.assertEqual(votes[0]["question"], "Laid on the table")
 
+    def test_a_recusal_is_its_own_word_and_counts_against_its_printed_tally(self):
+        # the shape of file 1044-2026 in the Oct. 2, 2026 issue: "Passed. Yeas 13. Nays 0. Recusal 1." and a "Recusal:" list
+        names = "Voting Yea: Ash, Birch, Cedar.\nVoting Nay: None.\nRecusal: Dogwood.\nAbsent: Elm.\n"
+        votes, problems, _ = run(entry("17-2026", result="Read third time in full. Passed. Yeas 3. Nays 0. Recusal 1.", names=names))
+        self.assertEqual(problems, [])
+        self.assertEqual(votes[0]["members"]["Dogwood Dogwoodson"], "recused")
+        self.assertEqual(votes[0]["tally"], {"yea": 3, "nay": 0, "recused": 1})
+
+    def test_a_recusal_list_that_does_not_match_its_tally_is_refused(self):
+        names = "Voting Yea: Ash, Birch, Cedar.\nVoting Nay: None.\nRecusal: Dogwood, Elm.\nAbsent: None.\n"
+        votes, problems, _ = run(entry("18-2026", result="Read third time in full. Passed. Yeas 3. Nays 0. Recusal 1.", names=names))
+        self.assertEqual(votes, [])
+        self.assertIn("do not match the tally", problems[0])
+        names = "Voting Yea: Ash, Birch, Cedar.\nVoting Nay: None.\nRecusal: Dogwood.\nAbsent: Elm.\n"   # a list with no printed count is refused too
+        votes, problems, _ = run(entry("19-2026", result="Read third time in full. Passed. Yeas 3. Nays 0.", names=names))
+        self.assertEqual(votes, [])
+
+
+ACTS_HEAD = HEAD
+
+
+class Actions(unittest.TestCase):
+    """What else an entry prints: the referral at a first reading, the approvals before a final vote, and the effective date."""
+
+    def test_a_referral_is_tied_to_its_entry_and_meeting_and_kept_as_printed(self):
+        t = ACTS_HEAD + ("Ordinance No. 50-2026\nBy Council Member: Ash\n\nAn emergency ordinance about something.\n\n"
+                         "Referred to the Directors of Public Safety; Finance; and Law; Committees\non Safety; and Finance, Diversity, Equity and Inclusion.\n\n")
+        a = cr.parse_actions(t)
+        self.assertEqual(a["held"], [])
+        self.assertEqual(a["referrals"], [{"file": "50-2026", "date": "2026-09-21", "text": "Referred to the Directors of Public Safety; Finance; and Law; Committees on Safety; and Finance, Diversity, Equity and Inclusion."}])
+        self.assertEqual(cr.committees_in(a["referrals"][0]["text"]), ["Safety", "Finance, Diversity, Equity and Inclusion"])
+
+    def test_a_sentence_across_a_page_break(self):
+        t = ACTS_HEAD + ("Ordinance No. 51-2026\nBy Council Member: Ash\n\nText.\n\nApproved by the Directors of Finance; and Law; Committee on Finance,\n\n"
+                         "Second Reading Emergency Ordinances Passed  Ord. No. 51-2026\nOfficial Proceedings � City Council\nSeptember 25, 2026  The City Record   12\n\n"
+                         "Diversity, Equity and Inclusion.\n\n")
+        a = cr.parse_actions(t)
+        self.assertEqual(a["approvals"][0]["text"], "Approved by the Directors of Finance; and Law; Committee on Finance, Diversity, Equity and Inclusion.")
+
+    def test_passed_and_effective_dates_across_a_page_break(self):
+        t = ACTS_HEAD + ("Ordinance No. 52-2026\nBy Council Members: Ash and Birch\n\nSection 2. That this ordinance ... Ordinance No. 812-2024 relating to gifts, and\n"
+                         "Ordinance No. 812-2024 relating to acceptance of gifts\nmore text.\n\nPassed September 21, 2026.\n\n"
+                         "Adopted Resolutions and Passed Ordinances                   Ord. No. 52-2026\nSeptember 25, 2026   The City Record  184\n\nEffective September 23, 2026.\n")
+        a = cr.parse_actions(t)
+        self.assertEqual((a["effective"], a["held"]), ([{"file": "52-2026", "passed": "2026-09-21", "effective": "2026-09-23"}], []))
+
+    def test_a_line_outside_any_entry_is_held_not_guessed(self):
+        t = ACTS_HEAD + "File No. 53-2026\nA communication. Received.\n\nReferred to the Directors of Law.\n\nPassed September 21, 2026.\nEffective September 23, 2026.\n"
+        a = cr.parse_actions(t)
+        self.assertEqual((a["referrals"], a["effective"]), ([], []))
+        self.assertEqual(len(a["held"]), 3)
+
+    def test_an_effective_date_whose_passed_date_disagrees_with_councils_record_is_held(self):
+        issue = {"url": "https://example.invalid/r.pdf", "label": "Record - Sept. 25, 2026", "acts": {"effective": [{"file": "52-2026", "passed": "2026-09-21", "effective": "2026-09-23"}]}}
+        refs, apps, eff, held = cr.tie_actions([issue], {"52-2026": {"passed": "2026-09-14"}})
+        self.assertEqual(eff, {})
+        self.assertIn("Council's record says 2026-09-14", held[0])
+        refs, apps, eff, held = cr.tie_actions([issue], {"52-2026": {"passed": "2026-09-21"}})
+        self.assertEqual(eff["52-2026"]["effective"], "2026-09-23")
+        self.assertEqual(eff["52-2026"]["anchor"]["url"], "https://example.invalid/r.pdf")
+
+    def test_a_veto_line_is_kept_for_a_person_and_nothing_else_is_made_of_it(self):
+        a = cr.parse_actions(ACTS_HEAD + "Action on Mayor's Veto. When the Mayor refuses to sign an ordinance\n")
+        self.assertEqual(a["veto"], ["Action on Mayor's Veto. When the Mayor refuses to sign an ordinance"])
+        self.assertEqual((a["referrals"], a["effective"]), ([], []))
+
+
+class Legistar(unittest.TestCase):
+    """Council's Legistar record as a second source: it fills a roll call only where the City Record prints no names, and a difference
+    between the two records is listed, never settled by hand."""
+    people = {"people": [{"person_id": i, "name": n, "title": "Council Member"} for i, n in enumerate(ROS.values(), start=1)]}
+
+    def snap(self, votes=None):
+        s = cr.assemble([snapshot_issue(votes or [])])
+        return s
+
+    def item(self, f, d, words, action="adopted"):
+        return [99, f, d, action, {str(i): w for i, w in enumerate(words, start=1)}]
+
+    def test_fills_a_file_the_city_record_prints_no_names_for(self):
+        s = cr.add_legistar(self.snap(), [self.item("4-2026", "2026-01-05", ["Yea", "Yea", "Yea", "Yea", "Nay"])], {"4-2026": {"passed": "2026-01-05", "url": "https://x.invalid/4"}}, self.people, "t")
+        v = s["legistar_votes"]["4-2026"]
+        self.assertEqual((v["question"], v["tally"], v["members"]["Elm Elmson"]), ("Adoption", {"yea": 4, "nay": 1}, "nay"))
+        self.assertEqual(v["anchor"]["url"], "https://x.invalid/4")
+
+    def test_a_blank_word_or_a_missing_member_is_held(self):
+        s = cr.add_legistar(self.snap(), [self.item("4-2026", "2026-01-05", ["Yea", None, "Yea", "Yea", "Yea"])], {"4-2026": {"passed": "2026-01-05", "url": "u"}}, self.people, "t")
+        self.assertEqual(s["legistar_votes"], {})
+        self.assertIn("no recorded word", s["legistar"]["held"][0])
+        s = cr.add_legistar(self.snap(), [self.item("4-2026", "2026-01-05", ["Yea", "Yea", "Yea", "Yea"])], {"4-2026": {"passed": "2026-01-05", "url": "u"}}, self.people, "t")
+        self.assertEqual(s["legistar_votes"], {})
+
+    def test_not_on_the_files_passed_date_is_held(self):
+        s = cr.add_legistar(self.snap(), [self.item("4-2026", "2026-01-05", ["Yea"] * 5)], {"4-2026": {"passed": "2026-02-02", "url": "u"}}, self.people, "t")
+        self.assertEqual(s["legistar_votes"], {})
+        self.assertIn("2026-02-02", s["legistar"]["held"][0])
+
+    def test_where_both_records_have_a_vote_the_city_record_is_shown_and_a_difference_is_listed(self):
+        s = cr.add_legistar(self.snap([v("1-2026", "2026-09-21")]), [self.item("1-2026", "2026-09-21", ["Yea", "Yea", "Yea", "Yea", "Nay"], "approved")], {"1-2026": {"passed": "2026-09-21", "url": "u"}}, self.people, "t")
+        self.assertEqual(s["legistar_votes"], {})
+        self.assertEqual(s["differs"], [{"file": "1-2026", "date": "2026-09-21", "question": "Passage", "members": {"Elm Elmson": {"city_record": "yea", "legistar": "nay"}}}])
+
+    def test_a_passed_file_with_no_named_vote_says_why(self):
+        matters = {"1-2026": {"status": "Passed", "passed": "2026-09-21", "url": "u"}, "2-2026": {"status": "Passed", "passed": "2026-09-28", "url": "u"},
+                   "3-2026": {"status": "Passed", "passed": "2026-09-14", "url": "u"}, "5-2026": {"status": "Filed", "url": "u"}}
+        s = cr.add_legistar(self.snap([v("1-2026", "2026-09-21")]), [], matters, self.people, "t")
+        s = cr.add_no_names(s, matters)
+        self.assertEqual(sorted(s["no_names"]), ["2-2026", "3-2026"])   # a filed item is not a passed file, and 1-2026 has its roll call
+        self.assertEqual((s["no_names"]["2-2026"]["reason"], s["no_names"]["2-2026"]["latest_meeting"]), ("issue_not_out", "2026-09-21"))
+        self.assertEqual(s["no_names"]["3-2026"]["reason"], "not_printed")
+        del s["no_names"]["3-2026"]
+        self.assertTrue(any("no named vote and no reason" in b for b in cr.check(s, matters)))
+
 
 class Refuse(unittest.TestCase):
     def test_names_that_do_not_match_the_tally(self):
@@ -223,12 +336,28 @@ class StoredData(unittest.TestCase):
         ros = set(cr.roster().values())
         for f, x in list(self.d["votes"].items()) + [(o["file"], o) for o in self.d["other"]]:
             self.assertEqual(set(x["members"]), ros, f)
-            self.assertTrue(set(x["members"].values()) <= {"yea", "nay", "absent"}, f)
+            self.assertTrue(set(x["members"].values()) <= {"yea", "nay", "absent", "recused"}, f)
 
     def test_every_vote_points_to_a_city_record_issue(self):
         for f, x in self.d["votes"].items():
             self.assertTrue(x["anchor"]["url"].startswith("https://www.clevelandcitycouncil.gov/"), f)
             self.assertIn(f, x["anchor"]["locator"])
+
+    def test_a_legistar_vote_only_where_the_city_record_has_none(self):
+        for f, x in self.d.get("legistar_votes", {}).items():
+            self.assertNotIn(f, self.d["votes"], f)
+            self.assertTrue(x["anchor"]["url"].startswith("https://cityofcleveland.legistar.com/"), f)
+
+    def test_every_action_has_a_date_text_and_issue(self):
+        for kind in ("referrals", "approvals"):
+            for f, rows in self.d.get(kind, {}).items():
+                for r in rows:
+                    self.assertRegex(r["date"], r"^2026-\d\d-\d\d$", f)
+                    self.assertTrue(r["text"].endswith("."), f)
+                    self.assertTrue(r["anchor"]["url"].startswith("https://www.clevelandcitycouncil.gov/"), f)
+        for f, r in self.d.get("effective", {}).items():
+            self.assertRegex(r["effective"], r"^20\d\d-\d\d-\d\d$", f)
+            self.assertTrue(r["anchor"]["url"].startswith("https://www.clevelandcitycouncil.gov/"), f)
 
 
 if __name__ == "__main__":

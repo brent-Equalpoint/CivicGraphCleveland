@@ -368,7 +368,7 @@ function CxmRecord({ roomId, nodeId }) {
       )}
       {tab === `positions` && (
         <div className="cxm-fade">
-          <p className="cxm-mut">No sourced position statements are attached here yet. Party, sponsorship, and map location do not establish a person's beliefs.</p>
+          {m ? <CX_RecPositions m={m} onPerson={openSeat} head="h3" /> : <p className="cxm-mut">No sourced position statements are attached here yet. Party, sponsorship, and map location do not establish a person's beliefs.</p>}
           {seatId && <button type="button" className="cxm-btn2" onClick={() => openSeat(seatId)}>See what they sponsored in 2026</button>}
         </div>
       )}

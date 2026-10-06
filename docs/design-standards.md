@@ -113,7 +113,7 @@ reachable with a mouse alone, Jump to and My pages, the three main tabs and the 
 `spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
 /privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,
-hover card, and Index say the same first line; the review notice and the official words with their source and date; a role note closes four ways).
+hover card, and Index say the same first line; the review notice and the official words with their source and date; a role note closes four ways), `votes-actions` (a city record's names under each printed word and a count line that adds up, a source and a pulled date on every row, a file with no names says why and shows no nay, sponsorship rows say sponsorship, a person's list has no overall number or ranking word, the ward view with and without a ward chosen and the ward in no address, storage, or request, a ceremonial resolution as one short line, the record data loaded only when needed, Spanish, light in both styles).
 
 ## 8. Gaps to close next
 

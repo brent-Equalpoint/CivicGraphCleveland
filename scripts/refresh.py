@@ -7,6 +7,9 @@
   python scripts/refresh.py --explainers rebuild data/us-explainers-2026.json (what each committee and subcommittee handles, in its own official
                                          words, and what the committee roles mean; scripts/fetch_explainers.py). The nightly run also does this
                                          on Mondays, and on any night the committees in the federal record no longer match the file.
+  python scripts/refresh.py --votes      only the Council roll calls and the actions the City Record prints (scripts/fetch_cityrecord.py),
+                                         with the same safety checks; the old file stays if anything does not add up. The nightly run
+                                         does this as one of its steps.
 
 Steps:
   1. keep a copy of today's data/*.json
@@ -97,6 +100,19 @@ def main():
         bad = check(None, DATA)
         print("\n".join(bad) or "data/ passes the safety checks")
         sys.exit(1 if bad else 0)
+    if "--votes" in sys.argv:   # Council roll calls and the City Record's actions only; fetch_cityrecord writes nothing unless its own check passes
+        import fetch_cityrecord
+        keep = tempfile.mkdtemp(prefix="civic-prev-")
+        for f in FILES:
+            if os.path.exists(os.path.join(DATA, f)):
+                shutil.copy(os.path.join(DATA, f), keep)
+        fetch_cityrecord.main()
+        bad = check(keep, DATA)
+        if bad:
+            shutil.copy(os.path.join(keep, "votes-2026.json"), DATA)
+            sys.exit("REFRESH STOPPED, previous votes kept: " + "; ".join(bad))
+        shutil.rmtree(keep, ignore_errors=True)
+        return
     keep = tempfile.mkdtemp(prefix="civic-prev-")
     for f in FILES:
         if os.path.exists(os.path.join(DATA, f)):

@@ -83,6 +83,9 @@ function CxmPlace() {
         </section>
       )}
       <div className="cxm-drops">
+        <CxmPlaceSec id="wardrec" open={open} setOpen={setOpen} title="Your ward's record" sum={home?.ward ? `Ward ${home.ward}: votes, actions, and records that name it` : `Choose your ward to see it`}>
+          <CX_WardRecord ward={home?.ward || null} onFile={(f) => openSheet(`leg`, { file: f })} onPerson={openSeat} onSetWard={() => openSheet(`home`)} head="h2" />
+        </CxmPlaceSec>
         <CxmPlaceSec id="rep" open={open} setOpen={setOpen} title={`Who represents ${hood}`} sum={now0 ? `${cxPlMember(`wards2026`, now0.ward)}, Ward ${now0.ward}${D.now.length > 1 ? ` and ${D.now.length - 1} more` : ``}` : `No ward data`}>
           <h4 className="cxm-h4" aria-level="2">Now</h4>
           {D.now.map((r) => (

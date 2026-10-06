@@ -183,6 +183,13 @@ function cxmFromUrl() {
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
     ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
     privacy: [`today`, null, null, `privacy`] };
+  // a record link (?panel=leg&file=906-2026) opens that file's record over Today; the address names the file, never the viewer
+  if (panel === `leg`) {
+    const f = q.get(`file`);
+    if (f && /^\d{1,5}-\d{4}$/.test(f) && cxmMatter(f)) return { ...out, sheet: { type: `leg`, file: f } };
+    CXM_NOTICE.v = `We could not find that record, so here is the start.`;
+    return out;
+  }
   // a profile link (?panel=us&who=bernie-moreno) opens the map, where the profile page lives
   if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null }; }
   if (r && r.id !== `overview`) {
@@ -205,6 +212,7 @@ function cxmToUrl(tab, room, top, peopleMode, page) {
   else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
   else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
   else if (page === `privacy`) p.set(`panel`, `privacy`);
+  else if (top && top.type === `leg` && /^\d{1,5}-\d{4}$/.test(top.file || ``)) { p.set(`panel`, `leg`); p.set(`file`, top.file); }   // a record names its file, never the viewer
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); if (who && /^[a-z0-9:-]{1,120}$/i.test(who)) p.set(`who`, who); }
@@ -691,7 +699,7 @@ function cxStorageOk() {
   try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
 }
 /* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
-const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`, `levies`, `privacy`];
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`, `levies`, `privacy`, `leg`];
 function cxLinkProblem() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }

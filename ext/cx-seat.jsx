@@ -211,6 +211,11 @@ function CX_SeatProfile({ seatId }) {
           : <CX_VotesSection person={person} first={name.split(` `)[0]} />}
       </section>
 
+      <section aria-labelledby={sec(`acts`)}>
+        <h2 id={sec(`acts`)}>Votes & actions</h2>
+        <SpActions seatId={seatId} />
+      </section>
+
       {!isMayor && (
         <section aria-labelledby={sec(`ward`)}>
           <h2 id={sec(`ward`)}>Ward {seat.ward} and its neighborhoods</h2>
@@ -239,6 +244,22 @@ function CX_SeatProfile({ seatId }) {
         <p className="sp-actions"><button type="button" onClick={() => globalThis.print()}>Print this profile</button></p>
       </section>
     </article>
+  );
+}
+
+/* Votes & actions on a profile (ext/cx-record.jsx): built only when the person opens it, so a profile opens as fast as before. On the phone a file
+   opens in the record sheet; on a computer, on the record page. */
+function SpActions({ seatId }) {
+  const cxm = useCxm();
+  const [open, setOpen] = u.useState(!1);
+  u.useEffect(() => setOpen(!1), [seatId]);
+  const onFile = cxm ? (f) => cxm.openSheet(`leg`, { file: f }) : cxOpenLeg;
+  return (
+    <>
+      <p>{seatId === `mayor` ? CX_VT.personMayor : CX_VT.personLead}</p>
+      <p className="sp-actions"><button type="button" aria-expanded={open} onClick={() => setOpen(!open)}>{open ? `Hide the list` : `Show the list`}</button></p>
+      {open && <CX_PersonRecord seatId={seatId} onFile={onFile} title={!1} lead={!1} />}
+    </>
   );
 }
 

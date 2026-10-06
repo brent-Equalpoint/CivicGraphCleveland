@@ -38,10 +38,11 @@ const RULES = [
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', ...SWEEP]],
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
+  [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', ...SWEEP]],   // votes, actions, and positions
   [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
-  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'us-graph', 'screen-states', 'update-wins', 'perf-budget']],
+  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'votes-actions', 'us-graph', 'screen-states', 'update-wins', 'perf-budget']],
   [(f) => f.startsWith('design/'), ['design-look', 'color-vision']],
   [(f) => f.startsWith('scripts/checks/') || f.startsWith('scripts/design/'), ALL],
   [(f) => f.startsWith('scripts/') || f.startsWith('.github/') || f === 'vercel.json', []],   // unit tests and workflows, not the browser
