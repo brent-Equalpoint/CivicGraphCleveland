@@ -820,6 +820,16 @@ const CHECKS = {
     expect(p.csp.length >= 2, 'the browser did not report the attempts it blocked, so the policy may not be active');
     p.csp = []; p.outside = [];   // those attempts were on purpose
     await done(p);
+    // how you line up, step 2 (through the test hook): with answers given, a request to another site is still blocked, and no storage entry or
+    // cookie names the answers (the alignment check compares storage, the cookie, the address, and every request before and after answering)
+    const a = await open('/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW });
+    await a.evaluate(AXE_AFTER.alignAnswered); await wait(300);
+    const r2 = await a.evaluate(async () => ({ answered: document.querySelectorAll('.ual-answers input:checked').length, sent: await fetch('https://example.com/?a=1', { mode: 'no-cors' }).then(() => 'sent', () => 'blocked'), stored: JSON.stringify(Object.entries(localStorage)) + JSON.stringify(Object.entries(sessionStorage)) + document.cookie }));
+    expect(r2.answered >= 3, `the step 2 questions were not answered (${r2.answered})`);
+    expect(r2.sent === 'blocked', 'with answers given, a request to another site was not blocked');
+    expect(!/align|answer|ual-|"(yes|no|depends|learning)"/i.test(r2.stored), `something about the answers is stored: ${r2.stored.slice(0, 200)}`);
+    a.csp = []; a.outside = [];   // the attempt was on purpose
+    await done(a);
   },
   async 'register-story'() {
     // "Register to vote": a story on the Ballot tab and first in the Today row in the week of the deadline. It links to the official sites, says the app cannot register anyone,
@@ -1278,7 +1288,7 @@ const CHECKS = {
     expect(await has(p, '.usm canvas.usm-canvas'), 'the United States page has no map canvas');
     expect(!(await has(p, '.us-tabs')) && !(await has(p, '.us-canvas')), 'the old Sky and its tabs are still on the page');
     expect(/United States/.test((await txt(p, '.atlas-sidebar [aria-current="page"]')) || ''), 'United States is not the open page in the desktop strip');
-    expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic`);
+    expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic Compare members', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic, Compare members`);
     expect(((await txt(p, '.usm-pills')) || '').replace(/\s+/g, ' ').trim() === 'Sky Index Linked Tree', 'the views are not Sky, Index, Linked, Tree');
     await clickText(p, 'Show', '.usm-show-btn');
     expect(/Preview/.test((await txt(p, '.usm-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.usm-preview')) || ''), 'the map does not say its source terms are unconfirmed');
@@ -1327,12 +1337,10 @@ const CHECKS = {
     expect(/Not voting is not a no/.test(vt) && /The official record/.test(vt) && /Yea \d+, Nay \d+, Present \d+, Not voting \d+/.test(vt), 'the votes section lacks the not-a-no note, the official record link, or plain counts');
     expect(!/%|percent|score|rank|agrees? with/i.test(vt.replace(/Congressional Research Service/g, '')), 'a percentage, score, or ranking appeared in the votes');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People with votes: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
-    await p.evaluate(() => { const b = [...document.querySelectorAll('.us-areas input')]; b[1].click(); b[2].click(); }); await wait(500);
-    expect((await count(p, '.us-area-table tbody tr')) === 2 && (await count(p, '.us-area-table thead th')) === 4, 'two chosen areas should give two rows and a column for each of the three members');
-    const at = ((await txt(p, '.us-area-table')) || '').replace(/Congressional Research Service/g, '');
-    expect(/Votes that decided something: \d+/.test(at) && /Not voting is not a no/.test(at) && !/%|percent|score|rank|match|grade|agree/i.test(at), 'the area table lacks plain counts or the not-a-no note, or grades someone');
+    // the policy-area counts for these members are on Compare members (the alignment check reads them against the record); People leads there
+    await clickText(p, 'Compare your members by policy area', '.us-mine button'); await wait(700);
+    expect((await txt(p, '.usm-menu li button.on')) === 'Compare members' && (await count(p, '.ual-table tbody tr, .ual-pick')) >= 1, 'People does not lead to Compare members');
     expect(!/area|Energy|Health/i.test(await p.evaluate(() => location.href)), 'a chosen policy area reached the address');
-    await p.evaluate(() => [...document.querySelectorAll('.us-areas input:checked')].forEach((b) => b.click())); await wait(200);
     // Votes by topic, from the left menu
     await clickText(p, 'Votes by topic', '.usm-menu li button'); await wait(500);
     const tops = await p.$$eval('.us-topics select option', (os) => os.map((o) => o.value).filter(Boolean)); expect(tops.length > 15, `the topic list has only ${tops.length} topics`);
@@ -2051,6 +2059,185 @@ const CHECKS = {
     expect(!small.length, `controls under 44 px: ${small.slice(0, 4)}`);
     await done(m);
   },
+  /* How you line up (ext/cx-align.jsx, docs/plan-alignment.md). Step 1: the counts in Compare members, a member's sheet, and their profile equal
+     the record for real members and areas; the table is ordered by name or by state, never by a count; the policy areas never reach the address,
+     storage, a cookie, or a request. Step 2 is hidden without the test hook (no question, no answer button, no count, and the question file is
+     never fetched, on either layout); with the hook (window.__cxAlignPreview, set only by this check) the questions show with the review notice
+     and the sample size, the per-area lines equal the record (Present and Not voting are no vote on this, a member missing from the roll is shown
+     and never counted as a no, It depends and Still learning are left out, a senator is compared only on Senate votes), the answers never reach
+     the address, storage, a cookie, or a request, the order does not change when you answer, and the map is the same before and after (every
+     node's place, size, color, and shape, and the drawn picture). No forbidden word appears, in English or Spanish. */
+  async alignment() {
+    const R = alignRecord();
+    const html = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8');
+    expect(!R.Q.questions.some((q) => html.includes(q.q) || html.includes(q.does)), 'the hosted page carries the question text; it should load only when step 2 opens');
+    const blog = fs.existsSync(path.join(ROOT, 'dist', 'build-log.txt')) ? fs.readFileSync(path.join(ROOT, 'dist', 'build-log.txt'), 'utf8') : '';
+    const reviewed = /alignment questions: reviewed by .+ step 2 shown/.test(blog);
+    expect(reviewed === fs.existsSync(path.join(ROOT, 'data', 'alignment-reviewed.json')) || !reviewed, 'the build says the questions were reviewed, but no review is recorded in data/alignment-reviewed.json');
+    if (reviewed) console.log('    note: the question set is marked reviewed, so step 2 is on for residents; the hidden-without-the-hook part is skipped');
+    // ---- step 1, desktop, no hook
+    const p = await open('/?panel=us#desktop', { settle: 1800, pre: ALIGN_STILL });
+    await mapReady(p);
+    const before = await alignPrivate(p);
+    expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic Compare members', `the left menu is "${await txt(p, '.usm-menu ul')}"`);
+    await clickText(p, 'Compare members', '.usm-menu li button'); await wait(900);
+    expect((await txt(p, '.usm-menu li button.on')) === 'Compare members', 'Compare members is not marked in the left menu');
+    await alignPick(p, ['Energy', 'Crime and Law Enforcement']);
+    await alignPlace(p, 'OH', '11');
+    let rows = await alignRows(p);
+    expect(rows.length === 3, `Ohio's district 11 should list 2 senators and 1 representative, not ${rows.length}`);
+    for (const r of rows) for (const area of ['Energy', 'Crime and Law Enforcement']) {
+      const want = R.step1Lines(r.id, area), got = (r.cells[area] || {}).c1 || [];
+      expect(JSON.stringify(got) === JSON.stringify(want), `${r.name}, ${area}: the table says ${JSON.stringify(got)}, the record says ${JSON.stringify(want)}`);
+      expect(!(r.cells[area] || {}).c2.length, `${r.name}, ${area}: a step 2 line shows without the review or the hook`);
+    }
+    expect(JSON.stringify(rows.map((r) => r.id)) === JSON.stringify(R.order(rows.map((r) => r.id), 'name')), `the table is not by name: ${rows.map((r) => r.name)}`);
+    await clickText(p, 'By state', '.ual-seg button'); await wait(300);
+    rows = await alignRows(p);
+    expect(JSON.stringify(rows.map((r) => r.id)) === JSON.stringify(R.order(rows.map((r) => r.id), 'state')), 'the table is not by state after By state');
+    await clickText(p, 'Senate', '.ual-seg button'); await wait(500);
+    rows = await alignRows(p);
+    expect(rows.length === 25 && /^100 members/.test((await txt(p, '.ual-count')) || ''), `the Senate shows ${rows.length} rows and "${await txt(p, '.ual-count')}"`);
+    expect(JSON.stringify(rows.map((r) => r.id)) === JSON.stringify(R.order(R.chamber('senate'), 'state').slice(0, 25)), 'the Senate is not listed by state');
+    const sample = rows[3];
+    for (const area of ['Energy', 'Crime and Law Enforcement']) expect(JSON.stringify(sample.cells[area].c1) === JSON.stringify(R.step1Lines(sample.id, area)), `${sample.name}, ${area}: the table does not equal the record`);
+    await clickText(p, 'By name', '.ual-seg button'); await wait(400);
+    rows = await alignRows(p);
+    expect(JSON.stringify(rows.map((r) => r.id)) === JSON.stringify(R.order(R.chamber('senate'), 'name').slice(0, 25)), 'the Senate is not listed by name after By name');
+    { const t = (await txt(p, '.usm-text')) || ''; const h = t.match(ALIGN_FORBIDDEN); expect(!h, `Compare members says "${h && h[0]}"`); }
+    expect(reviewed || !(await alignStep2Shown(p)), 'step 2 shows on Compare members without the review or the hook');
+    // a member's sheet and profile: their counts, and still no step 2
+    await clickText(p, 'Network', '.usm-menu li button'); await wait(500); await mapReady(p);
+    await p.type('.usm-search input', 'Husted'); await wait(400); await p.click('.usm-results button'); await wait(1200);
+    const husted = R.byName('Jon Husted');
+    for (const area of ['Energy', 'Crime and Law Enforcement']) {
+      const got = await p.evaluate((a) => { const d = document.querySelector(`.usm-sheet .ual:not(.ual-mine) .ual-row[data-area="${a}"] > summary, .usm-sheet .ual:not(.ual-mine) .ual-row-flat`); return d ? [...d.querySelectorAll('span')].map((s) => s.textContent) : null; }, area);
+      expect(JSON.stringify(got) === JSON.stringify(R.step1Lines(husted.id, area)), `the sheet for Jon Husted, ${area}, says ${JSON.stringify(got)}`);
+    }
+    expect(await p.evaluate(() => { const d = document.querySelector('.usm-sheet .ual-row'); if (!d) return false; d.open = true; return [...d.querySelectorAll('.ual-links a')].some((a) => /senate\.gov/.test(a.href)) && [...d.querySelectorAll('.ual-links a')].some((a) => /congress\.gov\/bill/.test(a.href)); }), 'a row in the sheet does not link the official roll call and the bill');
+    expect(reviewed || !(await alignStep2Shown(p)), 'step 2 shows in the sheet without the review or the hook');
+    await clickText(p, 'Open profile', '.usm-acts button'); await wait(2200);
+    expect(await has(p, '.usm-prof .ual .ual-row'), 'the profile does not show the counts in the policy areas you picked');
+    expect(reviewed || !(await alignStep2Shown(p)), 'step 2 shows on the profile without the review or the hook');
+    const after = await alignPrivate(p);
+    expect(after.store === before.store && !after.cookie, `the policy areas reached storage or a cookie: ${after.store}`);
+    expect(!/Energy|Crime|area=|areas=/i.test(after.url), `a policy area reached the address: ${after.url}`);
+    expect(reviewed || !p.asked.some((u) => /align/.test(u)), 'the question file was fetched without the review or the hook');
+    await done(p);
+    // ---- the phone, no hook: People > Federal > Compare members opens the map at Compare members; the Show panel reaches it too
+    const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
+    await clickText(ph, 'Compare members by policy area', '.cxm-row'); await wait(1600);
+    expect(await has(ph, '.usm-phone .ual-compare'), 'People > Federal does not open Compare members');
+    await alignPick(ph, ['Energy']); await alignPlace(ph, 'OH', '11');
+    const cards = await alignRows(ph);
+    expect(cards.length === 3 && cards.every((r) => JSON.stringify(r.cells.Energy.c1) === JSON.stringify(R.step1Lines(r.id, 'Energy'))), 'the phone cards do not equal the record');
+    expect(reviewed || !(await alignStep2Shown(ph)), 'step 2 shows on the phone without the review or the hook');
+    expect(await ph.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone Compare members slides sideways');
+    expect((await alignSmall(ph)).length === 0, `phone Compare members: controls under 44px: ${(await alignSmall(ph)).slice(0, 4)}`);
+    expect(/Back to People/.test(await ph.evaluate(() => (document.querySelector('.usm-top .usm-back') || {}).getAttribute('aria-label') || '')), 'Compare members opened from People does not go back to People');
+    await ph.tap('.usm-top .usm-back'); await wait(700);
+    expect(await has(ph, '.cxm-folders') && !(await has(ph, '.usm')), 'the back button did not return to People');
+    expect(reviewed || !ph.asked.some((u) => /align/.test(u)), 'the phone fetched the question file without the review or the hook');
+    await done(ph);
+    // ---- step 2 with the hook, desktop
+    const s = await open('/?panel=us#desktop', { settle: 1800, pre: `${ALIGN_STILL};${ALIGN_PREVIEW}` });
+    await mapReady(s);
+    const priv0 = await alignPrivate(s);
+    // the map as it is drawn on coming back from a text page, before any answer (a first drawing and a redrawing differ in the ninth decimal of the zoom)
+    await clickText(s, 'Compare members', '.usm-menu li button'); await wait(900);
+    await clickText(s, 'Network', '.usm-menu li button'); await wait(700); await mapReady(s); await wait(400);
+    const look0 = await alignMapLook(s);
+    await clickText(s, 'Compare members', '.usm-menu li button'); await wait(900);
+    await alignPick(s, ['Energy', 'Environmental Protection']);
+    await alignChoose(s, 'A state'); await alignPlace(s, 'OH', '');
+    for (let t = 0; t < 30 && !(await has(s, '.ual-q')); t++) await wait(150);
+    const status = (await txt(s, '.ual-status')) || '';
+    expect(/A person has not reviewed these questions yet\./.test(status), `the unreviewed notice is missing: "${status}"`);
+    expect(new RegExp(`This is a sample of ${R.Q.questions.length} questions in ${new Set(R.Q.questions.map((q) => q.area)).size} policy areas, not everything Congress voted on\\.`).test(status), `the sample is not stated: "${status}"`);
+    const qs = await s.evaluate(() => [...document.querySelectorAll('.ual-q')].map((q) => ({ id: q.getAttribute('data-q'), text: q.querySelector('.ual-qq').textContent, n: q.querySelectorAll('.ual-answers input[type=radio]').length, labels: [...q.querySelectorAll('.ual-answers label')].map((l) => l.innerText.trim()), src: [...q.querySelectorAll('.ual-links a')].map((a) => a.href) })));
+    const wantQs = R.Q.questions.filter((q) => q.area === 'Energy' || q.area === 'Environmental Protection');
+    expect(qs.length === wantQs.length && qs.every((q, k) => q.id === wantQs[k].id && q.text === wantQs[k].q), `the questions shown are not the sample's for the two areas: ${qs.map((q) => q.id)}`);
+    expect(qs.every((q) => q.n === 4 && JSON.stringify(q.labels) === JSON.stringify(['Yes, I support it', 'No, I oppose it', 'It depends', 'Still learning'])), 'a question does not offer Yes, No, It depends, and Still learning');
+    expect(qs.every((q) => q.src.some((h) => /^https:\/\/www\.govinfo\.gov\//.test(h))), 'a question does not link its official source');
+    const order0 = (await alignRows(s)).map((r) => r.id);
+    const sentAfter = []; s.on('request', (r) => sentAfter.push({ url: r.url(), method: r.method(), body: r.postData() || '' }));   // everything the page asks for from here on
+    // answer: yes, no, and It depends in Energy; yes, yes, and Still learning in Environmental Protection
+    const ANS = {}; wantQs.forEach((q, k) => { ANS[q.id] = ['yes', 'no', 'depends', 'yes', 'yes', 'learning'][k]; });
+    await s.evaluate((ans) => { for (const [id, a] of Object.entries(ans)) { const i = document.querySelector(`.ual-q[data-q="${id}"] input[value="${a}"]`); if (i) i.click(); } }, ANS);
+    await wait(600);
+    const answered = await alignRows(s);
+    expect(JSON.stringify(answered.map((r) => r.id)) === JSON.stringify(order0), 'answering changed the order of the members');
+    let checked = 0, sawMissing = 0;
+    for (const r of answered) for (const area of ['Energy', 'Environmental Protection']) {
+      const want = R.step2Lines(r.id, area, ANS), got = r.cells[area].c2;
+      checked++; if (want.some((t) => /did not vote on: [1-9]/.test(t))) sawMissing++;
+      expect(JSON.stringify(got) === JSON.stringify(want), `${r.name}, ${area}: step 2 says ${JSON.stringify(got)}, the record says ${JSON.stringify(want)}`);
+    }
+    expect(checked >= 30 && sawMissing >= 2, `step 2 was checked on ${checked} cells, ${sawMissing} with a missing vote (Ohio has members who did not vote on these questions)`);
+    const rulli = answered.find((r) => r.name === 'Michael A. Rulli');   // Not voting on the Alaska reserve question, answered no: shown, never counted
+    expect(rulli && rulli.cells.Energy.c2.includes('Questions you answered that this member did not vote on: 1.'), `Rulli's Not voting in Energy is not shown as not voted on: ${rulli && JSON.stringify(rulli.cells.Energy.c2)}`);
+    { const t = (await txt(s, '.usm-text')) || ''; const h = t.match(ALIGN_FORBIDDEN); expect(!h, `step 2 says "${h && h[0]}"`); }
+    expect((await alignSmall(s)).length === 0, `desktop Compare members: controls under 44px: ${(await alignSmall(s)).slice(0, 4)}`);
+    { const bad = await axeBad(s); expect(bad.length === 0, `axe on step 2: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    // a senator: Senate votes only (Ohio's senators on the Energy questions, which all had a Senate vote)
+    const moreno = answered.find((r) => r.name === 'Bernie Moreno');
+    expect(moreno && JSON.stringify(moreno.cells.Energy.c2) === JSON.stringify(R.step2Lines(moreno.id, 'Energy', ANS)), 'a senator\'s Energy line is not from the Senate votes');
+    // the sheet and the profile: How you line up on what you picked
+    const asked1 = s.asked.length;
+    await clickText(s, 'Network', '.usm-menu li button'); await wait(700); await mapReady(s); await wait(400);
+    const look1 = await alignMapLook(s);
+    expect(JSON.parse(look0.nodes).length > 1800 && look0.png.length > 10000, 'the map was not read before answering, so the comparison would mean nothing');
+    expect(look0.nodes === look1.nodes, 'the map\'s nodes moved, grew, or changed color after answering');
+    expect(look0.png === look1.png, 'the map looks different after answering');
+    await s.type('.usm-search input', 'Beatty'); await wait(400); await s.click('.usm-results button'); await wait(1300);
+    const beatty = R.byName('Joyce Beatty');
+    const mine = await s.evaluate(() => [...document.querySelectorAll('.usm-sheet .ual-mine .ual-row')].map((d) => ({ area: d.getAttribute('data-area'), lines: [...d.querySelectorAll(':scope > summary > span, :scope > span')].map((x) => x.textContent) })));
+    expect(mine.length === 2 && mine.every((m) => JSON.stringify(m.lines) === JSON.stringify(R.step2Lines(beatty.id, m.area, ANS))), `Joyce Beatty's sheet does not equal the record: ${JSON.stringify(mine)}`);
+    expect(await s.evaluate(() => { const d = [...document.querySelectorAll('.usm-sheet .ual-mine details.ual-row')].find((x) => x.getAttribute('data-area') === 'Environmental Protection'); if (!d) return false; d.open = true; return /This member: Present, so no vote on this\./.test(d.innerText) && /No vote on this/.test(d.innerText); }), 'Joyce Beatty\'s Present is not shown as no vote on this in the sheet');
+    await clickText(s, 'Open profile', '.usm-acts button'); await wait(2200);
+    expect(await has(s, '.usm-prof .ual-mine .ual-row'), 'the profile does not show How you line up on what you picked');
+    const priv1 = await alignPrivate(s);
+    expect(priv1.store === priv0.store && !priv1.cookie, `the answers reached storage or a cookie: ${priv1.store}`);
+    expect(!/yes|answer|depends|learning|energy/i.test(priv1.url.replace(/who=joyce-beatty/, '')), `the answers or areas reached the address: ${priv1.url}`);
+    // after answering, the page asks only for its own static files (a portrait, a record file), by address alone: no query, no body, no answer
+    const leaky = sentAfter.filter((r) => { const u = new URL(r.url); return r.method !== 'GET' || r.body || u.search || !/^\/(portraits\/|us\/[a-z0-9-]+\.json$|fonts\/|favicon)/.test(u.pathname) || /yes|depends|learning|energy|environment/i.test(r.url); });
+    expect(asked1 > 0 && leaky.length === 0, `after answering, the page sent something that could carry an answer: ${JSON.stringify(leaky.slice(0, 3))}`);
+    expect(s.asked.filter((u) => /align-2026/.test(u)).length === 1, 'the question file was not fetched exactly once when step 2 opened');
+    await done(s);
+    // ---- step 2 with the hook, a senator not in one roll (Oklahoma's senator appointed in 2026): shown as not in the roll, never a no
+    const ok2 = await open('/?panel=us#desktop', { settle: 1800, pre: `${ALIGN_STILL};${ALIGN_PREVIEW}` });
+    await mapReady(ok2); await clickText(ok2, 'Compare members', '.usm-menu li button'); await wait(900);
+    await alignPick(ok2, ['Energy']); await alignChoose(ok2, 'A state'); await alignPlace(ok2, 'OK', '');
+    for (let t = 0; t < 30 && !(await has(ok2, '.ual-q')); t++) await wait(150);
+    const okAns = {}; R.Q.questions.filter((q) => q.area === 'Energy').forEach((q) => { okAns[q.id] = 'yes'; });
+    await ok2.evaluate((ans) => { for (const [id, a] of Object.entries(ans)) { const i = document.querySelector(`.ual-q[data-q="${id}"] input[value="${a}"]`); if (i) i.click(); } }, okAns); await wait(500);
+    const okRows = await alignRows(ok2);
+    const arm = okRows.find((r) => r.name === 'Alan Armstrong');
+    expect(arm && JSON.stringify(arm.cells.Energy.c2) === JSON.stringify(R.step2Lines(arm.id, 'Energy', okAns)) && arm.cells.Energy.c2.some((t) => /did not vote on: [1-9]/.test(t)), `a senator not in the roll is not shown as not voted on: ${arm && JSON.stringify(arm.cells.Energy.c2)}`);
+    await done(ok2);
+    // ---- step 2 with the hook, the phone: the Show panel opens Compare members, the questions answer, the cards carry the lines
+    const pp = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW });
+    await mapReady(pp);
+    await pp.tap('.usm-show-btn'); await wait(400); await clickText(pp, 'Compare members', '.usm-panel button'); await wait(900);
+    await alignPick(pp, ['Crime and Law Enforcement']); await alignPlace(pp, 'OH', '11');
+    for (let t = 0; t < 30 && !(await has(pp, '.ual-q')); t++) await wait(150);
+    const cAns = {}; R.Q.questions.filter((q) => q.area === 'Crime and Law Enforcement').forEach((q, k) => { cAns[q.id] = ['no', 'yes', 'yes'][k]; });
+    await pp.evaluate((ans) => { for (const [id, a] of Object.entries(ans)) { const i = document.querySelector(`.ual-q[data-q="${id}"] input[value="${a}"]`); if (i) i.click(); } }, cAns); await wait(500);
+    const pc = await alignRows(pp);
+    expect(pc.length === 3 && pc.every((r) => JSON.stringify(r.cells['Crime and Law Enforcement'].c2) === JSON.stringify(R.step2Lines(r.id, 'Crime and Law Enforcement', cAns))), 'the phone cards do not carry the step 2 lines from the record');
+    expect(await pp.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the phone step 2 slides sideways');
+    expect((await alignSmall(pp)).length === 0, `phone step 2: controls under 44px: ${(await alignSmall(pp)).slice(0, 4)}`);
+    await done(pp);
+    // ---- Spanish: no forbidden word in the feature's Spanish either
+    const es = await open('/?panel=us#desktop', { settle: 1800, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} window.__cxAlignPreview = true; })()` });
+    await mapReady(es);
+    await es.evaluate(() => { const b = [...document.querySelectorAll('.usm-menu li button')].pop(); if (b) b.click(); }); await wait(900);
+    await alignPick(es, ['Energy', 'Crime and Law Enforcement']); await alignPlace(es, 'OH', '11');
+    for (let t = 0; t < 30 && !(await has(es, '.ual-q')); t++) await wait(150);
+    await es.evaluate(() => document.querySelectorAll('.ual-q').forEach((q) => { const i = q.querySelector('input[value="yes"]'); if (i) i.click(); })); await wait(1200);
+    { const t = (await txt(es, '.usm-text')) || ''; const h = t.match(ALIGN_FORBIDDEN_ES); expect(!h, `in Spanish the feature says "${h && h[0]}"`); expect(/Comparar/.test(t) && /muestra/.test(t), 'the Spanish Compare members page is not in Spanish'); }
+    await done(es);
+  },
   async 'print'() {
     const p = await open('/?panel=profiles#desktop'); await p.emulateMediaType('print'); await wait(250);
     const d = await p.evaluate(() => ['.atlas-header', '.atlas-sidebar', '.sp-pick'].map((s) => (document.querySelector(s) ? getComputedStyle(document.querySelector(s)).display : 'none')));
@@ -2071,6 +2258,12 @@ const CHECKS = {
       const p = await open('/?panel=ballot#desktop', { width: w });
       const small = await p.evaluate(() => [...document.querySelectorAll('.atlas-sidebar :is(button, a[href], [role=tab], [role=button], input)')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden') return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${(el.innerText || el.getAttribute('aria-label') || '').trim().slice(0, 30)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
       expect(small.length === 0, `desktop strip at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+    }
+    // how you line up: Compare members with step 2 on (the hook), every question and fold open, on a computer and a phone
+    for (const [name, url, o] of [['desktop compare', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW }], ['phone compare', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW }]]) {
+      const p = await open(url, o); await p.evaluate(AXE_AFTER.alignAnswered); await wait(300);
+      const small = await alignSmall(p);
+      expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
   },
   /* The desktop strip above the graph (ext/cx-nav.jsx, ext/cx.css, build.py "desktop strip"): the chosen room is always in view, exactly one thing
@@ -2351,6 +2544,74 @@ function labelProblems(st, blocked) {
 /* words that would turn a map of recorded ties into a scoreboard or a party map (the kit's strength words included) */
 const MAP_WORDS = /\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\bideolog|\bconservative|\bliberal\b|\b(Republican|Democrat|Democratic)\b|\branked\b|\branking (?!member)/i;
 
+/* ---- how you line up (ext/cx-align.jsx): what the alignment check reads, and its own count from the record ---- */
+const ALIGN_PREVIEW = '(() => { window.__cxAlignPreview = true; })()';   // the step 2 test hook; nothing in the app sets it
+const ALIGN_STILL = "(() => { try { localStorage.setItem('cx-us-motion', 'still'); } catch (e) {} })()";
+const ALIGN_FORBIDDEN = /\bscores?\b|\bmatch(es|ed|ing)?\b|\branks?\b|\branked\b|\branking\b(?! member)|%|\bpercent|\bbest\b|\bworst\b|\baligned with you\b|\bagrees? with you\b|\boverall\b|\bin total\b|\bgrades?\b/i;
+const ALIGN_FORBIDDEN_ES = /\bpuntuaci[oó]n|\bpuntaje|\bcoincidencias?\b|\bclasificaci[oó]n|%|\bporcentaje|\bpor ciento|\bmejor(es)?\b|\bpeor(es)?\b|\ben total\b|\ben general\b/i;
+/* the record, and the counts the screens should show, worked out here from data/ (not from the app's code) */
+function alignRecord() {
+  const vd = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'us-votes-2026.json'), 'utf8'));
+  const land = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'us-landscape-2026.json'), 'utf8'));
+  const Q = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'align-2026.json'), 'utf8'));
+  const byId = new Map(land.members.map((m) => [m.id, m])), vById = new Map(vd.votes.map((v) => [v.id, v]));
+  const areaOf = (v) => (v.bill ? (vd.bills[v.bill] || {}).policy_area || 'No policy area listed' : v.kind === 'nomination' ? 'Nominations' : 'No policy area listed');
+  const code = (m, v) => { const i = vd.members.indexOf(m.id); return i < 0 ? '-' : v.codes[i] || '-'; };
+  const step1Lines = (id, area) => {
+    const m = byId.get(id), t = { Y: 0, N: 0, P: 0, X: 0 }; let n = 0;
+    vd.votes.forEach((v) => { if (!v.final || v.chamber !== m.chamber || areaOf(v) !== area) return; const c = code(m, v); if (c === '-') return; n++; if (c in t) t[c]++; });
+    if (!n) return ['None on record for them in this area.'];
+    return [n === 1 ? '1 vote that decided a bill or a nominee.' : `${n} votes that decided a bill or a nominee.`, t.P ? `Yea ${t.Y}, Nay ${t.N}, Not voting ${t.X}, Present ${t.P}.` : `Yea ${t.Y}, Nay ${t.N}, Not voting ${t.X}.`];
+  };
+  const step2Lines = (id, area, ans) => {
+    const m = byId.get(id); let answered = 0, same = 0, of = 0, none = 0, other = 0;
+    Q.questions.filter((q) => q.area === area).forEach((q) => {
+      const a = ans[q.id]; if (a !== 'yes' && a !== 'no') return; answered++;
+      const vid = q.votes[m.chamber]; if (!vid) { other++; return; }
+      const c = code(m, vById.get(vid));
+      if (c === 'Y' || c === 'N') { of++; if ((c === 'Y') === (a === 'yes')) same++; } else none++;
+    });
+    if (!answered) return [];
+    const out = [];
+    if (of) out.push(of === 1 ? `You answered the same on ${same} of 1 question you answered that this member voted on.` : `You answered the same on ${same} of ${of} questions you answered that this member voted on.`);
+    else if (none) out.push('This member did not vote on any question you answered here.');
+    if (of || none) out.push(`Questions you answered that this member did not vote on: ${none}.`);
+    if (other) out.push(`Questions you answered that had no ${m.chamber === 'senate' ? 'Senate' : 'House'} vote, so they are not compared: ${other}.`);
+    return out;
+  };
+  const stName = (c) => ({ AL: 'Alabama', AK: 'Alaska', AZ: 'Arizona', AR: 'Arkansas', CA: 'California', CO: 'Colorado', CT: 'Connecticut', DE: 'Delaware', FL: 'Florida', GA: 'Georgia', HI: 'Hawaii', ID: 'Idaho', IL: 'Illinois', IN: 'Indiana', IA: 'Iowa', KS: 'Kansas', KY: 'Kentucky', LA: 'Louisiana', ME: 'Maine', MD: 'Maryland', MA: 'Massachusetts', MI: 'Michigan', MN: 'Minnesota', MS: 'Mississippi', MO: 'Missouri', MT: 'Montana', NE: 'Nebraska', NV: 'Nevada', NH: 'New Hampshire', NJ: 'New Jersey', NM: 'New Mexico', NY: 'New York', NC: 'North Carolina', ND: 'North Dakota', OH: 'Ohio', OK: 'Oklahoma', OR: 'Oregon', PA: 'Pennsylvania', RI: 'Rhode Island', SC: 'South Carolina', SD: 'South Dakota', TN: 'Tennessee', TX: 'Texas', UT: 'Utah', VT: 'Vermont', VA: 'Virginia', WA: 'Washington', WV: 'West Virginia', WI: 'Wisconsin', WY: 'Wyoming', DC: 'District of Columbia', PR: 'Puerto Rico', GU: 'Guam', VI: 'U.S. Virgin Islands', AS: 'American Samoa', MP: 'Northern Mariana Islands' })[c] || c;
+  const nm = (m) => `${m.last || m.name}|${m.name}`;
+  const order = (ids, by) => ids.map((id) => byId.get(id)).sort((a, b) => (by === 'state' ? stName(a.state).localeCompare(stName(b.state)) || (a.chamber === 'senate' ? 0 : 1) - (b.chamber === 'senate' ? 0 : 1) || (a.district ?? 0) - (b.district ?? 0) : 0) || nm(a).localeCompare(nm(b))).map((m) => m.id);
+  return { vd, land, Q, step1Lines, step2Lines, order, chamber: (ch) => land.members.filter((m) => m.chamber === ch).map((m) => m.id), byName: (n) => land.members.find((m) => m.name === n) };
+}
+async function alignPick(p, areas) {   // choose policy areas in the first picker on the screen (they are kept in memory for the visit)
+  await p.evaluate(() => { const d = document.querySelector('.ual-pick'); if (d) d.open = true; }); await wait(300);
+  for (let t = 0; t < 30 && !(await p.evaluate(() => !!document.querySelector('.ual-areas label'))); t++) await wait(150);
+  for (const a of areas) { await p.evaluate((a) => { const l = document.querySelector(`.ual-areas label[data-area="${a}"]`); if (l && !l.querySelector('input').checked) l.querySelector('input').click(); }, a); await wait(200); }
+  await p.evaluate(() => { const d = document.querySelector('.ual-pick'); if (d) d.open = false; }); await wait(200);
+}
+async function alignChoose(p, who) { await p.evaluate((w) => { const b = [...document.querySelectorAll('.ual-seg button')].find((x) => x.innerText.trim() === w); if (b) b.click(); }, who); await wait(400); }
+async function alignPlace(p, st, di) {
+  const set = (sel, v) => p.evaluate((sel, v) => { const s = document.querySelector(sel); if (!s) return false; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })); return true; }, sel, v);
+  await set('.ual-fields label:nth-of-type(1) select', st); await wait(400);
+  if (di) { await set('.ual-fields label:nth-of-type(2) select', di); await wait(500); }
+}
+/* the rows of Compare members as data: the member's id and name, and for each area its step 1 lines (c1) and step 2 lines (c2) */
+async function alignRows(p) {
+  for (let t = 0; t < 30 && !(await p.evaluate(() => !!document.querySelector('[data-member]'))); t++) await wait(150);
+  return p.evaluate(() => [...document.querySelectorAll('.ual-table tbody tr[data-member], .ual-cards li[data-member]')].map((r) => ({
+    id: r.getAttribute('data-member'), name: (r.querySelector('.ual-name > span') || {}).textContent,
+    cells: Object.fromEntries([...r.querySelectorAll('[data-area]')].map((c) => [c.getAttribute('data-area'), { c1: [...c.querySelectorAll('.ual-c1')].map((x) => x.textContent), c2: [...c.querySelectorAll('.ual-c2')].map((x) => x.textContent) }])),
+  })));
+}
+/* anything of step 2 on the screen: a question, an answer button, a line, the review notice, or its heading */
+const alignStep2Shown = (p) => p.evaluate(() => !!document.querySelector('.ual-mine, .ual-q, .ual-answers, .ual-c2, .ual-status, .ual-qsec, input[type=radio][name^="ual-a-"]') || /How you line up|Questions in your areas|Your answer/.test(document.body.innerText));
+const alignSmall = (p) => p.evaluate(() => [...document.querySelectorAll('.ual button, .ual a[href], .ual summary, .ual select, .ual-compare button, .ual-compare a[href], .ual-compare summary, .ual-compare select, .ual-answers label')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${(el.innerText || '').trim().slice(0, 24)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
+/* what a person's device holds and shows: every storage entry, the cookie, and the address */
+const alignPrivate = (p) => p.evaluate(() => { const all = (s) => { try { return Object.keys(s).sort().map((k) => `${k}=${s.getItem(k)}`).join('|'); } catch (e) { return 'blocked'; } }; return { store: `${all(localStorage)}#${all(sessionStorage)}`, cookie: document.cookie, url: location.href }; });
+/* the map as drawn: every node's place, size, color, and shape, and the picture itself (Still, so nothing moves by itself) */
+const alignMapLook = (p) => p.evaluate(() => { const c = document.querySelector('.usm-canvas'); return { nodes: JSON.stringify(c.cxMap.look()), png: c.toDataURL() }; });
+
 /* Known axe false positives. A violation matching one of these is skipped; everything else fails. */
 const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /data-node="(people|ohio-governor)"/, why: 'SVG label lines join without a space in the visible text, so the full name does contain the words' },
@@ -2376,6 +2637,11 @@ const AXE_PAGES = [
   ['phone us committee subcommittees', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usSubs' }], ['phone us committee story', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usStory' }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
   ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone issue story', '/#phone', { mobile: true, easy: false, after: 'issueStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  // how you line up (ext/cx-align.jsx): Compare members with two areas and a place; step 2 through the test hook, answered, with every fold open; a
+  // senator's sheet and a profile with the counts open
+  ['desktop us compare', '/?panel=us#desktop', { settle: 1800, after: 'alignCompare' }], ['phone us compare', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'alignCompare' }],
+  ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
+  ['desktop us profile areas step 2', '/?panel=us&who=jon-husted#desktop', { settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }], ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, after: 'alignProfile' }],
   // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
@@ -2408,6 +2674,41 @@ const AXE_AFTER = {
     document.querySelectorAll('.usm-prof .usx-sub, .usm-prof .usx-official').forEach((d) => { d.open = true; }); await w(300);
   },
   usStory: async () => { const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = document.querySelector('.usm-prof .usx-how'); if (b) b.click(); await w(800); },
+  // how you line up: open Compare members (the left menu on a computer, the Show panel on a phone), pick Energy and Crime, and Ohio's district 11
+  alignCompare: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const menu = document.querySelectorAll('.usm-menu li button');
+    if (menu.length) menu[menu.length - 1].click(); else { document.querySelector('.usm-show-btn').click(); await w(400); const b = [...document.querySelectorAll('.usm-panel .usm-wide')].pop(); if (b) b.click(); }
+    for (let t = 0; t < 40 && !document.querySelector('.ual-areas label'); t++) { const d = document.querySelector('.ual-pick'); if (d) d.open = true; await w(150); }
+    for (const a of ['Energy', 'Crime and Law Enforcement']) { const l = document.querySelector(`.ual-areas label[data-area="${a}"]`); if (l && !l.querySelector('input').checked) { l.querySelector('input').click(); await w(150); } }
+    const set = (sel, v) => { const s = document.querySelector(sel); if (!s) return; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })); };
+    set('.ual-fields label:nth-of-type(1) select', 'OH'); await w(400);
+    set('.ual-fields label:nth-of-type(2) select', '11'); await w(700);
+  },
+  // the same, with step 2 on (the hook): every question answered in turn, every fold opened
+  alignAnswered: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const menu = document.querySelectorAll('.usm-menu li button');
+    if (menu.length) menu[menu.length - 1].click(); else { document.querySelector('.usm-show-btn').click(); await w(400); const b = [...document.querySelectorAll('.usm-panel .usm-wide')].pop(); if (b) b.click(); }
+    for (let t = 0; t < 40 && !document.querySelector('.ual-areas label'); t++) { const d = document.querySelector('.ual-pick'); if (d) d.open = true; await w(150); }
+    for (const a of ['Energy', 'Crime and Law Enforcement']) { const l = document.querySelector(`.ual-areas label[data-area="${a}"]`); if (l && !l.querySelector('input').checked) { l.querySelector('input').click(); await w(150); } }
+    const set = (sel, v) => { const s = document.querySelector(sel); if (!s) return; Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })); };
+    set('.ual-fields label:nth-of-type(1) select', 'OH'); await w(400);
+    set('.ual-fields label:nth-of-type(2) select', '11'); await w(700);
+    for (let t = 0; t < 40 && !document.querySelector('.ual-q'); t++) await w(150);
+    [...document.querySelectorAll('.ual-q')].forEach((q, k) => { const i = q.querySelectorAll('.ual-answers input')[k % 4]; if (i) i.click(); });
+    await w(400);
+    document.querySelectorAll('.ual-compare details').forEach((d) => { d.open = true; }); await w(300);
+  },
+  // a senator's profile: choose two areas there, and open every count
+  alignProfile: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.usm-prof .ual .usm-btn'); if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.usm-prof .ual-areas label'); t++) { const d = document.querySelector('.usm-prof .ual-pick'); if (d) d.open = true; await w(150); }
+    for (const a of ['Energy', 'Environmental Protection']) { const l = document.querySelector(`.usm-prof .ual-areas label[data-area="${a}"]`); if (l && !l.querySelector('input').checked) { l.querySelector('input').click(); await w(150); } }
+    await w(600);
+    document.querySelectorAll('.usm-prof .ual details').forEach((d) => { d.open = true; }); await w(300);
+  },
   pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
   jumpOpen: () => { const b = document.querySelector('.cx-jump-btn'); if (b) b.click(); },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
@@ -2517,6 +2818,9 @@ const CV_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop leaders', '/?panel=leaders#desktop', {}], ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}],
   ['desktop us', '/?panel=us#desktop', {}], ['desktop place', '/?panel=place#desktop', {}], ['desktop stories', '/?panel=stories#desktop', {}],
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
+  // how you line up: Compare members with step 2 on and answered, and a profile with the counts open
+  ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
+  ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }],
 ];
 /* Words on each phone screen, counted as a person sees them (nothing folded is opened). A screen may not grow past its recorded count plus a small allowance, so
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
@@ -2618,6 +2922,7 @@ CHECKS['color-vision'] = async () => {
   for (const [name, url, opt] of CV_PAGES) {
     if (process.env.CV_PAGE && !process.env.CV_PAGE.split(',').includes(name)) continue;
     const p = await open(url, opt);
+    if (opt.after) { await p.evaluate(AXE_AFTER[opt.after]); await wait(300); }
     const marks = await p.evaluate(() => {
       const out = [];
       for (const e of document.querySelectorAll('body *')) {
