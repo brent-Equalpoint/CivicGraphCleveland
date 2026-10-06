@@ -281,9 +281,17 @@ function cxJumpFind(q) {
     return 1;
   };
   const top = (list, n) => list.map((x) => [score(x), x]).filter((p) => p[0] >= 0).sort((a, b) => b[0] - a[0]).slice(0, n).map((p) => p[1]);
-  return [[`Rooms`, top(ix.rooms, 6)], [`Pages`, top(ix.pages, 6)], [`Records`, top(ix.recs, 8)]].filter((g) => g[1].length);
+  return [[`Rooms`, top(ix.rooms, 6)], [`Pages`, top(ix.pages, 6)], [`Records`, top(ix.recs, 8)], [`Laws and proposals`, cxJumpFiles(q)]].filter((g) => g[1].length);
+}
+/* a file number (906-2026, 906-26, or 906) finds that city file's record page; words alone never search the 1,393 titles here (Search does) */
+function cxJumpFiles(q) {
+  const fm = String(q || ``).trim().match(/^(\d{1,5})(?:-(\d{2}|\d{4}))?$/);
+  if (!fm) return [];
+  const want = (f) => (fm[2] ? f === `${fm[1]}-${fm[2].length === 2 ? `20${fm[2]}` : fm[2]}` : f.split(`-`)[0] === fm[1]);
+  return CX_LEG.matters.filter((m) => want(m.file)).slice(0, 6).map((m) => ({ id: `leg:${m.file}`, kind: `leg`, file: m.file, name: `${m.file} · ${cxHeadline(m.title)}`, sub: m.type }));
 }
 function cxJumpGo(x, onRoom) {
+  if (x.kind === `leg`) { cxOpenLeg(x.file); return; }   // a file number is not kept in the recent list
   cxJumpRemember(x.id);
   if (x.kind === `room`) onRoom ? onRoom(x.room) : CX_NAV.go(x.room);
   else if (x.kind === `page`) cxNavOpenPage(x.page);
@@ -332,7 +340,7 @@ function CX_DeskJump({ panel, onRoom }) {
     if (el) el.scrollIntoView({ block: `nearest` });
   }, [pos, q, open]);
   // a record opens in the map's record panel, which takes the focus itself
-  const go = (x) => { if (x.kind === `rec`) back.current = null; setOpen(!1); cxJumpGo(x, onRoom); };
+  const go = (x) => { if (x.kind === `rec` || x.kind === `leg`) back.current = null; setOpen(!1); cxJumpGo(x, onRoom); };
   const key = (e) => {
     if (e.key === `ArrowDown` || e.key === `ArrowUp`) { e.preventDefault(); setAct(Math.max(0, Math.min(flat.length - 1, pos + (e.key === `ArrowDown` ? 1 : -1)))); }
     else if (e.key === `Enter` && flat[pos]) { e.preventDefault(); go(flat[pos]); }

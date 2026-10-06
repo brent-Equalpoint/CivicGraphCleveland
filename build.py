@@ -186,6 +186,26 @@ def mark_us_text_reviewed(who):
     print(f"marked the committee lines reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def votes_text_fp():
+    """Fingerprint of the plain words for votes, actions, and positions: everything between the VOTES-TEXT markers in ext/cx-votes-text.jsx."""
+    src = open(os.path.join(EXT, "cx-votes-text.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* VOTES-TEXT-START.*?VOTES-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the VOTES-TEXT markers are missing from ext/cx-votes-text.jsx")
+    if re.search("[–—]", m.group(0)):
+        sys.exit("build: the votes text in ext/cx-votes-text.jsx has an em or en dash")
+    return hashlib.sha256(m.group(0).encode()).hexdigest()[:16]
+
+
+def mark_votes_text_reviewed(who):
+    """Record that a person read the plain words for votes, actions, and positions against the record, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-votes-text-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "votes-text-reviewed.json")
+    write(path, json.dumps({"fp": votes_text_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the votes and actions text reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def align_block():
     """The sample questions for "how you line up" (docs/plan-alignment.md, step 2): everything between the ALIGN-TEXT markers in ext/cx-align-text.jsx."""
     src = open(os.path.join(EXT, "cx-align-text.jsx"), encoding="utf-8").read()
@@ -360,7 +380,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/meetings/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/meetings/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/") || url.pathname.startsWith("/council/")) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -564,6 +584,12 @@ def main():
     ut_ok = ut.get("fp") == us_text_fp()
     log(f"committee lines: {'reviewed by ' + ut['by'] + ' on ' + ut['checked'] if ut_ok else 'NOT reviewed by a person (' + ('text changed since review' if ut else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/us-text-reviewed.json ---- */\nconst CX_US_TEXT_REVIEW = " + json.dumps({"ok": ut_ok, "by": ut.get("by") if ut_ok else None, "checked": ut.get("checked") if ut_ok else None}) + ";\n"
+    # the plain words for votes, actions, and positions (ext/cx-votes-text.jsx): reviewed by a person only while their fingerprint still matches what that person read
+    vx_path = os.path.join(ROOT, "data", "votes-text-reviewed.json")
+    vx = json.load(open(vx_path, encoding="utf-8")) if os.path.exists(vx_path) else {}
+    vx_ok = vx.get("fp") == votes_text_fp()
+    log(f"votes and actions text: {'reviewed by ' + vx['by'] + ' on ' + vx['checked'] if vx_ok else 'NOT reviewed by a person (' + ('text changed since review' if vx else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/votes-text-reviewed.json ---- */\nconst CX_VOTES_TEXT_REVIEW = " + json.dumps({"ok": vx_ok, "by": vx.get("by") if vx_ok else None, "checked": vx.get("checked") if vx_ok else None}) + ";\n"
     # the privacy policy (ext/cx-privacy.jsx): approved by a person only while its fingerprint still matches what they approved; no dash in its words
     _, policy = privacy_block()
     if re.search("[\u2013\u2014]", json.dumps(policy, ensure_ascii=False)):
@@ -615,26 +641,38 @@ def main():
     if vt["skipped"]:
         raise SystemExit(f"data/votes-2026.json has {len(vt['skipped'])} vote(s) that were not stored; fix the cause before building: {vt['skipped'][:3]}")
     vt_members = sorted(p["name"] for p in pe["people"] if p["title"] == "Council Member")
-    vt_issues = sorted((i["url"], i["label"]) for i in vt["issues"])
-    vt_issue_ix = {u: n for n, (u, _) in enumerate(vt_issues)}
+    # issues: the City Record issues, then one entry per roll call read from Council's Legistar record (kind "lg"), each with its own address
+    vt_lg = vt.get("legistar_votes", {})
+    vt_issues = sorted((i["url"], i["label"], "cr") for i in vt["issues"]) + [(v["anchor"]["url"], f"Council's Legistar record, file {f}", "lg") for f, v in sorted(vt_lg.items())]
+    vt_issue_ix = {(u, k): n for n, (u, _, k) in enumerate(vt_issues)}
     vt_q = {"Passage": 0, "Adoption": 1, "Laid on the table": 2}
+    vt_code = {"yea": "y", "nay": "n", "absent": "a", "recused": "r", "abstain": "b"}
     def vt_codes(v):
         if set(v["members"]) != set(vt_members):
             raise SystemExit("a stored vote does not name every sitting council member")
-        return "".join({"yea": "y", "nay": "n", "absent": "a"}[v["members"][m]] for m in vt_members)
-    def vt_row(v):
-        r = [v["date"], vt_q[v["question"]], vt_issue_ix[v["anchor"]["url"]], vt_codes(v)]
+        return "".join(vt_code[v["members"][m]] for m in vt_members)
+    def vt_row(v, kind="cr"):
+        r = [v["date"], vt_q[v["question"]], vt_issue_ix[(v["anchor"]["url"], kind)], vt_codes(v)]
         return r + [v["misprint"]] if v.get("misprint") else r
-    ext_js += "/* ---- data/votes-2026.json (Council roll calls from the City Record) ---- */\nconst CX_VOTES = " + js_data("votes",
-        {"source": vt["source"], "retrieved_at": vt["retrieved_at"], "members": vt_members, "issues": [[l, u] for u, l in vt_issues],
-         "f": {f: vt_row(v) for f, v in vt["votes"].items()}, "o": [[o["file"]] + vt_row(o) for o in vt["other"]]}) + ";\n"
+    vt_rows = {f: vt_row(v) for f, v in vt["votes"].items()}
+    vt_rows.update({f: vt_row(v, "lg") for f, v in vt_lg.items()})
+    vt_unnamed = sum(1 for m in leg["matters"] if m["status"] == "Passed" and m["file"] not in vt_rows)
+    log(f"council votes: {sum(1 for m in leg['matters'] if m['status'] == 'Passed' and m['file'] in vt_rows)} of {sum(1 for m in leg['matters'] if m['status'] == 'Passed')} passed files have names "
+        f"({len(vt_lg)} from Council's Legistar record); {vt_unnamed} without, each with a reason ({len(vt.get('no_names', {}))}); {len(vt.get('differs', []))} votes where the two records differ")
+    vt_why = [m["file"] for m in leg["matters"] if m["status"] == "Passed" and m["file"] not in vt_rows and m["file"] not in vt.get("no_names", {})]
+    if vt_why and "no_names" in vt:
+        raise SystemExit(f"data/votes-2026.json: passed files with no named vote and no reason in no_names ({vt_why[:3]}); run python scripts/refresh.py --votes")
+    ext_js += "/* ---- data/votes-2026.json (Council roll calls: the City Record, and Council's Legistar record where the City Record prints no names) ---- */\nconst CX_VOTES = " + js_data("votes",
+        {"source": vt["source"], "retrieved_at": vt["retrieved_at"], "legistar_read": (vt.get("legistar") or {}).get("read_at"), "members": vt_members,
+         "issues": [[l, u, k] for u, l, k in vt_issues], "f": vt_rows, "o": [[o["file"]] + vt_row(o) for o in vt["other"]],
+         "x": vt.get("no_names", {}), "d": {d["file"]: [[n, w["city_record"], w["legistar"]] for n, w in d["members"].items()] for d in vt.get("differs", [])}}) + ";\n"
     # United States graph: only the d3 parts the map uses (force and zoom, ext/cx-d3.js), bundled from the pinned npm packages into the page as CXD3
     d3_js = run([tool("esbuild"), os.path.join(EXT, "cx-d3.js"), "--bundle", "--format=iife", "--global-name=CXD3", "--target=es2020", "--legal-comments=none"])
     d3_ver = ", ".join(f"{p} {json.load(open(os.path.join(ROOT, 'node_modules', p, 'package.json'), encoding='utf-8'))['version']}" for p in ("d3-force", "d3-zoom", "d3-selection", "d3-transition", "d3-quadtree", "d3-timer"))
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
@@ -916,6 +954,27 @@ def main():
                 "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n"
                 "          F === `privacy` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Privacy policy`, resetKey: F, children: (0, W.jsx)(CX_PrivacyPolicy, {}) }) }),\n",
                 label="aux page: privacy")
+    # a city record's page (ext/cx-record.jsx, ?panel=leg&file=906-2026): what it is, Votes & actions, Positions, and where to read it. The address names
+    # the file (written by the URL writer below), never the viewer. Opened from Jump to (a file number), a person's list, the ward view, and the map drawer.
+    src = patch(src, "`levies`, `districts`, `privacy`]", "`levies`, `districts`, `privacy`, `leg`]", count=2, label="url panels: leg")
+    src = patch(src,
+                "          F === `privacy` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Privacy policy`, resetKey: F, children: (0, W.jsx)(CX_PrivacyPolicy, {}) }) }),\n",
+                "          F === `privacy` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Privacy policy`, resetKey: F, children: (0, W.jsx)(CX_PrivacyPolicy, {}) }) }),\n"
+                "          F === `leg` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `A city record`, resetKey: F, children: (0, W.jsx)(CX_LegPage, {}) }) }),\n",
+                label="aux page: city record")
+    src = patch(src, "    t ? i.set(`panel`, `priorities`) : n && i.set(`panel`, n),\n",
+                "    t ? i.set(`panel`, `priorities`) : n && i.set(`panel`, n),\n    !t && n === `leg` && CX_LEG_SEL.v && i.set(`file`, CX_LEG_SEL.v),\n",
+                label="url: a city record names its file")
+    # the map's record drawer: the few records that are city files show the shared Votes & actions and Positions, not the empty notes
+    src = patch(src, "                                (0, W.jsx)(Zh, { node: U }),\n",
+                "                                (0, W.jsx)(CX_DrawerRecord, { node: U, tab: R }),\n                                (0, W.jsx)(Zh, { node: U }),\n",
+                label="drawer: city record votes and actions")
+    src = patch(src, "                                R === `actions` &&\n                                  !U.activity &&\n",
+                "                                R === `actions` &&\n                                  !U.activity &&\n                                  !/^leg-/.test(U.id) &&\n",
+                label="drawer: no empty vote note on a city record")
+    src = patch(src, "                                R === `positions` &&\n                                  (0, W.jsx)(`p`, {\n",
+                "                                R === `positions` &&\n                                  !/^leg-/.test(U.id) &&\n                                  (0, W.jsx)(`p`, {\n",
+                label="drawer: no empty positions note on a city record")
     # the open personal page says so to a screen reader (aria-current="page"), on every one of the 15 page buttons
     n_cur = 0
     def cur(m):
@@ -1209,8 +1268,17 @@ def main():
     dist_gz = _b64.b64encode(_gzip.compress(dist_min.encode("utf-8"), 9, mtime=0)).decode("ascii")
     log(f"data   {sha(dist_path)}  data/districts-2026.json  ({len(dist_min)} bytes; {len(dist_gz)} as base64 gzip inside the single file)")
 
+    # Votes & actions on every city record (scripts/council_record.py, a pure function of data/): the hosted site serves it as a file fetched only
+    # when a record or a person's list first needs it; the single file carries it in a block that is read only then.
+    sys.path.insert(0, os.path.join(ROOT, "scripts"))
+    import council_record
+    rec = council_record.build_from_data()
+    rec_min = json.dumps(rec, ensure_ascii=False, separators=(",", ":"))
+    log(f"council record: {len(rec['files'])} files with dated actions, {len(rec['meetings'])} meetings, {len(rec['issues'])} City Record issues ({len(rec_min)} bytes)")
+
     def page(inline_assets, fonts):
         dist_tag = ('<script type="application/octet-stream" id="cx-districts-gz">' + dist_gz + '</script>\n') if inline_assets else ""
+        dist_tag += ('<script type="application/json" id="cx-council-rec">' + rec_min.replace("<", "\\u003c") + '</script>\n') if inline_assets else ""
         i18n_tag = ('<script type="application/json" id="cx-i18n-es">' + i18n_min.replace("</", "<\\/") + '</script>\n') if inline_assets else ""
         icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else ('<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n<link rel="manifest" href="/manifest.webmanifest">\n'
                                                                                                                                                   '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Civic Graph">\n<meta name="theme-color" content="#0c0c0e">\n')
@@ -1324,6 +1392,9 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
             continue
         write(os.path.join(SITE, "bench", name), body)
         log(f"SITE   {sha(body.encode())}  site/bench/{name}")
+    os.makedirs(os.path.join(SITE, "council"), exist_ok=True)
+    write(os.path.join(SITE, "council", "record-2026.json"), rec_min + "\n")
+    log(f"SITE   {sha((rec_min + chr(10)).encode())}  site/council/record-2026.json  (dated actions on each city record, fetched when a record or a list first needs them)")
     os.makedirs(os.path.join(SITE, "i18n"), exist_ok=True)
     write(os.path.join(SITE, "i18n", "es.json"), i18n_min + "\n")
     os.makedirs(os.path.join(SITE, "districts"), exist_ok=True)
@@ -1357,5 +1428,7 @@ if __name__ == "__main__":
         mark_alignment_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-privacy-reviewed":
         mark_privacy_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-votes-text-reviewed":
+        mark_votes_text_reviewed(" ".join(sys.argv[2:]))
     else:
         main()

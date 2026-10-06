@@ -28,6 +28,7 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | Compiled app | `patch()` in `build.py` | the build log lists every patch ok |
 | New or changed text | the component, then `i18n/manual.json` | `node scripts/i18n/crawl.js`, `python scripts/test_i18n.py` |
 | How you line up (questions, counts) | `ext/cx-align-text.jsx` (between the markers), `ext/cx-align.jsx` | `node scripts/test_alignment.js`, `--only alignment`; a person runs `python build.py --mark-alignment-reviewed "Name"` |
+| Votes, actions, and positions on a city record, a person's list, a ward | `ext/cx-record.jsx` (shared by both layouts), its plain words in `ext/cx-votes-text.jsx` between the VOTES-TEXT markers; the roll calls and the City Record's actions in `scripts/fetch_cityrecord.py` (`python scripts/refresh.py --votes`); the dated actions file in `scripts/council_record.py` (a pure function of `data/`, written by `build.py` to `site/council/record-2026.json`) | `python scripts/test_votes_actions.py`, `python scripts/test_cityrecord.py`, `--only votes-actions`; a person runs `python build.py --mark-votes-text-reviewed "Name"` |
 | Anything saved in the browser (a new `localStorage` or `sessionStorage` name, a cache) | the code, then its line in the privacy policy's list (`ext/cx-privacy.jsx`) and a row in `docs/privacy-claims.md` | `python scripts/test_privacy.py`, `--only privacy-policy`; the policy's words need a person's approval again |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
@@ -101,4 +102,17 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
   `alignment` check fail on each.
 - **The translator takes a comma that follows a number.** "Yea 6, Nay 0" masks as "Yea {n} Nay {n}" with "6," captured, because a number may have
   thousands commas. Write such a pattern in `i18n/manual.json` without the comma after `{n}`, in English and Spanish (the counts on Compare members do).
+- **A new printed word in the City Record stops every vote, by design.** `fetch_cityrecord.py` refuses the whole snapshot when one vote does not
+  add up, and the nightly run only warns ("Council votes were not updated"). From Oct 2 to Oct 6, 2026 the word was "Recusal" (file 1044-2026), so the
+  33 files passed on Sept. 28 showed no names for four days. Read the warning in the nightly log, teach the parser the word with its printed count
+  checked, add a test, and raise `PARSER` so every stored issue is read again once. Never edit `data/votes-2026.json` by hand.
+- **Two records of one vote can disagree.** Council's Legistar record has member votes for 11 meetings (Jan. 5 to May 18, 2026); the City Record is
+  the printed vote with a tally. The City Record's vote is shown; Legistar fills a file only where the City Record prints no names (`legistar_votes`),
+  and every difference is listed in `differs` and said on the record. "How they voted" on a profile counts the City Record only; the Votes & actions
+  list shows every roll call with its source.
+- **A count on a filter can become an overall number.** With one year in the record, a count on the year choice equals the whole list. In a person's
+  Votes & actions, counts go only on kinds and types of legislation, never on "All" or the year (`votes-actions` fails on either).
+- **The dated actions load when needed.** `site/council/record-2026.json` (and, in the offline file, the `cx-council-rec` block, read once and removed)
+  is fetched the first time a record or a list needs it (`useCxRec()`); until then a record shows the action history the page already carries.
+  `votes-actions` fails if Today asks for it.
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).

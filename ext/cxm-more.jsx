@@ -1,18 +1,26 @@
 /* v5.14 phone app: the legislation record ("receipt"), search, dictionary, You, decision ledger,
    and How this is built. Each reads the same data as its desktop counterpart. */
 
+/* Votes & actions on a legislation record: the shared record list (ext/cx-record.jsx), dated, oldest first, each row with its source */
 function CxmLegHistory({ m }) {
-  const p = cxPlPath(m);
-  const rows = p.h.length ? p.h : [[m.intro, `introduced`, `City Council`], ...(m.passed ? [[m.passed, `passed (date from the matter record)`, `City Council`]] : [])];
+  const { openSeat, openSheet } = useCxm();
   return (
     <div className="cxm-hist">
       <h3 className="cxm-h3">Votes & actions</h3>
-      <div className="cxm-tl"><span className="cxm-tl-d">{cxmDate(m.intro)}</span><span><strong>Introduced</strong><small>City Council</small></span></div>
-      {rows.filter((r) => !(r[1] === `introduced`)).map((r, k) => <div key={k} className="cxm-tl"><span className="cxm-tl-d">{cxmDate(r[0])}</span><span><strong>{r[1].charAt(0).toUpperCase() + r[1].slice(1)}</strong><small>{r[2]}</small></span></div>)}
-      {cxVoteRecord(m.file)
-        ? <CX_RollCall file={m.file} />
-        : <p className="cxm-note">{m.passed ? `The City Record snapshot has no member-by-member vote for this file. Council's own record shows the outcome only. A missing record is not a no.` : `This file has no passed date in Council's record, so there is no final vote to show.`}</p>}
-      <CxmHeardAt file={m.file} />
+      <CX_RecActions m={m} onPerson={openSeat} onFile={(f) => openSheet(`leg`, { file: f })} title={!1} />
+    </div>
+  );
+}
+/* a ceremonial resolution (congratulations, condolences, recognition) gets one line, never a full record */
+function CxmLegShort({ m }) {
+  return (
+    <div className="cxm-pad">
+      <CxmKicker>{m.file} · {m.type}</CxmKicker>
+      <h2 className={`cxm-h2 ${cxShortTitle(m.title).length > 110 ? `cxm-h2-long` : ``}`}>{cxShortTitle(m.title)}</h2>
+      <div className="rc"><CX_RecShort m={m} bare /></div>
+      <p className="cxm-fine">{CX_VT.ceremonial}</p>
+      <div className="cxm-row-links cxm-col"><CxmSrc href={m.url}>Cleveland City Council record, {m.file}</CxmSrc></div>
+      <p className="cxm-fine">Cleveland's Legistar record, pulled {cxFresh().when} (Eastern).</p>
     </div>
   );
 }
@@ -20,6 +28,7 @@ function CxmLeg({ file }) {
   const { like, liked, openSeat } = useCxm();
   const m = cxmMatter(file);
   if (!m) return <div className="cxm-pad"><p className="cxm-mut">{file} is not in the 2026 record.</p></div>;
+  if (m.type === `Ceremonial Resolution`) return <CxmLegShort m={m} />;
   const st = cxmStatus(m);
   const p = st.p;
   const f = cxPlCity().allFunds.find((r) => r.m.file === file);
@@ -58,14 +67,17 @@ function CxmLeg({ file }) {
       </button>}
       {q && CX_REASONS[q.id] && <CxmDrop title="Why supporters backed it" sub="Their case, from the official record"><CX_Why q={q} /></CxmDrop>}
       <CxmLegHistory m={m} />
+      <h3 className="cxm-h3">Positions</h3>
+      <CX_RecPositions m={m} onPerson={openSeat} title={!1} />
       <CxmDrop title="Full official title"><p>{m.title}</p></CxmDrop>
-      <h3 className="cxm-h3">Sources</h3>
+      <h3 className="cxm-h3">Where to read it</h3>
       <div className="cxm-row-links cxm-col">
         <CxmSrc href={m.url}>Cleveland City Council record, {m.file}</CxmSrc>
         {f?.f.text_url && <CxmSrc href={f.f.text_url}>Ordinance text</CxmSrc>}
         {src && src[0] && !f?.f.text_url && <CxmSrc href={src[0]}>Ordinance text</CxmSrc>}
         {src && src[1] && <CxmSrc href={src[1]}>Legislative summary</CxmSrc>}
       </div>
+      <CX_RecWhere m={m} meetings={<CxmHeardAt file={m.file} />} title={!1} base={!1} />
       <p className="cxm-fine">Cleveland's Legistar record, pulled {cxFresh().when} (Eastern); action history pulled {cxShortDate(cxDayET(Date.parse(CX_PL.retrieved)))}. Checked every night.</p>
     </div>
   );

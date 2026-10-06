@@ -862,6 +862,44 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 @media (max-width: 760px) { .sp-dl { grid-template-columns: 1fr; gap: 2px 0; } .sp-dl dt { margin-top: 10px; } .sp h1 { font-size: 26px; } .sp-head img { width: 72px; height: 72px; } }
 @media print { .sp-pick, .sp-actions { display: none !important; } .sp-ext { display: none !important; } .sp-dl { grid-template-columns: 9.5em 1fr; } }
 
+/* ---- votes, actions, and positions on a city record, a person, and a ward (ext/cx-record.jsx). The same markup sits in the phone sheets, the desktop
+   pages (.sp), and the map's record drawer, so the text takes the color of where it is; rows are tinted blocks (no stripe), and every control is 44 px. ---- */
+.rc { margin: 0 0 12px; }
+.rc-h { margin: 18px 0 8px; font-size: 18px; font-weight: 700; line-height: 1.3; }
+.rc-list { list-style: none; margin: 8px 0 12px; padding: 0; display: grid; gap: 10px; }
+.rc-row { padding: 10px 12px; border-radius: 12px; background: #ffffff0d; }
+.rc-row p { margin: 0 0 4px; }
+.rc-row p:last-child { margin-bottom: 0; }
+.rc-when { font-size: 14px; font-weight: 600; }
+.rc-what { font-size: 16px; line-height: 1.4; }
+.rc-body { display: block; font-size: 14px; font-weight: 400; }
+.rc-who, .rc-title { font-size: 15px; line-height: 1.45; }
+.rc-word, .rc-src, .rc-note, .rc-names { font-size: 14px; line-height: 1.45; }
+.rc-count { font-size: 15px; }
+.rc-vote { margin: 6px 0; }
+.rc-lead { font-size: 15px; line-height: 1.5; }
+.rc-sub { margin: 10px 0 4px; font-size: 15px; }
+.rc-none, .rc-review { font-size: 14px; line-height: 1.45; }
+.rc-short { margin: 0; font-size: 14px; line-height: 1.45; overflow-wrap: anywhere; }
+.rc-row, .rc-word q, .rc-title, .rc-names { overflow-wrap: anywhere; }
+.rc-links { margin: 6px 0 10px; padding-left: 20px; }
+.rc-links li { margin: 4px 0; font-size: 15px; }
+.rc-fold { margin: 8px 0; }
+.rc-fold > summary { min-height: 44px; display: flex; align-items: center; font-weight: 600; cursor: pointer; }
+.rc-fold > p { margin: 0 0 8px; }
+.sp .rc-h1-long { font-size: 24px; line-height: 1.25; }
+.rc-page h1:focus { outline: none; }
+.rc-filters { display: grid; gap: 8px; margin: 10px 0; }
+.rc-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.rc-chips button, .rc-more { min-height: 44px; padding: 0 14px; border-radius: 999px; border: 1px solid #ffffff2e; background: transparent; color: inherit; font-family: inherit; font-size: 14px; font-weight: 600; text-align: left; cursor: pointer; }
+.rc-chips button.on { background: #ffffff24; border-color: #ffd1a9; }
+.rc-more { border-radius: 10px; margin: 4px 0 10px; }
+.rc a:focus-visible, .rc button:focus-visible, .rc summary:focus-visible { outline: 3px solid #f1b083; outline-offset: 2px; }
+.rc a { text-decoration: underline; text-underline-offset: 3px; }
+.cx-ward-record { margin-top: 24px; }
+.cx-drawer-record { margin: 6px 0 12px; }
+@media print { .rc-filters, .rc-more { display: none !important; } }
+
 /* ---- v5.16 profile ward map and the drawer button ---- */
 .sp-map { margin: 4px 0 14px; max-width: 420px; }
 .sp-map svg { display: block; width: 100%; height: auto; }
