@@ -1866,6 +1866,29 @@ const CHECKS = {
         await done(p);
       }
     }
+    // a mouse alone reaches every room at 1100 px: the "n more" button walks the row to its end, and a plain wheel moves the row, then hands back to the page
+    const mo = await open('/?room=overview#desktop', { width: 1100 });
+    const row0 = await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); return { over: r.scrollWidth > r.clientWidth + 1, end: r.hasAttribute('data-more-end'), start: r.hasAttribute('data-more-start'), more: !!document.querySelector('.cx-row-rooms .cx-rowmore-end') }; });
+    if (row0.over) {
+      expect(row0.end && !row0.start && row0.more, `1100: the rooms row scrolls but shows no fade or "more" button at its end (${JSON.stringify(row0)})`);
+      const label = await mo.evaluate(() => document.querySelector('.cx-row-rooms .cx-rowmore-end').textContent.replace(/\s+/g, ' ').trim());
+      expect(/^Show \d+ more rooms$/.test(label || ''), `1100: the "more" button is named "${label}"`);
+      for (let i = 0; i < 12 && (await has(mo, '.cx-row-rooms .cx-rowmore-end')); i++) { await mo.click('.cx-row-rooms .cx-rowmore-end'); await wait(700); }
+      const last = await mo.evaluate(() => { const tabs = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width); const t = tabs[tabs.length - 1], r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return { label: t.innerText.trim(), ok: r.right <= row.right + 1 && r.left >= row.left - 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      expect(last.ok, `1100: after the "more" button the last room, ${last.label}, is still not fully in view`);
+      await mo.mouse.click(last.x, last.y); await wait(600);
+      expect((await mo.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'ecosystem', `1100: a mouse click on ${last.label} after scrolling with "more" did not open it`);
+      // the wheel: back to the start, then down over the row moves the row and not the page; at the row's end the page scrolls again
+      await mo.evaluate(() => { document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft = 0; scrollTo(0, 0); }); await wait(200);
+      const at = await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+      await mo.mouse.move(at[0], at[1]); await mo.mouse.wheel({ deltaY: 240 }); await wait(300);
+      const w1 = await mo.evaluate(() => ({ x: document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft, y: scrollY }));
+      expect(w1.x > 0 && w1.y === 0, `1100: a mouse wheel over the rooms row did not move it sideways (row ${w1.x}, page ${w1.y})`);
+      await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); r.scrollLeft = r.scrollWidth; }); await wait(200);
+      await mo.mouse.move(at[0], at[1]); await mo.mouse.wheel({ deltaY: 240 }); await wait(400);
+      expect((await mo.evaluate(() => scrollY)) > 0, '1100: at the end of the rooms row the wheel no longer scrolls the page (the row traps it)');
+    }
+    await done(mo);
     // a personal page is open: only it looks and announces itself as chosen
     const p = await open('/?room=council&panel=ballot#desktop', { width: 1440 });
     const c = await p.evaluate(NAV.chosen);
@@ -2303,7 +2326,8 @@ const OVERLAP_FN = () => {
     const t = n.nodeValue.replace(/\s+/g, ' ').trim();
     if (t.length < 2) continue;
     const el = n.parentElement;
-    if (!el || el.closest('svg, canvas, script, style, noscript, [aria-hidden="true"], .cxm-sr, .sp-ext, .cxm-fresh-hint')) continue;
+    // .cx-rowmore: the "n more" button of a row that scrolls sideways sits, on purpose, on its own solid background over the row's faded edge
+    if (!el || el.closest('svg, canvas, script, style, noscript, [aria-hidden="true"], .cxm-sr, .sp-ext, .cxm-fresh-hint, .cx-rowmore')) continue;
     const cs = getComputedStyle(el);
     if (cs.visibility !== 'visible' || cs.display === 'none' || parseFloat(cs.opacity) < 0.05) continue;
     const range = document.createRange(); range.selectNodeContents(n);

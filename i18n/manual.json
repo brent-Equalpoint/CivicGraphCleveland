@@ -848,7 +848,14 @@
   "One thing at a time": "Una cosa a la vez",
   "Present": "Presente",
   "Circles are people, hexagons are committees and courts, and squares are agencies. A committee is a filled hexagon; a court is an outlined one. A ring is a branch, with its total. Things sit near what they are tied to on the record. Distance is not a rank.": "Los círculos son personas, los hexágonos son comités y tribunales, y los cuadrados son agencias. Un comité es un hexágono relleno; un tribunal es un hexágono con solo el contorno. Un anillo es un poder del gobierno, con su total. Cada cosa queda cerca de aquello con lo que tiene vínculos en el registro. La distancia no es una clasificación.",
-  "My pages": "Mis páginas"
+  "My pages": "Mis páginas",
+  "more": "más",
+  "rooms": "salas",
+  "rooms to the left": "salas a la izquierda",
+  "pages": "páginas",
+  "pages to the left": "páginas a la izquierda",
+  "places": "lugares",
+  "places to the left": "lugares a la izquierda"
  },
  "masked": {
   "{n} days": "{n} días",

@@ -494,10 +494,15 @@ def main():
                                     "                      \"aria-selected\": t.id === e.room && !h && !F,\n"
                                     "                      \"data-state\": t.id === e.room && !h && !F ? `active` : `inactive`,\n", 1)
     src = src[:i0] + src[i1:]
+    # each row sits in a .cx-row wrapper with CX_RowMore after it: where a row still scrolls sideways it fades at the side with more, a mouse wheel moves it,
+    # and an "n more" button at each end reaches what is hidden (ext/cx-nav.jsx)
     tools_end = "                    children: `Cleveland first · Research preview`,\n                  }),\n                ],\n              }),\n"
-    src = patch(src, tools_end, tools_end + tabs_block, label="desktop strip: rooms after my pages")
+    src = patch(src, tools_end, tools_end + "              (0, W.jsx)(CX_RowMore, { unit: `pages` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                children: [\n" + tabs_block
+                + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n                ],\n              }),\n", label="desktop strip: rooms after my pages")
     # the personal pages are a navigation region named "My pages", and the open one says so (aria-current)
     src = patch(src, "              (0, W.jsxs)(`div`, {\n                className: `atlas-sidebar-bottom`,\n",
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-pages`,\n                children: [\n"
                 "              (0, W.jsxs)(`nav`, {\n                \"aria-label\": `My pages`,\n                className: `atlas-sidebar-bottom`,\n", label="desktop strip: my pages nav")
     # v5.15 dates know what day it is (passed / today / next); the text must match the compiled guide
     d0 = ("                    [\n                      [`Oct 5`, `Registration deadline`],\n                      [`Oct 6`, `Early voting begins`],\n"

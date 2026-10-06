@@ -677,14 +677,33 @@
   html[data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active]:focus-visible { outline-color: #fff; }
   html[data-cx-theme="bento"] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #fff; }
   html[data-cx-theme="original"] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #fff; }
-  /* the header search keeps a real width beside the header buttons (they wrap onto a second row instead) */
-  .atlas-header .atlas-search { flex: 1 1 240px; min-width: 200px; }
+  /* the header search keeps a real width beside the header buttons, without pushing them onto a third row (Spanish at 1100 px) */
+  .atlas-header .atlas-search { flex: 0 1 200px; min-width: 160px; }
+  /* a row that still scrolls sideways (ext/cx-nav.jsx, CX_RowMore): it fades only at the side with more (the mask uses only the alpha, so light mode needs
+     nothing), it never hands a sideways scroll on to the page, and an "n more" button at each end sits over the fade */
+  .atlas-workspace .cx-row { position: relative; min-width: 0; }
+  .atlas-workspace .cx-row-pages { margin: 0 0 10px; }
+  .atlas-workspace .cx-row-pages .atlas-sidebar-bottom { margin: 0; }
+  .atlas-workspace .cx-row-rooms { margin-bottom: -1px; }
+  .atlas-workspace .cx-row-rooms .atlas-room-tabs[data-slot=tabs-list] { margin-bottom: 0; }
+  .atlas-workspace .cx-row > :first-child { overscroll-behavior-x: contain; scroll-padding-inline: 112px; }
+  .atlas-workspace .cx-row > [data-more-end] { mask-image: linear-gradient(to right, #000 calc(100% - 96px), transparent); }
+  .atlas-workspace .cx-row > [data-more-start] { mask-image: linear-gradient(to left, #000 calc(100% - 96px), transparent); }
+  .atlas-workspace .cx-row > [data-more-start][data-more-end] { mask-image: linear-gradient(to right, transparent, #000 96px, #000 calc(100% - 96px), transparent); }
+  .atlas-workspace .cx-rowmore-wrap { display: contents; }
+  .atlas-workspace .cx-rowmore { position: absolute; top: 0; bottom: 0; z-index: 2; display: inline-flex; align-items: center; gap: 4px; height: 44px; min-width: 44px; margin: auto 0; padding: 0 12px; border-radius: 999px; border: 1px solid var(--atlas-border); background: var(--atlas-panel); color: var(--atlas-ink); font: inherit; font-size: .8125rem; font-weight: 600; white-space: nowrap; cursor: pointer; transition: transform .16s ease-out; }
+  .atlas-workspace .cx-rowmore:active { transform: scale(.97); }
+  .atlas-workspace .cx-rowmore-start { left: 0; }
+  .atlas-workspace .cx-rowmore-end { right: 0; }
+  .atlas-workspace .cx-rowmore-back { transform: rotate(180deg); }
+  .atlas-workspace .cx-row-rooms .cx-rowmore { margin-top: 4px; }
 }
+@media (max-width: 760px) { .cx-rowmore { display: none; } }
 @media (min-width: 761px) and (hover: hover) and (pointer: fine) {
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=inactive]:hover { background: #ffffff0d; color: var(--atlas-ink); }
   .atlas-workspace .atlas-sidebar-bottom button:not(.active):hover { background: #ffffff14; }
   /* hover shows only where there is a real pointer that hovers (a touch screen would leave it stuck on) */
 }
-@media (prefers-reduced-motion: reduce) { .atlas-workspace .atlas-sidebar-bottom button { transition: none; } .atlas-workspace .atlas-sidebar-bottom button:active { transform: none; } }
+@media (prefers-reduced-motion: reduce) { .atlas-workspace :is(.atlas-sidebar-bottom button, .cx-rowmore) { transition: none; } .atlas-workspace :is(.atlas-sidebar-bottom button, .cx-rowmore):active { transform: none; } }
 .cx-stories-ring .cx-story-art { width: 100%; height: 100%; display: grid; place-items: center; color: #fff; }
 .cx-story-art svg { width: 72%; height: 72%; }
