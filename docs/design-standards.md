@@ -57,7 +57,13 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
 - **Empty, blocked, and bad-link states say what happened, why, and one next step.** (`screen-states`)
 - **Easy mode keeps the plain version of everything**, without maps, filters, or controls that need explaining. (`easy-phone`, `easy-desktop`)
 - **Language is a one-tap choice from outside Settings** (the ES/EN button in every header). (`spanish-switch`)
-- **Motion is calm and optional.** Respect reduced motion. Nothing flashes. **(no check yet)**
+- **Where you are has one source.** A screen that shows where you are in more than one way (a lit tick, a highlighted heading, a highlighted
+  card, a guide's words) reads all of them from one value, so they can never disagree. On Explore that value is the level of the card on the
+  reading line, 45% down the list (`CXM_RAIL.level`). (`explore-bubble`)
+- **A guide speaks at rest, once.** A character's remark waits until the list has stopped (160 ms), names a place once a visit, going down,
+  never while the list moves and never on the way back up, and leaves as soon as the list moves or after 2.4 s. (`explore-bubble`)
+- **Motion is calm and optional.** Respect reduced motion. Nothing flashes. (`explore-bubble` for the guide's bubble and the rail's jumps;
+  **no check yet** for the rest)
 
 ## 4. UI standards (how it looks)
 
@@ -67,6 +73,15 @@ money or the ballot sit on the accent. Cards use tinted backgrounds. **Never a l
 (`axe` for contrast; the Original run covers the other palette)
 
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)
+
+**Glass never sits on text.** A translucent surface (the guide's bubble on Explore: the style's `--navy2` at 78% over an 18 px blur, a hairline
+edge, and a soft shade) keeps its own words readable (5.7:1 or better laid over the page's own text color, with no credit for the blur; 10:1 and up
+on the real pixels), but no glass keeps the text under it readable. So the surface is placed, not only made see-through: under the heading of the
+level it names, on no card question and no heading, inside the list and above the tab bar; when there is no such place it says nothing. It is
+hidden from screen readers, and a status line that is always there says the same words. With reduced transparency it is solid, with more
+contrast it is solid with a 2 px edge, in forced colors it takes the system colors, and with reduced motion it appears and leaves without moving.
+The values are in `ext/cxm.css` (`.cxm-rail-bubble`); a `material.glass` token is proposed to design and not yet in `design/tokens.json`.
+(`explore-bubble`, which measures the contrast on the real pixels behind the words and plants a bubble over a question to prove it catches one)
 
 **Light and dark.** Every screen works in both modes (System, Light, Dark) and both styles. Dark is the source; light is generated from it, so a new color rule in `ext/cxm.css` or `ext/cx.css` is turned into its light counterpart automatically. A part that sits on the accent or on a dark island must be named in `light.py` so it is left alone. The mode is separate from the style. (`mode-switch`; the layout, contrast, and color-vision checks run in light by `CHECK_MODE=light`, and `release.py` runs them)
 
@@ -110,6 +125,10 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
 reachable with a mouse alone, Jump to and My pages, the three main tabs and the way back from the United States map), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
+`explore-bubble` (on Explore at 390 and 320 px: the guide's bubble, the lit tick, and the highlighted heading name the highlighted card's level at every
+rest; the bubble covers no question or heading and stays in the list; 4.5:1 on the real pixels; at rest only, once a level, at most one after a fling,
+none going back up, gone 3 s after a jump to the top; Spanish from its first frame; reduced motion and reduced transparency; 44 px ticks, a bare tap
+moves nothing, a drag scrubs from where it took hold; cards keep their height; the rail's current place shows in light),
 `spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
 /privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,

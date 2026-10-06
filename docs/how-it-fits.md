@@ -123,4 +123,18 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **The dated actions load when needed.** `site/council/record-2026.json` (and, in the offline file, the `cx-council-rec` block, read once and removed)
   is fetched the first time a record or a list needs it (`useCxRec()`); until then a record shows the action history the page already carries.
   `votes-actions` fails if Today asks for it.
+- **A state rule loses to the generated light rule for its base.** `light.py` writes `html[data-cx-mode=light] .cxm-tick i { background: ... }`
+  for a dark base rule with a color, and the extra `html[...]` outranks the dark `.cxm-tick.on i { background: var(--acc2) }`. In light the Explore
+  rail's fill, current tick, and current ring were the track's pale gray. Restore the state in `ext/cx-light.css` (never by editing dark), and
+  look at the current state, not only the idle one, in a light screenshot.
+- **Words that must be in the reader's language from their first frame** (the guide's bubble on Explore) are drawn already translated
+  (`cxUsmTr`) on an element marked `data-no-translate`; without the mark the translator takes the Spanish for new English, marks it `lang="en"`,
+  and lists it as a gap. Words the translator swaps after drawing show English for about 50 ms.
+- **Explore's "where you are" is one value.** `CXM_RAIL.level` is the level of the card on the reading line (45% down the list); the lit
+  tick, the highlighted heading, the highlighted card, and the guide's bubble all read it. A second way to work out the level (the old bubble
+  used the pinned heading) disagreed with the card on a third of the rests. The rail's ticks are evenly spaced 44 px targets and the guide
+  moves piecewise in step with the scroll (`cxmRailY`), so it passes a tick exactly when that level takes the reading line.
+- **Chrome moves a tap near a button onto the button.** On a touch screen a tap a few pixels off a rail tick lands on the tick (touch
+  adjustment), so test "a bare tap does nothing" with the mouse, and make a drag handle a hit target of its own: the guide is drawn above the
+  ticks, or a drag that starts on the guide where it sits on a tick would only press the tick.
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).
