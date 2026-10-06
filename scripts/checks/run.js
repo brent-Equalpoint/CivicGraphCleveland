@@ -1,8 +1,14 @@
 #!/usr/bin/env node
 /* Browser checks for the built site: one command, one exit code.
 
-     node scripts/checks/run.js              run everything against site/
+     node scripts/checks/run.js              run everything against site/, several checks at a time
      node scripts/checks/run.js --only easy  run the checks whose name contains "easy"
+     node scripts/checks/run.js --exact axe,print   run exactly these checks ("none": no default pass, only --light or --spanish)
+     node scripts/checks/run.js --light      also run the light-mode list (scripts/checks/lists.js) in Bento and in Original; --light a,b: these
+     node scripts/checks/run.js --spanish    also run the Spanish layout list (lists.js); --spanish a,b: these
+     node scripts/checks/run.js --jobs 4     how many at a time (or CHECK_JOBS; default min(4, half the processors); 1: one by one, in this process)
+     node scripts/checks/run.js --shard 2/3  only part 2 of 3 of the jobs (the Checks workflow splits the suite across three machines)
+     node scripts/checks/run.js --report r.json   also write the results and times as JSON
      node scripts/checks/run.js --list       print the check names
 
    It serves site/ itself (so nothing else needs to run), drives headless Chrome with puppeteer-core,
@@ -10,8 +16,12 @@
    --no-sandbox. These are the checks that were run by hand during the v5.16 build; the accessibility
    audit (axe-core, WCAG 2.2 AA rules and best practices) is the last one. Known false positives are
    listed in AXE_ALLOW with the reason; anything else fails.
+   When more than one check runs at a time, scripts/checks/pool.js runs each in its own process (its own Chrome, profile, and server
+   port) and prints the results in this table's order; the exit code is the same. CHECK_MODE, CHECK_THEME, CHECK_LANG, and AXE_PAGE
+   reach every check as before.
 */
 const puppeteer = require('puppeteer-core');
+const { LIGHT, SPANISH, SERIAL, TOGETHER } = require('./lists.js');
 const axeSource = require('fs').readFileSync(require.resolve('axe-core/axe.min.js'), 'utf8');
 const http = require('http'), fs = require('fs'), path = require('path');
 
@@ -89,10 +99,14 @@ async function clickText(p, label, sel = 'button, a') {
   await el.click(); await wait(350);
 }
 function expect(cond, msg) { if (!cond) fails.push(msg); }
-async function done(p) {
+// what every page must not do: console errors, asking another site for anything, a Content-Security-Policy report
+function pageExpect(p) {
   expect(p.errors.length === 0, `console errors: ${JSON.stringify(p.errors)}`);
   expect((p.outside || []).length === 0, `the page asked another site for something: ${JSON.stringify(p.outside)}`);   // pages a check opens itself are not tracked
   expect((p.csp || []).length === 0, `the browser reported a Content-Security-Policy violation: ${JSON.stringify(p.csp)}`);
+}
+async function done(p) {
+  pageExpect(p);
   await p.close2();
 }
 /* At City Hall's own functions (the part of ext/cx-meetings.jsx with no screen in it, and the priority keyword rules of ext/cx-leaders.jsx) run on the
@@ -3377,21 +3391,40 @@ CHECKS['design-look'] = async () => {
   const file = path.join(__dirname, '..', '..', 'design', 'look.json');
   const have = fs.existsSync(file) ? JSON.parse(fs.readFileSync(file, 'utf8')) : {};
   const now = {};
+  // A screen with story steps on the same address (the phone's Today: the Issue 10 story, its figure, its number pad) is one page load: the screen
+  // is read first, then the story is opened and stepped through, reading each step. Reading changes nothing, so each step reads what a fresh
+  // open with the same clicks shows (12 fewer page loads; the look of every part is still compared with design/look.json).
+  const STEPS = ['story', 'figure', 'pad'];
   for (const look of ['bento dark', 'original dark', 'bento light', 'original light']) {
     const [style, mode] = look.split(' ');
+    const read = {};
     for (const [name, url, opt, step, sels] of LOOK_PAGES) {
+      if (read[name]) continue;
       const p = await open(url, { ...opt, mode, theme: style === 'original' ? 'original' : undefined });
-      if (step) {
+      const story = async () => {
         const ring = await p.$$('.cxm-story-btn'); let pick = null;
         for (const x of ring) { if (/Issue 10/.test(await x.evaluate((e) => e.getAttribute('aria-label') || ''))) pick = x; }
         if (pick) { await pick.click(); await wait(500); }
-        const tap = async () => { const x = await p.$('.cxm-tap-r'); if (x) await x.click(); await wait(250); };
+      };
+      const tap = async () => { const x = await p.$('.cxm-tap-r'); if (x) await x.click(); await wait(250); };
+      if (step) {
+        await story();
         if (step === 'figure' || step === 'pad') await tap();
         if (step === 'pad') await tap();
       }
-      now[`${look} | ${name}`] = await lookOf(p, sels);
+      read[name] = await lookOf(p, sels);
+      if (!step) {   // this address's story steps, in order, on the same page
+        const steps = LOOK_PAGES.filter((r) => r[3] && r[1] === url && JSON.stringify(r[2]) === JSON.stringify(opt) && !read[r[0]]).sort((a, b) => STEPS.indexOf(a[3]) - STEPS.indexOf(b[3]));
+        let at = -1;
+        for (const [n2, , , s2, sels2] of steps) {
+          if (at < 0) { await story(); at = 0; }
+          while (at < STEPS.indexOf(s2)) { await tap(); at++; }
+          read[n2] = await lookOf(p, sels2);
+        }
+      }
       await done(p);
     }
+    for (const [name] of LOOK_PAGES) now[`${look} | ${name}`] = read[name];
   }
   if (process.env.DESIGN_UPDATE) { fs.mkdirSync(path.dirname(file), { recursive: true }); fs.writeFileSync(file, JSON.stringify(now, null, 1) + '\n'); console.log(`    wrote design/look.json (${Object.keys(now).length} screens)`); return; }
   expect(Object.keys(have).length > 0, 'design/look.json is missing: run DESIGN_UPDATE=1 node scripts/checks/run.js --only design-look');
@@ -3552,15 +3585,48 @@ CHECKS['color-vision'] = async () => {
   }
   for (const [h, where] of unknown) expect(false, `${h} is used as a colored mark on ${where} but is in no "meaning" group in design/tokens.json: add it, say what carries its meaning, and run node scripts/design/cvd.js`);
 };
+/* axe, text-overlap, and no-bleed visit the same pages (AXE_PAGES). When two or three of them run in one process (pool.js gives them one
+   job: TOGETHER in lists.js), each page is opened once for all of them, and each reads it as its own fresh open would show it: the spill and
+   cut-off scan first (it only reads), then axe (it only reads; any scrolling it does is put back before the next scan), then the overlap scan
+   (it scrolls, so it is last). Console errors, requests to other sites, and Content-Security-Policy reports from the page's whole visit count
+   against every check that read it. A check run alone opens its pages itself, as it always has. */
+const SWEEP_SKIP = {
+  'no-bleed': /^desktop (home original|ledger original|profiles original|profile with votes original)$/,
+  // a menu that opens over the page covers part of a line on purpose
+  'text-overlap': /^desktop (home original|ledger original|profiles original|profile with votes original|my pages menu|my pages menu original|jump box|jump box original)$/,
+};
+const SWEEP = { runs: [], pages: new Map() };   // runs: which of the three run in this process (set before the checks start)
+const sweeping = () => SWEEP.runs.length > 1;
+async function sweepPage(name, url, o) {
+  if (!SWEEP.pages.has(name)) {
+    const want = SWEEP.runs.filter((c) => !(SWEEP_SKIP[c] && SWEEP_SKIP[c].test(name)));
+    const p = await open(url, o);
+    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
+    const r = {};
+    if (want.includes('no-bleed')) { r.bleed = await bleedBad(p); r.cut = await clipBad(p); }
+    if (want.includes('axe')) {
+      await p.evaluate(() => { window.__cxScroll = [document.scrollingElement, ...document.querySelectorAll('*')].filter((e) => e && (e.scrollHeight > e.clientHeight || e.scrollWidth > e.clientWidth)).map((e) => [e, e.scrollTop, e.scrollLeft]); });
+      r.axe = await axeBad(p);
+      const moved = await p.evaluate(() => { let n = 0; for (const [e, t, l] of window.__cxScroll) if (e.scrollTop !== t || e.scrollLeft !== l) { n++; e.scrollTop = t; e.scrollLeft = l; } delete window.__cxScroll; return n; });
+      if (moved) await wait(150);
+    }
+    if (want.includes('text-overlap')) r.overlap = await overlapScan(p);
+    r.page = { errors: p.errors.slice(), outside: p.outside.slice(), csp: p.csp.slice() };
+    await p.close2();
+    SWEEP.pages.set(name, r);
+  }
+  return SWEEP.pages.get(name);
+}
 // AXE_PAGE="desktop home,phone place" limits the run to those pages (a page name is the first word group of each AXE_PAGES row)
 CHECKS['axe'] = async () => {
   for (const [name, url, o] of AXE_PAGES) {
     if (process.env.AXE_PAGE && !process.env.AXE_PAGE.split(',').includes(name)) continue;
-    const p = await open(url, o);
-    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
-    const bad = await axeBad(p);
+    const s = sweeping() ? await sweepPage(name, url, o) : null;
+    const p = s ? null : await open(url, o);
+    if (p && o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
+    const bad = s ? s.axe : await axeBad(p);
     expect(bad.length === 0, `axe on ${name}: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));
-    await done(p);
+    if (s) pageExpect(s.page); else await done(p);
   }
 };
 
@@ -3705,13 +3771,14 @@ CHECKS['tab-blue'] = async () => {
   }
 };
 CHECKS['text-overlap'] = async () => {
-  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original|my pages menu|my pages menu original|jump box|jump box original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));   // a menu that opens over the page covers part of a line on purpose
+  const pages = AXE_PAGES.filter(([name]) => !SWEEP_SKIP['text-overlap'].test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
   for (const [name, url, o] of pages) {
-    const p = await open(url, o);
-    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
-    const bad = await overlapScan(p);
+    const s = sweeping() ? await sweepPage(name, url, o) : null;
+    const p = s ? null : await open(url, o);
+    if (p && o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
+    const bad = s ? s.overlap : await overlapScan(p);
     expect(bad.length === 0, `text overlaps text on ${name}: ` + bad.slice(0, 3).join('; '));
-    await done(p);
+    if (s) pageExpect(s.page); else await done(p);
   }
   if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'sheets') {   // the Profile sheet (counts, lists, votes) is where the big numbers are
     const s = await open('/?panel=profiles#phone', { mobile: true, easy: false });
@@ -3733,15 +3800,16 @@ CHECKS['text-overlap'] = async () => {
   }
 };
 CHECKS['no-bleed'] = async () => {
-  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
+  const pages = AXE_PAGES.filter(([name]) => !SWEEP_SKIP['no-bleed'].test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
   for (const [name, url, o] of pages) {
-    const p = await open(url, o);
-    if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
-    const bad = await bleedBad(p);
+    const s = sweeping() ? await sweepPage(name, url, o) : null;
+    const p = s ? null : await open(url, o);
+    if (p && o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }
+    const bad = s ? s.bleed : await bleedBad(p);
     expect(bad.length === 0, `text spills out of its box on ${name}: ` + bad.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}"`).join('; '));
-    const cut = await clipBad(p);
+    const cut = s ? s.cut : await clipBad(p);
     expect(cut.length === 0, `text is cut off on ${name}: ` + cut.slice(0, 4).map((b) => `.${b.cls} ${b.kind} by ${b.by}px "${b.text}"`).join('; '));
-    await done(p);
+    if (s) pageExpect(s.page); else await done(p);
   }
   // the detectors must catch the two ways text goes wrong, or a clean result means nothing
   if (!process.env.AXE_PAGE || process.env.AXE_PAGE === 'selftest') {
@@ -3966,12 +4034,26 @@ CHECKS['votes-actions'] = async () => {
 (async () => {
   if (argv('--list')) { console.log(Object.keys(CHECKS).join('\n')); return; }
   if (!fs.existsSync(path.join(SITE, 'index.html'))) { console.error(`No ${SITE}/index.html. Run python build.py first.`); process.exit(2); }
-  const only = argv('--only');
+  // which checks: --exact names them ("none": no default pass), --only takes every check whose name contains one of its words, neither takes all
+  const exact = argv('--exact'), only = argv('--only');
+  const listOf = (v, all) => (typeof v === 'string' ? (v === 'none' ? [] : v.split(',').map((s) => s.trim()).filter(Boolean)) : v ? all : []);
+  const asked = typeof exact === 'string' ? listOf(exact) : Object.keys(CHECKS).filter((name) => !(only && only !== true && !only.split(',').some((w) => name.includes(w))));
+  const light = listOf(argv('--light'), LIGHT), spanish = listOf(argv('--spanish'), SPANISH);
+  const unknown = [...asked, ...light, ...spanish].filter((n) => !CHECKS[n]);
+  if (unknown.length) { console.error(`No check named ${[...new Set(unknown)].join(', ')}. The names: node scripts/checks/run.js --list`); process.exit(2); }
+  const inOrder = (l) => Object.keys(CHECKS).filter((n) => l.includes(n));
+  const names = inOrder(asked);
+  // more than one job, a second pass, a part of the suite, or a report: side by side (pool.js), each check in its own process
+  const pool = require('./pool.js');
+  if (!process.env.CX_CHECK_CHILD && (light.length || spanish.length || argv('--shard') || argv('--report') || (pool.jobCount(argv('--jobs')) > 1 && pool.jobsFor({ names }).length > 1))) {
+    process.exit(await pool.run({ names, light: inOrder(light), spanish: inOrder(spanish), serial: SERIAL, jobs: argv('--jobs'), shard: argv('--shard'), report: argv('--report') }));
+  }
+  SWEEP.runs = TOGETHER[0].filter((c) => names.includes(c));
   const { server, base } = await serve(); BASE = base;
   B = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: process.env.CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : [] });
   let failed = 0, ran = 0;
-  for (const [name, fn] of Object.entries(CHECKS)) {
-    if (only && only !== true && !only.split(',').some((w) => name.includes(w))) continue;
+  for (const name of names) {
+    const fn = CHECKS[name];
     const t = Date.now(); ran++;
     // A browser can hiccup (a dropped session, a garbled script string) with nothing wrong in the app. A check that ended ONLY in a crash gets one more
     // run; an assertion that failed is never retried.
@@ -3984,7 +4066,19 @@ CHECKS['votes-actions'] = async () => {
     console.log(`${fails.length ? 'FAIL' : 'ok  '}  ${name}  (${((Date.now() - t) / 1000).toFixed(1)}s)`);
     fails.forEach((f) => console.log(`        - ${f}`)); if (fails.length) failed++;
   }
-  await B.close(); server.close();
+  await closeChrome(B); server.close();
   console.log(`\n${ran - failed} of ${ran} checks passed.`);
   process.exit(failed ? 1 : 0);
 })();
+/* Every result is in before Chrome is closed. On Windows, a Chrome told to close can take about two minutes to exit when several run at once
+   (three were seen to wait and then exit at the same moment), which would hold a job long after its check finished. So: a clean close if it
+   takes under 8 seconds, otherwise its processes are ended and its temporary profile is removed, as a clean close would. */
+async function closeChrome(b) {
+  const proc = b.process(), arg = ((proc && proc.spawnargs) || []).find((a) => a.startsWith('--user-data-dir='));
+  const closed = await Promise.race([b.close().then(() => true, () => true), wait(8000).then(() => false)]);
+  if (closed || !proc) return;
+  try { if (process.platform === 'win32') require('child_process').execSync(`taskkill /pid ${proc.pid} /T /F`, { stdio: 'ignore' }); else proc.kill('SIGKILL'); } catch (e) { /* already gone */ }
+  const dir = arg && arg.slice('--user-data-dir='.length);
+  if (!dir || !/puppeteer_dev_chrome_profile-/.test(path.basename(dir))) return;   // only the temporary profile puppeteer made for this run
+  for (let i = 0; i < 10; i++) { try { fs.rmSync(dir, { recursive: true, force: true }); return; } catch (e) { await wait(500); } }
+}
