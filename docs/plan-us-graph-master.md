@@ -82,7 +82,7 @@ Each phase ends with the full gate passing and a screenshot review before the ne
 7. **Phone.** Touch (tap, hold, drag, pinch, glide), pull-up sheet, small-screen and large-text passes, Reduce Motion.
 8. **Checks.** Port the kit's assertions into `scripts/checks/run.js`. Add: map fills at least 90% of the viewport; no overlapping labels; no name that appears only on hover; no scores or strength words anywhere in the text; sheet closes four ways; Spanish; light; color-vision; axe; a real-phone pass.
 9. **Retire the old Sky** once the new one passes, so there is one map. Update the docs and the build record.
-10. **Later:** the alignment mode, planned separately in `docs/plan-alignment.md`, which must use the same sheet and profile and still show no score.
+10. **Later:** the alignment mode, planned separately in `docs/plan-alignment.md`, which must use the same sheet and profile and still show no score. (Oct 6: step 1 is built as Compare members, the fourth item in the left menu, and as "In your policy areas" on a member's sheet and profile; step 2 is built and hidden until a person reviews its questions. `ext/cx-align.jsx`.)
 
 ## Risks
 

@@ -27,6 +27,7 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | Desktop or shared logic | `ext/cx-*.jsx`, `ext/cx-live.jsx` | same, plus `CHECK_THEME=original` |
 | Compiled app | `patch()` in `build.py` | the build log lists every patch ok |
 | New or changed text | the component, then `i18n/manual.json` | `node scripts/i18n/crawl.js`, `python scripts/test_i18n.py` |
+| How you line up (questions, counts) | `ext/cx-align-text.jsx` (between the markers), `ext/cx-align.jsx` | `node scripts/test_alignment.js`, `--only alignment`; a person runs `python build.py --mark-alignment-reviewed "Name"` |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
 | Ship | commit (one line, what changed for a resident) | `python scripts/release.py --push` |
@@ -80,4 +81,15 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
   map as cut off. The sheet's scrolling body is `position: relative`, which keeps such spans inside it.
 - **A note or story over the map takes its own step in history** (`openX`/`closeX` in `CX_UsMap`), checked first in `onPop`, so the back gesture closes
   it and never the profile under it. The desktop app rewrites the address after that step, so the profile's `who=` is put back when a note closes.
+- **How you line up has two steps, and the second is hidden.** `ext/cx-align.jsx` holds step 1 (what a member voted on in the policy areas you pick:
+  Compare members, and the counts on a member's sheet and profile) and step 2 (the sample questions and the per-area lines). The questions sit between
+  the ALIGN-TEXT markers in `ext/cx-align-text.jsx` as strict JSON; `build.py` checks every vote they name against `data/us-votes-2026.json` (in the
+  record, deciding, the right chamber, the bill's only deciding vote there), takes the table out of the page, and serves it as `site/us/align-2026.json`,
+  fetched only when step 2 is on and opens. Step 2 is on only when `CX_ALIGN_REVIEW.ok` (a person ran `--mark-alignment-reviewed "Name"` and the text
+  has not changed since) or when a browser check sets `window.__cxAlignPreview` before the page loads; nothing in the app sets it, and
+  `scripts/test_alignment.js` fails if anything does. The policy areas (`CX_US_AREAS`) and the answers (`CX_ALIGN_ANS`) live in memory only. Never
+  add a number across areas, an order by any count, or a color or size on the map that depends on an answer: `test_alignment.js` and the
+  `alignment` check fail on each.
+- **The translator takes a comma that follows a number.** "Yea 6, Nay 0" masks as "Yea {n} Nay {n}" with "6," captured, because a number may have
+  thousands commas. Write such a pattern in `i18n/manual.json` without the comma after `{n}`, in English and Spanish (the counts on Compare members do).
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).
