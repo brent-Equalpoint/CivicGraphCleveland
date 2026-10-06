@@ -1007,6 +1007,11 @@ function CX_UsMap({ phone, onExit }) {
   const [ix, setIx] = u.useState([]);
   const ixR = u.useRef({ stack: [], pushed: 0, skip: 0, then: null, fwd: [], t: [], on: !1 });
   ixR.current.on = page === `network` && view === `index`;
+  // the Tree (ext/cx-us-tree.jsx): what is open is kept in memory only. Opening something (a drawer, a branch, Open all) is a step in the
+  // browser's history, so Back and the back gesture close what was opened last; the steps are counted here, as the Index's are, and carry
+  // their number (cxUst) so Forward opens them again. The Tree fills in undo, redo, and find.
+  const trR = u.useRef({ steps: [], pushed: 0, skip: 0, then: null, fwd: [], t: [], on: !1, undo: null, redo: null, find: null });
+  trR.current.on = page === `network` && view === `tree`;
   // the profile page: the profiles open, oldest first ([] is the map). A link may name one (?who=bernie-moreno): the person, never the viewer.
   const whoAt = u.useRef(null);
   if (whoAt.current === null) { try { whoAt.current = new URLSearchParams(globalThis.location.search).get(`who`) || ``; } catch (e) { whoAt.current = ``; } }
@@ -1434,8 +1439,29 @@ function CX_UsMap({ phone, onExit }) {
     if (k > 0) { r.skip += 1; r.then = f; try { globalThis.history.go(-k); } catch (e) { r.skip -= 1; r.then = null; if (f) f(); } }
     else if (f) f();
   };
+  // ---- the Tree's steps in history: push one when something opens; drop what was closed by hand (the newest steps that are left empty
+  // leave history quietly); trLeave takes every step out before the map, a profile, the Index, or another page takes one of its own (then)
+  const trStamp = () => {   // as ixStamp: the desktop app rewrites the entry a back step lands on, so the step's number is written on it again
+    const r = trR.current; r.t.forEach((t) => clearTimeout(t));
+    r.t = [0, 300, 900].map((ms) => setTimeout(() => { try { const s0 = globalThis.history.state || {}; if (r.on && s0.cxUst !== r.steps.length) globalThis.history.replaceState({ ...s0, cxUst: r.steps.length }, ``, globalThis.location.href); } catch (e) { /* no history */ } }, ms));
+  };
+  const trLeave = (then) => {
+    const r = trR.current, k = r.pushed, f = typeof then === `function` ? then : null;
+    r.steps = []; r.fwd = []; r.pushed = 0;
+    if (k > 0) { r.skip += 1; r.then = f; try { globalThis.history.go(-k); } catch (e) { r.skip -= 1; r.then = null; if (f) f(); } }
+    else if (f) f();
+  };
+  trR.current.leave = trLeave;
+  trR.current.push = (ids) => { const r = trR.current; try { globalThis.history.pushState({ cxUst: r.steps.length + 1 }, ``, globalThis.location.href); r.pushed += 1; r.steps.push(ids); } catch (e) { /* a sandboxed page has no history */ } r.fwd = []; };
+  trR.current.drop = (ids) => {
+    const r = trR.current, gone = new Set(ids);
+    r.steps = r.steps.map((s0) => s0.filter((x) => !gone.has(x)));
+    let k = 0; while (k < r.steps.length && !r.steps[r.steps.length - 1 - k].length) k += 1;
+    k = Math.min(k, r.pushed);
+    if (k > 0) { r.steps = r.steps.slice(0, r.steps.length - k); r.pushed -= k; r.skip += 1; try { globalThis.history.go(-k); } catch (e) { r.skip -= 1; } }
+  };
   // the sheet takes its own step too: close it first, and do the next thing once that step is gone
-  const sheetThen = (then) => { const b = back.current; if (b.pushed === `sheet`) { b.then = then; setSheet(!1); } else { setSheet(!1); then(); } };
+  const sheetThen =(then) => { const b = back.current; if (b.pushed === `sheet`) { b.then = then; setSheet(!1); } else { setSheet(!1); then(); } };
 
   // ---- the back gesture closes the open sheet or panel instead of leaving the page (the kit's history layers)
   const layer = sheet ? `sheet` : phone && panel ? `panel` : ``;
@@ -1461,6 +1487,25 @@ function CX_UsMap({ phone, onExit }) {
       const b = back.current;
       if (b.skip) { b.skip -= 1; if (!b.skip && b.then) { const f = b.then; b.then = null; f(); } return; }
       if (b.pushed) { const was = b.pushed; b.pushed = ``; if (was === `sheet`) setSheet(!1); else setPanel(!1); return; }
+      // the Tree: close what was opened last (or, after a back step, Forward opens it again)
+      const tr = trR.current;
+      if (tr.skip) { tr.skip -= 1; if (!tr.skip && tr.then) { const f = tr.then; tr.then = null; f(); } trStamp(); return; }
+      const tst = ev && ev.state, td = tst && typeof tst.cxUst === `number` ? tst.cxUst : null, tn = tr.steps.length;
+      if (tr.on && td !== null && td > tn && tr.fwd.length) { const s0 = tr.fwd.pop(); tr.steps.push(s0); tr.pushed += 1; if (tr.redo) tr.redo(s0); trStamp(); return; }
+      if (tr.on && tn && tr.pushed > 0 && (td === null || td < tn)) {
+        const k = td === null ? 1 : Math.min(tn, tn - td), undone = tr.steps.splice(tn - k);
+        tr.pushed -= k; tr.fwd.push(...undone.slice().reverse());
+        const did = tr.undo ? tr.undo(undone.flat()) : !0;
+        trStamp();
+        // a step whose drawers were already closed by hand changes nothing: step back past it, so no back press is wasted
+        if (!did && tr.pushed > 0) { try { globalThis.history.back(); } catch (e) { /* no history */ } }
+        return;
+      }
+      if (!tr.on && tr.pushed > 0) {   // a step of a Tree that is no longer showing: step back past the rest of them quietly
+        const k = tr.pushed - 1; tr.pushed = 0; tr.steps = []; tr.fwd = [];
+        if (k > 0) { tr.skip += 1; try { globalThis.history.go(-k); } catch (e) { tr.skip -= 1; } }
+        return;
+      }
       // the Index: one name back (or, after a back step, Forward one name in again)
       const ir = ixR.current;
       if (ir.skip) { ir.skip -= 1; if (!ir.skip && ir.then) { const f = ir.then; ir.then = null; f(); } ixStamp(); return; }
@@ -1636,23 +1681,23 @@ function CX_UsMap({ phone, onExit }) {
   const setButton = !phone ? <button type="button" className="usm-btn usm-set-btn" aria-expanded={setOn} aria-haspopup="dialog" onClick={openSettings}><CXI.Sliders size={16} /><span>Settings</span></button> : null;
   // Explore in Index: the Index opens on this one's own page, with its front page one step back
   const openIndex = () => { const id = cur ? cur.id : ``; sheetThen(() => ixLeave(() => { setPage(`network`); setView(`index`); if (id) ixPush([id]); })); };
-  const indexOn = page === `network` && view === `index`;
-  const goPage = (p) => { const f = () => { setPage(p); setSheet(!1); setPanel(!1); }; if (ixR.current.on && p !== page) ixLeave(f); else f(); };
+  const indexOn = page === `network` && view === `index`, treeOn = page === `network` && view === `tree`;
+  const goPage = (p) => { const f = () => { setPage(p); setSheet(!1); setPanel(!1); }; if (ixR.current.on && p !== page) ixLeave(f); else if (trR.current.on && p !== page) trLeave(f); else f(); };
   // Compare members (ext/cx-align.jsx), from the left menu, a member's sheet or profile, People, or the phone's Show panel; f: `questions` opens it at the questions
   const goCompare = (f) => { setCmpFocus(f === `questions` ? `questions` : ``); goPage(`compare`); };
   const PILLS = [[`sky`, `Sky`], [`index`, `Index`], [`linked`, `Linked`], [`tree`, `Tree`]];
-  const pills = <div className="usm-pills" role="group" aria-label="View">{PILLS.map(([id, t]) => <button key={id} type="button" aria-pressed={page === `network` && view === id} className={page === `network` && view === id ? `on` : ``} onClick={() => { const f = () => { setPage(`network`); setView(id); setSheet(!1); }; const r = ixR.current; if (r.on && id === `index`) ixTo(0); else if (r.on) ixLeave(f); else f(); }}>{t}</button>)}</div>;
+  const pills = <div className="usm-pills" role="group" aria-label="View">{PILLS.map(([id, t]) => <button key={id} type="button" aria-pressed={page === `network` && view === id} className={page === `network` && view === id ? `on` : ``} onClick={() => { const f = () => { setPage(`network`); setView(id); setSheet(!1); }; const r = ixR.current; if (r.on && id === `index`) ixTo(0); else if (r.on) ixLeave(f); else if (trR.current.on && id !== `tree`) trLeave(f); else f(); }}>{t}</button>)}</div>;
   const search = (
     <div className="usm-search">
       <label><span className="usm-sr">Find a person, committee, agency, or court</span>
         <input ref={searchRef} type="search" value={q} aria-keyshortcuts="/" onChange={(e) => setQ(e.target.value)} placeholder="Find someone" autoComplete="off" /></label>
       {!phone && <kbd aria-hidden="true">/</kbd>}
-      {results.length > 0 && (sky || indexOn) && (
+      {results.length > 0 && (sky || indexOn || treeOn) && (
         <ul className="usm-results" aria-label="Search results">
-          {results.map((n) => <li key={n.id}><button type="button" onClick={() => { setQ(``); if (phone) setSearchOn(!1); if (indexOn) { ixGo(n.id); return; } if (solo && !solo.keep.has(n.i)) setSolo(null); pick(n.i, !0); }}><strong>{n.name}</strong><small>{kindWord(n)}{n.m ? `, ${cxStateName(n.m.state)}` : ``}</small></button></li>)}
+          {results.map((n) => <li key={n.id}><button type="button" onClick={() => { setQ(``); if (phone) setSearchOn(!1); if (indexOn) { ixGo(n.id); return; } if (treeOn) { if (trR.current.find) trR.current.find(n.id); return; } if (solo && !solo.keep.has(n.i)) setSolo(null); pick(n.i, !0); }}><strong>{n.name}</strong><small>{kindWord(n)}{n.m ? `, ${cxStateName(n.m.state)}` : ``}</small></button></li>)}
         </ul>
       )}
-      {needle.length >= 2 && !results.length && (sky || indexOn) && <p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
+      {needle.length >= 2 && !results.length && (sky || indexOn || treeOn) &&<p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
     </div>
   );
   const showPanel = (
@@ -1717,7 +1762,7 @@ function CX_UsMap({ phone, onExit }) {
       onProfile={(i) => { setSel(i); openProfile(i); }}
       onMap={(IP) => ixLeave(() => { setPage(`network`); setView(`sky`); if (IP.state) soloPick(`s:${IP.state}`); else if (IP.area) soloPick(`a:${IP.area}`); else { if (solo && !solo.keep.has(IP.i)) setSolo(null); pick(IP.i, !0); } })}
       onTopics={(area) => ixLeave(() => { CX_US_PICK.area = area; setPage(`topics`); setSheet(!1); setPanel(!1); })} />
-    : view === `tree` ? <CX_UsTree data={data} g={g} onOpen={(i) => { setSel(i); openProfile(i); }} />
+    : view === `tree` ? <CX_UstTree data={data} g={g} M={M} phone={phone} still={still} R={trR} onCard={(o, el) => openX({ type: `tree`, ...o }, el)} />
     : view === `linked` ? (
       <div className="us-linked">
         {!cur && <p>Choose a person, committee, agency, or court on the map, in the Index, or in the Tree, and its connections are listed here.</p>}
@@ -1739,14 +1784,14 @@ function CX_UsMap({ phone, onExit }) {
     <section className={`usm ${phone ? `usm-phone` : `usm-desk`} ${sheet ? `usm-has-sheet` : ``} ${full ? `usm-full` : ``}`} ref={rootRef} onKeyDown={onRootKey} aria-labelledby="usm-h">
       {!phone && (
         <nav className="usm-menu usm-float" ref={menuRef} aria-label="United States">
-          <button type="button" className="usm-back" onClick={() => ixLeave(() => (onExit ? onExit() : CX_NAV.panel && CX_NAV.panel(``)))}><CXI.Back size={16} /><span>Cleveland</span></button>
+          <button type="button" className="usm-back" onClick={() => ixLeave(() => trLeave(() => (onExit ? onExit() : CX_NAV.panel && CX_NAV.panel(``))))}><CXI.Back size={16} /><span>Cleveland</span></button>
           <h1 id="usm-h" className="usm-h1">United States<span className="usm-dot">.</span></h1>
           <p className="usm-sub">Pick anyone to see who they are tied to.</p>
           <ul>{[[`network`, `Network`], [`people`, `People`], [`topics`, `Votes by topic`], [`compare`, `Compare members`]].map(([id, t]) => <li key={id}><button type="button" aria-current={page === id ? `page` : undefined} className={page === id ? `on` : ``} onClick={() => goPage(id)}>{t}</button></li>)}</ul>
         </nav>
       )}
       <header className={`usm-top usm-float ${phone && searchOn ? `usm-searching` : ``}`} ref={topRef}>
-        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` && !(page === entryR.current && onExit) ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` && !(page === entryR.current && onExit) ? goPage(`network`) : onExit && ixLeave(onExit))}><CXI.Back size={18} /></button>}
+        {phone && <button type="button" className="usm-back usm-icon" aria-label={page !== `network` && !(page === entryR.current && onExit) ? `Back to the map` : `Back to People`} onClick={() => (page !== `network` && !(page === entryR.current && onExit) ? goPage(`network`) : onExit && ixLeave(() => trLeave(onExit)))}><CXI.Back size={18} /></button>}
         {phone && <h2 id="usm-h" className={page === `network` ? `usm-sr` : `usm-h2`}>{page === `network` ? `United States` : title}</h2>}
         {page === `network` && (!phone || searchOn) && search}
         {phone && searchOn && page === `network` && <button type="button" className="usm-icon" aria-label="Close search" onClick={() => { setSearchOn(!1); setQ(``); }}><CXI.X size={18} /></button>}
@@ -1757,8 +1802,8 @@ function CX_UsMap({ phone, onExit }) {
       </header>
       {P && <CX_UsProfile g={g} M={M} P={P} phone={phone} still={still} pulled={pulled} back={backLabel} onBack={() => closeProfiles()}
         bar={<><CX_LangButton cls="usm-lang" short={phone} />{setButton}</>}
-        onMap={() => closeProfiles(() => { if (solo && !solo.keep.has(P.i)) setSolo(null); pick(P.i, !0); })}
-        onIndex={() => { const id = g.nodes[P.i].id; closeProfiles(() => { if (ixR.current.on) ixGo(id); else sheetThen(() => ixLeave(() => { setPage(`network`); setView(`index`); ixPush([id]); })); }); }}
+        onMap={() => closeProfiles(() => trLeave(() => { if (solo && !solo.keep.has(P.i)) setSolo(null); pick(P.i, !0); }))}
+        onIndex={() => { const id = g.nodes[P.i].id; closeProfiles(() => { if (ixR.current.on) ixGo(id); else sheetThen(() => ixLeave(() => trLeave(() => { setPage(`network`); setView(`index`); ixPush([id]); }))); }); }}
         onOpen={openProfile} onRole={onRole} onHow={onHow}
         align={P.kind === `member` ? <CX_AlignMember key={P.id} m={g.nodes[P.i].m} where="profile" onCompare={(f) => closeProfiles(() => goCompare(f))} /> : null} />}
       {xo && xo.type !== `how` && <button type="button" className="usm-scrim usx-scrim" aria-label="Close" tabIndex={-1} onClick={closeX} />}
@@ -1780,6 +1825,14 @@ function CX_UsMap({ phone, onExit }) {
           onPick={(i) => closeX(() => ixGo(g.nodes[i].id))}
           lead={<><CX_UsxLines id={xo.sub} kind="sub" />{xo.from && xo.word ? <div className="usi-why"><h3>Why it is linked</h3><p><span {...CX_USI_REC}>{xo.from}</span><span>: </span><b>{xo.word}</b></p></div> : null}</>}
           tail={pc ? <div className="usi-card-acts"><button type="button" className="usm-btn usm-pri" onClick={() => closeX(() => openProfile(pc.i))}>Open the committee's profile</button>{pc.c.url && <a className="usm-btn" href={pc.c.url} target="_blank" rel="noreferrer">Official website<span className="sp-ext"> (opens in a new tab)</span></a>}</div> : null} />;
+      })()}
+      {xo && xo.type === `tree` && (() => {
+        // the Tree's details card (ext/cx-us-tree.jsx). Each button closes the card's own step first, then goes on (closeX's then)
+        const i = xo.i, back = () => { const f0 = xoR.current.focus; xoR.current.focus = null; if (f0 && f0.isConnected) f0.focus({ preventScroll: !0 }); };
+        return <CX_UstCard g={g} M={M} data={data} o={xo} phone={phone} still={still} sheetRef={xoSheetRef} onClose={closeX}
+          onProfile={() => closeX(() => { back(); setSel(i); openProfile(i); })}
+          onMap={() => closeX(() => trLeave(() => { if (solo && !solo.keep.has(i)) setSolo(null); pick(i, !0); }))}
+          onIndex={() => { const id = g.nodes[i].id; closeX(() => trLeave(() => { setPage(`network`); setView(`index`); ixPush([id]); })); }} />;
       })()}
       {xo && xo.type === `how` && <CX_UsxStory onClose={closeX} />}
       {setOn && !phone && <CX_UsmSettings panelRef={setPanelRef} onClose={closeSettings} onDict={() => { setSetOn(!1); setDictOn(!0); }} />}
@@ -1808,7 +1861,7 @@ function CX_UsMap({ phone, onExit }) {
             tail={cur && cur.kind === `member` ? <CX_AlignMember key={cur.id} m={cur.m} where="sheet" onCompare={goCompare} /> : null} />}
         </div>
       )}
-      {!sky && <div className={`us usm-text ${indexOn ? `usi-host` : ``}`}>{textView}</div>}
+      {!sky && <div className={`us usm-text ${indexOn ? `usi-host` : ``} ${treeOn ? `ust-host` : ``}`}>{textView}</div>}
       <p className="usm-sr" role="status" aria-live="polite">{Array.isArray(say) ? say.filter(Boolean).map((t, k) => <span key={k}>{k ? <span>, </span> : null}<span>{t}</span></span>) : say}</p>
     </section>
   );
