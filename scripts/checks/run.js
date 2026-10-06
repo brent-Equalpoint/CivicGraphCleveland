@@ -163,7 +163,7 @@ const CHECKS = {
     expect(await d.evaluate(() => !![...document.querySelectorAll('.cx-stories .cx-story-act button')].find((b) => /new in Council/.test(b.textContent))), 'no Go deeper button on the desktop last step');
     await clickText(d, "See what is new in Council's record", '.cx-stories button'); await wait(700);
     expect(await has(d, '.atlas-shell') && !(await has(d, '.cx-stories')), 'Go deeper did not leave the Stories page');
-    await clickText(d, 'Stories', '.atlas-sidebar button'); await wait(700);
+    await d.click('.cx-pages-btn'); await wait(300); await clickText(d, 'Stories', '#cx-pages-menu button'); await wait(700);   // Stories, from the My pages menu
     expect(/Step \d+ of \d+/.test((await txt(d, '.cx-story-count')) || '') && !/Step 1 of/.test((await txt(d, '.cx-story-count')) || ''), 'the desktop reader forgot where it was');
     await done(d);
   },
@@ -208,7 +208,7 @@ const CHECKS = {
     await clickText(p, 'Easy mode'); expect(await has(p, '.cxe') && !(await has(p, '.atlas-shell')), 'Easy mode did not replace the desktop shell');
     await clickText(p, 'What is on my ballot?'); await walkEasy(p); await clickText(p, 'Open my ballot'); await wait(700);
     expect(await has(p, '.atlas-shell'), 'Open my ballot did not return to the desktop site');
-    expect(/ballot/i.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'the ballot panel is not the active sidebar entry');
+    expect(/ballot/i.test((await txt(p, '.atlas-sidebar [aria-current="page"]')) || ''), 'the ballot panel is not the open page in the desktop strip');
     await done(p);
   },
   async 'screen-states'() {
@@ -1177,7 +1177,7 @@ const CHECKS = {
     expect(await mapReady(p), 'the United States map did not draw');
     expect(await has(p, '.usm canvas.usm-canvas'), 'the United States page has no map canvas');
     expect(!(await has(p, '.us-tabs')) && !(await has(p, '.us-canvas')), 'the old Sky and its tabs are still on the page');
-    expect(await has(p, '.atlas-sidebar button.active') && /United States/.test((await txt(p, '.atlas-sidebar button.active')) || ''), 'United States is not the active sidebar entry');
+    expect(/United States/.test((await txt(p, '.atlas-sidebar [aria-current="page"]')) || ''), 'United States is not the open page in the desktop strip');
     expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic`);
     expect(((await txt(p, '.usm-pills')) || '').replace(/\s+/g, ' ').trim() === 'Sky Index Linked Tree', 'the views are not Sky, Index, Linked, Tree');
     await clickText(p, 'Show', '.usm-show-btn');
@@ -1889,6 +1889,32 @@ const CHECKS = {
       expect((await mo.evaluate(() => scrollY)) > 0, '1100: at the end of the rooms row the wheel no longer scrolls the page (the row traps it)');
     }
     await done(mo);
+    // My pages: one menu, grouped, that opens every page the old buttons opened; Escape closes it and gives the focus back
+    const mp = await open('/?room=council#desktop', { width: 1440 });
+    expect(!(await mp.evaluate(() => [...document.querySelectorAll('.atlas-sidebar-bottom button')].some((b) => b.getBoundingClientRect().width))), 'the old row of page buttons still shows on a computer');
+    await mp.click('.cx-pages-btn'); await wait(300);
+    const menu = await mp.evaluate(() => { const m = document.querySelector('#cx-pages-menu'); if (!m) return null; return { heads: [...m.querySelectorAll('.cx-pages-h')].map((h) => h.innerText.trim()), items: [...m.querySelectorAll('button')].map((b) => b.innerText.trim()), exp: document.querySelector('.cx-pages-btn').getAttribute('aria-expanded'), fs: getComputedStyle(m.querySelector('.cx-pages-h')).fontSize, ff: getComputedStyle(m.querySelector('.cx-pages-h')).fontFamily, tt: getComputedStyle(m.querySelector('.cx-pages-h')).textTransform, small: [...m.querySelectorAll('button')].filter((b) => b.getBoundingClientRect().height < 44).length }; });
+    expect(menu && menu.exp === 'true', 'My pages did not open its menu');
+    if (menu) {
+      expect(JSON.stringify(menu.heads) === JSON.stringify(['Ballot', 'People', 'Where I live', 'Today', 'You']), `the My pages headings are ${JSON.stringify(menu.heads)}`);
+      expect(menu.items.length === 15, `the My pages menu has ${menu.items.length} pages, not 15`);
+      expect(menu.fs === '13px' && !/mono/i.test(menu.ff) && menu.tt === 'none', `the My pages headings are not 13px sentence case in the text font (${menu.fs}, ${menu.ff}, ${menu.tt})`);
+      expect(menu.small === 0, `${menu.small} entries in the My pages menu are under 44px tall`);
+    }
+    await mp.keyboard.press('Escape'); await wait(200);
+    expect(!(await has(mp, '#cx-pages-menu')) && (await mp.evaluate(() => document.activeElement && document.activeElement.classList.contains('cx-pages-btn'))), 'Escape did not close the My pages menu and give the focus back to its button');
+    await mp.click('.cx-pages-btn'); await wait(300);
+    await mp.evaluate(() => [...document.querySelectorAll('#cx-pages-menu button')].find((b) => b.innerText.trim() === 'Levies and taxes').click()); await wait(600);
+    const lv = await mp.evaluate(() => ({ panel: new URLSearchParams(location.search).get('panel'), btn: document.querySelector('.cx-pages-btn').innerText.trim(), cur: document.querySelector('.cx-pages-btn').getAttribute('aria-current'), menu: !!document.querySelector('#cx-pages-menu') }));
+    expect(lv.panel === 'levies' && /Levies and taxes/.test(lv.btn) && lv.cur === 'page' && !lv.menu, `choosing Levies and taxes from My pages did not open it and name it on the button (${JSON.stringify(lv)})`);
+    await done(mp);
+    // every ?panel= link still opens its page, and the strip names that page as the one open
+    for (const [panel, name] of [['priorities', 'My priorities'], ['constellation', 'My constellation'], ['leaders', 'My leaders'], ['stories', 'Stories'], ['profiles', 'Profiles'], ['ballot', 'My ballot'], ['learn', 'Voter education'], ['levies', 'Levies and taxes'], ['districts', 'Find my districts'], ['context', 'My local context'], ['news', "What's new"], ['ledger', 'Decision ledger'], ['bench', 'How this is built'], ['place', 'Who decides here?']]) {
+      const q = await open(`/?panel=${panel}#desktop`, { width: 1280, settle: 900 });
+      const c = await q.evaluate(() => [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].filter((e) => e.getBoundingClientRect().width).map((e) => e.innerText.trim()));
+      expect(c.length === 1 && c[0].endsWith(name) && (await has(q, '.auxiliary-page, .policy-page, .practice-page, .atlas-main[hidden]')), `?panel=${panel}: the strip names ${JSON.stringify(c)} as open (want ${name})`);
+      await done(q);
+    }
     // a personal page is open: only it looks and announces itself as chosen
     const p = await open('/?room=council&panel=ballot#desktop', { width: 1440 });
     const c = await p.evaluate(NAV.chosen);
@@ -1931,7 +1957,7 @@ const CHECKS = {
       expect(s.differ && s.weight >= 600 && s.offWeight < 600, `light ${theme}: the chosen room does not stand out (${JSON.stringify(s)})`);
       await done(l);
       const m = await open('/?room=council&panel=ballot#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
-      const s2 = await m.evaluate(() => { const on = document.querySelector('.atlas-sidebar [aria-current="page"]'); if (!on) return { none: true }; const off = [...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
+      const s2 = await m.evaluate(() => { const on = [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].find((e) => e.getBoundingClientRect().width); if (!on) return { none: true }; const off = [...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); if (!off) return { none: true, alone: true }; const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
       expect(!s2.none && s2.differ && s2.weight >= 600, `light ${theme}: the open page does not stand out (${JSON.stringify(s2)})`);
       await done(m);
     }
@@ -2008,6 +2034,8 @@ const AXE_PAGES = [
   ['desktop us map settings', '/?panel=us#desktop', { settle: 1800, after: 'usmSettings' }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
   ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
+  ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
@@ -2021,6 +2049,7 @@ const AXE_AFTER = {
     if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'liquor'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
   },
   usmSettings: () => { const b = document.querySelector('.usm-top .usm-set-btn'); if (b) b.click(); },
+  pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
   districtResult: async () => {   // open the finder (on the phone), type City Hall's address, and look for the districts
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -2368,7 +2397,7 @@ async function overlapScan(p) {
   return [...found];
 }
 CHECKS['text-overlap'] = async () => {
-  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));
+  const pages = AXE_PAGES.filter(([name]) => !/^desktop (home original|ledger original|profiles original|profile with votes original|my pages menu|my pages menu original|jump box|jump box original)$/.test(name) && (!process.env.AXE_PAGE || process.env.AXE_PAGE.split(',').includes(name)));   // a menu that opens over the page covers part of a line on purpose
   for (const [name, url, o] of pages) {
     const p = await open(url, o);
     if (o.after) { await p.evaluate(AXE_AFTER[o.after]); await wait(300); }

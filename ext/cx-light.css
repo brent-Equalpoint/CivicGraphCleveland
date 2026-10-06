@@ -51,3 +51,4 @@ html[data-cx-mode="light"][data-cx-theme="original"] .atlas-workspace .atlas-sid
 html[data-cx-mode="light"][data-cx-theme="bento"] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] { background: #2f66f3; border-color: #2f66f3; color: #ffffff; }
 html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active] svg { color: #ffffff; }
 html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active]:focus-visible, html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .atlas-sidebar-bottom button.active:focus-visible { outline-color: #ffffff; }
+html[data-cx-mode="light"][data-cx-theme] .atlas-workspace .cx-strip-btn.on:focus-visible { outline-color: #ffffff; }

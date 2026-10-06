@@ -108,6 +108,89 @@ function CX_RowMore({ unit }) {
   );
 }
 
+/* ---------- My pages: one menu for the 15 personal pages ----------
+   Grouped the way a resident looks for them. Every entry opens its page through the same functions the old buttons called (CX_NAV.panel,
+   CX_NAV.priorities), so every ?panel= link still opens the same page. My ballot keeps its own button beside the menu until Election Day. */
+const CX_PAGE_GROUPS = [
+  [`Ballot`, [[`ballot`, `My ballot`], [`learn`, `Voter education`], [`levies`, `Levies and taxes`], [`districts`, `Find my districts`]]],
+  [`People`, [[`leaders`, `My leaders`], [`profiles`, `Profiles`], [`constellation`, `My constellation`], [`us`, `United States`]]],
+  [`Where I live`, [[`place`, `Who decides here?`], [`context`, `My local context`]]],
+  [`Today`, [[`stories`, `Stories`], [`news`, `What's new`]]],
+  [`You`, [[`priorities`, `My priorities`], [`ledger`, `Decision ledger`], [`bench`, `How this is built`]]],
+];
+const CX_PAGE_NAME = Object.fromEntries(CX_PAGE_GROUPS.flatMap((g) => g[1]));
+function cxNavOpenPage(id) {
+  if (id === `priorities`) CX_NAV.priorities();
+  else CX_NAV.panel(id);
+}
+/* My ballot keeps its own button until the election is over (CX_DATES, Eastern time) */
+function cxNavBallotShortcut() {
+  try { return cxElectionPhase() !== `after`; } catch (e) { return !0; }
+}
+function CX_DeskPages({ panel, prio, ballot }) {
+  const cur = prio ? `priorities` : panel || ``;
+  const showBallot = ballot !== !1 && cxNavBallotShortcut();
+  const inMenu = !!cur && !!CX_PAGE_NAME[cur] && !(showBallot && cur === `ballot`);
+  const [open, setOpen] = u.useState(!1);
+  const [instant, setInstant] = u.useState(!1);
+  const btn = u.useRef(null), box = u.useRef(null), wrap = u.useRef(null);
+  u.useEffect(() => {
+    if (!open) return;
+    const away = (e) => { if (wrap.current && !wrap.current.contains(e.target)) setOpen(!1); };
+    const esc = (e) => { if (e.key === `Escape`) { e.stopPropagation(); e.preventDefault(); setOpen(!1); if (btn.current) btn.current.focus(); } };
+    document.addEventListener(`pointerdown`, away, !0);
+    document.addEventListener(`keydown`, esc, !0);
+    if (instant && box.current) { const f = box.current.querySelector(`[aria-current="page"]`) || box.current.querySelector(`button`); if (f) f.focus(); }
+    return () => { document.removeEventListener(`pointerdown`, away, !0); document.removeEventListener(`keydown`, esc, !0); };
+  }, [open]);
+  const pick = (id) => { setOpen(!1); cxNavOpenPage(id); };
+  const menuKey = (e) => {
+    if (!box.current) return;
+    const items = [...box.current.querySelectorAll(`button`)];
+    const i = items.indexOf(document.activeElement);
+    let n = -1;
+    if (e.key === `ArrowDown`) n = Math.min(items.length - 1, i + 1);
+    else if (e.key === `ArrowUp`) n = Math.max(0, i - 1);
+    else if (e.key === `Home`) n = 0;
+    else if (e.key === `End`) n = items.length - 1;
+    if (n >= 0) { e.preventDefault(); items[n].focus(); }
+  };
+  const toggle = () => { setInstant(CX_NAV_INPUT.kbd); setOpen(!open); };
+  return (
+    <div ref={wrap} className="cx-pages" onBlur={(e) => { if (open && wrap.current && !wrap.current.contains(e.relatedTarget)) setOpen(!1); }}>
+      {showBallot && (
+        <button type="button" className={`cx-strip-btn cx-ballot-btn${cur === `ballot` ? ` on` : ``}`} aria-current={cur === `ballot` ? `page` : undefined} onClick={() => cxNavOpenPage(`ballot`)}>
+          <CXI.Check size={16} /><span>My ballot</span>
+        </button>
+      )}
+      <button ref={btn} type="button" className={`cx-strip-btn cx-pages-btn${inMenu ? ` on` : ``}`} aria-expanded={open} aria-controls="cx-pages-menu" aria-current={inMenu ? `page` : undefined}
+        onClick={toggle} onKeyDown={(e) => { if (e.key === `ArrowDown` && !open) { e.preventDefault(); setInstant(!0); setOpen(!0); } }}>
+        {inMenu && <span className="sr-only">My pages:</span>}
+        <span>{inMenu ? CX_PAGE_NAME[cur] : `My pages`}</span>
+        <CXI.Chevron size={16} className="cx-pages-chev" />
+      </button>
+      {open && (
+        <div ref={box} id="cx-pages-menu" className={`cx-pages-menu${instant ? ` cx-instant` : ``}`} onKeyDown={menuKey}>
+          {CX_PAGE_GROUPS.map(([h, list], gi) => (
+            <div key={h} className="cx-pages-group" role="group" aria-labelledby={`cx-pages-h${gi}`}>
+              <p id={`cx-pages-h${gi}`} className="cx-pages-h">{h}</p>
+              <ul>
+                {list.map(([id, name]) => (
+                  <li key={id}>
+                    <button type="button" aria-current={cur === id ? `page` : undefined} onClick={() => pick(id)}>
+                      <span>{name}</span>{cur === id && <CXI.Check size={16} />}
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* Mounted by build.py at the top of the strip with the app's state: the room, the open page (panel), and My priorities. */
 function CX_DeskStrip({ room, panel, prio }) {
   const ref = u.useRef(null);
