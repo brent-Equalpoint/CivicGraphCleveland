@@ -660,6 +660,7 @@ html[data-cx-theme="original"] .cxm-sheet { background: #1a1613; }
 }
 @media (max-width: 359px) {
   .cxm-top-actions button { width: 40px; }
+  .cxm-full-bar .cxm-top-actions button { width: 44px; }
 }
 .cxm-field textarea { font-size: 16px; }
 .cxm-fresh { flex: none; display: flex; align-items: center; gap: 8px; width: 100%; min-height: 36px; padding: 6px 18px; font-size: 12.5px; color: var(--mut); background: #111114; border-bottom: 1px solid #ffffff0d; text-align: left; }
@@ -873,8 +874,7 @@ html[data-cx-theme="original"] .cxm-fresh { background: #18140f; }
 .cx-drawer-profile .cx-link-button { font-size: 15px; color: #ffd1a9; min-height: 36px; }
 @media print { .sp-ward { fill: none; stroke: #444; } .sp-ward.on { fill: #bbb; stroke: #000; } .sp-ward-t, .sp-ward-t.on { fill: #000; } .cx-drawer-profile { display: none !important; } }
 
-/* desktop themes grey every paragraph inside the app shell; keep profile text at full strength in both styles */
-html[data-cx-theme] .atlas-shell .sp p, html[data-cx-theme] .atlas-shell .sp-page p { color: #f4f2ee; }
+html[data-cx-theme] .atlas-shell .sp p, html[data-cx-theme] .atlas-shell .sp-page p { color: #f4f2ee; /* desktop themes grey every paragraph inside the app shell, so profile text is kept at full strength in both styles. This note sits after the color and inside the block because light.py reads a comment before a selector as part of it */ }
 html[data-cx-theme] .atlas-shell .sp p.sp-note, html[data-cx-theme] .atlas-shell .sp p.sp-src, html[data-cx-theme] .atlas-shell .sp-page p.sp-lede { color: #e7e4de; }
 
 /* ---- v5.16 accessibility pass ---- */
@@ -958,6 +958,27 @@ html[data-cx-theme] .ledger-summary span, html[data-cx-theme] .ledger-summary sm
 .cxm-sheet .sp-actions button { border-color: var(--line); color: var(--ink); }
 .cx-bench-status ul { margin: 8px 0 12px; padding-left: 22px; }
 .cx-bench-status li { margin: 4px 0; font-size: 17px; }
+.cx-bench-privacy { min-height: 44px; font-size: 16px; }
+
+/* ---- the privacy policy (ext/cx-privacy.jsx) on the profile page type (.sp): one tinted line says whether a person has approved it and one tinted block holds the short version. Fixed colors like .sp because the same page sits on the dark desktop and in the phone ---- */
+.pv { max-width: 680px; }
+.pv-draft { margin: 0 0 18px; padding: 12px 14px; border-radius: 14px; background: #ffffff14; font-size: 16px; font-weight: 600; line-height: 1.45; }
+.sp .pv-ok, .sp .pv-date { margin: 0 0 16px; }
+.pv-short { margin: 4px 0 8px; padding: 16px 18px; border-radius: 18px; background: #ffffff0d; }
+.sp .pv-short h2 { margin: 0 0 8px; font-size: 15px; font-weight: 600; color: #e1ded8; }
+.sp .pv-short p { margin: 0 0 6px; font-size: 18px; font-weight: 600; line-height: 1.4; }
+.sp .pv-short p:last-child { margin-bottom: 0; }
+.pv-items { list-style: none; margin: 8px 0 16px; padding: 0; }
+.pv-items li { padding: 12px 0; border-top: 1px solid #ffffff1f; }
+.pv-items li:last-child { border-bottom: 1px solid #ffffff1f; }
+.sp .pv-items p { margin: 0; }
+.sp .pv-items p + p { margin-top: 4px; }
+.pv-items code { display: inline-block; max-width: 100%; margin-left: 4px; padding: 0 6px; border-radius: 8px; background: #ffffff14; font-family: "IBM Plex Mono", ui-monospace, monospace; font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+.sp .pv-when { font-size: 15px; color: #e1ded8; }
+html[data-cx-theme] .atlas-shell .sp p.pv-when { color: #e1ded8; }
+.pv-changes strong { display: block; }
+.pv-go { display: inline-flex; align-items: center; min-height: 44px; font-weight: 600; }
+@media print { .pv-draft, .pv-short { border: 1px solid #000; } }
 
 /* phone stories: text version, spoken step, Go deeper, and the way back */
 .cxm-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }

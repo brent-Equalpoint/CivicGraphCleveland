@@ -186,6 +186,41 @@ def mark_us_text_reviewed(who):
     print(f"marked the committee lines reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def privacy_block():
+    """The privacy policy's words (ext/cx-privacy.jsx, between the PRIVACY-TEXT markers) and the policy itself, read as strict JSON."""
+    src = open(os.path.join(EXT, "cx-privacy.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* PRIVACY-TEXT-START.*?PRIVACY-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the PRIVACY-TEXT markers are missing from ext/cx-privacy.jsx")
+    j = re.search(r"const CX_POLICY = (\{.*?\n\});\n", m.group(0), re.S)
+    if not j:
+        sys.exit("build: the policy (const CX_POLICY = {...};) is missing from ext/cx-privacy.jsx")
+    try:
+        policy = json.loads(j.group(1))
+    except ValueError as e:
+        sys.exit(f"build: the privacy policy in ext/cx-privacy.jsx is not strict JSON: {e}")
+    return m.group(0), policy
+
+
+def privacy_fp():
+    """Fingerprint of what the privacy policy says: its words, and the two numbers it reads from the code that keeps a remembered place
+    (ext/cxm-core.jsx), so a change to either one clears a person's approval."""
+    core = open(os.path.join(EXT, "cxm-core.jsx"), encoding="utf-8").read()
+    limits = re.findall(r"const CX_PLACE_(?:KEEP_DAYS|LAST_DAY) = [^;]+;", core)
+    if len(limits) != 2:
+        sys.exit("build: CX_PLACE_KEEP_DAYS and CX_PLACE_LAST_DAY are missing from ext/cxm-core.jsx (the privacy policy reads them)")
+    return hashlib.sha256((privacy_block()[0] + "\n".join(limits)).encode()).hexdigest()[:16]
+
+
+def mark_privacy_reviewed(who):
+    """Record that a person approved the privacy policy as it reads today (after a lawyer has read it). The page then names them in place of the draft line."""
+    if not who:
+        sys.exit('usage: python build.py --mark-privacy-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "privacy-reviewed.json")
+    write(path, json.dumps({"fp": privacy_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the privacy policy approved by {who} on {datetime.date.today().isoformat()}")
+
+
 def geo_svg(geo):
     """Project the ward and neighborhood layers to SVG paths (simple equirectangular at Cleveland's latitude)."""
     import math
@@ -466,6 +501,16 @@ def main():
     ut_ok = ut.get("fp") == us_text_fp()
     log(f"committee lines: {'reviewed by ' + ut['by'] + ' on ' + ut['checked'] if ut_ok else 'NOT reviewed by a person (' + ('text changed since review' if ut else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/us-text-reviewed.json ---- */\nconst CX_US_TEXT_REVIEW = " + json.dumps({"ok": ut_ok, "by": ut.get("by") if ut_ok else None, "checked": ut.get("checked") if ut_ok else None}) + ";\n"
+    # the privacy policy (ext/cx-privacy.jsx): approved by a person only while its fingerprint still matches what they approved; no dash in its words
+    _, policy = privacy_block()
+    if re.search("[\u2013\u2014]", json.dumps(policy, ensure_ascii=False)):
+        sys.exit("build: the privacy policy in ext/cx-privacy.jsx has an em or en dash")
+    pv_path = os.path.join(ROOT, "data", "privacy-reviewed.json")
+    pv = json.load(open(pv_path, encoding="utf-8")) if os.path.exists(pv_path) else {}
+    pv_ok = pv.get("fp") == privacy_fp()
+    log(f"privacy policy: last changed {policy['changed'][0][0]}, {len(policy['stored'])} items saved in the browser listed; "
+        + ("approved by " + pv["by"] + " on " + pv["checked"] if pv_ok else "a DRAFT, not approved by a person (" + ("text changed since approval" if pv else "never approved") + ")"))
+    ext_js += "/* ---- data/privacy-reviewed.json ---- */\nconst CX_PRIVACY_REVIEW = " + json.dumps({"ok": pv_ok, "by": pv.get("by") if pv_ok else None, "checked": pv.get("checked") if pv_ok else None}) + ";\n"
     us_src, _ = us_text_block()
     us_lines, us_src_page = us_text_lines(us_src)
     ex_path = os.path.join(ROOT, "data", "us-explainers-2026.json")
@@ -516,7 +561,7 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-meetings.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
@@ -788,6 +833,13 @@ def main():
                 "          F === `levies` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Levies and taxes`, resetKey: F, children: (0, W.jsx)(CX_Levies, {}) }) }),\n"
                 "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n",
                 label="aux page: districts")
+    # the privacy policy (ext/cx-privacy.jsx): an address panel and a page, opened from My pages and How this is built (no button in the old row of 15)
+    src = patch(src, "`levies`, `districts`]", "`levies`, `districts`, `privacy`]", count=2, label="url panels: privacy")
+    src = patch(src,
+                "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n",
+                "          F === `districts` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Find my districts`, resetKey: F, children: (0, W.jsx)(CX_DistrictsPage, {}) }) }),\n"
+                "          F === `privacy` && (0, W.jsx)(`div`, { className: `auxiliary-page`, children: (0, W.jsx)(CxBoundary, { label: `Privacy policy`, resetKey: F, children: (0, W.jsx)(CX_PrivacyPolicy, {}) }) }),\n",
+                label="aux page: privacy")
     # the open personal page says so to a screen reader (aria-current="page"), on every one of the 15 page buttons
     n_cur = 0
     def cur(m):
@@ -1221,5 +1273,7 @@ if __name__ == "__main__":
         mark_office_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-us-text-reviewed":
         mark_us_text_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-privacy-reviewed":
+        mark_privacy_reviewed(" ".join(sys.argv[2:]))
     else:
         main()

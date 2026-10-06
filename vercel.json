@@ -3,6 +3,10 @@
   "framework": null,
   "installCommand": "",
   "outputDirectory": "site",
+  "rewrites": [
+    { "source": "/privacy", "destination": "/index.html" },
+    { "source": "/privacy/", "destination": "/index.html" }
+  ],
   "headers": [
     {
       "source": "/(.*)",
@@ -15,6 +19,7 @@
     },
     { "source": "/", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
     { "source": "/index.html", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
+    { "source": "/privacy", "headers": [{ "key": "Cache-Control", "value": "public, max-age=0, must-revalidate" }] },
     { "source": "/sw.js", "headers": [{ "key": "Cache-Control", "value": "no-cache, max-age=0, must-revalidate" }, { "key": "Service-Worker-Allowed", "value": "/" }] },
     { "source": "/bench/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=300, must-revalidate" }] },
     { "source": "/us/(.*)", "headers": [{ "key": "Cache-Control", "value": "public, max-age=3600, must-revalidate" }] },
