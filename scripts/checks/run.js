@@ -1884,7 +1884,7 @@ const CHECKS = {
       const p = await open('/?panel=us#desktop', { width: w, height: h, settle: 1500 }); await mapReady(p);
       await p.click('.usm-show-btn'); await wait(500);
       const r = await p.evaluate(() => { const a = document.querySelector('.usm-panel').getBoundingClientRect(), m = document.querySelector('.usm-menu').getBoundingClientRect(); return { hit: !(a.right <= m.left || a.left >= m.right || a.bottom <= m.top || a.top >= m.bottom), items: [...document.querySelectorAll('.usm-menu li button')].map((b) => { const q = b.getBoundingClientRect(), e = document.elementFromPoint(q.left + q.width / 2, q.top + q.height / 2); return [b.textContent, !!e && b.contains(e)]; }) }; });
-      expect(!r.hit && r.items.length === 3 && r.items.every((x) => x[1]), `${w} by ${h}: the Show panel covers the left menu: ${JSON.stringify(r)}`);
+      expect(!r.hit && r.items.length === 4 && r.items.every((x) => x[1]), `${w} by ${h}: the Show panel covers the left menu (Network, People, Votes by topic, Compare members): ${JSON.stringify(r)}`);
       const top = await p.evaluate(() => { const a = document.querySelector('.usm-panel').getBoundingClientRect(), t = document.querySelector('.usm-top').getBoundingClientRect(); return !(a.right <= t.left || a.left >= t.right || a.bottom <= t.top || a.top >= t.bottom); });
       expect(!top, `${w} by ${h}: the Show panel runs under the top bar`);
       await clickText(p, 'Votes by topic', '.usm-menu li button'); await wait(500);
