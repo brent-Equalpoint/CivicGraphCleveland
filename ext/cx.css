@@ -682,6 +682,8 @@
   .atlas-workspace :is(.atlas-room-tab[data-slot=tabs-trigger], .cx-folder, .cx-strip-btn.on):focus-visible { outline-offset: -4px; box-shadow: none; }
   html[data-cx-theme="bento"] .atlas-workspace .cx-folder[aria-selected="true"]:focus-visible { box-shadow: inset 0 3px 0 var(--bb-blue); }
   html[data-cx-theme="original"] .atlas-workspace .cx-folder[aria-selected="true"]:focus-visible { box-shadow: inset 0 3px 0 var(--atlas-orange); }
+  .atlas-workspace .cx-folder-main[aria-selected="true"], html[data-cx-theme] .atlas-workspace .cx-folder-main[aria-selected="true"], html[data-cx-theme] .atlas-workspace .cx-folder-main[aria-selected="true"]:focus-visible { background: #2f66f3; border-color: #2f66f3; border-bottom-color: #2f66f3; color: #ffffff; box-shadow: none; }
+  .atlas-workspace .cx-folder-main[aria-selected="true"]:focus-visible { outline-color: #ffffff; }
   .atlas-workspace .atlas-room-tab[data-slot=tabs-trigger][data-state=active]:focus-visible, .atlas-workspace .cx-strip-btn.on:focus-visible { outline-color: #fff; }
   /* the header search keeps a real width beside the header buttons, without pushing them onto a third row (Spanish at 1100 px) */
   .atlas-header .atlas-search { flex: 0 1 200px; min-width: 160px; }
