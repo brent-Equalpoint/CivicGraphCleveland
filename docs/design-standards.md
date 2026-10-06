@@ -72,6 +72,10 @@ text `--ink #ecebe7`, muted `--mut #b9bcc6`, accent `--acc #2f66f3` (blue, Bento
 money or the ballot sit on the accent. Cards use tinted backgrounds. **Never a left accent stripe.** A status (Committed, Talking stage, and the like) is written in words, with no colored status dot beside it; a dot stays only where it is the key to a chart or the data itself (a legend, a vote). Both styles must work.
 (`axe` for contrast; the Original run covers the other palette)
 
+**Chosen tabs and pills.** A chosen tab, view pill, or group is a solid fill in the style's accent (blue `#2f66f3` in Bento) with white words.
+No accent bar on any tab or nav: a stripe under or beside the chosen one is the left accent stripe by another name. (`us-index` for the map's view
+pills and the Index's groups, both sides of the chosen one equal)
+
 **Contrast.** Body text 4.5:1 or better, large text 3:1. On the blue, secondary text is white, not a pale tint. (`axe`)
 
 **Glass never sits on text.** A translucent surface (the guide's bubble on Explore: the style's `--navy2` at 78% over an 18 px blur, a hairline
@@ -129,7 +133,11 @@ reachable with a mouse alone, Jump to and My pages, the three main tabs and the 
 rest; the bubble covers no question or heading and stays in the list; 4.5:1 on the real pixels; at rest only, once a level, at most one after a fling,
 none going back up, gone 3 s after a jump to the top; Spanish from its first frame; reduced motion and reduced transparency; 44 px ticks, a bare tap
 moves nothing, a drag scrubs from where it took hold; cards keep their height; the rail's current place shows in light),
-`spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
+`spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `us-index` (the United States Index: the six groups count what the record
+holds; a page's groups keep the record's order and its rows the record's own words; no strength, score, ranking, or party word in our words, in
+English or Spanish; Back, Escape, Backspace, and the back gesture step back one name to the same list and scroll, and Forward goes in; the keyboard
+path; long lists page; the details card closes four ways; the chosen pill and group are solid accent; the globe holds still under Reduce Motion;
+one column the screen's width on a phone; 44 px targets), `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
 /privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,
 hover card, and Index say the same first line; the review notice and the official words with their source and date; a role note closes four ways), `votes-actions` (a city record's names under each printed word and a count line that adds up, a source and a pulled date on every row, a file with no names says why and shows no nay, sponsorship rows say sponsorship, a person's list has no overall number or ranking word, the ward view with and without a ward chosen and the ward in no address, storage, or request, a ceremonial resolution as one short line, the record data loaded only when needed, Spanish, light in both styles).

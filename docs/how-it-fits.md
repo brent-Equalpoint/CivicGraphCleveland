@@ -29,6 +29,7 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | New or changed text | the component, then `i18n/manual.json` | `node scripts/i18n/crawl.js`, `python scripts/test_i18n.py` |
 | How you line up (questions, counts) | `ext/cx-align-text.jsx` (between the markers), `ext/cx-align.jsx` | `node scripts/test_alignment.js`, `--only alignment`; a person runs `python build.py --mark-alignment-reviewed "Name"` |
 | Votes, actions, and positions on a city record, a person's list, a ward | `ext/cx-record.jsx` (shared by both layouts), its plain words in `ext/cx-votes-text.jsx` between the VOTES-TEXT markers; the roll calls and the City Record's actions in `scripts/fetch_cityrecord.py` (`python scripts/refresh.py --votes`); the dated actions file in `scripts/council_record.py` (a pure function of `data/`, written by `build.py` to `site/council/record-2026.json`) | `python scripts/test_votes_actions.py`, `python scripts/test_cityrecord.py`, `--only votes-actions`; a person runs `python build.py --mark-votes-text-reviewed "Name"` |
+| The United States Index (groups, pages, rows, the globe) | `ext/cx-us-index.jsx` (the pages are built from the map's model when opened), styles in `ext/cxm.css` (`.usi-`); its history steps live in `CX_UsMap` (`ix`, `ixR`) | `--only us-index`, plus `CHECK_MODE=light`, `CHECK_THEME=original`, `CHECK_LANG=es` |
 | Anything saved in the browser (a new `localStorage` or `sessionStorage` name, a cache) | the code, then its line in the privacy policy's list (`ext/cx-privacy.jsx`) and a row in `docs/privacy-claims.md` | `python scripts/test_privacy.py`, `--only privacy-policy`; the policy's words need a person's approval again |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
@@ -137,4 +138,16 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **Chrome moves a tap near a button onto the button.** On a touch screen a tap a few pixels off a rail tick lands on the tick (touch
   adjustment), so test "a bare tap does nothing" with the mouse, and make a drag handle a hit target of its own: the guide is drawn above the
   ticks, or a drag that starts on the guide where it sits on a tick would only press the tick.
+- **A history step cannot be read back on a computer.** The compiled desktop app rewrites the entry a back step lands on, 180 ms later, with an
+  empty state. So the map counts its own steps (profiles, notes, the sheet, and the Index's names in `ixR`) instead of trusting `history.state`;
+  the Index also writes its depth (`cxUsi`) on its entries again after each step (`ixStamp`), so Forward can tell itself from Back.
+- **A step taken while another is being removed is lost.** `history.back()` and `history.go(-k)` finish later; a `pushState` made in the same
+  moment lands first, and the step back then removes it. Anything that opens a new step right after closing one (Explore in Index from the
+  sheet, a card's buttons, Show on the map from the Index) closes first and goes on in its `then`: `closeX(then)`, `sheetThen(then)`, `ixLeave(then)`.
+  Leaving the Index takes its steps out of history (`ixLeave`); a step of an Index that is no longer showing is passed quietly on the way back.
+- **`textContent` glues words together.** The text of two neighbouring elements comes out as one word ("mapStrong"), so a word pattern with `\b`
+  never sees the second word. A check that scans text for words joins the text nodes with spaces (`us-index` did not catch a planted "Strong"
+  until it did).
+- **The map's phone sheet opens part way and clips its body until it is pulled up.** That suits the map's sheet; a sheet that is the whole
+  content (the Index's details card) opens all the way (`CX_UsMapSheet tall`), or `no-bleed` sees cut-off text.
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).

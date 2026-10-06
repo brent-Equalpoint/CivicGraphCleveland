@@ -46,6 +46,36 @@ What it shows: a "Back to Network" bar. Overlapping initials circles. A small ca
 
 Do not copy: the strength words, ordering by fit, the Draft intro, and anything that ranks people against each other. Lists are alphabetical or by the record's own order (seniority, date).
 
+## What the Index is now (Oct 6)
+
+The Index view is Brent's VC Fest Index kit, ported into our own source (`ext/cx-us-index.jsx`, styles in `ext/cxm.css`; the kit is not vendored).
+The front page lists six groups with their counts from the record: Members of Congress, Committees, Executive branch, Courts and judges, Policy
+areas, and States. Pick a group, then a name: that name moves to the middle with every group the record ties to it, and you can keep going.
+Every node of `cxUsMapModel` has a page, built when it is opened from the same model as the map (nothing is baked); a state and a policy area have
+pages too. A senator's groups are Committees, Subcommittees, State, and Chamber; a committee's are Chair and leaders, Senate members, House
+members, Subcommittees, and Chamber; an agency's are Part of, Agencies under it, and Led by (not in our record yet, and it says so); a court's are
+Judges, Its appeals go to, Hears appeals from, and Appointed by; a state's are Senators and Representatives; a policy area's are the members who
+cast a deciding vote in it, as Solo shows. Each row carries the record's own word (Chair, Ranking member, Member, Ex officio, Appointed by,
+Judge); the ring by the title is a plain count ("5 committees"). Groups are in the record's order and names alphabetical by last name or in the
+record's order, never by count. A subcommittee, which has no page, opens a details card in the map's own sheet (what it does and why it matters,
+why it is linked, who sits on it, the committee's website and profile). Every page has Open profile (a state: no profile) and Show on the map
+(a state or a policy area: Solo).
+
+- **Computers:** the name sits on the left as a slowly turning globe (still under Still or Reduce Motion), its groups in a column, and the chosen
+  group's names fan out on the right on curved lines, a page at a time ("and 55 more · page 1 of 5"). Crumbs at the top, Back to the start two
+  steps in.
+- **Phones:** one column, the full width of the screen: the globe and the name, the groups as buttons that wrap (no sideways scroll), then the
+  list, 60 at a time with Show more.
+- **Moving:** each name opened is a step in the browser's history (`ix` and `ixR` in `CX_UsMap`), so Back, the back gesture, Escape, and
+  Backspace step back one name at a time, to the same group, list page, and scroll; Forward goes back in. Leaving the Index takes its steps
+  out of history first. The search box works in the Index too. Explore in Index (the sheet, a profile) opens the Index on that page.
+- **Changed from the kit on purpose:** no strength words or rings (the kit's "Strong fit" and its strength ring), no row dots (the kind's own
+  shape instead), group names with a count instead of a strength mix, a chosen group shown solid in the accent, 44 px names (the kit's are 34),
+  names that wrap instead of being cut, the map's color families and shapes, no `#id` link (a link to a person still opens their profile),
+  the map's Show filters do not hide anything in the Index (it holds the whole record), and the kit's own top bar, menu, About, and
+  Accessibility screens are the app's (Settings on the map).
+- **Checked by** `us-index` (and the Index pages in `axe`, `no-bleed`, `text-overlap`, `color-vision`).
+
 ## The shape of the whole feature
 
 Four places, all reading one model:
@@ -106,3 +136,4 @@ Each phase ends with the full gate passing and a screenshot review before the ne
 9. Shapes by tier (2026-10-05, Brent): the branches are rings (the biggest), committees and courts are hexagons (a committee filled, in the green family; a court outlined and lightly tinted, in pink), agencies are squares, and people are circles (the smallest). The pentagon is gone. The key says each kind in words, so color is never the only signal.
 10. A phone held upright gets a tall map (2026-10-05): the same physics and seed, started in three rows, so the map fills the screen instead of leaving bands above and below. The build writes both shapes to `site/us/map-2026.json` (`xy` and `tall`).
 11. The profile page (2026-10-05): a link names the person by a readable name (`?panel=us&who=bernie-moreno`), never the viewer. Bills sponsored are not in our record, so a member's third number is subcommittees, and the page says sponsored bills are not in the record yet.
+12. The Index (2026-10-06, Brent): Brent owns the VC Fest Index kit, so its layout and interactions are ported straight into our source with a one-line note of where the design comes from; no vendored copy, README, or owner credit. It replaces the old list of category cards and one long list (`CX_UsDoors` stays only for the old Sky, which is off the page). See "What the Index is now" above.

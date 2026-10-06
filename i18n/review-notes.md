@@ -95,3 +95,12 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 2. **The line under each room card** is one whole line for each singular and plural, for example "6 registros · 5 fuentes oficiales · 1 ley o propuesta" and "34 registros · 21 fuentes oficiales · 6 leyes o propuestas" (it read "5 fuente oficials").
 3. **The first sentence of each room's answer** (shown on the highlighted card) is the first sentence of the draft of that whole answer, word for word, so the card and the room say the same thing. "Public Health" stays in English inside "El departamento de Public Health de Cleveland", as in the whole answer.
 4. **The guide's lines** ("Esta es su cuadra. ...") were already in the dictionary; the bubble is now drawn in Spanish from its first frame. The guide's name (Erie, Terry, Cuy) is a name and stays as it is.
+
+## The United States Index (Oct 6, 2026)
+66 new entries in `i18n/manual.json` for `ext/cx-us-index.jsx` (36 exact, 30 patterns). Names from the record (people, committees, agencies, courts) stay as the record writes them and are marked so the translator leaves them alone; policy area names and state names are translated as elsewhere.
+1. **Counts beside a group** are one whole phrase for each singular and plural: "5 comités", "12 subcomités", "1 senador o senadora", "15 representantes", "289 líderes y agencias", "951 tribunales y jueces", "17 miembros del Congreso". A count is a fact, never a strength.
+2. **The row's word is the record's word**, translated as on the profile: "Miembro", "Presidencia" (for Chair, Chairman, and Chairwoman alike: one post), "Miembro de mayor rango", "Vicepresidencia", "Por razón de su cargo" (Ex officio), "Copresidencia", "Distrito 11", "Por todo el estado", "Comisionado Residente".
+3. **Group names:** "Presidencia y líderes", "Miembros del Senado", "Miembros de la Cámara", "Agencias bajo ella", "Dirigida por" (an agency is feminine), "Nombrado o nombrada por". Check that "Agencias bajo ella" reads naturally; "Agencias que dependen de ella" is an alternative.
+4. **A president's count** reads "234 jueces nombrados" and, for one, "1 nombramiento de juez o jueza", to avoid guessing a judge's gender.
+5. **Moving around:** "Elija un grupo y luego un nombre.", "Elija un nombre para seguir.", "Volver al inicio", "Dónde está" (the crumbs, read by a screen reader), "Ahora se muestra" (spoken after each move), and "y 525 más · página 1 de 39" for a long list on a computer.
+6. **The details card:** "Por qué está vinculado", "Abrir el perfil del comité", "Sitio web oficial".
