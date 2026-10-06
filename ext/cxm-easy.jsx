@@ -140,7 +140,7 @@ function CxmEasy() {
         {view.k === `place` && (
           <>
             <h1>Where do you live?</h1>
-            <p className="cxe-text">Pick your neighborhood. This stays on your phone for this visit and is not saved or sent.</p>
+            <p className="cxe-text">Pick your neighborhood. It stays on this device and is never sent.</p>
             <label className="cxe-field"><span>Your neighborhood</span>
               <select defaultValue="" onChange={(e) => pickHood(e.target.value)}>
                 <option value="">Choose your neighborhood</option>

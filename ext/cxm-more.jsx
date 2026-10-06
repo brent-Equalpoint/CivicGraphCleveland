@@ -151,7 +151,7 @@ function CxmDict({ focus }) {
    Anything about government or your choices lives elsewhere: My priorities (People tab), Follow a decision (Explore tab),
    and My place (its own tab). */
 function CxmYou() {
-  const { openSheet, guide, setGuide, theme, setTheme, large, setLarge, setEasy, closeSheet } = useCxm();
+  const { openSheet, guide, setGuide, theme, setTheme, large, setLarge, setEasy, closeSheet, openPrivacy } = useCxm();
   const canSave = cxStorageOk();
   const [msg, setMsg] = u.useState(``);
   const share = async () => {
@@ -179,6 +179,7 @@ function CxmYou() {
       <section className="cxm-section">
         <CxmKicker>About and sharing</CxmKicker>
         <button type="button" className="cxm-row" onClick={() => openSheet(`bench`)}><span><strong>How this is built</strong><small>Sources, method, and what is not running yet</small></span><CXI.Arrow size={15} /></button>
+        <button type="button" className="cxm-row" onClick={openPrivacy}><span><strong>Privacy policy</strong><small>What this site saves, and where</small></span><CXI.Arrow size={15} /></button>
         <button type="button" className="cxm-row" onClick={share}><span><strong>Share this screen</strong><small>A plain link to where you are. Your place and choices stay out of it.</small></span><CXI.Arrow size={15} /></button>
         <button type="button" className="cxm-row" onClick={() => { location.hash = `desktop`; }}><span><strong>Desktop view</strong><small>The full map with Simple, Explore, and Audit modes</small></span><CXI.Arrow size={15} /></button>
         {msg && <p className="cxm-fine" role="status">{msg}</p>}
@@ -299,6 +300,7 @@ function CxmLedger() {
 
 /* ---------- how this is built ---------- */
 function CxmBench() {
+  const { openPrivacy } = useCxm();
   const [tab, setTab] = u.useState(`pipeline`);
   const [step, setStep] = u.useState(0);
   const [group, setGroup] = u.useState(`all`);
@@ -317,6 +319,7 @@ function CxmBench() {
       <div className="cxm-tile">
         <span className="cxm-kicker">Your privacy</span>
         <p className="cxm-mut">This site sets no cookies and has no analytics. Your choices stay on your device, and the browser is told to talk only to this site.</p>
+        <button type="button" className="cxm-link" onClick={openPrivacy}>Read the privacy policy</button>
       </div>
       <CxmSeg label="Architecture sections" items={[[`pipeline`, `Pipeline`], [`seats`, `Seats`], [`states`, `States & gates`], [`plan`, `Delivery plan`], [`contracts`, `Evidence rules`]]} value={tab} onChange={setTab} />
       {tab === `pipeline` && (

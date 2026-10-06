@@ -21,10 +21,13 @@ const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 function argv(flag) { const i = process.argv.indexOf(flag); return i < 0 ? null : (process.argv[i + 1] && !process.argv[i + 1].startsWith('--') ? process.argv[i + 1] : true); }
 
 const MIME = { '.js': 'text/javascript; charset=utf-8', '.html': 'text/html; charset=utf-8', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.webp': 'image/webp', '.pdf': 'application/pdf', '.json': 'application/json' };
+// the host's own address rules (vercel.json "rewrites", exact paths only), so /privacy opens here as it does on the hosted site
+const REWRITES = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')).rewrites || []; } catch (e) { return []; } })();
 function serve(rootFn = () => SITE) {
   const server = http.createServer((q, r) => {
     const root = rootFn();
-    const u = decodeURIComponent(q.url.split('?')[0]);
+    const u0 = decodeURIComponent(q.url.split('?')[0]), rw = REWRITES.find((x) => x.source === u0);
+    const u = rw ? rw.destination : u0;
     let f = u === '/' ? path.join(root, 'index.html') : path.join(root, u);
     if (!f.startsWith(root)) { r.writeHead(403); return r.end(); }
     fs.readFile(f, (e, d) => {
@@ -307,7 +310,7 @@ const CHECKS = {
     for (const [url, want] of [['/?room=nope#desktop', /find that page/], ['/?room=voting&node=zzz#desktop', /find that record/], ['/?panel=bogus#desktop', /find that page/]]) {
       const p = await open(url); expect(want.test((await txt(p, '.cx-notice')) || ''), `desktop notice missing for ${url}`); await done(p);
     }
-    for (const url of ['/?room=voting#desktop', '/?panel=stories#desktop', '/#desktop']) { const p = await open(url); expect((await txt(p, '.cx-notice')) === null, `a good link showed a notice: ${url}`); await done(p); }
+    for (const url of ['/?room=voting#desktop', '/?panel=stories#desktop', '/#desktop', '/?panel=privacy#desktop']) { const p = await open(url); expect((await txt(p, '.cx-notice')) === null, `a good link showed a notice: ${url}`); await done(p); }
     let p = await open('/?room=nope#phone', { mobile: true, easy: false }); expect(/find that page/.test((await txt(p, '.cxm-notice')) || ''), 'phone bad-link notice missing'); await done(p);
     p = await open('/?room=voting#phone', { mobile: true }); await clickText(p, 'Search'); await p.type('input[type=search]', 'zzzqx'); await wait(300);
     expect(/Nothing matches/.test((await txt(p, '.cxm-empty strong')) || ''), 'empty search has no helpful message');
@@ -915,6 +918,218 @@ const CHECKS = {
     expect(await f.evaluate(() => /could not save your place/i.test(document.body.innerText)), 'a browser that blocks storage was not told');
     expect((await f.$eval(sw, (x) => x.getAttribute('aria-pressed'))) === 'false', 'the switch says on although nothing was saved');
     await done(f);
+  },
+  /* The privacy policy (ext/cx-privacy.jsx; what backs each sentence is in docs/privacy-claims.md). It opens at /privacy and at ?panel=privacy on a
+     phone and a computer (in Easy mode too), and from Settings, How this is built, and My pages; it shows its date and, until a person approves
+     it, the draft line first; its list of what is saved in the browser is exactly what the app writes while a person uses it (language, light or
+     dark, style, Larger text, Remember this device, the guide, Easy mode, a place, priorities, the practice ballot, the address finder, Jump to,
+     the map's motion); and what it says about cookies, requests, the place's limits, links, fonts, and the report link is what the build does.
+     No dash and no legal promise word; 44 px targets, axe, no sideways scroll, Spanish, and light mode in both styles. */
+  async 'privacy-policy'() {
+    const SRC = fs.readFileSync(path.join(ROOT, 'ext', 'cx-privacy.jsx'), 'utf8'), CORE = fs.readFileSync(path.join(ROOT, 'ext', 'cxm-core.jsx'), 'utf8');
+    const POL = JSON.parse(/const CX_POLICY = (\{[\s\S]*?\n\});\n/.exec(SRC)[1]);
+    const DAYS = +/const CX_PLACE_KEEP_DAYS = (\d+);/.exec(CORE)[1], LAST = /const CX_PLACE_LAST_DAY = `([\d-]+)`;/.exec(CORE)[1];
+    const long = (iso) => new Date(`${iso}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+    const approved = (() => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'privacy-reviewed.json'), 'utf8')); } catch (e) { return null; } })();
+    const EN = process.env.CHECK_LANG !== 'es';
+    const DRAFT = EN ? 'This policy is a draft. A person has not yet approved it.' : 'Esta política es un borrador. Una persona todavía no la ha aprobado.';
+    const LEGAL = /\b(guarantee[sd]?|ensures?|ensured|assures?|warrant(y|ies|s)?|compliant|compliance|certif(y|ied|ies)|GDPR|CCPA|COPPA|HIPAA|promises?|liab(le|ility)|garantiza\w*|cumplimiento)\b|100 ?%/i;
+    const read = (p) => p.evaluate(() => {
+      const a = document.querySelector('article.pv'); if (!a) return null;
+      const kids = [...a.children].map((e) => (e.classList.contains('pv-draft') ? 'draft' : e.classList.contains('pv-ok') ? 'ok' : e.tagName === 'H1' ? 'h1' : e.classList.contains('pv-date') ? 'date' : e.classList.contains('pv-short') ? 'short' : e.tagName.toLowerCase()));
+      return { text: a.innerText, kids: kids.slice(0, 4), h1: a.querySelector('h1').innerText.trim(), draft: ((a.querySelector('.pv-draft') || a.querySelector('.pv-ok') || {}).innerText || '').trim(), date: (a.querySelector('.pv-date') || {}).innerText,
+        short: [...a.querySelectorAll('.pv-short p')].map((x) => x.innerText.trim()), items: [...a.querySelectorAll('.pv-items li')].map((li) => [li.dataset.where, li.querySelector('code').textContent]),
+        english: [...a.querySelectorAll('[data-cx-auto-en]')].map((e) => e.innerText.trim().slice(0, 60)),
+        links: [...a.querySelectorAll('a')].map((x) => ({ href: x.href, target: x.target, text: x.innerText.trim() })) };
+    });
+    const small = (p) => p.evaluate(() => [...document.querySelectorAll('article.pv :is(button, a), .pv-page .cxm-full-bar button')].filter((el) => { const r = el.getBoundingClientRect(); return r.width && (r.height < 44 || r.width < 44); }).map((el) => `${el.tagName.toLowerCase()} "${el.innerText.trim().slice(0, 30)}"`));
+    // 1. its own address and the panel link, on a phone and a computer, and for someone in Easy mode; the draft line, the heading, the date, and the short version come first
+    for (const [url, o, where] of [['/privacy', { mobile: true, easy: false }, 'phone at /privacy'], ['/?panel=privacy#phone', { mobile: true, easy: false }, 'phone at ?panel=privacy'],
+      ['/privacy#desktop', { width: 1440 }, 'computer at /privacy'], ['/?panel=privacy#desktop', { width: 1280 }, 'computer at ?panel=privacy'], ['/privacy', { mobile: true, easy: true }, 'phone in Easy mode at /privacy'],
+      ['/?panel=privacy#phone', { mobile: true, easy: false, width: 320, height: 640 }, 'phone 320 px wide']]) {
+      const p = await open(url, { ...o, settle: EN ? 1100 : 2200 });
+      const r = await read(p);
+      expect(!!r, `${where}: the privacy policy did not open`);
+      if (r) {
+        expect(r.h1 === (EN ? 'Privacy policy' : 'Política de privacidad'), `${where}: the heading is "${r.h1}"`);
+        expect(JSON.stringify(r.kids) === JSON.stringify([approved && r.kids[0] === 'ok' ? 'ok' : 'draft', 'h1', 'date', 'short']), `${where}: the page does not open with the draft line, the heading, the date, and the short version (${r.kids})`);
+        if (r.kids[0] === 'ok') expect(!!approved && r.draft === `Approved by ${approved.by} on ${long(approved.checked)}.`, `${where}: the page says it is approved, but data/privacy-reviewed.json does not name that person and day`);
+        else expect(r.draft === DRAFT, `${where}: the draft line reads "${r.draft}"`);
+        if (EN) {
+          expect(r.date === `Last changed ${long(POL.changed[0][0])}.`, `${where}: the date reads "${r.date}"`);
+          expect(JSON.stringify(r.short) === JSON.stringify(POL.short) && /No accounts\. No cookies\. No analytics\./.test(r.short[0]), `${where}: the short version is not the three lines that lead with no accounts, no cookies, and no analytics`);
+          expect(r.text.includes(`up to ${DAYS} days, and never after ${long(LAST)},`), `${where}: the page does not give the place limits the code keeps (${DAYS} days, ${LAST})`);
+        } else {
+          expect(r.text.includes(`hasta ${DAYS} días`), `${where}: the Spanish page does not give the ${DAYS} days the code keeps a place`);
+          expect(r.english.length === 0, `${where}: English left on the Spanish page: ${JSON.stringify(r.english.slice(0, 4))}`);
+        }
+        expect(!/[–—]/.test(r.text), `${where}: a dash on the page`);
+        const legal = r.text.match(LEGAL); expect(!legal, `${where}: a legal promise word on the page ("${legal && legal[0]}")`);
+        expect(r.items.length === POL.stored.length, `${where}: the page lists ${r.items.length} saved items, the policy has ${POL.stored.length}`);
+        const rep = r.links.find((l) => /github\.com\//.test(l.href)), ver = r.links.find((l) => /vercel\.com/.test(l.href));
+        expect(!!rep && /^https:\/\/github\.com\/brent-Equalpoint\/CivicGraphCleveland\/issues\/new\?template=mistake\.yml&/.test(rep.href) && rep.target === '_blank', `${where}: the report link does not open the repository's mistake form in a new tab (${rep && rep.href})`);
+        expect(!!ver && ver.href === 'https://vercel.com/legal/privacy-notice' && ver.target === '_blank', `${where}: no link to Vercel's privacy notice that opens in a new tab`);
+        expect(!r.links.some((l) => /^mailto:/.test(l.href)), `${where}: an email link; the privacy contact is Brent's to choose`);
+      }
+      const at = await p.evaluate(() => [location.pathname, new URLSearchParams(location.search).get('panel')]);
+      expect(at[0] === '/' && at[1] === 'privacy', `${where}: the address became ${at.join(' ')}, not /?panel=privacy`);
+      expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `${where}: the page scrolls sideways`);
+      const tiny = await small(p); expect(tiny.length === 0, `${where}: controls under 44 px: ${tiny.slice(0, 4)}`);
+      if (!/Easy/.test(where)) { const bad = await axeBad(p); expect(bad.length === 0, `${where}: axe found ${bad.length}: ` + bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')); }
+      await done(p);
+    }
+    // 2. linked from Settings and How this is built on the phone (Back and Escape return to the sheet it came from), and from How this is built and My pages on a computer
+    const s = await open('/#phone', { mobile: true, easy: false });
+    await clickText(s, 'Settings'); await wait(300);
+    await clickText(s, 'Privacy policy', '.cxm-sheet button'); await wait(500);
+    expect(await has(s, '.cxm-full.pv-page article.pv') && !(await has(s, '.cxm-sheet')), 'Settings does not open the privacy policy as a page');
+    expect(new URLSearchParams(await s.evaluate(() => location.search)).get('panel') === 'privacy', 'the policy opened from Settings is not at ?panel=privacy');
+    await s.click('.pv-page .cxm-full-back'); await wait(400);
+    expect(!(await has(s, '.pv-page')) && await s.evaluate(() => !!document.querySelector('.cxm-sheet .cxm-remember')), 'Back from the policy did not return to Settings');
+    await clickText(s, 'How this is built', '.cxm-sheet button'); await wait(500);
+    await clickText(s, 'Read the privacy policy', '.cxm-sheet button'); await wait(500);
+    expect(await has(s, '.pv-page article.pv'), 'How this is built on the phone does not open the privacy policy');
+    await s.keyboard.press('Escape'); await wait(400);
+    expect(!(await has(s, '.pv-page')) && await s.evaluate(() => /How a resident question/.test((document.querySelector('.cxm-sheet') || {}).innerText || '') || /Cómo/.test((document.querySelector('.cxm-sheet') || {}).innerText || '')), 'Escape on the policy did not return to How this is built');
+    await done(s);
+    const d = await open('/?panel=bench#desktop', {});
+    await clickText(d, 'Read the privacy policy', '.cx-bench button'); await wait(600);
+    expect(await has(d, '.auxiliary-page article.pv'), 'How this is built on a computer does not open the privacy policy');
+    await done(d);
+    const mp = await open('/?room=council#desktop', { width: 1440 });
+    await mp.click('.cx-pages-btn'); await wait(300);
+    const grp = await mp.evaluate(() => { const b = [...document.querySelectorAll('#cx-pages-menu button')].find((x) => /Privacy policy|Política de privacidad/.test(x.innerText)); return b ? b.closest('.cx-pages-group').querySelector('.cx-pages-h').innerText.trim() : null; });
+    expect(grp === (EN ? 'You' : 'Usted'), `My pages does not list Privacy policy under You (${grp})`);
+    await clickText(mp, 'Privacy policy', '#cx-pages-menu button'); await wait(600);
+    expect(await has(mp, '.auxiliary-page article.pv') && /Privacy policy|Política de privacidad/.test((await txt(mp, '.cx-pages-btn')) || ''), 'My pages did not open the privacy policy and name it on its button');
+    await done(mp);
+    // 3. what the app really saves: one browser profile, nothing set before it starts, every write recorded, through the flows a person uses
+    if (EN) {
+      const ctx = await B.createBrowserContext(), p = await ctx.newPage();
+      p.errors = []; p.outside = []; p.csp = []; const reqs = [], cookies = [];
+      p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
+      p.on('console', (m) => { if (m.type() === 'error' && /Content Security Policy/i.test(m.text())) p.csp.push(m.text().slice(0, 200)); });
+      p.on('request', (r) => { try { const u = new URL(r.url()); if (!['data:', 'blob:', 'about:'].includes(u.protocol) && u.origin !== new URL(BASE).origin) p.outside.push(r.url().slice(0, 100)); } catch (e) { /* not a web address */ } reqs.push(r.url() + ' ' + (r.postData() || '')); });
+      p.on('response', (r) => { if (r.headers()['set-cookie']) cookies.push(r.url()); });
+      await p.evaluateOnNewDocument(() => {
+        const W = (window.__cxWrites = []), set = Storage.prototype.setItem;
+        Storage.prototype.setItem = function (k, v) { try { W.push([this === window.sessionStorage ? 'session' : 'local', String(k)]); } catch (e) { /* recording only */ } return set.call(this, k, v); };
+      });
+      const writes = [];
+      const take = async () => { for (const w of (await p.evaluate(() => window.__cxWrites || []))) writes.push(w); await p.evaluate(() => { if (window.__cxWrites) window.__cxWrites.length = 0; }); };
+      const go = async (url, w) => { await take(); if (w) await p.setViewport(w); await p.goto(BASE + url, { waitUntil: 'networkidle2', timeout: 60000 }); await wait(1300); };
+      const tap = (sel, label) => p.evaluate((sel, label) => { const b = [...document.querySelectorAll(sel)].find((x) => !label || (x.innerText || '').trim().startsWith(label)); if (b) b.click(); return !!b; }, sel, label);
+      const steps = [];
+      const step = async (name, fn) => { const ok = await fn(); await wait(450); steps.push(name); if (ok === false) expect(false, `flow step "${name}" could not find its control`); };
+      await go('/#phone', { width: 390, height: 844, isMobile: true, hasTouch: true });
+      await step('open Settings', () => tap('.cxm-you'));
+      await step('choose Español', () => tap('.cxm-sheet [aria-label="Language / Idioma"] button', 'Español')); await wait(1400);
+      await step('close the Spanish draft notice', () => tap('.cx-notice-lang button'));
+      await step('choose English', () => tap('.cxm-sheet [aria-label="Language / Idioma"] button', 'English')); await wait(700);
+      await step('choose Light', () => tap('.cxm-sheet [aria-label="Light or dark"] button', 'Light'));
+      await step('choose Dark', () => tap('.cxm-sheet [aria-label="Light or dark"] button', 'Dark'));
+      await step('choose Original', () => tap('.cxm-sheet [aria-label="Style"] button', 'Original'));
+      await step('choose Bento', () => tap('.cxm-sheet [aria-label="Style"] button', 'Bento'));
+      await take(); const before = writes.length;
+      await step('turn on Larger text', () => tap('.cxm-sheet .cxm-switch', 'Larger text'));
+      await take(); const larger = writes.slice(before).map((w) => w[1]).filter((k) => k !== 'cx-probe');   // Settings redraws and runs its saving test again (cx-probe, listed): that is not Larger text
+      expect(larger.length === 0, `turning on Larger text saved ${JSON.stringify(larger)}; the policy says it is not saved`);
+      await step('pick the guide Terry', () => tap('.cxm-sheet .cxm-guides button', 'Terry'));
+      await step('turn on Remember this device', () => tap('.cxm-sheet .cxm-remember .cxm-switch'));
+      await step('open Easy mode', () => tap('.cxm-sheet .cxm-row', 'Easy mode')); await wait(500);
+      await step('leave Easy mode', () => tap('.cxe-bar-actions button', 'Full app')); await wait(500);
+      await step('set the place', () => tap('.cxm-setplace')); await wait(400);
+      await step('pick Ward 6', () => tap('.cxm-sheet .cxm-chips button', 'Ward 6'));
+      await go('/?panel=priorities#phone');
+      await step('pick a priority', () => tap('.cxm-sheet .cxm-tile .cxm-chips button'));
+      await step('turn on Remember on this device', () => tap('.cxm-sheet .cxm-switch', 'Remember on this device'));
+      // the priority picked, by its id, so no request may carry it
+      const prioId = await p.evaluate(() => { try { const v = JSON.parse(localStorage.getItem('cleveland-civic-values-v2')).values; return (Object.entries(v).find((e) => e[1]) || [null])[0]; } catch (e) { return null; } });
+      expect(!!prioId, 'Remember on this device did not save the priority that was picked');
+      await step('Clear my choices', () => tap('.cxm-sheet button', 'Clear my choices'));
+      expect(await p.evaluate(() => localStorage.getItem('cleveland-civic-values-v2') === null && localStorage.getItem('cleveland-civic-priorities') === null), 'Clear my choices did not delete the saved priorities');
+      await go('/?panel=ballot#phone');
+      await step('turn on Save on this browser', () => tap('.cxm-switch', 'Save on this browser'));
+      expect(await p.evaluate(() => localStorage.getItem('cleveland-practice-ballot-2026-v1') !== null), 'Save on this browser did not save the practice ballot');
+      await step('Clear my practice data', () => tap('button', 'Clear my practice data'));
+      expect(await p.evaluate(() => localStorage.getItem('cleveland-practice-ballot-2026-v1') === null), 'Clear my practice data did not delete the saved practice ballot');
+      await step('open Find my districts', () => tap('button', 'Find my districts by address')); await wait(300);
+      await p.evaluate(() => { const i = document.querySelector('.dist-field input'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, '601 Lakeside Ave 44114'); i.dispatchEvent(new Event('input', { bubbles: true })); });
+      await step('find the districts', () => tap('.dist-actions .cxm-btn')); await wait(1200);
+      await step('use them on the ballot', () => tap('.dist-actions button', 'Use these on my ballot'));
+      await go('/?panel=us#phone');
+      await step('open Your place in Washington', () => tap('.cxm-drop-head', 'Your place in Washington')); await wait(300);
+      await p.select('.cxm-drop-body label:nth-of-type(1) select', 'OH'); await wait(400);
+      await p.select('.cxm-drop-body label:nth-of-type(2) select', '11'); await wait(400);
+      const place = await p.evaluate(() => JSON.parse(localStorage.getItem('cx-place') || 'null'));
+      expect(!!place && place.place === 'ward-6' && place.state === 'OH' && place.district === '11' && Object.keys(place).every((k) => ['v', 'saved', 'place', 'hood', 'state', 'district'].includes(k)), `the remembered place is not what the policy describes: ${JSON.stringify(place)}`);
+      await go('/#desktop', { width: 1280, height: 900 });
+      await p.keyboard.down('Control'); await p.keyboard.press('k'); await p.keyboard.up('Control'); await wait(300);
+      await p.keyboard.type('bus'); await wait(200); await p.keyboard.press('Enter'); await wait(600); steps.push('Jump to bus');
+      await step('switch the mode on a computer', () => tap('.cx-mode-switch'));
+      await step('switch the style on a computer', () => tap('.cx-theme-switch:not(.cx-mode-switch)'));
+      await p.evaluate(() => { const i = document.querySelector('.atlas-search input'); i.focus(); });
+      await p.keyboard.type('zoning'); await wait(800);
+      expect(/[?&]q=zoning\b/.test(await p.evaluate(() => location.search)), 'the policy says words typed in the search box at the top of the map go into the link, but they did not');
+      await go('/?panel=us#desktop', { width: 1280, height: 900 }); await wait(800);
+      await step('open Show on the map', () => tap('.usm-show-btn')); await wait(300);
+      await step('choose Calm motion', () => tap('.usm-motion button', 'Calm'));
+      await take();
+      const listed = new Map(POL.stored.map((x) => [x.key, x.where]));
+      const seen = new Map(); for (const [area, k] of writes) { if (!seen.has(k)) seen.set(k, new Set()); seen.get(k).add(area); }
+      for (const [k, areas] of seen) expect(listed.has(k) && areas.has(listed.get(k)), `the app saved "${k}" (${[...areas]}) but the policy ${listed.has(k) ? `says ${listed.get(k)}` : 'does not list it'}`);
+      for (const x of POL.stored) {
+        if (x.where === 'cache') continue;
+        if (x.where === 'old') expect(!seen.has(x.key), `the policy says "${x.key}" is no longer saved, but the app saved it`);
+        else expect(seen.has(x.key), `the policy lists "${x.key}", but nothing the flows did saved it (steps: ${steps.length})`);
+      }
+      const caches = await p.evaluate(() => (globalThis.caches ? caches.keys() : []));
+      expect(caches.length >= 1 && caches.every((c) => /^cx-[0-9a-f]{12}$/.test(c)), `the site's saved copy is not the one cache named cx- and a build number, as the policy says: ${JSON.stringify(caches)}`);
+      const jar = await p.evaluate(() => document.cookie);
+      expect(jar === '' && cookies.length === 0, `a cookie was set: "${jar}" ${cookies.slice(0, 2)}`);
+      const told = reqs.filter((u) => /lakeside|601%20|601\+|ward-6|district=|place=/i.test(u) || (prioId && prioId.length > 4 && u.includes(prioId)));
+      expect(told.length === 0, `a request carried the address, the place, or a priority: ${told.slice(0, 2)}`);
+      const store = await p.evaluate(() => JSON.stringify(localStorage) + JSON.stringify(sessionStorage) + location.href);
+      expect(!/lakeside|601 /i.test(store), 'the typed address reached storage or the address bar');
+      await done({ errors: p.errors, outside: p.outside, csp: p.csp, close2: () => ctx.close() });
+    }
+    // 4. the fonts sentence and the cookie sentence, from the files: the website asks only itself for fonts, the single offline file asks Google, and the host sets no cookie
+    const site = fs.readFileSync(path.join(SITE, 'index.html'), 'utf8');
+    expect(!/fonts\.googleapis\.com|fonts\.gstatic\.com/.test(site) && /font-src 'self'[;"]/.test(site), 'the hosted page asks another site for fonts, but the policy says it serves its own');
+    // "The hosted site tells your browser to let the page talk only to this site": the page's own Content-Security-Policy (the security-policy check tries to break it)
+    const csp = (/<meta http-equiv="Content-Security-Policy" content="([^"]+)"/.exec(site) || [])[1] || '';
+    expect(/(^|; )connect-src 'self'(;|$)/.test(csp) && /(^|; )default-src 'self'(;|$)/.test(csp), `the hosted page's policy does not limit it to this site, as the privacy policy says (${csp.slice(0, 80)})`);
+    const single = path.join(ROOT, 'dist', 'Cleveland-Civic-Graph-v5.html');
+    if (fs.existsSync(single)) {
+      expect(/fonts\.googleapis\.com/.test(fs.readFileSync(single, 'utf8')), 'the single offline file no longer asks Google Fonts: update the policy, which says it does');
+      // the single offline file has the policy as a screen, with the network off, on a phone and a computer
+      for (const [hash, vp] of [['#phone', { width: 390, height: 844, isMobile: true, hasTouch: true }], ['#desktop', { width: 1280, height: 900 }]]) {
+        const f = await B.createBrowserContext(), q = await f.newPage(), errs = [];
+        q.on('pageerror', (e) => errs.push(e.message.slice(0, 120)));
+        await q.setViewport(vp); await q.setOfflineMode(true);
+        await q.goto('file:///' + single.split(path.sep).join('/') + '?panel=privacy' + hash, { waitUntil: 'load' }); await wait(2500);
+        const got = await q.evaluate(() => { const a = document.querySelector('article.pv'); return a ? a.querySelectorAll('.pv-items li').length : 0; });
+        expect(got === POL.stored.length && errs.length === 0, `the single offline file did not open the privacy policy ${hash} with the network off (${got} items listed, errors ${JSON.stringify(errs)})`);
+        await f.close();
+      }
+    }
+    expect(!/set-cookie/i.test(fs.readFileSync(path.join(ROOT, 'vercel.json'), 'utf8')), 'vercel.json sets a cookie header, but the policy says the site sets no cookies');
+    // 5. Spanish (when this check runs in English) and light mode in both styles
+    if (EN) {
+      const e = await open('/?panel=privacy#phone', { mobile: true, easy: false, settle: 2400, pre: () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (x) {} } });
+      const r = await read(e);
+      expect(!!r && r.h1 === 'Política de privacidad' && r.draft === 'Esta política es un borrador. Una persona todavía no la ha aprobado.', `the Spanish page does not show its heading and the draft line (${r && r.h1} / ${r && r.draft})`);
+      expect(!!r && r.text.includes(`hasta ${DAYS} días`) && r.english.length === 0, `the Spanish page has English left or lacks the place limits: ${r && JSON.stringify(r.english.slice(0, 4))}`);
+      await done(e);
+    }
+    for (const theme of ['bento', 'original']) {
+      for (const [url, o] of [['/?panel=privacy#phone', { mobile: true, easy: false }], ['/?panel=privacy#desktop', { width: 1440 }]]) {
+        const l = await open(url, { ...o, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
+        const bad = (await axeBad(l)).filter((x) => x.id === 'color-contrast' || x.id === 'link-in-text-block');
+        expect(bad.length === 0, `light ${theme} ${url}: contrast: ${bad.slice(0, 3).map((x) => x.target).join('; ')}`);
+        await done(l);
+      }
+    }
   },
   async 'date-states'() {
     // The election dates on the phone Ballot show a tag by the day: "Next" before a date, "Today" on it, "Passed" after. A color that was fine for two of them once failed
@@ -2341,7 +2556,7 @@ const CHECKS = {
     expect(menu && menu.exp === 'true', 'My pages did not open its menu');
     if (menu) {
       expect(JSON.stringify(menu.heads) === JSON.stringify(['Ballot', 'People', 'Where I live', 'Today', 'You']), `the My pages headings are ${JSON.stringify(menu.heads)}`);
-      expect(menu.items.length === 15, `the My pages menu has ${menu.items.length} pages, not 15`);
+      expect(menu.items.length === 16, `the My pages menu has ${menu.items.length} pages, not 16 (15 pages and the privacy policy)`);
       expect(menu.fs === '13px' && !/mono/i.test(menu.ff) && menu.tt === 'none', `the My pages headings are not 13px sentence case in the text font (${menu.fs}, ${menu.ff}, ${menu.tt})`);
       expect(menu.small === 0, `${menu.small} entries in the My pages menu are under 44px tall`);
     }
@@ -2353,7 +2568,7 @@ const CHECKS = {
     expect(lv.panel === 'levies' && /Levies and taxes/.test(lv.btn) && lv.cur === 'page' && !lv.menu, `choosing Levies and taxes from My pages did not open it and name it on the button (${JSON.stringify(lv)})`);
     await done(mp);
     // every ?panel= link still opens its page, and the strip names that page as the one open
-    for (const [panel, name] of [['priorities', 'My priorities'], ['constellation', 'My constellation'], ['leaders', 'My leaders'], ['stories', 'Stories'], ['profiles', 'Profiles'], ['ballot', 'My ballot'], ['learn', 'Voter education'], ['levies', 'Levies and taxes'], ['districts', 'Find my districts'], ['context', 'My local context'], ['news', "What's new"], ['ledger', 'Decision ledger'], ['bench', 'How this is built'], ['place', 'Who decides here?']]) {
+    for (const [panel, name] of [['priorities', 'My priorities'], ['constellation', 'My constellation'], ['leaders', 'My leaders'], ['stories', 'Stories'], ['profiles', 'Profiles'], ['ballot', 'My ballot'], ['learn', 'Voter education'], ['levies', 'Levies and taxes'], ['districts', 'Find my districts'], ['context', 'My local context'], ['news', "What's new"], ['ledger', 'Decision ledger'], ['bench', 'How this is built'], ['place', 'Who decides here?'], ['privacy', 'Privacy policy']]) {
       const q = await open(`/?panel=${panel}#desktop`, { width: 1280, settle: 900 });
       const c = await q.evaluate(() => [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].filter((e) => e.getBoundingClientRect().width).map((e) => e.innerText.trim()));
       expect(c.length === 1 && c[0].endsWith(name) && (await has(q, '.auxiliary-page, .policy-page, .practice-page, .atlas-main[hidden]')), `?panel=${panel}: the strip names ${JSON.stringify(c)} as open (want ${name})`);
@@ -2642,6 +2857,8 @@ const AXE_PAGES = [
   ['desktop us compare', '/?panel=us#desktop', { settle: 1800, after: 'alignCompare' }], ['phone us compare', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'alignCompare' }],
   ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
   ['desktop us profile areas step 2', '/?panel=us&who=jon-husted#desktop', { settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }], ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, after: 'alignProfile' }],
+  // the privacy policy (ext/cx-privacy.jsx), the whole page
+  ['desktop privacy', '/?panel=privacy#desktop', {}], ['desktop privacy original', '/?panel=privacy#desktop', { theme: 'original' }], ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }],
   // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
@@ -2755,6 +2972,9 @@ const LOOK_PAGES = [
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
   // the desktop strip above the graph (ext/cx-nav.jsx): a chosen and a plain place, a chosen and a plain room, the thumb, and the strip's buttons
   ['desktop strip', '/?room=transport#desktop', {}, null, ['.cx-folder[aria-selected="true"]', '.cx-folder[aria-selected="false"]', '.atlas-room-tabs[data-slot=tabs-list]', '.cx-row-rooms [role=tab][aria-selected="true"]', '.cx-row-rooms [role=tab][aria-selected="false"]:not([data-cx-off])', '.cx-thumb', '.cx-ballot-btn', '.cx-jump-btn', '.cx-jump-btn kbd', '.cx-pages-btn']],
+  // the privacy policy (ext/cx-privacy.jsx): the profile page's type with the draft line, the short version, and the list of what is saved
+  ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
+  ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
 ];
 async function lookOf(p, selectors) {
   return p.evaluate((sels, props) => {
@@ -2834,6 +3054,8 @@ const TEXT_SCREENS = [
   ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['At City Hall', '/?panel=meetings#phone'],
   ['Decision ledger', '/?panel=ledger#phone'], ['How this is built', '/?panel=bench#phone'], ['Settings', '/?panel=settings#phone'],
   ['United States: a profile', '/?panel=us&who=bernie-moreno#phone'],
+  // the privacy policy says everything once, in full, so the other screens can stay short (docs/plan-privacy-policy.md); recorded on purpose
+  ['Privacy policy', '/?panel=privacy#phone'],
 ];
 CHECKS['text-budget'] = async () => {
   const file = path.join(__dirname, 'text-budget.json');

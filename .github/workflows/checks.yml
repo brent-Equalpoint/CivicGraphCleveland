@@ -53,6 +53,7 @@ jobs:
           python scripts/test_districts.py
           node scripts/test_design.js
           python scripts/test_i18n.py
+          python scripts/test_privacy.py
 
       - name: Data safety check
         run: python scripts/refresh.py --check

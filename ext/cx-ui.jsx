@@ -534,6 +534,11 @@ function CX_Bench() {
         <h3 aria-level="2">The architecture is designed. Part of the machinery now runs.</h3>
         <p>Every night a script turns Council's public record into one packet per ordinance or resolution. Rule-based checks play the Examiner and the Skeptic, and only a named publisher, through a signed GitHub workflow, can approve an exact version. Approved records show a Reviewed mark on profiles, with who checked them and what they found. Not running yet: agents that read documents, a member-by-member vote source, and a correction desk. Anything not marked Reviewed was gathered by hand, with sources and gaps labeled.</p>
       </div>
+      <div className="civic-card cx-bench-priv">
+        <h2>Your privacy</h2>
+        <p>This site sets no cookies and has no analytics. Your choices stay on your device, and the browser is told to talk only to this site.</p>
+        <button type="button" className="cx-link-button cx-bench-privacy" onClick={() => CX_NAV.panel(`privacy`)}>Read the privacy policy</button>
+      </div>
       <CX_BenchStatus />
       <div className="cx-tabs" role="tablist" aria-label="Architecture sections">
         {tabs.map(([id, label]) => (

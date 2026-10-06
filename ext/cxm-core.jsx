@@ -181,7 +181,8 @@ function cxmFromUrl() {
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
   // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`] };
+    ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
+    privacy: [`today`, null, null, `privacy`] };
   // a profile link (?panel=us&who=bernie-moreno) opens the map, where the profile page lives
   if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null }; }
   if (r && r.id !== `overview`) {
@@ -203,6 +204,7 @@ function cxmToUrl(tab, room, top, peopleMode, page) {
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
   else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
   else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
+  else if (page === `privacy`) p.set(`panel`, `privacy`);
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); if (who && /^[a-z0-9:-]{1,120}$/i.test(who)) p.set(`who`, who); }
@@ -295,6 +297,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [storyBack, setStoryBack] = u.useState(null);  // the story you were in when you chose Go deeper
   const [easy, setEasyState] = u.useState(() => {
     if (deskEasy) return !0;
+    if (start.page === `privacy`) return !1;   // a link to the privacy policy opens it, in Easy mode too (for this visit; nothing is saved)
     return cxmStore(`cx-easy`, ``) === `on`;   // only if the person chose it before
   });
   const setEasy = (v) => { setEasyState(v); cxmPut(`cx-easy`, v ? `on` : `off`); };
@@ -319,6 +322,9 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const backSheet = () => setSheets((s) => s.slice(0, -1));
   const go = (t) => { setSheets([]); setOverlay(null); setTab(t); setStoryBack(null); };
   const backToStory = () => { if (!storyBack) return; setSheets([]); setOverlay(storyBack); setStoryBack(null); };
+  // the privacy policy is a full page; Back puts back the sheets it was opened from (Settings, How this is built)
+  const openPrivacy = () => { setOverlay({ type: `privacy`, sheets }); setSheets([]); setStoryBack(null); };
+  const closePrivacy = () => { const back = overlay && overlay.type === `privacy` ? overlay.sheets : null; setOverlay(null); if (back && back.length) setSheets(back); };
   const openRoom = (roomId, nodeId) => {
     setSheets([]); setOverlay(null); setTab(`explore`); setRoom(roomId);
     if (nodeId) setTimeout(() => openSheet(`record`, { room: roomId, node: nodeId }), 30);
@@ -336,7 +342,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const page = overlay ? overlay.type : null;
   u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page); }, [tab, room, topSheet, people.mode, page]);
   u.useEffect(() => {
-    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay) setOverlay(overlay.type === `hall` && overlay.back ? overlay.back : null); } };
+    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay(overlay.type === `hall` && overlay.back ? overlay.back : null); } };
     globalThis.addEventListener(`keydown`, onKey);
     return () => globalThis.removeEventListener(`keydown`, onKey);
   }, [sheets.length, overlay]);
@@ -345,6 +351,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
     people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
+    openPrivacy, closePrivacy,
   };
   const top = sheets[sheets.length - 1];
   const TABS = [
@@ -391,6 +398,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `districts` && <CxmDistricts />}
             {overlay && overlay.type === `crush` && <CxmCrush />}
             {overlay && overlay.type === `hall` && <CxmHall />}
+            {overlay && overlay.type === `privacy` && <CxmPrivacyPage />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}
           {storyBack && !overlay && <button type="button" className="cxm-storyback" onClick={backToStory}><CXI.Back size={16} /> Back to the story</button>}
@@ -658,7 +666,7 @@ function CxmHomePicker() {
         <button type="button" className={home?.place === `county` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `county` }); closeSheet(); }}>Elsewhere in Cuyahoga County</button>
         <button type="button" className={home?.place === `unsure` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `unsure` }); closeSheet(); }}>I am not sure</button>
       </div>
-      <p className="cxm-fine">Do not know your ward? Choose "I am not sure" and use the official lookup. Private: your choice is never shared or added to links. It stays only for this visit unless you turn on Remember my place.</p>
+      <p className="cxm-fine">Do not know your ward? Choose "I am not sure" and use the official lookup. Private: your choice is never shared or added to links. It stays only for this visit unless you turn on Remember this device.</p>
       <div className="cxm-row-links">
         <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address">Find my ward by address</CxmSrc>
         {home && <button type="button" className="cxm-link" onClick={() => { setHome(null); closeSheet(); }}>Clear my place</button>}
@@ -683,7 +691,7 @@ function cxStorageOk() {
   try { const k = `cx-probe`; localStorage.setItem(k, `1`); localStorage.removeItem(k); return !0; } catch { return !1; }
 }
 /* Desktop: a link to a room, record, or panel that does not exist gets a notice (the phone has its own, CXM_NOTICE). */
-const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`, `levies`];
+const CX_PANELS_KNOWN = [`ballot`, `learn`, `constellation`, `context`, `ledger`, `bench`, `leaders`, `place`, `news`, `stories`, `priorities`, `profiles`, `us`, `levies`, `privacy`];
 function cxLinkProblem() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return null; }

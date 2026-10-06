@@ -109,7 +109,7 @@ function CX_RowMore({ unit }) {
   );
 }
 
-/* ---------- My pages: one menu for the 15 personal pages ----------
+/* ---------- My pages: one menu for the 15 personal pages and the privacy policy ----------
    Grouped the way a resident looks for them. Every entry opens its page through the same functions the old buttons called (CX_NAV.panel,
    CX_NAV.priorities), so every ?panel= link still opens the same page. My ballot keeps its own button beside the menu until Election Day. */
 const CX_PAGE_GROUPS = [
@@ -117,7 +117,7 @@ const CX_PAGE_GROUPS = [
   [`People`, [[`leaders`, `My leaders`], [`profiles`, `Profiles`], [`constellation`, `My constellation`], [`us`, `United States`]]],
   [`Where I live`, [[`place`, `Who decides here?`], [`context`, `My local context`]]],
   [`Today`, [[`stories`, `Stories`], [`news`, `What's new`]]],
-  [`You`, [[`priorities`, `My priorities`], [`ledger`, `Decision ledger`], [`bench`, `How this is built`]]],
+  [`You`, [[`priorities`, `My priorities`], [`ledger`, `Decision ledger`], [`bench`, `How this is built`], [`privacy`, `Privacy policy`]]],
 ];
 const CX_PAGE_NAME = Object.fromEntries(CX_PAGE_GROUPS.flatMap((g) => g[1]));
 function cxNavOpenPage(id) {

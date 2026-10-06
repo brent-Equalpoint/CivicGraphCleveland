@@ -28,6 +28,7 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | Compiled app | `patch()` in `build.py` | the build log lists every patch ok |
 | New or changed text | the component, then `i18n/manual.json` | `node scripts/i18n/crawl.js`, `python scripts/test_i18n.py` |
 | How you line up (questions, counts) | `ext/cx-align-text.jsx` (between the markers), `ext/cx-align.jsx` | `node scripts/test_alignment.js`, `--only alignment`; a person runs `python build.py --mark-alignment-reviewed "Name"` |
+| Anything saved in the browser (a new `localStorage` or `sessionStorage` name, a cache) | the code, then its line in the privacy policy's list (`ext/cx-privacy.jsx`) and a row in `docs/privacy-claims.md` | `python scripts/test_privacy.py`, `--only privacy-policy`; the policy's words need a person's approval again |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
 | Ship | commit (one line, what changed for a resident) | `python scripts/release.py --push` |
@@ -64,6 +65,14 @@ Both styles (Bento, Original), both layouts, dark and light, English and Spanish
 - **A CSS comment is part of the next selector to `bento.py` and `light.py`.** Their parser keeps a comment that comes right before a rule or an
   `@media` in that rule's selector: a commented `@media` block is never turned into its Bento or light version, and a comment with a comma in it
   breaks the generated selector. Put the comment inside the block, before a rule with no color in it (the desktop strip block in `ext/cx.css` does).
+  A comment before a selector that starts with `html[...]` also breaks it: `light.py` cannot merge the two `html` parts and writes
+  `html[data-cx-mode=light] html[data-cx-theme] ...`, which never matches (the desktop `.sp p` rule did this; profiles hid it because they also match
+  `.sp-page p`, and the privacy page showed white text on a light page). Inside a rule's own block, a comment goes after the last declaration:
+  `light.py` splits the block on `;` and reads the property name before the first `:`, so a comment in front of `color:` hides the color.
+  Two more selectors still have this shape (`html[data-cx-theme] .ledger-summary span` and `html[data-cx-theme=bento] .atlas-header` in the light layer).
+- **Everything saved in the browser is on the privacy policy.** A new `localStorage` or `sessionStorage` name fails `scripts/test_privacy.py`
+  until `CX_POLICY.stored` in `ext/cx-privacy.jsx` names it (and the `privacy-policy` check runs the app and compares what it really writes).
+  Name a storage key with a string or a constant the test can read, never one built at run time.
 - **CSS class names are shared by every file.** `.cx-more` already existed (a "more" section), and `.cx-pages-menu` was both a wrapper and a menu
   for a moment. Grep a class name in `ext/*.css` and `ext/*.jsx` before using it, the same as a function name.
 - **An animation switched off and on again plays again.** Turning a page's entrance off with an attribute on `<html>` while a key was down, and back on

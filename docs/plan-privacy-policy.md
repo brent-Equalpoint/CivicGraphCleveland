@@ -1,6 +1,15 @@
 # Plan: a privacy policy that states how people are protected
 
-Status: decided 2026-10-05, not written yet. Brent asked for this so the app does not explain privacy at every control. Controls say the minimum ("Remember this device"); this page says the rest, once.
+Status: decided 2026-10-05. **Built 2026-10-06 as a draft** (on a branch, not released): a lawyer has not read it and no person has approved it, so the page says so at the top. Brent asked for this so the app does not explain privacy at every control. Controls say the minimum ("Remember this device"); this page says the rest, once.
+
+## What was built (Oct 6, 2026)
+
+- **The page.** `ext/cx-privacy.jsx`: the words as strict JSON between the PRIVACY-TEXT markers (`CX_POLICY`), one component for both layouts (`CX_PrivacyPolicy`, on the profile page's type), and the phone's full page (`CxmPrivacyPage`, like At City Hall). Order: the draft line, the heading, the date, "In short" (three lines: no accounts, no cookies, no analytics; your address, place, answers, and priorities never leave your device; your place is saved only if you choose Remember this device), then each part from the list below, then "Everything this site saves in your browser" (13 names and the site's saved copy, each with what it holds and how it is removed) and the changes, newest first.
+- **Where it opens.** `/privacy` on the hosted site (a rewrite in `vercel.json`; the page turns the address into `/?panel=privacy` before either layout reads it), `?panel=privacy` on a phone, a computer, and the single offline file. Linked from Settings and How this is built on the phone, and from How this is built and My pages > You on a computer. There is no separate share-link page (a shared link opens the app itself), so there is no footer link. If Brent wants one, the phone footer (`cxm-foot`) and the desktop footer stamp are the two places; it adds two words to every screen's text budget.
+- **Review.** `python build.py --mark-privacy-reviewed "Name"` (after a lawyer has read it) writes `data/privacy-reviewed.json` and replaces the draft line with "Approved by Name on date"; any later change to the words, or to the two place limits it reads from `ext/cxm-core.jsx`, brings the draft line back.
+- **What backs each sentence:** `docs/privacy-claims.md` (a table: claim, where in the code, check or test). **Privacy contact: to be added** by Brent; until then the page offers only the public GitHub issue.
+- **Checks.** `scripts/test_privacy.py` reads every storage call in the code (ours, the scripts `build.py` writes, and the compiled app) and fails if a saved name is not on the page, or the page names something nothing saves; and for dashes, legal promise words, a typed-in place limit, an email address, the `/privacy` rewrite, and a claims row that names a check that does not exist. The `privacy-policy` browser check opens the page at both addresses on a phone, a computer, 320 px, and in Easy mode, follows every link to it, runs the app through its flows with every storage write recorded and compares them with the page's list, and checks cookies, requests, fonts, the report link, Spanish, and light mode in both styles.
+- **Corrections to the plan's list, from the code:** "Clear my choices" clears only the priorities; the practice ballot and its answers are cleared by "Clear my practice data" (phone) or "Clear practice ballot and answers" (computer). Larger text is not saved. Words typed in the desktop map's search box do go into the link (`q=`), so the page says so. Turning a place's remembering off deletes it, but clearing practice data does not (the remember-place plan expected it would).
 
 ## Why a policy, not more text on screens
 
@@ -17,7 +26,7 @@ Every reassurance repeated beside a switch or a box is a sentence people have to
 - **What the host can see.** Our host (Vercel) receives ordinary web requests and may log things like your IP address and the page asked for, as any web host does. We do not add anything about you to those requests. (To confirm with the host's own policy before publishing.)
 - **Reporting a mistake.** Reports go through a public GitHub issue, so they are public; do not include anything personal. A free GitHub account is needed. (From the existing wording on profiles.)
 - **Sources.** Official public records, with dates pulled; news and interpretation wait for a person.
-- **Who runs it.** Built by Futureland with Equalpoint; hosting by Equalpoint's Vercel plan.
+- **Who runs it.** An Equalpoint project, hosted on Equalpoint's Vercel plan. (Corrected Oct 6: not Futureland.)
 - **Children, accessibility, contact.** To be decided: a contact for privacy questions.
 - **Changes.** The date the policy last changed, and a plain note of what changed.
 
@@ -31,4 +40,4 @@ Every reassurance repeated beside a switch or a box is a sentence people have to
 
 ## When
 
-Not now. When Brent asks, write it from the list above, add a browser check that every claim names its backing check or test, and publish it at its own address with the date.
+Brent asked on Oct 6, 2026; the draft is built (see the top). Left before it is final: a lawyer reads it, Brent supplies a privacy contact (or confirms the GitHub issue is the only one), Brent and the lawyer confirm the "Who runs this site" wording, a person approves it with `--mark-privacy-reviewed`, and a Spanish speaker reads the Spanish.
