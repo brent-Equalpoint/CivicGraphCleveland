@@ -1,11 +1,12 @@
-/* The desktop strip above the graph (screens wider than 760 px): the rooms and the personal pages.
-   The compiled app draws the room tabs (a Radix tablist, ?room=) and the personal page buttons (?panel=); build.py mounts
-   CX_DeskStrip inside the strip with the app's own state, so this file keeps them in view and in step. */
+/* The desktop strip above the graph (screens wider than 760 px): places, rooms, Jump to, and My pages.
+   Row one: the places (folders, from your block to the nation) and My ballot. Row two: the chosen place's rooms as a segmented control,
+   Jump to, and the My pages menu. The compiled app draws the room tabs (a Radix tablist, ?room=) and the personal page buttons (?panel=,
+   kept for a narrow window); build.py mounts these parts inside the strip with the app's own state. */
 
 /* Bring a tab or button inside its sideways-scrolling row into view, clear of the fade and the "more" button at each end
    (scroll-padding-inline in ext/cx.css, 112 px). Only the row moves sideways: the page never moves up or down. */
 function cxNavReveal(el, smooth) {
-  const row = el && el.closest(`.atlas-room-tabs, .atlas-sidebar-bottom`);
+  const row = el && el.closest(`.atlas-room-tabs, .atlas-sidebar-bottom, .cx-folders`);
   if (!row || row.scrollWidth <= row.clientWidth + 1) return;
   const pad = 112, r = el.getBoundingClientRect(), s = row.getBoundingClientRect();
   let d = 0;
@@ -127,9 +128,10 @@ function cxNavOpenPage(id) {
 function cxNavBallotShortcut() {
   try { return cxElectionPhase() !== `after`; } catch (e) { return !0; }
 }
-function CX_DeskPages({ panel, prio, ballot }) {
+/* only: `ballot` draws just the My ballot button (on the places row), `menu` just the My pages menu (on the rooms row) */
+function CX_DeskPages({ panel, prio, only }) {
   const cur = prio ? `priorities` : panel || ``;
-  const showBallot = ballot !== !1 && cxNavBallotShortcut();
+  const showBallot = cxNavBallotShortcut();
   const inMenu = !!cur && !!CX_PAGE_NAME[cur] && !(showBallot && cur === `ballot`);
   const [open, setOpen] = u.useState(!1);
   const [instant, setInstant] = u.useState(!1);
@@ -156,20 +158,21 @@ function CX_DeskPages({ panel, prio, ballot }) {
     if (n >= 0) { e.preventDefault(); items[n].focus(); }
   };
   const toggle = () => { setInstant(CX_NAV_INPUT.kbd); setOpen(!open); };
+  if (only === `ballot` && !showBallot) return null;
   return (
-    <div ref={wrap} className="cx-pages" onBlur={(e) => { if (open && wrap.current && !wrap.current.contains(e.relatedTarget)) setOpen(!1); }}>
-      {showBallot && (
+    <div ref={wrap} className={`cx-pages${only ? ` cx-pages-part-${only}` : ``}`} onBlur={(e) => { if (open && wrap.current && !wrap.current.contains(e.relatedTarget)) setOpen(!1); }}>
+      {showBallot && only !== `menu` && (
         <button type="button" className={`cx-strip-btn cx-ballot-btn${cur === `ballot` ? ` on` : ``}`} aria-current={cur === `ballot` ? `page` : undefined} onClick={() => cxNavOpenPage(`ballot`)}>
           <CXI.Check size={16} /><span>My ballot</span>
         </button>
       )}
-      <button ref={btn} type="button" className={`cx-strip-btn cx-pages-btn${inMenu ? ` on` : ``}`} aria-expanded={open} aria-controls="cx-pages-menu" aria-current={inMenu ? `page` : undefined}
+      {only !== `ballot` && <button ref={btn} type="button" className={`cx-strip-btn cx-pages-btn${inMenu ? ` on` : ``}`} aria-expanded={open} aria-controls="cx-pages-menu" aria-current={inMenu ? `page` : undefined}
         onClick={toggle} onKeyDown={(e) => { if (e.key === `ArrowDown` && !open) { e.preventDefault(); setInstant(!0); setOpen(!0); } }}>
         {inMenu && <span className="sr-only">My pages:</span>}
         <span>{inMenu ? CX_PAGE_NAME[cur] : `My pages`}</span>
         <CXI.Chevron size={16} className="cx-pages-chev" />
-      </button>
-      {open && (
+      </button>}
+      {open && only !== `ballot` && (
         <div ref={box} id="cx-pages-menu" className={`cx-pages-menu${instant ? ` cx-instant` : ``}`} onKeyDown={menuKey}>
           {CX_PAGE_GROUPS.map(([h, list], gi) => (
             <div key={h} className="cx-pages-group" role="group" aria-labelledby={`cx-pages-h${gi}`}>
@@ -194,7 +197,8 @@ function CX_DeskPages({ panel, prio, ballot }) {
 /* The places, from your block to the nation: the phone's zoom levels (CXM_LEVELS in ext/cxm-explore.jsx), read from the same list so the two
    layouts cannot drift, with their names in sentence case ("YOUR BLOCK" is "Your block"). */
 function cxNavLevels() {
-  if (!cxNavLevels.v) cxNavLevels.v = cxmLevelRooms().map((l) => ({ ...l, name: l.label.charAt(0) + l.label.slice(1).toLowerCase() }));
+  // each place's rooms keep the desktop's own room order (the order of the room tabs), so the first room of a place is the first one you see
+  if (!cxNavLevels.v) cxNavLevels.v = cxmLevelRooms().map((l) => ({ ...l, name: l.label.charAt(0) + l.label.slice(1).toLowerCase(), rooms: [...l.rooms].sort((a, b) => Uh.indexOf(a) - Uh.indexOf(b)) }));
   return cxNavLevels.v;
 }
 function cxNavFolderOf(roomId) {
@@ -375,6 +379,91 @@ function CX_DeskJump({ panel, onRoom }) {
   );
 }
 
+/* ---------- Places: the rooms in folders, from your block to the nation ----------
+   The folders are the places above (cxNavLevels). Choosing one happens on the press (like the room tabs) and opens the room last used in it
+   this visit (kept in memory only, never saved), or its first room. The chosen place's rooms show below it as a segmented control: they are
+   the compiled room tabs, and build.py only hides the other places' tabs (data-cx-off), so ?room= links and the room panels stay as they were. */
+const CX_FOLDER_LAST = {};
+function cxNavFolderRoom(l) {
+  const last = CX_FOLDER_LAST[l.id];
+  return last && l.rooms.some((r) => r.id === last) ? last : l.rooms[0].id;
+}
+/* Left and Right move along a row of tabs, Home and End go to its ends, and the row stops at its ends. The focus moves; nothing opens. */
+function cxNavRove(e, sel) {
+  const map = { ArrowLeft: -1, ArrowRight: 1, Home: -1e3, End: 1e3 };
+  if (!(e.key in map) || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+  const items = [...e.currentTarget.querySelectorAll(sel)].filter((x) => x.getBoundingClientRect().width > 0);
+  const i = items.indexOf(document.activeElement);
+  if (i < 0) return;
+  e.preventDefault();
+  const n = items[Math.max(0, Math.min(items.length - 1, i + map[e.key]))];
+  if (n && n !== document.activeElement) n.focus();
+}
+function CX_DeskFolders({ room, panel, prio, onRoom }) {
+  const ls = cxNavLevels();
+  const cur = cxNavFolderOf(room), page = !!(panel || prio);
+  u.useEffect(() => { CX_FOLDER_LAST[cxNavFolderOf(room)] = room; }, [room]);
+  const choose = (l) => {
+    const to = cxNavFolderRoom(l);
+    if (to === room && !page) return;
+    onRoom(to);
+  };
+  return (
+    <div className="cx-row cx-row-folders">
+      <div role="tablist" aria-label="Places" className="cx-folders" onKeyDown={(e) => cxNavRove(e, `[role=tab]`)}>
+        {ls.map((l) => {
+          const on = l.id === cur;
+          return (
+            <button key={l.id} type="button" role="tab" className="cx-folder" aria-selected={on && !page} data-on={on ? `` : undefined} aria-controls="cx-rooms-row" tabIndex={on ? 0 : -1}
+              onMouseDown={(e) => { if (e.button === 0 && !e.ctrlKey && !e.metaKey) choose(l); }}
+              onClick={(e) => { if (e.detail === 0 && (l.id !== cur || page)) choose(l); }}
+              onKeyDown={(e) => { if (e.key === `Enter` || e.key === ` `) { e.preventDefault(); choose(l); } }}>
+              {l.name}
+            </button>
+          );
+        })}
+      </div>
+      <CX_RowMore unit="places" />
+    </div>
+  );
+}
+/* A place with one room shows that room and the place's own line beside it */
+function CX_FolderLine({ room }) {
+  const l = cxNavLevels().find((x) => x.id === cxNavFolderOf(room));
+  return l && l.rooms.length === 1 ? <p className="cx-folder-line">{l.line}</p> : null;
+}
+/* The thumb of the segmented control: it slides to the chosen room (transform and width, motion.spring), and is gone while a personal page is open.
+   A pointer choice within the same place slides; a keyboard choice, a new place, the first drawing, and a change of size (fonts, Spanish) just put it there. */
+function cxThumbAt(el, slide) {
+  const list = el.parentElement, t = list && list.querySelector(`[role=tab][aria-selected="true"]`);
+  if (!t) { el.style.opacity = `0`; el.dataset.at = ``; return; }
+  el.classList.toggle(`cx-thumb-go`, !!slide && !!el.dataset.at);
+  el.style.opacity = `1`;
+  el.style.width = `${t.offsetWidth}px`;
+  el.style.transform = `translateX(${t.offsetLeft}px)`;
+  el.dataset.at = `${t.offsetLeft},${t.offsetWidth}`;
+}
+function CX_RoomThumb({ room, page }) {
+  const ref = u.useRef(null), was = u.useRef(``);
+  u.useLayoutEffect(() => {
+    const f = cxNavFolderOf(room);
+    if (ref.current) cxThumbAt(ref.current, !CX_NAV_INPUT.kbd && was.current === f);
+    was.current = f;
+  }, [room, page]);
+  u.useEffect(() => {
+    const el = ref.current, list = el && el.parentElement;
+    if (!list || typeof ResizeObserver === `undefined`) return;
+    const ro = new ResizeObserver(() => {
+      const t = list.querySelector(`[role=tab][aria-selected="true"]`);
+      if (t && el.dataset.at !== `${t.offsetLeft},${t.offsetWidth}`) cxThumbAt(el, !1);
+    });
+    ro.observe(list);
+    list.querySelectorAll(`[role=tab]`).forEach((t) => ro.observe(t));
+    return () => ro.disconnect();
+  }, []);
+  return <span ref={ref} className="cx-thumb" aria-hidden="true" />;
+}
+
 /* Mounted by build.py at the top of the strip with the app's state: the room, the open page (panel), and My priorities. */
 function CX_DeskStrip({ room, panel, prio }) {
   const ref = u.useRef(null);
@@ -392,6 +481,7 @@ function CX_DeskStrip({ room, panel, prio }) {
       if (!matchMedia(`(min-width: 761px)`).matches) return;
       cxNavReveal(strip.querySelector(`.atlas-room-tab[data-state="active"]`) || strip.querySelector(`.atlas-room-tab[tabindex="0"]`));
       cxNavReveal(strip.querySelector(`.atlas-sidebar-bottom [aria-current="page"]`));
+      cxNavReveal(strip.querySelector(`.cx-folder[data-on]`));
     };
     const raf = requestAnimationFrame(show);
     let gone = !1;

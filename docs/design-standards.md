@@ -42,6 +42,10 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
 - **Targets are at least 44 by 44 px**, with space between. (`targets`)
 - **Nothing needs hover, drag, or a long press.** Everything a pointer does, the keyboard does: Tab order is the reading order, arrows
   move through a story, Escape closes. (`axe`, `shell`)
+- **A row of tabs is one Tab stop; the arrows move along it and stop at its ends; Enter opens.** An arrow never opens a room or adds a
+  history entry. Exactly one thing in a navigation bar looks and announces itself as chosen. The chosen item is always in view, and a row
+  that does not fit says how much more there is and can be reached with a mouse alone (a plain wheel, an "n more" button). A keyboard
+  shortcut never fires while someone is typing in a field. (`nav-desktop`)
 - **Every screen has a way out and a way back**, and returning lands where you left. (`stories-deeper`)
 - **Empty, blocked, and bad-link states say what happened, why, and one next step.** (`screen-states`)
 - **Easy mode keeps the plain version of everything**, without maps, filters, or controls that need explaining. (`easy-phone`, `easy-desktop`)
@@ -97,7 +101,8 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 
 `node scripts/design/audit.js` (the CSS is on the tokens) and `node scripts/checks/run.js` run all of them; `python scripts/release.py` runs them before anything ships.
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
-`targets` (44 px), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
+`targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
+reachable with a mouse alone, Jump to and My pages), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
 `spanish-switch`, `levies`, `profiles`, `council-votes`, `us-graph`, `screen-states`, `shell`, `offline-shell`, `update-wins`.
 
 ## 8. Gaps to close next

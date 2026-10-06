@@ -137,7 +137,7 @@ Weights: regular 400, medium 500, semibold 600, bold 700, heavy 800. Line height
 
 Corner radius: small 8 px, control 10 px, medium 12 px, card 14 px, large 16 px, tile 18 px, sheet 20 px, pill 999 px, round 50%.
 
-Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. Smallest control: 44 by 44 px. Motion: quick 200ms, base 250ms, slow 350ms; with reduced motion: no movement, no slide, no flash.
+Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. Smallest control: 44 by 44 px. Motion: quick 200ms, base 250ms, slow 350ms, press 160ms, ease cubic-bezier(.2,.8,.2,1), spring linear(0, 0.0788, 0.2361, 0.403, 0.5509, 0.6711, 0.7638, 0.8329, 0.8832, 0.9191, 0.9445, 0.9621, 0.9743, 0.9827, 0.9884, 0.9922, 0.9948, 0.9965, 0.9977, 0.9985, 1); with reduced motion: no movement, no slide, no flash.
 
 ### Contrast pairs that must stay at 4.5:1 or better
 
@@ -177,6 +177,7 @@ Spacing steps (px): 2, 4, 6, 8, 10, 12, 14, 16, 18, 22, 28. Phone gutter 18 px. 
 | person-face | `.cxm-fed-av, .us-who` | ext/cx-us.jsx (CxFace). a round portrait over the person's initials; a missing photo leaves the initials; used on Federal profiles, the strip, the Index, and the Sky side panel |
 | city-hall-front-page | `.mt, .mt-lead, .mt-item, .mt-strip, .mt-small, .mt-chip, .mt-card` | ext/cx-meetings.jsx. a lead tile (the next Council meeting), a short strip for the rest of the week, what was just decided, and earlier meetings folded by month; every item opens its legislation record |
 | section-banner | `.bn, .bn-art, .bn-copy, .bn-f1, .bn-f2, .bn-f3, .bn-f4, .bn-f5, .bn-f6x, .bn-f7` | ext/cxm-banner.jsx. an illustrated header for each chapter of Today (What's new, At City Hall, City Hall receipts, Close to home); original drawings in the style's own colors through variables, no text inside, hidden from screen readers, motion stops for reduced-motion |
+| desktop-strip | `.cx-folders, .cx-folder, .atlas-room-tabs, .cx-thumb, .cx-strip-btn, .cx-pages-menu, .cx-jump, .cx-rowmore` | ext/cx-nav.jsx (CX_DeskFolders, CX_RoomThumb, CX_RowMore, CX_DeskPages, CX_DeskJump), build.py (desktop strip). on a computer: the places (the phone zoom levels) as folder tabs, the chosen place rooms as a segmented control whose thumb moves on motion.spring (motion.ease where linear() is missing), Jump to (Ctrl+K, Cmd+K, or /), and the My pages menu; a row that does not fit fades at the side with more and has an n more button |
 
 <!-- GENERATED-END -->
 

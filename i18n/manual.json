@@ -865,7 +865,14 @@
   "Recent": "Recientes",
   "Clear recent": "Borrar recientes",
   "Pages": "Páginas",
-  "<1>↑</1> <2>↓</2> to move, <3>Enter</3> to open, <4>Esc</4> to close": "<1>↑</1> <2>↓</2> para moverse, <3>Enter</3> para abrir, <4>Esc</4> para cerrar"
+  "<1>↑</1> <2>↓</2> to move, <3>Enter</3> to open, <4>Esc</4> to close": "<1>↑</1> <2>↓</2> para moverse, <3>Enter</3> para abrir, <4>Esc</4> para cerrar",
+  "Places": "Lugares",
+  "Your block": "Su cuadra",
+  "Your ward": "Su distrito",
+  "Your city": "Su ciudad",
+  "County and courts": "Condado y tribunales",
+  "Ohio and the nation": "Ohio y la nación",
+  "The big picture": "El panorama general"
  },
  "masked": {
   "{n} days": "{n} días",

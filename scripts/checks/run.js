@@ -1866,29 +1866,45 @@ const CHECKS = {
         await done(p);
       }
     }
-    // a mouse alone reaches every room at 1100 px: the "n more" button walks the row to its end, and a plain wheel moves the row, then hands back to the page
+    // a mouse alone reaches every room at 1100 px: each place by a click (with its row's "n more" button if the places do not fit), then each place's
+    // last room, brought into view with the rooms row's "n more" button when the row does not fit; no scrollbar is needed anywhere
     const mo = await open('/?room=overview#desktop', { width: 1100 });
-    const row0 = await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); return { over: r.scrollWidth > r.clientWidth + 1, end: r.hasAttribute('data-more-end'), start: r.hasAttribute('data-more-start'), more: !!document.querySelector('.cx-row-rooms .cx-rowmore-end') }; });
-    if (row0.over) {
-      expect(row0.end && !row0.start && row0.more, `1100: the rooms row scrolls but shows no fade or "more" button at its end (${JSON.stringify(row0)})`);
-      const label = await mo.evaluate(() => document.querySelector('.cx-row-rooms .cx-rowmore-end').textContent.replace(/\s+/g, ' ').trim());
-      expect(/^Show \d+ more rooms$/.test(label || ''), `1100: the "more" button is named "${label}"`);
-      for (let i = 0; i < 12 && (await has(mo, '.cx-row-rooms .cx-rowmore-end')); i++) { await mo.click('.cx-row-rooms .cx-rowmore-end'); await wait(700); }
-      const last = await mo.evaluate(() => { const tabs = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width); const t = tabs[tabs.length - 1], r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return { label: t.innerText.trim(), ok: r.right <= row.right + 1 && r.left >= row.left - 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
-      expect(last.ok, `1100: after the "more" button the last room, ${last.label}, is still not fully in view`);
-      await mo.mouse.click(last.x, last.y); await wait(600);
-      expect((await mo.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'ecosystem', `1100: a mouse click on ${last.label} after scrolling with "more" did not open it`);
-      // the wheel: back to the start, then down over the row moves the row and not the page; at the row's end the page scrolls again
-      await mo.evaluate(() => { document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft = 0; scrollTo(0, 0); }); await wait(200);
-      const at = await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
-      await mo.mouse.move(at[0], at[1]); await mo.mouse.wheel({ deltaY: 240 }); await wait(300);
-      const w1 = await mo.evaluate(() => ({ x: document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft, y: scrollY }));
-      expect(w1.x > 0 && w1.y === 0, `1100: a mouse wheel over the rooms row did not move it sideways (row ${w1.x}, page ${w1.y})`);
-      await mo.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); r.scrollLeft = r.scrollWidth; }); await wait(200);
-      await mo.mouse.move(at[0], at[1]); await mo.mouse.wheel({ deltaY: 240 }); await wait(400);
-      expect((await mo.evaluate(() => scrollY)) > 0, '1100: at the end of the rooms row the wheel no longer scrolls the page (the row traps it)');
+    const places = await mo.evaluate(() => [...document.querySelectorAll('.cx-folders [role=tab]')].map((t) => t.innerText.trim()));
+    expect(places.length === 6, `the places row has ${places.length} places`);
+    for (const place of places) {
+      for (let i = 0; i < 6; i++) {
+        const vis = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return r.left >= row.left - 1 && r.right <= row.right + 1; }, place);
+        if (vis || !(await has(mo, '.cx-row-folders .cx-rowmore-end'))) break;
+        await mo.click('.cx-row-folders .cx-rowmore-end'); await wait(600);
+      }
+      const at = await mo.evaluate((pl) => { const t = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === pl), r = t.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, place);
+      await mo.mouse.click(at[0], at[1]); await wait(500);
+      for (let i = 0; i < 8 && (await has(mo, '.cx-row-rooms .cx-rowmore-end')); i++) { await mo.click('.cx-row-rooms .cx-rowmore-end'); await wait(600); }
+      const last = await mo.evaluate(() => { const tabs = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width); const t = tabs[tabs.length - 1], r = t.getBoundingClientRect(), row = t.parentElement.getBoundingClientRect(); return { label: t.innerText.trim(), id: (t.id || '').split('-trigger-').pop(), ok: r.right <= row.right + 1 && r.left >= row.left - 1, x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      expect(last.ok, `1100: in ${place}, the last room, ${last.label}, cannot be brought fully into view with a mouse`);
+      await mo.mouse.click(last.x, last.y); await wait(500);
+      expect((await mo.evaluate(() => new URLSearchParams(location.search).get('room'))) === last.id, `1100: a mouse click on ${last.label} in ${place} did not open it`);
     }
+    expect((await mo.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0, '1100: the page scrolls sideways');
     await done(mo);
+    // where a row does not fit (a computer 900 px wide), it fades at the side with more, says how many are hidden, and a plain wheel moves it, then hands back to the page
+    const nr = await open('/?room=administration#desktop', { width: 900 });
+    const row0 = await nr.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); return { over: r.scrollWidth > r.clientWidth + 1, end: r.hasAttribute('data-more-end'), start: r.hasAttribute('data-more-start'), more: !!document.querySelector('.cx-row-rooms .cx-rowmore-end') }; });
+    expect(row0.over, '900: the rooms of Your city fit, so the fallback was not tested');
+    if (row0.over) {
+      expect(row0.end && !row0.start && row0.more, `900: the rooms row scrolls but shows no fade or "more" button at its end (${JSON.stringify(row0)})`);
+      const label = await nr.evaluate(() => document.querySelector('.cx-row-rooms .cx-rowmore-end').textContent.replace(/\s+/g, ' ').trim());
+      expect(/^Show \d+ more rooms$/.test(label || ''), `900: the "more" button reads "${label}" to a screen reader`);
+      await nr.evaluate(() => { document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft = 0; scrollTo(0, 0); }); await wait(200);
+      const at = await nr.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]').getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; });
+      await nr.mouse.move(at[0], at[1]); await nr.mouse.wheel({ deltaY: 240 }); await wait(300);
+      const w1 = await nr.evaluate(() => ({ x: document.querySelector('.cx-row-rooms > [role=tablist]').scrollLeft, y: scrollY }));
+      expect(w1.x > 0 && w1.y === 0, `900: a mouse wheel over the rooms row did not move it sideways (row ${w1.x}, page ${w1.y})`);
+      await nr.evaluate(() => { const r = document.querySelector('.cx-row-rooms > [role=tablist]'); r.scrollLeft = r.scrollWidth; }); await wait(200);
+      await nr.mouse.move(at[0], at[1]); await nr.mouse.wheel({ deltaY: 240 }); await wait(400);
+      expect((await nr.evaluate(() => scrollY)) > 0, '900: at the end of the rooms row the wheel no longer scrolls the page (the row traps it)');
+    }
+    await done(nr);
     // My pages: one menu, grouped, that opens every page the old buttons opened; Escape closes it and gives the focus back
     const mp = await open('/?room=council#desktop', { width: 1440 });
     expect(!(await mp.evaluate(() => [...document.querySelectorAll('.atlas-sidebar-bottom button')].some((b) => b.getBoundingClientRect().width))), 'the old row of page buttons still shows on a computer');
@@ -1964,6 +1980,45 @@ const CHECKS = {
     await um.keyboard.press('/'); await wait(300);
     expect(!(await has(um, '.cx-jump[role=dialog]')), '"/" opened the jump box on the United States map, which keeps "/" for its own search');
     await done(um);
+    // Places: the folders are the phone's levels, in order; a link opens the right folder; a folder opens the room last used in it; the arrows stop at the ends
+    // and skip the hidden rooms of other places
+    const pl = await open('/?room=transport#desktop', { width: 1440 });
+    const f0 = await pl.evaluate(() => ({ folders: [...document.querySelectorAll('.cx-folders [role=tab]')].map((t) => t.innerText.trim()), on: (document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText, rooms: [...document.querySelectorAll('.cx-row-rooms [role=tab]')].filter((t) => t.getBoundingClientRect().width).map((t) => t.innerText.trim()) }));
+    expect(JSON.stringify(f0.folders) === JSON.stringify(['Your block', 'Your ward', 'Your city', 'County and courts', 'Ohio and the nation', 'The big picture']), `the places are ${JSON.stringify(f0.folders)}`);
+    expect(f0.on === 'Your block' && JSON.stringify(f0.rooms) === JSON.stringify(['Local decisions', 'Housing & land', 'Public safety', 'Transit & streets']), `?room=transport opened ${f0.on} with ${JSON.stringify(f0.rooms)}`);
+    await pl.evaluate(() => { const t = [...document.querySelectorAll('.cx-row-rooms [role=tab]')].find((x) => x.innerText.trim() === 'Public safety'); t.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })); t.click(); }); await wait(500);
+    await pl.evaluate(() => { const f = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === 'Your city'); f.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })); }); await wait(500);
+    expect((await pl.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'administration', 'choosing Your city did not open its first room');
+    await pl.evaluate(() => { const f = [...document.querySelectorAll('.cx-folders [role=tab]')].find((x) => x.innerText.trim() === 'Your block'); f.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, button: 0 })); }); await wait(500);
+    expect((await pl.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'safety', 'going back to Your block did not open the room last used there (Public safety)');
+    // the arrows in the rooms row stop at its ends and never land on a hidden room
+    await pl.evaluate(() => document.querySelector('.cx-row-rooms [role=tab][aria-selected="true"]').focus());
+    for (let i = 0; i < 6; i++) await pl.keyboard.press('ArrowRight');
+    await wait(200);
+    const endR = await pl.evaluate(() => ({ t: document.activeElement.innerText.trim(), vis: document.activeElement.getBoundingClientRect().width > 0 }));
+    expect(endR.t === 'Transit & streets' && endR.vis, `ArrowRight in Your block ended on "${endR.t}", not the last room of the place`);
+    await pl.keyboard.press('Home'); await wait(150);
+    expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'Local decisions', 'Home did not go to the first room of the place');
+    // the folders: arrows move along and stop at the ends; Enter opens
+    await pl.evaluate(() => document.querySelector('.cx-folders [tabindex="0"]').focus());
+    await pl.keyboard.press('End'); await wait(100); await pl.keyboard.press('ArrowRight'); await wait(100);
+    expect((await pl.evaluate(() => document.activeElement.innerText.trim())) === 'The big picture', 'End and ArrowRight in the places row did not stop at The big picture');
+    const hb = await pl.evaluate(() => history.length);
+    await pl.keyboard.press('Enter'); await wait(500);
+    expect((await pl.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'overview' && (await pl.evaluate(() => history.length)) === hb + 1, 'Enter on The big picture did not open Your government with one history entry');
+    await done(pl);
+    // the default landing room is Your government, in The big picture
+    const d0 = await open('/#desktop', { width: 1440 });
+    expect((await d0.evaluate(() => [(document.querySelector('.cx-folders [aria-selected="true"]') || {}).innerText, (document.querySelector('.cx-row-rooms [aria-selected="true"]') || {}).innerText].join('|'))) === 'The big picture|Your government', 'the first visit does not land on Your government in The big picture');
+    await done(d0);
+    // in Spanish, and at a narrow computer width, a row that does not fit falls back to the fade and the "more" button
+    for (const [lang, w] of [['es', 1100], ['en', 900]]) {
+      const s = await open('/?room=administration#desktop', { width: w, pre: lang === 'es' ? () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } : undefined, settle: 1500 });
+      const rows = await s.evaluate(() => ['.cx-row-folders', '.cx-row-rooms'].map((sel) => { const w = document.querySelector(sel), r = w.firstElementChild; const over = r.scrollWidth > r.clientWidth + 1; return { sel, over, more: !!w.querySelector('.cx-rowmore-end, .cx-rowmore-start'), fade: r.hasAttribute('data-more-end') || r.hasAttribute('data-more-start') }; }));
+      for (const r of rows) expect(!r.over || (r.more && r.fade), `${lang} ${w}: ${r.sel} does not fit and shows no fade or "more" button`);
+      expect((await s.evaluate(() => document.documentElement.scrollWidth - innerWidth)) <= 0, `${lang} ${w}: the page scrolls sideways`);
+      await done(s);
+    }
     // a personal page is open: only it looks and announces itself as chosen
     const p = await open('/?room=council&panel=ballot#desktop', { width: 1440 });
     const c = await p.evaluate(NAV.chosen);
@@ -1971,7 +2026,7 @@ const CHECKS = {
     expect(c.tabLooks === 1, `with My ballot open, a room tab still looks different from the others (${c.tabLooks} looks)`);
     await done(p);
     // Tab follows the screen, and the strip has few stops
-    const t = await open('/?room=council#desktop', { width: 1440 });
+    const t = await open('/?room=administration#desktop', { width: 1440 });
     await t.evaluate(() => document.querySelector('.atlas-search input').focus());
     let seq = [];
     for (let i = 0; i < 40; i++) {
@@ -1983,21 +2038,21 @@ const CHECKS = {
     expect(seq.length > 0, 'Tab never reached the desktop strip');
     const outOfOrder = seq.findIndex((s, i) => i && (s.y < seq[i - 1].y - 12 || (Math.abs(s.y - seq[i - 1].y) <= 12 && s.x < seq[i - 1].x - 2)));
     expect(outOfOrder < 0, `Tab in the strip goes against the screen order at "${outOfOrder >= 0 ? seq[outOfOrder].label : ''}" (${seq.map((s) => s.label).join(', ')})`);
-    expect(seq.length <= 16, `the strip has ${seq.length} Tab stops`);
+    expect(seq.length <= 6, `the strip has ${seq.length} Tab stops (${seq.map((s) => s.label).join(', ')}); a row of tabs is one stop`);
     // the arrows move the focus and open nothing; Enter opens the focused room (one history entry)
     await t.evaluate(() => document.querySelector('.atlas-room-tabs [role=tab][aria-selected="true"]').focus());
     const h0 = await t.evaluate(() => history.length), url0 = await t.evaluate(() => location.search);
     for (let i = 0; i < 6; i++) { await t.keyboard.press('ArrowRight'); await wait(60); }
     await wait(400);
     const after = await t.evaluate(() => ({ h: history.length, sel: document.querySelector('.atlas-room-tabs [role=tab][aria-selected="true"]').innerText.trim(), focus: document.activeElement.innerText.trim(), room: new URLSearchParams(location.search).get('room') }));
-    expect(after.h === h0 && after.sel === 'Council & wards' && after.room === 'council', `six arrow presses changed the room or the history (history ${h0} to ${after.h}, chosen ${after.sel}, address ${url0} to room ${after.room})`);
-    expect(after.focus !== 'Council & wards', 'the arrow keys did not move the focus');
+    expect(after.h === h0 && after.sel === 'Mayor & services' && after.room === 'administration', `six arrow presses changed the room or the history (history ${h0} to ${after.h}, chosen ${after.sel}, address ${url0} to room ${after.room})`);
+    expect(after.focus === 'Health & environment', `the arrow keys did not move the focus to the last room of the place and stop there (focus on ${after.focus})`);
     // the focus ring sits inside the strip's rows, so nothing cuts it off
     const ring = await t.evaluate(() => { const a = document.activeElement, cs = getComputedStyle(a), r = a.getBoundingClientRect(), row = a.closest('[role=tablist], nav, .atlas-sidebar').getBoundingClientRect(); const o = parseFloat(cs.outlineOffset) + parseFloat(cs.outlineWidth); return { style: cs.outlineStyle, top: r.top - o >= row.top - 0.5, bottom: r.bottom + o <= row.bottom + 0.5 }; });
     expect(ring.style !== 'none' && ring.top && ring.bottom, `the focus ring on a room tab is cut off by its row (${JSON.stringify(ring)})`);
     await t.keyboard.press('Enter'); await wait(500);
     const opened = await t.evaluate(() => ({ h: history.length, room: new URLSearchParams(location.search).get('room') }));
-    expect(opened.room !== 'council' && opened.h === h0 + 1, `Enter did not open the focused room with one history entry (room ${opened.room}, history ${h0} to ${opened.h})`);
+    expect(opened.room === 'health' && opened.h === h0 + 1, `Enter did not open the focused room with one history entry (room ${opened.room}, history ${h0} to ${opened.h})`);
     await done(t);
     // the chosen room and the open page show in light mode, in both styles: a different fill or edge, and bolder words
     for (const theme of ['bento', 'original']) {
@@ -2006,7 +2061,7 @@ const CHECKS = {
       expect(s.differ && s.weight >= 600 && s.offWeight < 600, `light ${theme}: the chosen room does not stand out (${JSON.stringify(s)})`);
       await done(l);
       const m = await open('/?room=council&panel=ballot#desktop', { width: 1440, mode: 'light', theme: theme === 'original' ? 'original' : undefined });
-      const s2 = await m.evaluate(() => { const on = [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].find((e) => e.getBoundingClientRect().width); if (!on) return { none: true }; const off = [...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); if (!off) return { none: true, alone: true }; const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
+      const s2 = await m.evaluate(() => { const on = [...document.querySelectorAll('.atlas-sidebar [aria-current="page"]')].find((e) => e.getBoundingClientRect().width); if (!on) return { none: true }; const off = [...document.querySelectorAll('.atlas-sidebar .cx-strip-btn'), ...on.parentElement.querySelectorAll('button')].find((b) => b !== on && b.getBoundingClientRect().width); if (!off) return { none: true, alone: true }; const a = getComputedStyle(on), b = getComputedStyle(off); return { differ: a.backgroundColor !== b.backgroundColor, weight: +a.fontWeight }; });
       expect(!s2.none && s2.differ && s2.weight >= 600, `light ${theme}: the open page does not stand out (${JSON.stringify(s2)})`);
       await done(m);
     }
@@ -2136,6 +2191,8 @@ const LOOK_PAGES = [
   ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
   ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
+  // the desktop strip above the graph (ext/cx-nav.jsx): a chosen and a plain place, a chosen and a plain room, the thumb, and the strip's buttons
+  ['desktop strip', '/?room=transport#desktop', {}, null, ['.cx-folder[aria-selected="true"]', '.cx-folder[aria-selected="false"]', '.atlas-room-tabs[data-slot=tabs-list]', '.cx-row-rooms [role=tab][aria-selected="true"]', '.cx-row-rooms [role=tab][aria-selected="false"]:not([data-cx-off])', '.cx-thumb', '.cx-ballot-btn', '.cx-jump-btn', '.cx-jump-btn kbd', '.cx-pages-btn']],
 ];
 async function lookOf(p, selectors) {
   return p.evaluate((sels, props) => {

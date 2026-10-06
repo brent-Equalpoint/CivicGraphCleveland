@@ -492,19 +492,31 @@ def main():
     tabs_block = src[i0:i1].replace("                      className: `atlas-room-tab`,\n",
                                     "                      className: `atlas-room-tab`,\n"
                                     "                      \"aria-selected\": t.id === e.room && !h && !F,\n"
-                                    "                      \"data-state\": t.id === e.room && !h && !F ? `active` : `inactive`,\n", 1)
+                                    "                      \"data-state\": t.id === e.room && !h && !F ? `active` : `inactive`,\n"
+                                    "                      \"data-cx-off\": cxNavFolderOf(t.id) !== cxNavFolderOf(e.room) || void 0,\n", 1)
+    # only the chosen place's room tabs show (data-cx-off hides the rest, ext/cx.css); the row stops at its ends; the thumb of the segmented control sits behind the tabs
+    tabs_block = tabs_block.replace("                \"aria-label\": `Parts of the civic system`,\n                children: Uh.map((t) => {\n",
+                                    "                \"aria-label\": `Parts of the civic system`,\n                loop: !1,\n"
+                                    "                children: [(0, W.jsx)(CX_RoomThumb, { room: e.room, page: !!(h || F) }, `cx-thumb`), ...Uh.map((t) => {\n", 1)
+    if not tabs_block.endswith("                }),\n              }),\n") or "CX_RoomThumb" not in tabs_block or "data-cx-off" not in tabs_block:
+        sys.exit("PATCH FAILED [desktop strip: rooms segmented]: the room tabs block changed")
+    tabs_block = tabs_block[:-len("                }),\n              }),\n")] + "                })],\n              }),\n"
     src = src[:i0] + src[i1:]
     # each row sits in a .cx-row wrapper with CX_RowMore after it: where a row still scrolls sideways it fades at the side with more, a mouse wheel moves it,
     # and an "n more" button at each end reaches what is hidden (ext/cx-nav.jsx)
     tools_end = "                    children: `Cleveland first · Research preview`,\n                  }),\n                ],\n              }),\n"
-    # on a computer the 15 page buttons become one "My pages" menu at the end of the rooms row (CX_DeskPages); the row of buttons stays for a narrow window.
-    # "Jump to" (CX_DeskJump) opens a box that finds a room, a page, or a record on the device (Ctrl+K, Cmd+K, or "/").
+    # On a computer (ext/cx-nav.jsx): row one has the places (CX_DeskFolders, the phone's zoom levels as folder tabs) and My ballot until Election Day;
+    # row two has the chosen place's rooms as a segmented control, "Jump to" (CX_DeskJump: a room, a page, or a record, found on the device; Ctrl+K,
+    # Cmd+K, or "/"), and the "My pages" menu in place of the 15 page buttons (CX_DeskPages). The row of page buttons stays for a narrow window.
     src = patch(src, tools_end, tools_end + "              (0, W.jsx)(CX_RowMore, { unit: `pages` }),\n                ],\n              }),\n"
-                "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-main`,\n                children: [\n"
-                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                children: [\n" + tabs_block
-                + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-top`,\n                children: [\n"
+                "              (0, W.jsx)(CX_DeskFolders, { room: e.room, panel: F, prio: h, onRoom: Me }),\n"
+                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `ballot` }),\n                ],\n              }),\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-bottom`,\n                children: [\n"
+                "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                id: `cx-rooms-row`,\n                children: [\n" + tabs_block
+                + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n              (0, W.jsx)(CX_FolderLine, { room: e.room }),\n                ],\n              }),\n"
                 "              (0, W.jsx)(CX_DeskJump, { panel: F, onRoom: Me }),\n"
-                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h }),\n                ],\n              }),\n", label="desktop strip: rooms after my pages")
+                "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h, only: `menu` }),\n                ],\n              }),\n", label="desktop strip: places, rooms, jump, my pages")
     # the personal pages are a navigation region named "My pages", and the open one says so (aria-current)
     src = patch(src, "              (0, W.jsxs)(`div`, {\n                className: `atlas-sidebar-bottom`,\n",
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-pages`,\n                children: [\n"
