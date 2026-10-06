@@ -857,7 +857,15 @@
   "places": "lugares",
   "places to the left": "lugares a la izquierda",
   "Where I live": "Donde vivo",
-  "My pages:": "Mis páginas:"
+  "My pages:": "Mis páginas:",
+  "Jump to": "Ir a",
+  "Jump to a room, page, or record": "Ir a una sala, una página o un registro",
+  "A room, a page, or a record": "Una sala, una página o un registro",
+  "Places to go": "Lugares a donde ir",
+  "Recent": "Recientes",
+  "Clear recent": "Borrar recientes",
+  "Pages": "Páginas",
+  "<1>↑</1> <2>↓</2> to move, <3>Enter</3> to open, <4>Esc</4> to close": "<1>↑</1> <2>↓</2> para moverse, <3>Enter</3> para abrir, <4>Esc</4> para cerrar"
  },
  "masked": {
   "{n} days": "{n} días",
@@ -1152,7 +1160,8 @@
   "Representative, {*}": "Representante, {*}",
   "Judge, {*}": "Juez o jueza, {*}",
   "Associate Justice, {*}": "Juez asociado o jueza asociada, {*}",
-  "Chief Justice, {*}": "Presidente del tribunal, {*}"
+  "Chief Justice, {*}": "Presidente del tribunal, {*}",
+  "No room or page matches \"{*}\". Try a word like bus, school, or vote.": "Ninguna sala ni página coincide con \"{*}\". Pruebe una palabra como autobús, escuela o voto."
  },
  "keep": [
   "1234 E 116th St, Cleveland",

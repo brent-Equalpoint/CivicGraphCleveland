@@ -191,6 +191,190 @@ function CX_DeskPages({ panel, prio, ballot }) {
   );
 }
 
+/* The places, from your block to the nation: the phone's zoom levels (CXM_LEVELS in ext/cxm-explore.jsx), read from the same list so the two
+   layouts cannot drift, with their names in sentence case ("YOUR BLOCK" is "Your block"). */
+function cxNavLevels() {
+  if (!cxNavLevels.v) cxNavLevels.v = cxmLevelRooms().map((l) => ({ ...l, name: l.label.charAt(0) + l.label.slice(1).toLowerCase() }));
+  return cxNavLevels.v;
+}
+function cxNavFolderOf(roomId) {
+  const ls = cxNavLevels();
+  return (ls.find((l) => l.rooms.some((r) => r.id === roomId)) || ls[ls.length - 1]).id;
+}
+
+/* ---------- Jump to: one box that finds a room, a page, or a record ----------
+   Ctrl+K or Cmd+K anywhere opens it, and "/" where you are not typing (the United States map keeps "/" for its own search). It matches on the
+   device: what you type is never put in a link, a request, or storage. With nothing typed it shows the last five places you went (their ids
+   only, kept in this browser, with a Clear button) and the rooms by place. It opens and closes at once: it is used often, so it does not animate. */
+const CX_JUMP_KEY = `cx-jump-recent`;
+const CX_JUMP_ID = /^(room:[a-z0-9-]+|page:[a-z]+|rec:[a-z0-9-]+:[a-z0-9-]+)$/;
+function cxJumpRecent() {
+  try {
+    const v = JSON.parse(localStorage.getItem(CX_JUMP_KEY) || `[]`);
+    return Array.isArray(v) ? v.filter((x) => typeof x === `string` && CX_JUMP_ID.test(x)).slice(0, 5) : [];
+  } catch (e) { return []; }
+}
+function cxJumpRemember(id) {
+  if (!CX_JUMP_ID.test(id)) return;
+  try { localStorage.setItem(CX_JUMP_KEY, JSON.stringify([id, ...cxJumpRecent().filter((x) => x !== id)].slice(0, 5))); } catch (e) { /* storage blocked: nothing is kept */ }
+}
+function cxJumpForget() {
+  try { localStorage.removeItem(CX_JUMP_KEY); } catch (e) { /* nothing to forget */ }
+}
+/* words a resident might type that the room's own text does not use; matched, never shown */
+const CX_JUMP_WORDS = {
+  transport: `bus buses rta transit train rail road roads pothole potholes sidewalk bike traffic autobus transporte calle calles`,
+  energy: `electricity electric power lights gas water bill utility utilities electricidad luz agua`,
+  courts: `judge judges court courts jail sentence juez jueces tribunal corte`,
+  education: `school schools teacher teachers student students cmsd escuela escuelas`,
+  voting: `vote voting ballot election elections register voto votar boleta elecciones`,
+  housing: `house home homes rent landlord eviction vivienda casa alquiler`,
+  safety: `police fire ems 911 policia seguridad`,
+  money: `tax taxes budget contract contracts spending impuesto presupuesto`,
+  health: `health hospital clinic lead environment pollution salud`,
+  council: `council councilmember ward wards concejo distrito`,
+  administration: `mayor bibb city hall departments alcalde`,
+};
+function cxJumpFold(s) {
+  return String(s || ``).toLowerCase().normalize(`NFD`).replace(/\p{M}/gu, ``);
+}
+function cxJumpEs(s) {
+  try { return CX_I18N.lang === `es` ? cxI18nText(s) || `` : ``; } catch (e) { return ``; }
+}
+/* everything the box can open: 17 rooms, 15 pages, and the records in the rooms (each under the most specific room it is in) */
+function cxJumpIndex() {
+  const lang = (typeof CX_I18N !== `undefined` && CX_I18N.lang) || `en`;
+  if (cxJumpIndex.v && cxJumpIndex.lang === lang) return cxJumpIndex.v;
+  const levels = cxNavLevels();
+  const folderOf = {};
+  levels.forEach((l) => l.rooms.forEach((r) => { folderOf[r.id] = l; }));
+  const rooms = Uh.map((r) => ({ id: `room:${r.id}`, kind: `room`, room: r.id, name: r.label, sub: r.question, folder: folderOf[r.id],
+    name0: cxJumpFold(`${r.label} ${cxJumpEs(r.label)}`), hay: cxJumpFold([r.label, r.question, r.answer, r.region, ...(r.terms || []), CX_JUMP_WORDS[r.id] || ``, cxJumpEs(r.label), cxJumpEs(r.question)].join(` `)) }));
+  const pages = CX_PAGE_GROUPS.flatMap(([g, list]) => list.map(([id, name]) => ({ id: `page:${id}`, kind: `page`, page: id, name, sub: g,
+    name0: cxJumpFold(`${name} ${cxJumpEs(name)}`), hay: cxJumpFold(`${name} ${g} ${cxJumpEs(name)}`) })));
+  const recs = [], seen = new Set();
+  for (const r of [...Uh.filter((x) => x.id !== `overview`), ...Uh.filter((x) => x.id === `overview`)]) {
+    for (const n of r.nodes) {
+      if (seen.has(n.id) || n.id === `people` || !/^[a-z0-9-]+$/.test(n.id)) continue;
+      seen.add(n.id);
+      recs.push({ id: `rec:${r.id}:${n.id}`, kind: `rec`, room: r.id, node: n.id, name: n.name, sub: r.label,
+        name0: cxJumpFold(n.name), hay: cxJumpFold(`${n.name} ${n.label || ``} ${n.region || ``}`) });
+    }
+  }
+  cxJumpIndex.v = { rooms, pages, recs, all: new Map([...rooms, ...pages, ...recs].map((x) => [x.id, x])) };
+  cxJumpIndex.lang = lang;
+  return cxJumpIndex.v;
+}
+/* every word typed must appear; a name that starts with the words comes first */
+function cxJumpFind(q) {
+  const words = cxJumpFold(q).split(/[^a-z0-9]+/).filter(Boolean);
+  if (!words.length) return null;
+  const ix = cxJumpIndex();
+  const score = (x) => {
+    if (!words.every((w) => x.hay.includes(w))) return -1;
+    if (x.name0.startsWith(words[0])) return 3;
+    if (words.every((w) => x.name0.includes(w))) return 2;
+    return 1;
+  };
+  const top = (list, n) => list.map((x) => [score(x), x]).filter((p) => p[0] >= 0).sort((a, b) => b[0] - a[0]).slice(0, n).map((p) => p[1]);
+  return [[`Rooms`, top(ix.rooms, 6)], [`Pages`, top(ix.pages, 6)], [`Records`, top(ix.recs, 8)]].filter((g) => g[1].length);
+}
+function cxJumpGo(x, onRoom) {
+  cxJumpRemember(x.id);
+  if (x.kind === `room`) onRoom ? onRoom(x.room) : CX_NAV.go(x.room);
+  else if (x.kind === `page`) cxNavOpenPage(x.page);
+  else CX_NAV.go(x.room, x.node);
+}
+function cxJumpIsField(t) {
+  if (!t || !t.tagName) return !1;
+  if (t.isContentEditable) return !0;
+  if (t.tagName === `TEXTAREA` || t.tagName === `SELECT`) return !0;
+  return t.tagName === `INPUT` && !/^(button|checkbox|radio|range|color|file|submit|reset|image)$/i.test(t.type || ``);
+}
+const CX_JUMP_MAC = typeof navigator !== `undefined` && /Mac|iPhone|iPad/.test(navigator.platform || ``);
+function CX_DeskJump({ panel, onRoom }) {
+  const [open, setOpen] = u.useState(!1);
+  const [q, setQ] = u.useState(``);
+  const [act, setAct] = u.useState(0);
+  const [recent, setRecent] = u.useState([]);
+  const list = u.useRef(null), back = u.useRef(null);
+  // Escape (or a choice) gives the focus back to where it was when the box opened: the Jump to button, or wherever Ctrl+K was pressed
+  const show = () => { back.current = document.activeElement; setOpen(!0); };
+  u.useEffect(() => {
+    const onKey = (e) => {
+      if (!matchMedia(`(min-width: 761px)`).matches) return;
+      const other = [...document.querySelectorAll(`[role=dialog]`)].some((d) => !d.classList.contains(`cx-jump`));
+      if ((e.ctrlKey || e.metaKey) && !e.altKey && !e.shiftKey && String(e.key).toLowerCase() === `k`) {
+        if (other) return;
+        e.preventDefault(); if (document.querySelector(`.cx-jump`)) setOpen(!1); else show(); return;
+      }
+      if (e.key === `/` && !e.ctrlKey && !e.metaKey && !e.altKey && !other && !cxJumpIsField(e.target) && panel !== `us` && !document.querySelector(`.usm`)) {
+        e.preventDefault(); show();
+      }
+    };
+    window.addEventListener(`keydown`, onKey);
+    return () => window.removeEventListener(`keydown`, onKey);
+  }, [panel]);
+  u.useEffect(() => { if (open) { setQ(``); setAct(0); setRecent(cxJumpRecent()); } }, [open]);
+  const ix = open ? cxJumpIndex() : null;
+  const groups = !open ? [] : q.trim() ? cxJumpFind(q) || [] : [
+    ...(recent.length ? [[`Recent`, recent.map((id) => ix.all.get(id)).filter(Boolean)]] : []),
+    ...cxNavLevels().map((l) => [l.name, l.rooms.map((r) => ix.all.get(`room:${r.id}`)).filter(Boolean)]),
+  ].filter((g) => g[1].length);
+  const flat = groups.flatMap((g) => g[1]);
+  const pos = Math.min(act, Math.max(0, flat.length - 1));
+  u.useEffect(() => {
+    const el = list.current && list.current.querySelector(`[aria-selected="true"]`);
+    if (el) el.scrollIntoView({ block: `nearest` });
+  }, [pos, q, open]);
+  // a record opens in the map's record panel, which takes the focus itself
+  const go = (x) => { if (x.kind === `rec`) back.current = null; setOpen(!1); cxJumpGo(x, onRoom); };
+  const key = (e) => {
+    if (e.key === `ArrowDown` || e.key === `ArrowUp`) { e.preventDefault(); setAct(Math.max(0, Math.min(flat.length - 1, pos + (e.key === `ArrowDown` ? 1 : -1)))); }
+    else if (e.key === `Enter` && flat[pos]) { e.preventDefault(); go(flat[pos]); }
+  };
+  let k = -1;
+  return (
+    <>
+      <button type="button" className="cx-strip-btn cx-jump-btn" aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K" onClick={show}>
+        <CXI.Search size={16} /><span>Jump to</span><kbd aria-hidden="true">{CX_JUMP_MAC ? `⌘ K` : `Ctrl K`}</kbd>
+      </button>
+      <CXD.Root open={open} onOpenChange={setOpen}>
+        <CXD.Content className="atlas-dialog cx-jump" showCloseButton={!1} aria-describedby={undefined} onCloseAutoFocus={(e) => { const b = back.current; if (b && b.isConnected && b !== document.body) { e.preventDefault(); b.focus({ preventScroll: !0 }); } }}>
+          <CXD.Title className="sr-only">Jump to</CXD.Title>
+          <div className="cx-jump-field">
+            <CXI.Search size={18} />
+            <input type="text" role="combobox" aria-expanded="true" aria-controls="cx-jump-list" aria-autocomplete="list" aria-label="Jump to a room, page, or record"
+              aria-activedescendant={flat[pos] ? `cx-jump-o${pos}` : undefined} autoComplete="off" spellCheck={!1} placeholder="A room, a page, or a record"
+              value={q} onChange={(e) => { setQ(e.target.value); setAct(0); }} onKeyDown={key} />
+          </div>
+          <div ref={list} id="cx-jump-list" className="cx-jump-list" role="listbox" aria-label="Places to go">
+            {groups.map(([h, items], gi) => (
+              <div key={h + gi} role="group" aria-labelledby={`cx-jump-g${gi}`} className="cx-jump-group">
+                <div id={`cx-jump-g${gi}`} role="presentation" className="cx-jump-h">{h}</div>
+                {items.map((x) => {
+                  k++;
+                  const i = k;
+                  return (
+                    <div key={x.id} id={`cx-jump-o${i}`} role="option" aria-selected={i === pos} className="cx-jump-opt" onMouseMove={() => i !== pos && setAct(i)} onClick={() => go(x)}>
+                      <span>{x.name}</span>{x.sub && <small>{x.sub}</small>}
+                    </div>
+                  );
+                })}
+              </div>
+            ))}
+          </div>
+          {q.trim() && !flat.length && <p className="cx-jump-empty" role="status">{`No room or page matches "${q.trim()}". Try a word like bus, school, or vote.`}</p>}
+          <div className="cx-jump-foot">
+            <span aria-hidden="true"><kbd>↑</kbd> <kbd>↓</kbd> to move, <kbd>Enter</kbd> to open, <kbd>Esc</kbd> to close</span>
+            {!q.trim() && recent.length > 0 && <button type="button" className="cx-jump-clear" onClick={() => { cxJumpForget(); setRecent([]); setAct(0); }}>Clear recent</button>}
+          </div>
+        </CXD.Content>
+      </CXD.Root>
+    </>
+  );
+}
+
 /* Mounted by build.py at the top of the strip with the app's state: the room, the open page (panel), and My priorities. */
 function CX_DeskStrip({ room, panel, prio }) {
   const ref = u.useRef(null);

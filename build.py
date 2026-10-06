@@ -497,11 +497,13 @@ def main():
     # each row sits in a .cx-row wrapper with CX_RowMore after it: where a row still scrolls sideways it fades at the side with more, a mouse wheel moves it,
     # and an "n more" button at each end reaches what is hidden (ext/cx-nav.jsx)
     tools_end = "                    children: `Cleveland first · Research preview`,\n                  }),\n                ],\n              }),\n"
-    # on a computer the 15 page buttons become one "My pages" menu at the end of the rooms row (CX_DeskPages); the row of buttons stays for a narrow window
+    # on a computer the 15 page buttons become one "My pages" menu at the end of the rooms row (CX_DeskPages); the row of buttons stays for a narrow window.
+    # "Jump to" (CX_DeskJump) opens a box that finds a room, a page, or a record on the device (Ctrl+K, Cmd+K, or "/").
     src = patch(src, tools_end, tools_end + "              (0, W.jsx)(CX_RowMore, { unit: `pages` }),\n                ],\n              }),\n"
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-strip-main`,\n                children: [\n"
                 "              (0, W.jsxs)(`div`, {\n                className: `cx-row cx-row-rooms`,\n                children: [\n" + tabs_block
                 + "              (0, W.jsx)(CX_RowMore, { unit: `rooms` }),\n                ],\n              }),\n"
+                "              (0, W.jsx)(CX_DeskJump, { panel: F, onRoom: Me }),\n"
                 "              (0, W.jsx)(CX_DeskPages, { panel: F, prio: h }),\n                ],\n              }),\n", label="desktop strip: rooms after my pages")
     # the personal pages are a navigation region named "My pages", and the open one says so (aria-current)
     src = patch(src, "              (0, W.jsxs)(`div`, {\n                className: `atlas-sidebar-bottom`,\n",

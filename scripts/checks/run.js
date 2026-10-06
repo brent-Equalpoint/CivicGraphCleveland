@@ -1915,6 +1915,55 @@ const CHECKS = {
       expect(c.length === 1 && c[0].endsWith(name) && (await has(q, '.auxiliary-page, .policy-page, .practice-page, .atlas-main[hidden]')), `?panel=${panel}: the strip names ${JSON.stringify(c)} as open (want ${name})`);
       await done(q);
     }
+    // Jump to: Ctrl+K opens it anywhere; it finds bus, electricity, and judge on the device; Enter opens; Escape gives the focus back;
+    // "/" does nothing in a text field or on the United States map; the recent list keeps ids only, never what was typed
+    const jb = await open('/?room=council#desktop', { width: 1440, pre: () => { try { localStorage.removeItem('cx-jump-recent'); } catch (e) {} } });
+    expect(await jb.evaluate(() => { const b = document.querySelector('.cx-jump-btn'); return !!b && /Control\+K/.test(b.getAttribute('aria-keyshortcuts') || '') && getComputedStyle(b.querySelector('kbd')).fontSize === '12px'; }), 'the Jump to button has no aria-keyshortcuts or no 12px key hint');
+    await jb.evaluate(() => document.querySelector('.cx-pages-btn').focus());
+    const typed = [];
+    for (const [word, want] of [['bus', 'Transit & streets'], ['electricity', 'Energy & utilities'], ['judge', 'Courts & justice']]) {
+      await jb.keyboard.down('Control'); await jb.keyboard.press('k'); await jb.keyboard.up('Control'); await wait(250);
+      expect(await has(jb, '.cx-jump[role=dialog]'), `Ctrl+K did not open the jump box (looking for ${word})`);
+      await jb.keyboard.type(word); typed.push(word); await wait(250);
+      const opts = await jb.evaluate(() => [...document.querySelectorAll('.cx-jump [role=option]')].map((o) => o.querySelector('span').innerText.trim()));
+      expect(opts.includes(want), `the jump box finds ${JSON.stringify(opts.slice(0, 6))} for "${word}", not ${want}`);
+      const small = await jb.evaluate(() => [...document.querySelectorAll('.cx-jump [role=option]')].filter((o) => o.getBoundingClientRect().height < 44).length);
+      expect(small === 0, `${small} jump box rows are under 44px tall`);
+      await jb.keyboard.press('Escape'); await wait(250);
+      expect(!(await has(jb, '.cx-jump[role=dialog]')) && (await jb.evaluate(() => document.activeElement && document.activeElement.classList.contains('cx-pages-btn'))), `Escape did not close the jump box and give the focus back (after "${word}")`);
+    }
+    await jb.keyboard.down('Control'); await jb.keyboard.press('k'); await jb.keyboard.up('Control'); await wait(250);
+    await jb.keyboard.type('electricity'); typed.push('electricity'); await wait(200);
+    const pick = await jb.evaluate(() => { const o = [...document.querySelectorAll('.cx-jump [role=option]')]; const i = o.findIndex((x) => /Energy & utilities/.test(x.innerText)); return i; });
+    for (let i = 0; i < pick; i++) await jb.keyboard.press('ArrowDown');
+    await jb.keyboard.press('Enter'); await wait(600);
+    expect((await jb.evaluate(() => new URLSearchParams(location.search).get('room'))) === 'energy', 'Enter in the jump box did not open Energy & utilities');
+    const kept = await jb.evaluate(() => ({ recent: localStorage.getItem('cx-jump-recent'), all: Object.keys(localStorage).map((k) => k + '=' + localStorage.getItem(k)).join('\n') + '\n' + Object.keys(sessionStorage).map((k) => k + '=' + sessionStorage.getItem(k)).join('\n') + '\n' + location.href + '\n' + document.cookie }));
+    expect(/^\["room:energy"/.test(kept.recent || ''), `the recent list holds ${kept.recent}, not the room's id first`);
+    for (const w of typed) expect(!kept.all.toLowerCase().includes(w), `"${w}", typed in the jump box, was kept in storage, a cookie, or the address`);
+    expect(!jb.asked.some((u) => typed.some((w) => u.toLowerCase().includes(w))), 'a request carried text typed in the jump box');
+    // nothing typed: Recent first (with Clear), then the rooms by place
+    await jb.keyboard.down('Control'); await jb.keyboard.press('k'); await jb.keyboard.up('Control'); await wait(250);
+    const heads = await jb.evaluate(() => [...document.querySelectorAll('.cx-jump .cx-jump-h')].map((h) => h.innerText.trim()));
+    expect(heads[0] === 'Recent' && heads.length >= 6, `with nothing typed the jump box shows ${JSON.stringify(heads)} (want Recent, then the places)`);
+    await jb.evaluate(() => document.querySelector('.cx-jump-clear').click()); await wait(200);
+    expect((await jb.evaluate(() => localStorage.getItem('cx-jump-recent'))) === null, 'Clear recent did not clear the recent list');
+    await jb.keyboard.type('zzqx'); await wait(200);
+    expect(/No room or page matches "zzqx"\. Try a word like bus, school, or vote\./.test((await txt(jb, '.cx-jump-empty')) || ''), 'the jump box has no helpful empty state');
+    await jb.keyboard.press('Escape'); await wait(200);
+    // "/" in a text field types a slash; "/" elsewhere opens the box
+    await jb.evaluate(() => { const i = document.querySelector('.atlas-search input'); i.focus(); });
+    await jb.keyboard.press('/'); await wait(250);
+    expect(!(await has(jb, '.cx-jump[role=dialog]')), '"/" in a text field opened the jump box');
+    await jb.evaluate(() => { const i = document.querySelector('.atlas-search input'); i.blur(); document.body.focus(); });
+    await jb.keyboard.press('/'); await wait(250);
+    expect(await has(jb, '.cx-jump[role=dialog]'), '"/" outside a text field did not open the jump box');
+    await done(jb);
+    const um = await open('/?panel=us#desktop', { width: 1440, settle: 1800 });
+    await um.evaluate(() => { if (document.activeElement) document.activeElement.blur(); });
+    await um.keyboard.press('/'); await wait(300);
+    expect(!(await has(um, '.cx-jump[role=dialog]')), '"/" opened the jump box on the United States map, which keeps "/" for its own search');
+    await done(um);
     // a personal page is open: only it looks and announces itself as chosen
     const p = await open('/?room=council&panel=ballot#desktop', { width: 1440 });
     const c = await p.evaluate(NAV.chosen);
@@ -2035,7 +2084,7 @@ const AXE_PAGES = [
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
   ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
   // the desktop strip's My pages menu, open (ext/cx-nav.jsx)
-  ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
+  ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
@@ -2050,6 +2099,7 @@ const AXE_AFTER = {
   },
   usmSettings: () => { const b = document.querySelector('.usm-top .usm-set-btn'); if (b) b.click(); },
   pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
+  jumpOpen: () => { const b = document.querySelector('.cx-jump-btn'); if (b) b.click(); },
   districtAsk: () => { const b = document.querySelector('.cxm-tile-acc button.cxm-btn-dark'); if (b) b.click(); },
   districtResult: async () => {   // open the finder (on the phone), type City Hall's address, and look for the districts
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
