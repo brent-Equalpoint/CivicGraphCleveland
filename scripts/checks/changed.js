@@ -32,7 +32,8 @@ const RULES = [
   [(f) => f === 'ext/cx-levies.jsx', ['levies', 'story-fit', 'titles-never-cut', ...SWEEP]],
   [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', ...SWEEP]],
   [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', ...SWEEP]],
-  [(f) => f === 'ext/cxm-explore.jsx' || f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
+  [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'map-cards', 'screen-states', 'shell', 'text-overlap', ...SWEEP]],   // Explore and its rail (ext/cxm.css runs everything)
+  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', ...SWEEP]],

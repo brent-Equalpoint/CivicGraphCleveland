@@ -56,6 +56,7 @@ async function open(url, o = {}) {
   }
   const p = await ctx.newPage();
   if (o.scheme) await p.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: o.scheme }]);
+  if (o.media) { const cdp = await p.createCDPSession(); await cdp.send('Emulation.setEmulatedMedia', { features: o.media }); }   // [{ name: 'prefers-reduced-transparency', value: 'reduce' }]: features puppeteer's own helper does not accept
   await p.setViewport(o.mobile ? { width: o.width || 390, height: o.height || 844, isMobile: true, hasTouch: true } : { width: o.width || 1280, height: o.height || 900 });
   p.errors = [];
   p.on('pageerror', (e) => p.errors.push(e.message.slice(0, 160)));
@@ -205,6 +206,91 @@ async function ballotIssueStories() {
   await d.evaluate(() => { const x = document.querySelector('.cx-story-reader .lv-more-story'); if (x) x.open = true; });
   expect(/How it got on the ballot/.test((await txt(d, '.cx-story-reader')) || ''), 'the desktop Issue 13 Read more is not the issue write-up');
   await done(d);
+}
+
+/* Part of the explore-bubble check (ext/cxm-explore.jsx): the six level lines the guide may say, read from the code, and what the page shows. */
+const EXB_LINES = (() => { const src = fs.readFileSync(path.join(ROOT, 'ext', 'cxm-explore.jsx'), 'utf8'); return [...src.matchAll(/^\s*\[`\w+`, `[^`]*`, `[^`]*`, `([^`]*)`, \[/gm)].map((m) => m[1]); })();
+const exbWant = (l) => (process.env.CHECK_LANG === 'es' ? require('../../i18n/es.json').exact[EXB_LINES[l]] || EXB_LINES[l] : EXB_LINES[l]);
+// in the page: what the bubble covers (its own geometry: text-overlap cannot see a bubble that takes no pointer and is hidden from screen readers)
+const EXB_GEOM = () => {
+  window.__exbHits = (b) => {
+    const br = b.getBoundingClientRect(), mr = document.querySelector('.cxm-main').getBoundingClientRect(), tabs = document.querySelector('.cxm-tabs').getBoundingClientRect();
+    const hit = (q) => Math.min(q.right, br.right) - Math.max(q.left, br.left) > 0.5 && Math.min(q.bottom, br.bottom) - Math.max(q.top, br.top) > 0.5;
+    const lines = (sel) => [...document.querySelectorAll(sel)].flatMap((e) => { const o = []; const w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT); for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) if (q.width && q.height) o.push({ q, t: n.nodeValue.trim().slice(0, 32) }); } return o; });
+    return { titles: lines('.cxm-roomtile-q').filter((x) => hit(x.q)).map((x) => x.t), heads: [...document.querySelectorAll('.cxm-level-h')].filter((h) => hit(h.getBoundingClientRect())).map((h) => h.innerText.trim().slice(0, 32)),
+      end: lines('.cxm-end').some((x) => hit(x.q)), inside: br.top >= mr.top - 0.5 && br.bottom <= Math.min(mr.bottom, tabs.top) + 0.5 && br.left >= -0.5 && br.right <= innerWidth + 0.5 };
+  };
+  // every time a bubble is put in the page: its words at that moment (its first frame), and every time one becomes visible
+  window.__exbSeen = []; window.__exbShows = [];
+  new MutationObserver((ms) => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1 && n.classList.contains('cxm-rail-bubble')) window.__exbSeen.push({ level: Number(n.getAttribute('data-level')), text: n.textContent.trim() }); }).observe(document.querySelector('.cxm-rail'), { childList: true });
+  let was = false;
+  const poll = () => { const b = [...document.querySelectorAll('.cxm-rail-bubble')].find((x) => getComputedStyle(x).visibility !== 'hidden'); if (b && !was) window.__exbShows.push({ level: Number(b.getAttribute('data-level')), at: Math.round(document.querySelector('.cxm-main').scrollTop) }); was = !!b; requestAnimationFrame(poll); };
+  requestAnimationFrame(poll);
+};
+const EXB_STATE = () => {
+  const main = document.querySelector('.cxm-main');
+  const lv = (el) => (el && el.closest('section[data-level]') ? Number(el.closest('section[data-level]').getAttribute('data-level')) : null);
+  const tick = document.querySelector('.cxm-tick.on');
+  const b = [...document.querySelectorAll('.cxm-rail-bubble')].find((x) => getComputedStyle(x).visibility !== 'hidden') || null;
+  const out = { st: Math.round(main.scrollTop), max: main.scrollHeight - main.clientHeight, focus: lv(document.querySelector('.cxm-roomtile.focus')), kicker: lv(document.querySelector('.cxm-kicker-on')), tick: tick ? Number(tick.getAttribute('data-tick')) : null,
+    heights: [...document.querySelectorAll('.cxm-roomtile')].map((t) => Math.round(t.getBoundingClientRect().height)), wide: Math.max(document.scrollingElement.scrollWidth - innerWidth, main.scrollWidth - main.clientWidth),
+    sr: (document.querySelector('.cxm-rail .cxm-sr[role=status]') || {}).textContent, bubble: null };
+  if (b) { const cs = getComputedStyle(b); out.bubble = { level: Number(b.getAttribute('data-level')), text: b.textContent.trim(), hidden: b.getAttribute('aria-hidden'), anim: cs.animationName, backdrop: cs.backdropFilter || cs.webkitBackdropFilter || 'none', bg: cs.backgroundColor, color: cs.color, ...window.__exbHits(b) }; }
+  return out;
+};
+// glide the list to y over a few frames, as a finger does, then rest
+async function exbGo(p, y, rest = 460) {
+  await p.evaluate(async (to) => { const m = document.querySelector('.cxm-main'); const from = m.scrollTop; for (let k = 1; k <= 6; k++) { m.scrollTop = from + ((to - from) * k) / 6; await new Promise((r) => requestAnimationFrame(r)); } }, y);
+  await wait(rest);
+  return p.evaluate(EXB_STATE);
+}
+async function exbOpen(o = {}) {
+  const p = await open('/#phone', { mobile: true, easy: false, ...o });
+  await clickText(p, 'Explore', '.cxm-tabs button'); await wait(700);
+  await p.evaluate(EXB_GEOM);
+  return p;
+}
+// WCAG contrast of two colors given as [r, g, b] in 0 to 255
+function exbRatio(a, b) { const L = (c) => { const f = (v) => { v /= 255; return v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4); }; return 0.2126 * f(c[0]) + 0.7152 * f(c[1]) + 0.0722 * f(c[2]); }; const x = L(a), y = L(b); return (Math.max(x, y) + 0.05) / (Math.min(x, y) + 0.05); }
+// a computed color ("rgb(...)", "rgba(...)", or "color(srgb r g b / a)") as [r, g, b, a]
+function exbColor(s) {
+  let m = /^rgba?\(([^)]+)\)/.exec(s); if (m) { const v = m[1].split(/[ ,/]+/).filter(Boolean).map(Number); return [v[0], v[1], v[2], v[3] === undefined ? 1 : v[3]]; }
+  m = /^color\(srgb ([^)]+)\)/.exec(s); if (m) { const v = m[1].split(/[ /]+/).filter(Boolean).map(Number); return [v[0] * 255, v[1] * 255, v[2] * 255, v[3] === undefined ? 1 : v[3]]; }
+  return null;
+}
+// a PNG from a screenshot as RGBA pixels (no library: the check runs with what package.json already has)
+function exbPng(buf) {
+  const zlib = require('zlib'); let pos = 8, w, h, ct, idat = [];
+  while (pos < buf.length) { const len = buf.readUInt32BE(pos), type = buf.toString('ascii', pos + 4, pos + 8), d = buf.slice(pos + 8, pos + 8 + len); if (type === 'IHDR') { w = d.readUInt32BE(0); h = d.readUInt32BE(4); ct = d[9]; } else if (type === 'IDAT') idat.push(d); pos += 12 + len; }
+  const raw = zlib.inflateSync(Buffer.concat(idat)), bpp = ct === 6 ? 4 : 3, stride = w * bpp, out = Buffer.alloc(w * h * 4); let prev = Buffer.alloc(stride);
+  for (let y = 0; y < h; y++) {
+    const f = raw[y * (stride + 1)], line = Buffer.from(raw.slice(y * (stride + 1) + 1, (y + 1) * (stride + 1)));
+    for (let x = 0; x < stride; x++) { const a = x >= bpp ? line[x - bpp] : 0, b = prev[x], c = x >= bpp ? prev[x - bpp] : 0; let v = line[x]; if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1; else if (f === 4) { const q = a + b - c, pa = Math.abs(q - a), pb = Math.abs(q - b), pc = Math.abs(q - c); v += pa <= pb && pa <= pc ? a : pb <= pc ? b : c; } line[x] = v & 255; }
+    for (let x = 0; x < w; x++) { out[(y * w + x) * 4] = line[x * bpp]; out[(y * w + x) * 4 + 1] = line[x * bpp + 1]; out[(y * w + x) * 4 + 2] = line[x * bpp + 2]; out[(y * w + x) * 4 + 3] = 255; }
+    prev = line;
+  }
+  return { w, h, data: out };
+}
+// the worst contrast between the bubble's words and the real pixels behind them: hide the words, photograph the bubble, compare every pixel under each line
+async function exbPixelContrast(p) {
+  const info = await p.evaluate(() => {
+    const b = [...document.querySelectorAll('.cxm-rail-bubble')].find((x) => getComputedStyle(x).visibility !== 'hidden'); if (!b) return null;
+    const r = b.getBoundingClientRect(), rects = [], w = document.createTreeWalker(b, NodeFilter.SHOW_TEXT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) { if (!n.nodeValue.trim()) continue; const g = document.createRange(); g.selectNodeContents(n); for (const q of g.getClientRects()) rects.push({ x: q.left - r.left, y: q.top - r.top, w: q.width, h: q.height, color: getComputedStyle(n.parentElement).color }); }
+    b.querySelectorAll('*').forEach((e) => { e.style.color = 'transparent'; }); b.style.color = 'transparent';
+    return { box: { x: r.left, y: r.top, width: r.width, height: r.height }, rects };
+  });
+  if (!info) return null;
+  const img = exbPng(Buffer.from(await p.screenshot({ clip: info.box, type: 'png' })));
+  await p.evaluate(() => { const b = document.querySelector('.cxm-rail-bubble'); if (b) { b.querySelectorAll('*').forEach((e) => { e.style.color = ''; }); b.style.color = ''; } });
+  const s = img.w / info.box.width; let worst = 99;
+  for (const q of info.rects) {
+    const tc = exbColor(q.color);
+    for (let y = Math.max(0, Math.floor(q.y * s)); y < Math.min(img.h, Math.ceil((q.y + q.h) * s)); y++) for (let x = Math.max(0, Math.floor(q.x * s)); x < Math.min(img.w, Math.ceil((q.x + q.w) * s)); x++) {
+      const i = (y * img.w + x) * 4; worst = Math.min(worst, exbRatio(tc, [img.data[i], img.data[i + 1], img.data[i + 2]]));
+    }
+  }
+  return worst;
 }
 
 const CHECKS = {
@@ -2468,6 +2554,13 @@ const CHECKS = {
       const small = await p.evaluate(() => [...document.querySelectorAll('button, a[href], select, input, [role=button], summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
+    // Explore: everything on the screen at a phone's width, and the list and the rail's ticks at 320 (where the shared header's buttons are 40 px
+    // wide on every tab; that is not Explore's, and is listed in STATE-OF-BUILD as still to fix)
+    for (const [w, h, scope] of [[390, 844, 'body'], [320, 640, '.cxm-main, .cxm-rail']]) {
+      const p = await open('/#phone', { mobile: true, easy: false, width: w, height: h }); await clickText(p, 'Explore', '.cxm-tabs button'); await wait(700);
+      const small = await p.evaluate((scope) => [...document.querySelectorAll(scope)].flatMap((r) => [...r.querySelectorAll('button, a[href], select, input, [role=button], summary')]).filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
+      expect(small.length === 0, `phone explore at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+    }
     // the desktop strip above the graph (rooms and My pages): every control in it is a full target too, at a small and a wide computer screen
     for (const w of [1100, 1440]) {
       const p = await open('/?panel=ballot#desktop', { width: w });
@@ -2479,6 +2572,160 @@ const CHECKS = {
       const p = await open(url, o); await p.evaluate(AXE_AFTER.alignAnswered); await wait(300);
       const small = await alignSmall(p);
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+    }
+  },
+  /* The guide's bubble and the rail on Explore (ext/cxm-explore.jsx, ext/cxm.css). At every rest the bubble, the lit tick, and the highlighted
+     heading name the level of the highlighted card (the card on the reading line); the bubble sits on no card question, no heading, and not the
+     end of the list, inside the list and above the tab bar, with no sideways scroll; its words read at 4.5:1 or better on the real pixels behind
+     them and on its fill over the page's own text; it speaks at rest, once a level, going down, so a fling shows at most one and scrolling back up
+     shows none; it is gone 3 s after a jump to the top; its first frame is already in the reader's language; it does not animate with reduced
+     motion and is solid with reduced transparency. The cards keep their height when highlighted. The rail: 44 px ticks, the first level is
+     announced, a bare tap moves nothing, a short drag moves nothing, a longer one scrubs from where it took hold, and in light mode the fill and the
+     current tick are not the track's gray. Runs in CHECK_MODE, CHECK_THEME, and CHECK_LANG. A planted bubble over a card's question must be caught. */
+  async 'explore-bubble'() {
+    expect(EXB_LINES.length === 6, `explore-bubble could not read the six level lines from ext/cxm-explore.jsx (found ${EXB_LINES.length})`);
+    const es = process.env.CHECK_LANG === 'es';
+    for (const [w, h] of [[390, 844], [320, 640]]) {
+      const at = `${w}x${h}`;
+      const p = await exbOpen({ width: w, height: h });
+      // the rail: six ticks, each a full target, apart from each other, named in the reader's language
+      const ticks = await p.evaluate(() => [...document.querySelectorAll('.cxm-tick')].map((t) => { const r = t.getBoundingClientRect(); return { w: r.width, h: r.height, y: r.top + r.height / 2, label: t.getAttribute('aria-label') }; }));
+      expect(ticks.length === 6, `${at}: the rail has ${ticks.length} ticks, not 6`);
+      expect(ticks.every((t) => t.w >= 44 && t.h >= 44), `${at}: a tick on the rail is under 44 px: ${ticks.map((t) => `${Math.round(t.w)}x${Math.round(t.h)}`).join(', ')}`);
+      expect(ticks.slice(1).every((t, i) => t.y - ticks[i].y >= 44), `${at}: two ticks on the rail are closer than 44 px, so their targets overlap`);
+      if (es) expect(ticks.every((t) => t.label && !/\b(Jump|your|the)\b/.test(t.label)), `${at}: a tick's name is still in English in Spanish: ${ticks.map((t) => t.label).join(' | ')}`);
+      const railTop = await p.evaluate(() => ({ rail: document.querySelector('.cxm-rail').getBoundingClientRect().top, main: document.querySelector('.cxm-main').getBoundingClientRect().top }));
+      expect(railTop.rail >= railTop.main, `${at}: the rail starts above the list (${Math.round(railTop.rail)} < ${Math.round(railTop.main)}), over the Updated strip`);
+      // a slow read down the whole list, resting every 120 px
+      const states = [];
+      const max = await p.evaluate(() => { const m = document.querySelector('.cxm-main'); return m.scrollHeight - m.clientHeight; });
+      for (let y = 120; ; y += 120) { states.push(await exbGo(p, Math.min(y, max))); if (y >= max) break; }
+      const rests = states.filter((s) => s.focus !== null);
+      for (const s of rests) {
+        expect(s.kicker === s.focus && s.tick === s.focus, `${at}: at ${s.st} px the highlighted card is in level ${s.focus}, but the heading says ${s.kicker} and the lit tick ${s.tick}`);
+        expect(s.wide <= 0, `${at}: at ${s.st} px the page scrolls sideways by ${s.wide} px`);
+        if (!s.bubble) continue;
+        const b = s.bubble;
+        expect(b.level === s.focus, `${at}: at ${s.st} px the guide names level ${b.level}, but the highlighted card is in level ${s.focus}`);
+        expect(b.text.endsWith(exbWant(b.level)), `${at}: at ${s.st} px the bubble does not say the line for its level in this language: "${b.text.slice(0, 80)}"`);
+        expect(!b.titles.length && !b.heads.length && !b.end, `${at}: at ${s.st} px the bubble covers ${[...b.titles.map((t) => `the question "${t}"`), ...b.heads.map((t) => `the heading "${t}"`), ...(b.end ? ['the end of the list'] : [])].join(', ')}`);
+        expect(b.inside, `${at}: at ${s.st} px the bubble is outside the list or over the tab bar`);
+        expect(b.hidden === 'true', `${at}: the bubble is not hidden from screen readers (the status line speaks for it)`);
+        expect(s.sr && s.sr.trim() === exbWant(b.level), `${at}: at ${s.st} px the status line does not say what the bubble says: "${s.sr}"`);
+        // its words on its own fill, laid over the page's own text color and over the page (no credit for the blur)
+        const fill = exbColor(b.bg), ink = exbColor(b.color);
+        if (fill && ink && fill[3] < 1) {
+          const page = exbColor(await p.evaluate(() => getComputedStyle(document.querySelector('.cxm')).backgroundColor));
+          for (const [name, under] of [['the page text', ink], ['the page', page]]) { const c = fill.slice(0, 3).map((v, i) => v * fill[3] + under[i] * (1 - fill[3])); const r = exbRatio(ink, c); expect(r >= 4.5, `${at}: the bubble's words over its fill on ${name} are ${r.toFixed(2)}:1, under 4.5:1`); }
+        }
+      }
+      const shown = rests.filter((s) => s.bubble);
+      expect(shown.length >= 3, `${at}: the guide spoke at only ${shown.length} of ${rests.length} rests on the way down`);
+      expect(new Set(shown.map((s) => s.bubble.level)).size === shown.length, `${at}: the guide named a level twice on the way down (${shown.map((s) => s.bubble.level).join(', ')})`);
+      // the first level is named when you scroll down from the top
+      expect(shown.some((s) => s.bubble.level === 0), `${at}: the first level ("${EXB_LINES[0]}") was never named on the way down from the top`);
+      // its first frame is in the reader's language
+      const seen = await p.evaluate(() => window.__exbSeen);
+      for (const x of seen) expect(x.text.endsWith(exbWant(x.level)) && (!es || !x.text.includes(EXB_LINES[x.level])), `${at}: the bubble's first frame says "${x.text.slice(0, 70)}", not the line for level ${x.level} in this language`);
+      // the cards never change height when highlighted
+      const grew = rests[0] ? rests[0].heights.map((_, i) => Math.max(...rests.map((s) => s.heights[i])) - Math.min(...rests.map((s) => s.heights[i]))).filter((d) => d > 1) : [];
+      expect(!grew.length, `${at}: ${grew.length} card(s) change height while you scroll (by up to ${Math.max(0, ...grew)} px)`);
+      // the real pixels behind the words, at one rest with a bubble
+      await p.evaluate(() => { window.__exbShows.length = 0; });
+      const mid = Math.round(max * 0.62);
+      await exbGo(p, mid - 300, 300); await exbGo(p, mid, 120);
+      if (await p.evaluate(() => !![...document.querySelectorAll('.cxm-rail-bubble')].find((x) => getComputedStyle(x).visibility !== 'hidden'))) {
+        await wait(320);
+        const worst = await exbPixelContrast(p);
+        expect(worst === null || worst >= 4.5, `${at}: the bubble's words are ${worst && worst.toFixed(2)}:1 on the real pixels behind them, under 4.5:1`);
+      }
+      // scrolling back up names nothing
+      await p.evaluate(() => { window.__exbShows.length = 0; });
+      for (let y = Math.max(0, max - 200); y >= 0; y -= 360) await exbGo(p, y, 380);
+      const up = await p.evaluate(() => window.__exbShows);
+      expect(up.length === 0, `${at}: the guide spoke ${up.length} time(s) while scrolling back up (levels ${up.map((x) => x.level).join(', ')})`);
+      // light mode (and dark): the fill and the current tick are not the track's color, the current ring is not an idle ring
+      const rc = await p.evaluate(() => { const g = (s, k = 'backgroundColor') => { const e = document.querySelector(s); return e ? getComputedStyle(e)[k] : null; }; return { track: g('.cxm-rail-track'), fill: g('.cxm-rail-fill'), idle: g('.cxm-tick:not(.on) i'), on: g('.cxm-tick.on i'), ringOn: g('.cxm-level-h circle.on', 'stroke'), ringIdle: g('.cxm-level-h circle:not(.on):not(.core)', 'stroke') }; });
+      expect(rc.fill !== rc.track && rc.on !== rc.track && rc.on !== rc.idle && rc.ringOn !== rc.ringIdle, `${at}: the rail's current place does not stand out (${JSON.stringify(rc)})`);
+      await done(p);
+    }
+    // a jump to the top: the bubble is gone within 3 s (it used to stay over the Updated strip)
+    {
+      const p = await exbOpen();
+      const max = await p.evaluate(() => { const m = document.querySelector('.cxm-main'); return m.scrollHeight - m.clientHeight; });
+      let s = null;
+      for (let y = 120; y < max && !(s && s.bubble && s.bubble.level >= 1); y += 120) s = await exbGo(p, y);
+      expect(!!(s && s.bubble), 'no bubble came up on the way down, so the jump to the top could not be tried');
+      await p.evaluate(() => { document.querySelector('.cxm-main').scrollTop = 0; }); await wait(3000);
+      expect(!(await has(p, '.cxm-rail-bubble')), 'the bubble is still there 3 s after a jump to the top');
+      // a fling from the top: at most one bubble, and none while the list moves
+      await p.evaluate(() => { window.__exbShows.length = 0; });
+      const during = await p.evaluate(async (to) => { const m = document.querySelector('.cxm-main'); let seen = 0; for (let k = 1; k <= 40; k++) { m.scrollTop = (to * k) / 40; await new Promise((r) => requestAnimationFrame(r)); if ([...document.querySelectorAll('.cxm-rail-bubble')].some((x) => getComputedStyle(x).visibility !== 'hidden')) seen++; } return seen; }, Math.round(max * 0.8));
+      await wait(1200);
+      const fl = await p.evaluate(() => window.__exbShows);
+      expect(during === 0, `a bubble showed in ${during} frames while the list was flung`);
+      expect(fl.length <= 1, `a fling showed ${fl.length} bubbles`);
+      // a bare click on the rail between two ticks moves nothing; a 6 px drag moves nothing; a 60 px drag scrubs from where it took hold
+      await p.evaluate(() => { document.querySelector('.cxm-main').scrollTop = 0; }); await wait(400);
+      const gap = await p.evaluate(() => { const t = [...document.querySelectorAll('.cxm-tick')].map((x) => x.getBoundingClientRect()); const r = document.querySelector('.cxm-rail').getBoundingClientRect(); return { x: r.left + r.width / 2, y: (t[2].bottom + t[3].top) / 2 }; });
+      const st = () => p.evaluate(() => Math.round(document.querySelector('.cxm-main').scrollTop));
+      const cuy = () => p.evaluate(() => { const r = document.querySelector('.cxm-rail-guide').getBoundingClientRect(); return r.top + r.height / 2; });
+      await p.mouse.click(gap.x, gap.y); await wait(400);
+      expect((await st()) === 0, `a bare click on the rail moved the list to ${await st()} px`);
+      await p.mouse.move(gap.x, gap.y); await p.mouse.down(); await p.mouse.move(gap.x, gap.y + 6, { steps: 3 }); await p.mouse.up(); await wait(300);
+      expect((await st()) === 0, `a 6 px drag on the rail moved the list to ${await st()} px`);
+      const c0 = await cuy();
+      await p.mouse.move(gap.x, gap.y); await p.mouse.down(); await p.mouse.move(gap.x, gap.y + 60, { steps: 8 }); await p.mouse.up(); await wait(300);
+      const moved = (await cuy()) - c0;
+      expect((await st()) > 0 && moved > 30 && moved < 70, `a 60 px drag on the rail did not scrub from where it took hold (the list is at ${await st()} px, the guide moved ${Math.round(moved)} px)`);
+      // a drag that starts on the guide scrubs at once (a touch, where the guide sits on a tick)
+      await p.evaluate(() => { document.querySelector('.cxm-main').scrollTop = 0; }); await wait(400);
+      const g = await p.evaluate(() => { const r = document.querySelector('.cxm-rail-guide').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      await p.touchscreen.touchStart(g.x, g.y); for (let k = 1; k <= 6; k++) await p.touchscreen.touchMove(g.x, g.y + k * 10); await p.touchscreen.touchEnd(); await wait(300);
+      expect((await st()) > 0, 'a drag that starts on the guide did not move the list');
+      await done(p);
+    }
+    // reduced motion: no animation, gone at once, and a tick jumps without a glide
+    {
+      const p = await exbOpen({ media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+      let s = null;
+      for (let y = 120; y < 3000 && !(s && s.bubble); y += 120) s = await exbGo(p, y);
+      expect(!!(s && s.bubble), 'reduced motion: no bubble came up on the way down');
+      if (s && s.bubble) {
+        expect(s.bubble.anim === 'none', `reduced motion: the bubble animates (${s.bubble.anim})`);
+        await p.evaluate(() => { document.querySelector('.cxm-main').scrollTop += 60; }); await wait(80);
+        expect(!(await has(p, '.cxm-rail-bubble')), 'reduced motion: the bubble did not leave at once when the list moved');
+      }
+      const before = await p.evaluate(() => document.querySelector('.cxm-main').scrollTop);
+      await p.evaluate(() => document.querySelectorAll('.cxm-tick')[4].click()); await wait(40);
+      const a = await p.evaluate(() => document.querySelector('.cxm-main').scrollTop); await wait(400);
+      const b = await p.evaluate(() => document.querySelector('.cxm-main').scrollTop);
+      expect(a !== before && Math.abs(a - b) < 2, `reduced motion: a tick glides instead of jumping (${Math.round(before)}, then ${Math.round(a)}, then ${Math.round(b)})`);
+      await done(p);
+    }
+    // reduced transparency: a solid fill and no blur
+    {
+      const p = await exbOpen({ media: [{ name: 'prefers-reduced-transparency', value: 'reduce' }] });
+      let s = null;
+      for (let y = 120; y < 3000 && !(s && s.bubble); y += 120) s = await exbGo(p, y);
+      expect(!!(s && s.bubble), 'reduced transparency: no bubble came up on the way down');
+      if (s && s.bubble) expect(s.bubble.backdrop === 'none' && (exbColor(s.bubble.bg) || [0, 0, 0, 0])[3] === 1, `reduced transparency: the bubble is still glass (backdrop ${s.bubble.backdrop}, fill ${s.bubble.bg})`);
+      await done(p);
+    }
+    // the detector must catch a bubble over a card's question, or a clean result means nothing
+    {
+      const p = await exbOpen();
+      await exbGo(p, 900);
+      const caught = await p.evaluate(() => {
+        const q = [...document.querySelectorAll('.cxm-roomtile-q')].find((e) => { const r = e.getBoundingClientRect(); return r.top > 120 && r.bottom < innerHeight - 160; });
+        const rail = document.querySelector('.cxm-rail'), d = document.createElement('span');
+        d.className = 'cxm-rail-bubble'; d.textContent = 'A planted bubble over a question.'; d.style.top = `${q.getBoundingClientRect().top - rail.getBoundingClientRect().top}px`; rail.appendChild(d);
+        const hit = window.__exbHits(d); d.style.top = `${innerHeight}px`; const out = window.__exbHits(d); d.remove();
+        return { titles: hit.titles.length, outside: !out.inside };
+      });
+      expect(caught.titles > 0, 'the explore-bubble check missed a bubble planted over a card question');
+      expect(caught.outside, 'the explore-bubble check missed a bubble planted below the list, over the tab bar');
+      await done(p);
     }
   },
   /* The desktop strip above the graph (ext/cx-nav.jsx, ext/cx.css, build.py "desktop strip"): the chosen room is always in view, exactly one thing
@@ -2963,6 +3210,8 @@ const AXE_PAGES = [
   ['phone today', '/#phone', { mobile: true, easy: false }], ['phone settings', '/?panel=settings#phone', { mobile: true, easy: false }], ['phone my priorities', '/?panel=priorities#phone', { mobile: true, easy: false }], ['phone settings original', '/?panel=settings#phone', { mobile: true, easy: false, theme: 'original' }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
+  // Explore (ext/cxm-explore.jsx): the list with the rail and the guide; the guide's bubble has its own geometry check (explore-bubble)
+  ['phone explore', '/#phone', { mobile: true, easy: false, after: 'explore' }], ['phone explore small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'explore' }],
   // the United States profile page (a senator, with the votes loaded; a committee), and Settings over the map
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us committee profile', '/?panel=us&who=senate-committee-on-finance#desktop', { settle: 2600 }], ['phone us court profile', '/?panel=us&who=supreme-court-of-the-united-states#phone', { mobile: true, easy: false, settle: 2600 }],
@@ -2988,6 +3237,7 @@ const AXE_PAGES = [
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
+  explore: async () => { const b = document.querySelectorAll('.cxm-tabs button')[1]; if (b) b.click(); await new Promise((r) => setTimeout(r, 700)); },
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
   hallOpen: async () => {   // At City Hall with everything opened: the day's meetings, the whole next agenda, the year's folds, and a search
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
