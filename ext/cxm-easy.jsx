@@ -51,7 +51,7 @@ function CxeProfile({ seat, onFull }) {
 }
 
 function CxmEasy() {
-  const { home, setHome, practice, setEasy, go, openSeat, openSheet, deskEasy, leaveEasy } = useCxm();
+  const { home, setHome, practice, setEasy, go, openSeat, openSheet, deskEasy, leaveEasy, setOverlay } = useCxm();
   const answers = practice.state.answers;
   const [view, setView] = u.useState({ k: `home` });
   const [speaking, setSpeaking] = u.useState(!1);
@@ -173,7 +173,7 @@ function CxmEasy() {
                 {view.j === `ballot` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`ballot`), () => CX_NAV.panel(`ballot`))}>Open my ballot</button>}
                 {view.j === `us` && !deskEasy && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`))}>Open the full app</button>}
                 {view.j === `us` && deskEasy && <button type="button" className="cxe-btn" onClick={() => toFull(() => CX_NAV.panel(`us`), () => CX_NAV.panel(`us`))}>See them in the United States graph</button>}
-                {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => go(`today`), () => CX_NAV.panel(`news`))}>{deskEasy ? `See what is new in Council's record` : `See City Hall's receipts`}</button>}
+                {view.j === `council` && <button type="button" className="cxe-btn" onClick={() => toFull(() => { go(`today`); setOverlay({ type: `records` }); }, () => CX_NAV.panel(`news`))}>{deskEasy ? `See what is new in Council's record` : `See the latest city records`}</button>}
                 <button type="button" className="cxe-btn alt" onClick={toHome}>Pick another question</button>
               </div>
             )}

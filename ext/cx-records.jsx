@@ -86,10 +86,10 @@ function cxRecAct(r) {
   if (r.act === `passed`) return `Passed`;
   return CX_VT.action[r.act] || r.act.charAt(0).toUpperCase() + r.act.slice(1);
 }
-/* where it stands now, unless the action already says so */
+/* where it stands now, unless the action already says so; a status with no plain words of ours is named as the record's own */
 function cxRecNow(r) {
   if ((r.status === `Passed` && CX_REC_PASSED.has(r.act)) || (r.status === `Filed` && r.act === `received and filed`)) return null;
-  return `Now: ${CX_STAGE[r.status] || r.status}.`;
+  return CX_STAGE[r.status] ? `Now: ${CX_STAGE[r.status]}.` : `Status in Council's record: ${r.status}.`;
 }
 /* "14 Yea, 0 Nay, 1 Absent": the record's own words, every word that has a member in it (as cxRecCountLine does for a vote in the page) */
 function cxRecCounts(c) {
@@ -261,7 +261,7 @@ function CxmRecords() {
         <div className="cxm-top-actions"><CX_LangButton cls="cxm-lang" short /></div>
       </div>
       <div className="cxm-full-body">
-        <CxmBanner kind="receipts" kicker="City Council's public record" title="Records" />
+        <CxmBanner kind="receipts" title="Records" />
         <CX_Records home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={(seat) => openSheet(`seat`, { seat })} />
       </div>
     </div>

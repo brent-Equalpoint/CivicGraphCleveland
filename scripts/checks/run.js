@@ -516,10 +516,12 @@ const CHECKS = {
     expect(g.set.height <= 72, `the place row takes ${Math.round(g.set.height)}px`);
     expect(/Set your neighborhood/.test(g.setText || ''), `the place row is not direct: ${g.setText}`);
     expect(g.stories.top - g.main.top < 24, `the stories start ${Math.round(g.stories.top - g.main.top)}px down the page`);
-    const cards = await m.evaluate(() => [...document.querySelectorAll('.cxm-rcpt')].map((e) => ({ t: (e.querySelector('.cxm-rcpt-t') || {}).innerText || '', second: !!(e.querySelector('.cxm-rcpt-w') && !e.classList.contains('cxm-news-row')) })));
-    expect(cards.length >= 4, `Today shows only ${cards.length} receipt cards`);
-    expect(cards.every((c) => c.t.length > 0 && c.t.length <= 130), `a receipt headline is ${Math.max(...cards.map((c) => c.t.length))} characters long`);
-    expect(!cards.some((c) => c.second), 'a receipt card repeats the official title under its headline');
+    // Latest (docs/plan-mobile-restructure.md, step 1): three record cards under the next-meeting card, each with a short headline
+    for (let i = 0; i < 20 && (await count(m, '.rf-latest .rf-card')) < 3; i++) await wait(150);
+    const cards = await m.evaluate(() => [...document.querySelectorAll('.rf-latest .rf-card')].map((e) => ({ t: (e.querySelector('.rf-title, .rf-line') || {}).innerText || '', titles: e.querySelectorAll('.rf-title').length })));
+    expect(cards.length === 3, `Today shows ${cards.length} Latest cards, not 3`);
+    expect(cards.every((c) => c.t.length > 0 && c.t.length <= 200 && c.titles <= 1), `a Latest card has no headline, a long one, or two: ${JSON.stringify(cards.map((c) => c.t.length))}`);
+    expect(await m.evaluate(() => { const h = document.querySelector('.mt-hall'), l = document.querySelector('.rf-latest'); return !h || !l || (h.compareDocumentPosition(l) & Node.DOCUMENT_POSITION_FOLLOWING) > 0; }), 'Latest is not under the next-meeting card');
     await clickText(m, 'Set your neighborhood'); await wait(400);
     expect(await has(m, '.cxm-sheet'), 'the place row does not open the neighborhood picker');
     await done(m);
@@ -1255,7 +1257,7 @@ const CHECKS = {
     // translating), and still when the device asks for less motion.
     const p = await open('/#phone', { mobile: true, easy: false, settle: 2000 });
     const kinds = await p.$$eval('.bn', (els) => els.map((e) => e.className.split(' ')[1]));
-    for (const k of ['bn-news', 'bn-receipts', 'bn-home']) expect(kinds.includes(k), `Today has no ${k} banner (found ${kinds})`);
+    for (const k of ['bn-hall', 'bn-news', 'bn-home']) expect(kinds.includes(k), `Today has no ${k} banner (found ${kinds})`);   // At City Hall, Latest, Close to home
     expect(await p.evaluate(() => [...document.querySelectorAll('.bn')].every((b) => { const svg = b.querySelector('svg.bn-art'); return svg && svg.getAttribute('aria-hidden') === 'true' && !svg.querySelector('text') && !!b.querySelector('h2'); })), 'a banner shows words in its picture, is not hidden from screen readers, or has no heading');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the banners make Today scroll sideways');
     expect(await p.evaluate(() => [...document.querySelectorAll('.bn')].every((b) => b.getBoundingClientRect().height >= 120 && b.getBoundingClientRect().height <= 180)), 'a banner is not between 120 and 180 px tall');
@@ -3610,9 +3612,9 @@ const AXE_AFTER = {
   recordsOpen: async () => {   // Records: a legislation card's Details and a roll call's Details, open
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     const leg = document.querySelector('[data-f="type"] button[data-v="legislation"]'); if (leg) leg.click(); await w(300);
-    const c = document.querySelector('.rf-list > .rf-card:not(.rf-short) .rf-more'); if (c) c.click(); await w(1200);
+    const c = document.querySelector('.rf-page .rf-list > .rf-card:not(.rf-short) .rf-more'); if (c) c.click(); await w(1200);
     const v = document.querySelector('[data-f="type"] button[data-v="all"]'); if (v) v.click(); await w(300);
-    const vc = document.querySelector('.rf-list > .rf-card[data-type="vote"] .rf-more'); if (vc) vc.click(); await w(400);
+    const vc = document.querySelector('.rf-page .rf-list > .rf-card[data-type="vote"] .rf-more'); if (vc) vc.click(); await w(400);
   },
   recordsWard: async () => {   // Records with the ward saved on the device chosen, over all time
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -3804,12 +3806,12 @@ CHECKS['text-budget'] = async () => {
      PERF_BUDGET_UPDATE=1 node scripts/checks/run.js --only perf-budget      record today's numbers on purpose (and say why in the commit)
    - the app's own code in the hosted page (everything but its data block), gzipped, may grow 3% past its record
    - the records in the data block may grow 60% (a year of Council records), so only an accident, such as embedding a lazy file, fails
-   - a phone's first load of Today asks only for the page, fonts, pictures, and the meetings file: never the federal record, the votes,
-     the district list, or (in English) the Spanish dictionary; all it asks for, gzipped, may grow 25%
+   - a phone's first load of Today asks only for the page, fonts, pictures, the meetings file, and the front of Records (Latest): never the
+     federal record, the votes, the district list, the whole Records list, or (in English) the Spanish dictionary; all it asks for, gzipped, may grow 25%
    - opening the United States map downloads the federal record and the map's places, gzipped: may grow 25%
    - the map's first drawing makes a fixed number of canvas shape calls (paths, fills, lines; not text, whose count depends on the font
      having arrived): may grow 10%. When it is done, counted from the start of the page, is printed, with a warning past twice the record. */
-const PERF_TODAY_OK = [/^\/$/, /^\/index\.html$/, /^\/favicon\.svg$/, /^\/manifest\.webmanifest$/, /^\/sw\.js$/, /^\/fonts\/[^/]+\.woff2$/, /^\/portraits\/[^/]+\.webp$/, /^\/meetings\/meetings-2026\.json$/, /^\/bench\/[^/]+\.json$/];
+const PERF_TODAY_OK = [/^\/$/, /^\/index\.html$/, /^\/favicon\.svg$/, /^\/manifest\.webmanifest$/, /^\/sw\.js$/, /^\/fonts\/[^/]+\.woff2$/, /^\/portraits\/[^/]+\.webp$/, /^\/meetings\/meetings-2026\.json$/, /^\/bench\/[^/]+\.json$/, /^\/records\/latest-2026\.json$/];
 function perfGzip(rel) {
   const f = path.join(SITE, rel.replace(/^\//, '') || 'index.html'), raw = fs.readFileSync(f);
   return /\.(html|js|json|svg|webmanifest|css)$/.test(f) ? require('zlib').gzipSync(raw, { level: 9 }).length : raw.length;
@@ -4371,8 +4373,8 @@ CHECKS['records-feed'] = async () => {
   const ES = process.env.CHECK_LANG === 'es';
   expect(rows.length === feed.counts.all && rows.length > 1900, `the records file has ${rows.length} rows, its count says ${feed.counts.all}`);
   const read = (p) => p.evaluate(() => ({
-    count: Number(((document.querySelector('.rf-count span') || {}).innerText || '').replace(/\D/g, '')),
-    cards: [...document.querySelectorAll('.rf-list > .rf-card')].map((c) => ({ id: c.dataset.id, date: c.dataset.date, type: c.dataset.type,
+    count: Number(((document.querySelector('.rf-page .rf-count span') || {}).innerText || '').replace(/\D/g, '')),
+    cards: [...document.querySelectorAll('.rf-page .rf-list > .rf-card')].map((c) => ({ id: c.dataset.id, date: c.dataset.date, type: c.dataset.type,
       kind: !!c.querySelector('.rf-type') && (c.querySelector('.rf-type').innerText || '').trim().length > 2,
       src: [...c.querySelectorAll('.rf-src a')].map((a) => a.href), pulled: /pulled [A-Z][a-z]{2,} \d{1,2}\.|obtenido el \d{1,2} [a-z]{3,}/.test((c.querySelector('.rf-src') || {}).innerText || ''),
       wards: [...c.querySelectorAll('.rf-chip')].map((x) => Number(x.dataset.ward)) })),
@@ -4419,14 +4421,14 @@ CHECKS['records-feed'] = async () => {
   r = await read(p);
   expect(r.cards.every((c, i) => i === 0 || c.date <= r.cards[i - 1].date), 'Newest first is not newest first');
   // 5. 20 at a time, and Show more moves the focus to the first new card
-  await p.evaluate(() => document.querySelector('.rf-show').click()); await wait(400);
+  await p.evaluate(() => document.querySelector('.rf-page .rf-show').click()); await wait(400);
   r = await read(p);
   expect(r.cards.length === Math.min(40, r.count), `Show more did not add 20 cards (${r.cards.length})`);
-  expect(await p.evaluate(() => { const c = document.querySelectorAll('.rf-list > .rf-card')[20]; return !!c && c.contains(document.activeElement); }), 'Show more did not move the focus to the first new card');
+  expect(await p.evaluate(() => { const c = document.querySelectorAll('.rf-page .rf-list > .rf-card')[20]; return !!c && c.contains(document.activeElement); }), 'Show more did not move the focus to the first new card');
   // 6. Details opens in place: the shared record inside the same card, and the list keeps its cards
   const before = r.cards.length;
   await pick(p, 'type', 'legislation'); await wait(250);
-  const opened = await p.evaluate(async () => { const c = [...document.querySelectorAll('.rf-list > .rf-card:not(.rf-short)')][0]; c.querySelector('.rf-more').click(); await new Promise((x) => setTimeout(x, 1200)); return { inCard: !!c.querySelector('.rf-details .rc-actions'), expanded: c.querySelector('.rf-more').getAttribute('aria-expanded') }; });
+  const opened = await p.evaluate(async () => { const c = [...document.querySelectorAll('.rf-page .rf-list > .rf-card:not(.rf-short)')][0]; c.querySelector('.rf-more').click(); await new Promise((x) => setTimeout(x, 1200)); return { inCard: !!c.querySelector('.rf-details .rc-actions'), expanded: c.querySelector('.rf-more').getAttribute('aria-expanded') }; });
   expect(opened.inCard && opened.expanded === 'true', 'Details did not open the record in place');
   expect((await read(p)).cards.length >= Math.min(20, before), 'opening Details changed the list');
   // 7. our own words: no score or ranking word, no person's name (English, and Spanish below)
@@ -4472,6 +4474,31 @@ CHECKS['records-feed'] = async () => {
     const ownEs = await q.evaluate(RF_OWN);
     expect(!RF_SCORE_ES.test(ownEs) && !RF_SCORE.test(ownEs), `Spanish: a score or ranking word: ${(ownEs.match(RF_SCORE_ES) || ownEs.match(RF_SCORE) || [])[0]}`);
     await done(q); }
+  // 14. Today: Latest is exactly three cards, the file's newest rows dated by today (a meeting once its day has passed), in its order, under the
+  // next-meeting card; Today reads only the
+  // front of the list; "See all records" opens Records and its back arrow returns; What's new and City Hall receipts are gone from Today, and What's
+  // new still opens from the Updated strip and from ?panel=news
+  { const t = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
+    for (let i = 0; i < 20 && (await count(t, '.rf-latest .rf-card')) < 3; i++) await wait(150);
+    const ids = await t.evaluate(() => [...document.querySelectorAll('.rf-latest .rf-card')].map((c) => c.dataset.id));
+    const top3 = rows.filter((x) => x.date <= today && !(x.type === 'meeting' && x.date >= today)).slice(0, 3).map((x) => x.id);
+    expect(JSON.stringify(ids) === JSON.stringify(top3), `Today's Latest shows ${ids}, the file's three newest are ${top3}`);
+    expect(t.asked.includes('/records/latest-2026.json') && !t.asked.includes('/records/records-2026.json'), `Today asked for ${t.asked.filter((u) => /records/.test(u))}, not only the front of the list`);
+    expect(!(await has(t, '.cxm-newsbox')) && !(await has(t, '.bn-receipts')) && !(await has(t, '.cxm-rgroup')), 'What\'s new or City Hall receipts is still on Today');
+    expect(await t.evaluate(() => { const h = document.querySelector('.mt-hall'), l = document.querySelector('.rf-latest'); return !!l && (!h || (h.compareDocumentPosition(l) & Node.DOCUMENT_POSITION_FOLLOWING) > 0); }), 'Latest is not under the next-meeting card');
+    const ownT = await t.evaluate(RF_OWN);
+    expect(!RF_SCORE.test(ownT) && !(ES && RF_SCORE_ES.test(ownT)) && !RF_NAME.test(ownT) && !people.some((n) => ownT.includes(n)), `a score, ranking word, or name in Latest: ${(ownT.match(RF_SCORE) || ownT.match(RF_NAME) || [])[0]}`);
+    expect(await t.evaluate(() => document.documentElement.scrollWidth === innerWidth), 'Today is wider than the screen');
+    expect(await t.evaluate(() => [...document.querySelectorAll('.rf-latest :is(button, a[href])')].every((el) => { const b = el.getBoundingClientRect(); return (el.tagName === 'A' && getComputedStyle(el).display === 'inline') || (b.height >= 44 && b.width >= 44); })), 'a control in Latest is under 44px');
+    await t.evaluate(() => document.querySelector('.rf-latest .rf-all').click()); await wait(1500);
+    expect(await has(t, '.cxm-full.rf-page') && /panel=records/.test(await t.evaluate(() => location.search)), '"See all records" did not open Records');
+    expect((await read(t)).count === want({ days: 30 }).length, '"See all records" opened Records with other choices than the defaults');
+    await t.evaluate(() => document.querySelector('.rf-page .cxm-full-back').click()); await wait(500);
+    expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the back arrow from Records did not return to Today');
+    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(700);
+    expect(/panel=news/.test(await t.evaluate(() => location.search)) && await has(t, '.cxm-sheet'), 'the Updated strip no longer opens What\'s new');
+    await done(t); }
+  { const q = await open('/?panel=news#phone', { mobile: true, easy: false }); expect(await has(q, '.cxm-sheet') && /What's new|Novedades/.test((await txt(q, '.cxm-sheet .cxm-h2')) || ''), '?panel=news no longer opens What\'s new'); await done(q); }
   // 13. a phone page: the desktop has no Records page yet
   { const q = await open('/?panel=records#desktop', { settle: 1400 }); expect(!(await has(q, '.rf')), 'a Records page appeared on the desktop'); await done(q); }
 };

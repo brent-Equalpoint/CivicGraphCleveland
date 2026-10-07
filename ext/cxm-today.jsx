@@ -1,71 +1,34 @@
-/* v5.14 phone app: Today. Stories, City Hall receipts, and moments, all generated from the records
+/* v5.14 phone app: Today. Stories, the next meeting, Latest (the newest records), and moments, all generated from the records
    for the resident's ward (or citywide before they pick a place). */
 
 
-/* ---------- City Hall receipts ---------- */
-const CXM_NEWEST = CX_LEG.matters.reduce((a, m) => (m.passed && m.passed > a ? m.passed : a), ``);
+/* ---------- Latest: the three newest records, the front of Records (ext/cx-records.jsx) ----------
+   It replaced What's new and City Hall receipts on Today (docs/plan-mobile-restructure.md, Option A, step 1). What's new still opens from the Updated
+   strip under the header (?panel=news). The cards are read from the front of the records list (site/records/latest-2026.json, a few KB) a moment
+   after Today has drawn; the whole list waits until Records opens. A meeting is "latest" once its day has passed: the next meeting, and one meeting
+   today, have their own card above. */
 function cxmWhen(m) {
   const p = cxPlPath(m);
   return (p.fin && p.fin[0]) || m.passed || (p.h.length ? p.h[p.h.length - 1][0] : m.intro);
-}
-function cxmReceipts(ward) {
-  const idx = cxLegIndex();
-  const seen = new Set();
-  const rows = [];
-  const add = (x) => { if (!seen.has(x.m.file)) { seen.add(x.m.file); rows.push(x); } };
-  if (ward) {
-    cxPlWardMoney(ward).rows.forEach((r) => add({ m: r.m, fund: r }));
-    idx.seats[ward - 1].items.filter((x) => x.role === `own`).forEach((x) => add({ m: x.m }));
-  } else {
-    cxPlCity().allFunds.filter((r) => !r.councilWide && r.counted).forEach((r) => add({ m: r.m, fund: r }));
-  }
-  idx.measures.filter((m) => m.status === `Tabled`).forEach((m) => add({ m }));
-  const cutoff = new Date(Date.parse(`${CXM_NEWEST}T12:00:00`) - 30 * 86400000).toISOString().slice(0, 10);
-  rows.forEach((x) => { x.st = cxmStatus(x.m); x.when = cxmWhen(x.m); });
-  rows.sort((a, b) => (a.when < b.when ? 1 : -1));
-  return [
-    [`talk`, `Talking stage`, `Still in review`, rows.filter((x) => x.st.k === `talk` || x.st.k === `hold`)],
-    [`new`, `Newest`, `Last 30 days of records`, rows.filter((x) => (x.st.k === `done` || x.st.k === `cond`) && x.when >= cutoff)],
-    [`earlier`, `Earlier this year`, ward ? `Ward ${ward} and its member` : `Citywide ward money`, rows.filter((x) => (x.st.k === `done` || x.st.k === `cond`) && x.when < cutoff)],
-    [`read`, `Left on read`, `Tabled by Council`, rows.filter((x) => x.st.k === `read`)],
-  ].filter((g) => g[3].length);
 }
 function cxmFundLabel(r) {
   const w = r.ward ? `Ward ${r.ward} ` : ``;
   return /casino/i.test(r.m.title) ? `${w}casino revenue` : `${w}equity fund`;
 }
-function CxmReceiptRow({ x }) {
-  const { openSheet } = useCxm();
-  const signer = cxPlSigner(x.m);
-  const title = x.fund ? <>{cxmFundLabel(x.fund)} → {cxEntity(x.fund.who) || `see record`}</> : cxHeadline(x.m.title);
-  const amount = x.fund ? (x.fund.amount ? (x.fund.counted ? cxmMoney(x.fund.amount) : `shared`) : `amount?`) : x.st.k === `read` ? `tabled` : ``;
-  return (
-    <button type="button" className={`cxm-rcpt ${x.st.k === `read` ? `read` : ``}`} onClick={() => openSheet(`leg`, { file: x.m.file, fund: !!x.fund })}>
-      <span className={`cxm-av cxm-av-${x.st.k}`}>{signer ? cxmInitials(signer) : `CH`}</span>
-      <span className="cxm-rcpt-mid">
-        <span className="cxm-rcpt-t">{title}</span>
-        <span className="cxm-rcpt-s">{x.st.label} · {cxmDate(x.when)}</span>
-      </span>
-      {amount && <span className="cxm-rcpt-a">{amount}</span>}
-    </button>
-  );
+function cxmRecLatest(rows, today) {
+  return (rows || []).filter((r) => r.date <= today && !(r.type === `meeting` && r.date >= today)).slice(0, 3);
 }
-function CxmReceipts() {
-  const { home } = useCxm();
-  const groups = u.useMemo(() => cxmReceipts(home?.ward || null), [home?.ward]);
-  const [more, setMore] = u.useState({});
+function CxmRecLatest() {
+  const { setOverlay, openSheet } = useCxm();
+  const data = useCxRecs(!0);
+  const today = cxTodayET();
+  const rows = data ? cxmRecLatest(data.rows, today) : [];
   return (
-    <section className="cxm-section">
-      <CxmBanner kind="receipts" title="City Hall receipts" />
-      <p className="cxm-mut">Who paid whom, who signed off, and where it stands. {home?.ward ? `Ward ${home.ward} money and what its council member led, plus anything Council tabled.` : `Pick your place to see your own ward's receipts.`}</p>
-      {groups.map(([id, title, sub, list]) => (
-        <div key={id} className="cxm-rgroup">
-          <div className="cxm-rgroup-h"><strong>{title}</strong><small>{sub} · {list.length}</small></div>
-          {(more[id] ? list : list.slice(0, 4)).map((x) => <CxmReceiptRow key={x.m.file} x={x} />)}
-          {list.length > 4 && <button type="button" className="cxm-link" onClick={() => setMore((m) => ({ ...m, [id]: !m[id] }))}>{more[id] ? `Show fewer` : `See all ${list.length}`}</button>}
-        </div>
-      ))}
-      <p className="cxm-fine">Our labels for a record's status: Committed is passed, Talking stage is still in review, Left on read is tabled. Amounts are the limits in each ordinance.</p>
+    <section className="cxm-section rf-latest">
+      <CxmBanner kind="news" title="Latest" />
+      {rows.length ? <ol className="rf-list">{rows.map((r) => cxRecCard(r, { today, onFile: (file) => openSheet(`leg`, { file }), onPerson: (seat) => openSheet(`seat`, { seat }) }))}</ol>
+        : <p className="cxm-mut" role="status">{CX_RECS.ldone ? `The latest records could not be loaded here. See all records to try again.` : `Loading the latest records.`}</p>}
+      <button type="button" className="rf-show rf-all" onClick={() => setOverlay({ type: `records` })}>See all records</button>
     </section>
   );
 }
@@ -162,9 +125,8 @@ function CxmToday() {
         <em>My ballot <CXI.Arrow size={14} /></em>
         {nextDate && nextDate.iso !== CXM_ELECTION && <small className="cxm-next">{nextDate.state === `today` ? `Today: ` : `Next: `}{nextDate.label}, {nextDate.text.replace(/ by .*| ends at .*/, ``).toLowerCase()}{nextDate.state === `next` ? ` (${nextDate.days === 1 ? `tomorrow` : `in ${nextDate.days} days`})` : ``}</small>}
       </button>
-      <CxmWhatsNew />
       <CxmHallCard />
-      <CxmReceipts />
+      <CxmRecLatest />
       <section className="cxm-section">
         <CxmBanner kind="home" title="Close to home" />
         {moments.map((m, i) => (

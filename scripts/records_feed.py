@@ -103,8 +103,8 @@ def ward_ties(file, title, place):
     return out
 
 
-# ---------- ordering: newest first; on one day, meetings, then votes, then legislation; then by number, newest file first ----------
-TYPE_RANK = {"meeting": 0, "vote": 1, "legislation": 2}
+# ---------- ordering: newest first; on one day, legislation, then its roll calls, then the meetings; then by number, newest file first ----------
+TYPE_RANK = {"legislation": 0, "vote": 1, "meeting": 2}
 
 
 def file_key(f):
