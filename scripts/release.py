@@ -116,7 +116,7 @@ def build_hashes():
 UNIT = [[sys.executable, "scripts/test_bench.py"], [sys.executable, "scripts/test_bench_gate.py"], [sys.executable, "scripts/test_links.py"], [sys.executable, "scripts/test_us.py"],
         ["node", "scripts/test_us_model.js"], ["node", "scripts/test_us_map.js"], ["node", "scripts/test_alignment.js"], [sys.executable, "scripts/test_privacy.py"],
         [sys.executable, "scripts/test_meetings.py"], [sys.executable, "scripts/test_us_explainers.py"], ["node", "scripts/test_meetings.js"], [sys.executable, "scripts/test_votes.py"],
-        [sys.executable, "scripts/test_cityrecord.py"], [sys.executable, "scripts/test_votes_actions.py"], [sys.executable, "scripts/test_offices.py"], ["node", "scripts/test_offices.js"], [sys.executable, "scripts/test_records.py"], ["node", "scripts/test_headline.js"], ["node", "scripts/test_districts.js"],
+        [sys.executable, "scripts/test_cityrecord.py"], [sys.executable, "scripts/test_votes_actions.py"], [sys.executable, "scripts/test_offices.py"], ["node", "scripts/test_offices.js"], [sys.executable, "scripts/test_aliases.py"], ["node", "scripts/test_aliases.js"], ["node", "scripts/test_place_split.js"], [sys.executable, "scripts/test_records.py"], ["node", "scripts/test_headline.js"], ["node", "scripts/test_districts.js"],
         [sys.executable, "scripts/test_districts.py"], ["node", "scripts/test_design.js"], [sys.executable, "scripts/test_i18n.py"], ["node", "scripts/test_release_plan.js"],
         [sys.executable, "scripts/refresh.py", "--check"]]
 

@@ -226,6 +226,26 @@ def mark_offices_reviewed(who):
     print(f"marked the offices text reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def aliases_text_fp():
+    """Fingerprint of the well known names that find a neighborhood in the place picker: everything between the ALIASES-TEXT markers in ext/cx-aliases-text.jsx."""
+    src = open(os.path.join(EXT, "cx-aliases-text.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* ALIASES-TEXT-START.*?ALIASES-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the ALIASES-TEXT markers are missing from ext/cx-aliases-text.jsx")
+    if re.search("[\u2013\u2014]", m.group(0)):
+        sys.exit("build: the aliases text in ext/cx-aliases-text.jsx has an em or en dash")
+    return hashlib.sha256(m.group(0).encode()).hexdigest()[:16]
+
+
+def mark_aliases_reviewed(who):
+    """Record that a person read the well known neighborhood names against their sources, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-aliases-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "aliases-text-reviewed.json")
+    write(path, json.dumps({"fp": aliases_text_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the neighborhood names reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def align_block():
     """The sample questions for "how you line up" (docs/plan-alignment.md, step 2): everything between the ALIGN-TEXT markers in ext/cx-align-text.jsx."""
     src = open(os.path.join(EXT, "cx-align-text.jsx"), encoding="utf-8").read()
@@ -616,6 +636,12 @@ def main():
     of5_ok = of5.get("fp") == offices_text_fp()
     log(f"offices text: {'reviewed by ' + of5['by'] + ' on ' + of5['checked'] if of5_ok else 'NOT reviewed by a person (' + ('text changed since review' if of5 else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/offices-text-reviewed.json ---- */\nconst CX_OFFICES_REVIEW = " + json.dumps({"ok": of5_ok, "by": of5.get("by") if of5_ok else None, "checked": of5.get("checked") if of5_ok else None}) + ";\n"
+    # the well known names that find a neighborhood in the place picker (ext/cx-aliases-text.jsx): reviewed by a person only while their fingerprint still matches what that person read
+    al_path = os.path.join(ROOT, "data", "aliases-text-reviewed.json")
+    al = json.load(open(al_path, encoding="utf-8")) if os.path.exists(al_path) else {}
+    al_ok = al.get("fp") == aliases_text_fp()
+    log(f"neighborhood names: {'reviewed by ' + al['by'] + ' on ' + al['checked'] if al_ok else 'NOT reviewed by a person (' + ('text changed since review' if al else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/aliases-text-reviewed.json ---- */\nconst CX_ALIASES_REVIEW = " + json.dumps({"ok": al_ok, "by": al.get("by") if al_ok else None, "checked": al.get("checked") if al_ok else None}) + ";\n"
     # the privacy policy (ext/cx-privacy.jsx): approved by a person only while its fingerprint still matches what they approved; no dash in its words
     _, policy = privacy_block()
     if re.search("[\u2013\u2014]", json.dumps(policy, ensure_ascii=False)):
@@ -698,7 +724,7 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-records.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-offices-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-records.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-offices-text.jsx", "cx-aliases-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
@@ -1486,5 +1512,7 @@ if __name__ == "__main__":
         mark_votes_text_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-offices-reviewed":
         mark_offices_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-aliases-reviewed":
+        mark_aliases_reviewed(" ".join(sys.argv[2:]))
     else:
         main()

@@ -36,8 +36,9 @@ function CxmPlaceSec({ id, open, setOpen, title, sum, children }) {
   );
 }
 function CxmPlace() {
-  const { home, setHome, placeHood, openSheet, openSeat, openRoom, go } = useCxm();
-  const hood = placeHood || home?.hood || `Downtown`;
+  const { home, pickPlace, placeHood, openSheet, openSeat, openRoom, go } = useCxm();
+  const placed = placeHood || home?.hood || ``;   // the neighborhood that is the person's place, or none
+  const hood = placed || `Downtown`;               // with none, Downtown is shown as an example, and says so
   const D = u.useMemo(() => cxPlaceData(hood), [hood]);
   const [open, setOpen] = u.useState(`rep`);
   const [lever, setLever] = u.useState(`all`);
@@ -58,10 +59,15 @@ function CxmPlace() {
       <CxmKicker>Who decides here?</CxmKicker>
       <CxmH1>{hood}</CxmH1>
       <p className="cxm-mut">Everything here comes from public records: the city's ward maps, Council's legislative database, and the ordinance text. Nothing scores anyone. Where the record is silent, it says so.</p>
-      <label className="cxm-field"><span>Neighborhood</span>
-        <select value={hood} onChange={(e) => { const h = e.target.value, w = cxmHoodWard(h); setHome({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }); }}>{D.hoods.map((h) => <option key={h} value={h}>{h}{home?.hood === h ? ` (home)` : ``}</option>)}</select>
+      <label className="cxm-field"><span>Your neighborhood</span>
+        <select value={placed} onChange={(e) => { const h = e.target.value, w = cxmHoodWard(h); if (!h) return; if (cxmHoodSplit(h)) openSheet(`home`, { step: h }); else pickPlace({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }, `select`); }}>{!placed && <option value="">Pick your neighborhood</option>}{D.hoods.map((h) => <option key={h} value={h}>{h}{home?.hood === h ? ` (home)` : ``}</option>)}</select>
       </label>
-      {!home && <button type="button" className="cxm-link" onClick={() => openSheet(`home`)}>Set this as my place</button>}
+      {!placed && (
+        <>
+          <p className="cxm-status-line">{home ? `Downtown is an example, not your neighborhood.` : `Downtown is an example, not your place yet.`}</p>
+          <div className="cxm-row2 cxm-hp-example"><button type="button" className="cxm-btn2" onClick={() => openSheet(`home`, { step: `Downtown` })}>Make Downtown my place</button></div>
+        </>
+      )}
       <p className="cxm-fine">In 2025 Council redrew the map from 17 wards to 15. Blue marks the wards that cover {hood}; the outline is the neighborhood's official boundary.</p>
       <div className="cxm-pmaps">
         <CxmPlaceMap layer="wards2014" hood={hood} wards={D.before} title="2014 to 2025 (17 wards)" />

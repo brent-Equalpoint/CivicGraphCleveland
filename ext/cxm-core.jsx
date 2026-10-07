@@ -104,6 +104,33 @@ function cxmHoodWard(hood) {
   for (const [w, rows] of Object.entries(CX_GEO.overlap.wards2026)) for (const r of rows) if (r.hood === hood && (!best || r.share_of_hood > best.share)) best = { ward: Number(w), share: r.share_of_hood };
   return best;
 }
+/* A neighborhood that no one ward holds 70% of: its wards, largest first, each with its share of the neighborhood's land area inside the 2026 wards,
+   as whole percents adding to exactly 100 (largest remainder; the file's own shares add to 99.1 to 100 because a sliver lies outside every ward).
+   Null for every other neighborhood (11 of 34), so those set the place at once. */
+function cxmHoodSplit(hood) {
+  const rows = [];
+  for (const [w, list] of Object.entries(CX_GEO.overlap.wards2026)) for (const r of list) if (r.hood === hood && r.share_of_hood > 0) rows.push({ ward: Number(w), raw: r.share_of_hood });
+  rows.sort((a, b) => b.raw - a.raw || a.ward - b.ward);
+  if (rows.length < 2 || rows[0].raw >= 0.7) return null;
+  const sum = rows.reduce((s, r) => s + r.raw, 0);
+  const t = rows.map((r) => { const x = (r.raw / sum) * 100, fl = Math.floor(x + 1e-9); return { fl, fr: x - fl }; });
+  const left = 100 - t.reduce((s, y) => s + y.fl, 0);
+  t.map((y, i) => i).sort((a, b) => t[b].fr - t[a].fr || a - b).slice(0, left).forEach((i) => { t[i].fl += 1; });
+  return rows.map((r, i) => ({ ward: r.ward, share: t[i].fl, raw: r.raw }));
+}
+/* the words for a place, as the notice and the Meetings line say it: "Hough, Ward 8", "Ward 6", "elsewhere in Cuyahoga County", "not sure yet"; empty when none */
+function cxmPlaceWords(h) {
+  if (!h) return ``;
+  if (h.place === `county`) return `elsewhere in Cuyahoga County`;
+  if (h.place === `unsure`) return `not sure yet`;
+  return h.hood ? (h.ward ? `${h.hood}, Ward ${h.ward}` : h.hood) : `Ward ${h.ward}`;
+}
+/* the control that opened the place picker, so a pick made by touch or mouse can give focus back to it */
+const CXM_OPENER = { el: null, last: null };
+function cxmNoteOpener() {
+  const a = document.activeElement, ok = (e) => e && e !== document.body && e.isConnected && !e.closest(`.cxm-sheet`);
+  CXM_OPENER.el = ok(a) ? a : ok(CXM_OPENER.last) ? CXM_OPENER.last : null;
+}
 const CXM_BY_FILE = new Map(CX_LEG.matters.map((m) => [m.file, m]));
 function cxmMatter(file) {
   return CXM_BY_FILE.get(file) || null;
@@ -137,6 +164,7 @@ function cxmStatus(m) {
 }
 
 /* ---------- priorities: same storage and rules as the desktop My priorities page ---------- */
+const CXM_PRIO_LIMIT = `That is five. Remove one to add another.`;   // shown at the top of My priorities with the counter, and read out when a sixth is tried
 function useCxmPrio() {
   const [st, setSt] = u.useState(() => {
     let v = { ...Om }, s = { ...km }, rem = !1;
@@ -154,7 +182,7 @@ function useCxmPrio() {
   };
   const setLevel = (id, level) => setSt((o) => {
     const count = Object.values(o.v).filter(Boolean).length;
-    if (level && !o.v[id] && count >= 5) return { ...o, msg: `Choose up to five priorities. Change or skip one before adding another.` };
+    if (level && !o.v[id] && count >= 5) return { ...o, msg: CXM_PRIO_LIMIT };
     const v = { ...o.v, [id]: level };
     const label = wm.find((w) => w.id === id)?.label ?? `Priority`;
     return { ...o, v, msg: persist(v, o.s, o.rem) || (level ? `${label}: ${Tm.find((t) => t.id === level)?.label}.` : `${label} skipped.`) };
@@ -331,12 +359,25 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     setHomeState(h);
     CX_PLACE.v = h && h.ward ? `ward-${h.ward}` : (h && h.place) || ``;
     CX_PLACE.hood = h && h.hood ? h.hood : ``;
-    if (h && h.hood) setPlaceHood(h.hood);
+    setPlaceHood(h && h.hood ? h.hood : null);   // My place browses the neighborhood that is the place, and none when the place is a ward, elsewhere, or not set
     cxPlacePersist();
+  };
+  // A neighborhood, a ward, or a clearing was chosen anywhere (the picker, My place, Meetings): set the place for the whole app and say so, with Undo.
+  // `how` is `kb` (a key chose it: focus goes to the notice and its timer is off), `pointer` (focus goes back to what opened the picker), or `select`
+  // (a list's arrow keys: focus stays on the list). The place before the first change since the notice opened, and whether Remember was on, are held
+  // in memory only for Undo; nothing here is stored.
+  const pickPlace = (h, how = `pointer`, extra) => {
+    const before = { home, rem: cxPlaceRemembered() };
+    setHome(h);
+    setToast((t) => ({ kind: `place`, prev: t && t.kind === `place` && t.prev ? t.prev : before, now: h, how, extra: extra || null, n: ((t && t.kind === `place` && t.n) || 0) + 1 }));
   };
   const setGuide = (g) => { setGuideState(g); cxmPut(`cx-guide`, g); };
   const setTheme = (t) => { setThemeState(t); document.documentElement.setAttribute(`data-cx-theme`, t); cxmPut(`cx-theme`, t); };
-  const openSheet = (type, data = {}, replace = !1) => setSheets((s) => (replace ? [...s.slice(0, -1), { type, ...data }] : [...s, { type, ...data }]));
+  const openSheet = (type, data = {}, replace = !1) => {
+    if (type === `home`) cxmNoteOpener();
+    setToast((t) => (t && t.kind === `place` ? null : t));   // a sheet takes the screen; a place notice does not wait under it
+    setSheets((s) => (replace ? [...s.slice(0, -1), { type, ...data }] : [...s, { type, ...data }]));
+  };
   const closeSheet = () => setSheets([]);
   const backSheet = () => setSheets((s) => s.slice(0, -1));
   const go = (t) => { setSheets([]); setOverlay(null); setTab(t); setStoryBack(null); };
@@ -365,13 +406,18 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page, recFolder); }, [tab, room, topSheet, people.mode, page, recFolder]);
   u.useEffect(() => {
     // Escape closes the top sheet, then a page over the tabs; with neither, it goes back to the story a "go deeper" step came from
-    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay(null); else if (storyBack) backToStory(); } };
+    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (toast && toast.kind === `place`) { setToast(null); cxmBackToOpener(mainRef); } else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay(null); else if (storyBack) backToStory(); } };
     globalThis.addEventListener(`keydown`, onKey);
     return () => globalThis.removeEventListener(`keydown`, onKey);
-  }, [sheets.length, overlay, storyBack]);
+  }, [sheets.length, overlay, storyBack, toast]);
+  u.useEffect(() => {   // what the last tap landed on, for a place pick to give focus back to when the control that opened the picker is gone
+    const onDown = (e) => { const b = e.target && e.target.closest ? e.target.closest(`button, a, select, [role=button]`) : null; if (b) CXM_OPENER.last = b; };
+    document.addEventListener(`pointerdown`, onDown, !0);
+    return () => document.removeEventListener(`pointerdown`, onDown, !0);
+  }, []);
 
   const ctx = {
-    practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
+    practice, prio, tab, go, home, setHome, pickPlace, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
     people, setPeople, openSeat, openProfile, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
     openPrivacy, closePrivacy, recFolder, setRecFolder, openRecords,
@@ -427,7 +473,8 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}
           {storyBack && !overlay && <button type="button" className="cxm-storyback" onClick={backToStory}><CXI.Back size={16} /> Back to the story</button>}
-          {toast && <CxmToast />}
+          {toast && toast.kind !== `place` && <CxmToast />}
+          <CxmPlaceNote />
         </div>}
       </div>
     </CXM.Provider>
@@ -451,7 +498,7 @@ const CXM_SHEETS = {
   ledger: () => <CxmLedger />,
   bench: () => <CxmBench />,
   check: (s) => <CxmCheck roomId={s.room} nodeId={s.node} />,
-  home: () => <CxmHomePicker />,
+  home: (s) => <CxmHomePicker step={s.step} />,
   guides: (s) => <CxmPriorityGuide id={s.id} />,
   cand: (s) => <CxmCand id={s.id} />,
   decision: (s) => <CxmDecision id={s.id} />,
@@ -663,39 +710,149 @@ function cxmHomeLabel(h) {
   if (h.place === `unsure`) return `Not sure yet`;
   return h.hood ? `${h.hood}${h.ward ? ` · Ward ${h.ward}` : ``}` : `Ward ${h.ward}, City of Cleveland`;
 }
-function CxmHomePicker() {
-  const { setHome, closeSheet, home } = useCxm();
-  const hoods = cxPlCity().hoods;
+/* Search first, then the neighborhoods the letters find (with the name a well known alias belongs to, ext/cx-aliases-text.jsx), then the wards. A
+   neighborhood that sits in more than one ward opens one step in this same sheet; every other choice sets the place at once and the notice says so. */
+function CxmHomePicker({ step: first }) {
+  const { pickPlace, closeSheet, home } = useCxm();
+  const hoods = u.useMemo(() => [...new Set(cxPlCity().hoods)], []);
   const [q, setQ] = u.useState(``);
-  const list = hoods.filter((h) => h.toLowerCase().includes(q.trim().toLowerCase()));
+  const [step, setStep] = u.useState(first || null);
+  const headRef = u.useRef(null);
+  u.useEffect(() => { if (!step) return undefined; const t = setTimeout(() => headRef.current && headRef.current.focus({ preventScroll: !0 }), 40); return () => clearTimeout(t); }, [step]);
+  const kbOf = (e) => (e && e.detail === 0 ? `kb` : `pointer`);
+  const set = (h, e, extra) => { closeSheet(); pickPlace(h, kbOf(e), extra); };
+  const byName = cxAliasNames(q, hoods), aliases = cxAliasFind(q, hoods), viaAlias = new Set(aliases.map((a) => a.hood));
+  const list = hoods.filter((h) => byName.includes(h) || viaAlias.has(h));
+  const typed = q.trim();
+  if (step) {
+    const parts = cxmHoodSplit(step) || [];
+    const wardsTxt = parts.map((x) => x.ward);
+    const head = parts.length === 2 ? `${step} touches Wards ${wardsTxt[0]} and ${wardsTxt[1]}.` : `${step} touches Wards ${wardsTxt.slice(0, -1).join(`, `)}, and ${wardsTxt[wardsTxt.length - 1]}.`;
+    const mine = home?.hood === step ? home.ward : null;
+    return (
+      <div className="cxm-pad cxm-hp">
+        <CxmKicker>Your place</CxmKicker>
+        <button type="button" className="cxm-hp-back" onClick={() => setStep(null)}><CXI.Back size={16} /><span>Neighborhoods</span></button>
+        <h2 className="cxm-h2" tabIndex={-1} ref={headRef} id="cxm-hp-h">{head}</h2>
+        <p className="cxm-mut">Your address decides. Pick the one you think is yours.</p>
+        <div className="cxm-hp-wards" role="radiogroup" aria-labelledby="cxm-hp-h">
+          {parts.map((x, k) => (
+            <button key={x.ward} type="button" role="radio" aria-checked={mine === x.ward} className={`cxm-hp-ward ${mine === x.ward ? `on` : ``}`} onClick={(e) => set({ hood: step, ward: x.ward, share: x.raw }, e)}>
+              <span className="cxm-hp-wl"><strong>{`Ward ${x.ward}`}</strong>{k === 0 && <small>largest part</small>}</span>
+              <b className="cxm-hp-share">{x.share}%</b>
+              <i aria-hidden="true">{mine === x.ward ? <CXI.Check size={14} /> : null}</i>
+            </button>
+          ))}
+          <button type="button" role="radio" aria-checked="false" className="cxm-hp-ward cxm-hp-unsure" onClick={(e) => set({ hood: step, ward: parts[0].ward, share: parts[0].raw }, e, `largest`)}>
+            <span className="cxm-hp-wl"><strong>I am not sure</strong><small>{`Use Ward ${parts[0].ward}, the largest part, for now.`}</small></span>
+            <i aria-hidden="true" />
+          </button>
+        </div>
+        <p className="cxm-fine">Shares are the land area of the neighborhood inside each ward, from the city's maps, rounded to whole percents that add to 100. They are not people and not a score.</p>
+        <div className="cxm-row-links">
+          <CxmSrc href={CX_GEO.src.wards2026}>2026 ward map (Ord. No. 1-2025)</CxmSrc>
+          <CxmSrc href={CX_GEO.src.spa}>Neighborhood boundaries</CxmSrc>
+          <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address">Find my ward by address</CxmSrc>
+        </div>
+      </div>
+    );
+  }
   return (
-    <div className="cxm-pad">
+    <div className="cxm-pad cxm-hp">
       <CxmKicker>Your place</CxmKicker>
       <h2 className="cxm-h2">Where do you call home?</h2>
       <p className="cxm-mut">Pick your neighborhood. It is never sent anywhere. Your exact address decides your ward; the Board of Elections lookup confirms it.</p>
+      <label className="cxm-field"><span>Find a neighborhood</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hough, Ohio City, Kamm's…" autoComplete="off" /></label>
       <CxmRememberPlace />
-      <label className="cxm-field"><span>Find a neighborhood</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Hough, Ohio City, Kamm's…" /></label>
-      <div className="cxm-chips">
-        {list.map((h) => {
-          const w = cxmHoodWard(h);
-          return (
-            <button key={h} type="button" className={home?.hood === h ? `on` : ``} onClick={() => { setHome({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }); closeSheet(); }}>
-              {h}{w ? <small> · Ward {w.ward}</small> : null}
-            </button>
-          );
-        })}
+      <div className="cxm-hp-status" role="status">
+        {aliases.map((a) => <p key={a.alias} className="cxm-hp-line"><span>{a.alias}</span>{` `}<span>is part of</span>{` `}<span>{a.hood}</span>{`.`}</p>)}
+        {aliases.length > 0 && <p className="cxm-fine">{cxAliasReview()}</p>}
+        {typed && !list.length && <p className="cxm-hp-line">{`No neighborhood matches "${typed}". Try the first letters, or pick your ward below.`}</p>}
       </div>
+      {list.length > 0 && (
+        <div className="cxm-chips">
+          {list.map((h) => {
+            const w = cxmHoodWard(h), sp = cxmHoodSplit(h), sel = home?.hood === h;
+            return (
+              <button key={h} type="button" className={sel ? `on` : ``} aria-pressed={sel} aria-current={sel ? `true` : undefined} onClick={(e) => { if (sp) setStep(h); else set({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }, e); }}>
+                {h}{sp ? <small>{` · Wards ${sp.map((x) => x.ward).join(`, `)}`}</small> : w ? <small>{` · Ward ${w.ward}`}</small> : null}
+              </button>
+            );
+          })}
+        </div>
+      )}
       <h3 className="cxm-h3">Or pick your ward</h3>
       <div className="cxm-chips">
-        {_h.map(([n, name]) => <button key={n} type="button" className={!home?.hood && home?.ward === Number(n) ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: Number(n), share: 0 }); closeSheet(); }}>Ward {n}<small> · {name}</small></button>)}
-        <button type="button" className={home?.place === `county` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `county` }); closeSheet(); }}>Elsewhere in Cuyahoga County</button>
-        <button type="button" className={home?.place === `unsure` ? `on` : ``} onClick={() => { setHome({ hood: ``, ward: null, place: `unsure` }); closeSheet(); }}>I am not sure</button>
+        {_h.map(([n, name]) => { const sel = !home?.hood && home?.ward === Number(n); return <button key={n} type="button" className={sel ? `on` : ``} aria-pressed={sel} aria-current={sel ? `true` : undefined} onClick={(e) => set({ hood: ``, ward: Number(n), share: 0 }, e)}>Ward {n}<small> · {name}</small></button>; })}
+        <button type="button" className={home?.place === `county` ? `on` : ``} aria-pressed={home?.place === `county`} aria-current={home?.place === `county` ? `true` : undefined} onClick={(e) => set({ hood: ``, ward: null, place: `county` }, e)}>Elsewhere in Cuyahoga County</button>
+        <button type="button" className={home?.place === `unsure` ? `on` : ``} aria-pressed={home?.place === `unsure`} aria-current={home?.place === `unsure` ? `true` : undefined} onClick={(e) => set({ hood: ``, ward: null, place: `unsure` }, e)}>I am not sure</button>
       </div>
       <p className="cxm-fine">Do not know your ward? Choose "I am not sure" and use the official lookup. Private: your choice is never shared or added to links. It stays only for this visit unless you turn on Remember this device.</p>
       <div className="cxm-row-links">
         <CxmSrc href="https://boe.cuyahogacounty.gov/voters/Find-Voting-Information-by-Address">Find my ward by address</CxmSrc>
-        {home && <button type="button" className="cxm-link" onClick={() => { setHome(null); closeSheet(); }}>Clear my place</button>}
+        {home && <button type="button" className="cxm-link" onClick={(e) => set(null, e)}>Clear my place</button>}
       </div>
+    </div>
+  );
+}
+
+/* ---------- the notice after a place is chosen: what was set, Keep on this device, Undo ---------- */
+/* focus goes back to the control that opened the picker, or to the page if that control is gone */
+function cxmBackToOpener(mainRef) {
+  const e = CXM_OPENER.el, el = e && e.isConnected ? e : mainRef && mainRef.current;
+  if (el && el.focus) el.focus({ preventScroll: !0 });
+}
+/* It floats just above the tab bar, over the page and under any sheet, in the notice look. The live region is always in the page so what appears in it
+   is announced. A key's choice moves focus to the text and turns the timer off; a touch or a mouse gives focus back to the opener and the notice fades
+   after about 6 seconds, waiting while a finger or the pointer is on it or a button in it has focus. Undo puts back the place and the Remember setting
+   from before the first change since it opened. Nothing here is stored; the old place is held in memory while the notice is open. */
+function CxmPlaceNote() {
+  const { toast: t, setToast, setHome, mainRef } = useCxm();
+  const [hold, setHold] = u.useState(!1);
+  const [badKeep, setBadKeep] = u.useState(!1);
+  const textRef = u.useRef(null);
+  const on = t && t.kind === `place` ? t : null;
+  const key = on ? on.n : 0;
+  const dismiss = () => { const a = document.activeElement; const inside = !!(a && a.closest && a.closest(`.cxm-pnote`)); setToast(null); setHold(!1); if (inside) cxmBackToOpener(mainRef); };
+  u.useEffect(() => {
+    if (!on) return;
+    setBadKeep(!1);
+    if (on.how === `select`) return;
+    if (on.how === `kb`) { if (textRef.current) textRef.current.focus({ preventScroll: !0 }); } else cxmBackToOpener(mainRef);
+  }, [key]);
+  u.useEffect(() => {
+    if (!on || hold || (on.how === `kb` && on.undone == null)) return undefined;
+    const id = setTimeout(dismiss, on.undone != null ? 4000 : 6000);
+    return () => clearTimeout(id);
+  }, [key, hold, on && on.kept]);
+  const rem = cxPlaceRemembered();
+  const keep = () => { const ok = cxPlaceSave(); setBadKeep(!ok); setToast({ ...on, kept: (on.kept || 0) + 1 }); setTimeout(() => textRef.current && textRef.current.focus({ preventScroll: !0 }), 0); };
+  const undo = (e) => {
+    const p = on.prev;
+    if (p) { if (!p.rem) cxPlaceForget(); setHome(p.home); }
+    setToast({ kind: `place`, undone: cxmPlaceWords(p ? p.home : null), how: e && e.detail === 0 ? `kb` : `pointer`, n: on.n + 1 });
+  };
+  let text = ``;
+  if (on) text = on.undone != null ? (on.undone ? `Back to ${on.undone}.` : `Your place is cleared.`) : !on.now ? `Your place is cleared.` : `Your place is ${cxmPlaceWords(on.now)}. ${rem ? `Saved on this device.` : `Kept for this visit only.`}`;
+  const holdOn = (e) => { if (e.type !== `focus` || (e.target && e.target.tagName === `BUTTON`)) setHold(!0); };
+  const holdOff = () => setHold(!1);
+  return (
+    <div className="cxm-pnote-live" role="status">
+      {on && (
+        <div className={`cxm-notice cxm-pnote ${on.undone == null && on.now && !rem ? `cxm-pnote-col` : ``}`} onPointerEnter={holdOn} onPointerLeave={holdOff} onTouchStart={holdOn} onTouchEnd={holdOff} onTouchCancel={holdOff} onFocus={holdOn} onBlur={holdOff}>
+          <span className="cxm-pnote-t" tabIndex={-1} ref={textRef}>
+            <span>{text}</span>
+            {on.extra === `largest` && on.undone == null && <span className="cxm-pnote-2">You were not sure, so this is the largest part.</span>}
+            {badKeep && <span className="cxm-pnote-2">This browser could not save your place. It stays for this visit.</span>}
+          </span>
+          {on.undone == null && (
+            <span className="cxm-pnote-acts">
+              {on.now && !rem && <button type="button" onClick={keep}>Keep on this device</button>}
+              <button type="button" onClick={undo}>Undo</button>
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

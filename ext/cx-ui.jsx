@@ -376,7 +376,7 @@ function CX_LocalContext({ onGo, onPanel }) {
         <CXI.Shield size={20} />
         <div>
           <strong>Private to this visit</strong>
-          <p>Your choice stays in this page's memory and is not saved, shared, or added to links. Reloading clears it.</p>
+          <p>Your choice is not shared or added to links. Reloading clears it, unless Remember this device is on, which saves it on this device only.</p>
         </div>
       </div>
       <div className="civic-card context-picker">

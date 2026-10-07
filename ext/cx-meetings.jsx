@@ -356,42 +356,41 @@ function CxMtgOn({ m, onOpen }) {
     </section>
   );
 }
-/* 4. For you: only from a ward or priorities the person set; worked out here, never sent, never a score */
-function CxMtgYou({ meetings, ward, chosen, onOpen, onPlace, onPrio }) {
+/* 4. Your ward this week: what on this week's agendas names the ward of the place the person set (the one place the whole app uses), and what matches their
+   priorities whether or not a place is set; worked out here, never sent, never a score. With no ward it is one line and a control that opens the same place picker. */
+function CxMtgYou({ meetings, ward, hood, chosen, onOpen, onPlace }) {
   const set = !!ward || chosen.length > 0;
   const list = u.useMemo(() => (set ? cxMtgForYou(meetings, ward, chosen, CX_WARD_LOOK) : []), [meetings, ward, chosen.join(`,`)]);
   const [all, setAll] = u.useState(!1);
   const shown = all ? list : list.slice(0, 5);
   return (
     <section className="mt-you" aria-labelledby="mt-you-h">
-      <h3 id="mt-you-h" className="cxm-h3">For you</h3>
-      {!set ? (
-        <div className="cxm-tile mt-you-empty">
-          <p>Set your place or your priorities to see what on this week's agendas touches them. They stay on this device.</p>
-          <div className="cxm-row2"><button type="button" className="cxm-btn2" onClick={onPlace}>Set your neighborhood</button><button type="button" className="cxm-btn2" onClick={onPrio}>Choose priorities</button></div>
-        </div>
+      <h3 id="mt-you-h" className="cxm-h3">Your ward this week</h3>
+      {ward ? (
+        <p className="cxm-fine mt-you-place"><span>Your place:</span>{` `}{hood ? <><span>{hood}</span>{`, `}</> : null}<span>{`Ward ${ward}`}</span>{`.`}<button type="button" className="cxm-link" onClick={onPlace}>Change</button></p>
       ) : (
         <>
-          <p className="cxm-fine">From this week's agendas, matched on this device.</p>
-          {list.length ? (
-            <>
-              <div className="mt-items">
-                {shown.map((r) => (
-                  <CxMtgItem key={r.f} i={r.i} onOpen={onOpen}>
-                    <small className="mt-why">
-                      <span>{r.f}</span>{` · `}<span>{cxMtgMonthDay(r.m.date)}</span>
-                      {r.why.map((w, k) => (w[0] === `ward` ? <span key={k}>{` · `}<span>{w[1]}</span></span> : <span key={k}>{` · `}<span>{CX_SHORT[w[1]] || w[1]}</span>{` (`}<span lang="en" data-no-translate>{w[2]}</span>{`)`}</span>))}
-                    </small>
-                  </CxMtgItem>
-                ))}
-              </div>
-              {list.length > 5 && <button type="button" className="cxm-link" aria-expanded={all} onClick={() => setAll(!all)}>{all ? `Show fewer` : `Show all ${list.length}`}</button>}
-            </>
-          ) : (
-            <p className="cxm-tile mt-you-none">{cxTight(ward && chosen.length ? `Nothing on this week's agendas names Ward ${ward} or matches your priorities.` : ward ? `Nothing on this week's agendas names Ward ${ward}.` : `Nothing on this week's agendas matches your priorities.`, !0)}</p>
-          )}
+          <p className="cxm-fine">Pick your neighborhood to see what on this week's agendas names your ward.</p>
+          <button type="button" className="mt-you-field" aria-haspopup="dialog" onClick={onPlace}><CXI.Search size={18} /><span>Find your neighborhood</span></button>
         </>
       )}
+      {set && (list.length ? (
+        <>
+          <div className="mt-items">
+            {shown.map((r) => (
+              <CxMtgItem key={r.f} i={r.i} onOpen={onOpen}>
+                <small className="mt-why">
+                  <span>{r.f}</span>{` · `}<span>{cxMtgMonthDay(r.m.date)}</span>
+                  {r.why.map((w, k) => (w[0] === `ward` ? <span key={k}>{` · `}<span>{w[1]}</span></span> : <span key={k}>{` · `}<span>{CX_SHORT[w[1]] || w[1]}</span>{` (`}<span lang="en" data-no-translate>{w[2]}</span>{`)`}</span>))}
+                </small>
+              </CxMtgItem>
+            ))}
+          </div>
+          {list.length > 5 && <button type="button" className="cxm-link" aria-expanded={all} onClick={() => setAll(!all)}>{all ? `Show fewer` : `Show all ${list.length}`}</button>}
+        </>
+      ) : (
+        <p className="cxm-tile mt-you-none">{cxTight(ward && chosen.length ? `Nothing on this week's agendas names Ward ${ward} or matches your priorities.` : ward ? `Nothing on this week's agendas names Ward ${ward}.` : `Nothing on this week's agendas matches your priorities.`, !0)}</p>
+      ))}
     </section>
   );
 }
@@ -623,8 +622,8 @@ function CxAgenda({ data, onPerson }) {
   );
 }
 
-/* The front page. onOpen opens a legislation record. For you shows only where the layout passes onPlace (the phone), and the calendar where it passes onPerson. */
-function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio, onPerson }) {
+/* The front page. onOpen opens a legislation record. Your ward this week shows only where the layout passes onPlace (the phone), and the calendar where it passes onPerson. */
+function CX_Meetings({ onOpen, ward = null, hood = ``, chosen = [], onPlace, onPerson }) {
   const data = useCxMtg();
   if (!data) return <p className="cxm-mut" role="status">{CX_MTG.done ? `The meeting record needs the hosted site. It is not part of the offline file.` : `Loading the meeting record...`}</p>;
   const today = cxTodayET(), s = cxMtgSplit(data, today), wk = cxMtgWeek(data, today), dec = cxMtgDecided(data, today);
@@ -634,7 +633,7 @@ function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio, onPers
       <CxMtgLead m={s.lead} today={today} />
       <CxMtgDays wk={wk} today={today} onOpen={onOpen} />
       {s.lead && <CxMtgOn m={s.lead} onOpen={onOpen} />}
-      {onPlace && <CxMtgYou meetings={wk.days.flatMap((x) => x.list)} ward={ward} chosen={chosen} onOpen={onOpen} onPlace={onPlace} onPrio={onPrio} />}
+      {onPlace && <CxMtgYou meetings={wk.days.flatMap((x) => x.list)} ward={ward} hood={hood} chosen={chosen} onOpen={onOpen} onPlace={onPlace} />}
       {onPerson && <CxAgenda data={data} onPerson={onPerson} />}
       {dec && <CxMtgDone m={dec} today={today} onOpen={onOpen} />}
       <CxMtgLookup data={data} today={today} onOpen={onOpen} />
@@ -659,7 +658,7 @@ function CxmHall() {
   return (
     <div className="mt-page cxm-rise">
       <CxmBanner kind="hall" kicker="Council and committee meetings" title="At City Hall" />
-      <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPrio={() => openSheet(`priorities`)} onPerson={openProfile} />
+      <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} hood={(home && home.hood) || ``} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPerson={openProfile} />
     </div>
   );
 }
