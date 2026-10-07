@@ -2150,16 +2150,20 @@ const CHECKS = {
     expect(vw.length > 0 && vw.every((w) => /^(Yea|Nay|Present|Not voting|Voted for a named person)$/.test(w)) && /Not voting is not a no/.test((await txt(p, '#usmp-l-votes')) || ''), `the votes are not listed with the record's words and the not-a-no note: ${vw.slice(0, 4)}`);
     await checkCorner(p, 'Jon Husted');
     expect(!(await small(p)).length, `controls under 44 px on the profile: ${(await small(p)).slice(0, 4)}`);
-    // tap a group: its list comes into view and takes the focus; drag a dot: it moves
+    // tap a group: its list comes into view and takes the focus; drag a dot: it moves with the pointer. Where it is, is read while the button
+    // is still down: once let go, a dot springs back toward its group and swings past where it started, so its place 600 ms later depends on
+    // the frame rate (at 60 frames a second, as on GitHub's Linux runners and most screens, it is back beside its start; headless Chrome on
+    // Windows draws about 150)
     await p.evaluate(() => document.querySelector('.usmp-canvas').scrollIntoView({ block: 'center' })); await wait(400);
     { const c = await p.evaluate(() => { const cv = document.querySelector('.usmp-canvas'), r = cv.getBoundingClientRect(), g = cv.cxCorner.group('chamber'), d = cv.cxCorner.at(cv.cxCorner.ids[0]); return { g: [r.left + g[0], r.top + g[1]], d: [r.left + d[0], r.top + d[1]], id: cv.cxCorner.ids[0] }; });
       await p.mouse.click(c.g[0], c.g[1]); await wait(700);
       expect(await p.evaluate(() => !!document.activeElement && !!document.activeElement.closest('#usmp-l-chamber')), 'tapping a group on the corner map did not jump to its list');
       await p.evaluate(() => { const cv = document.querySelector('.usmp-canvas'); cv.scrollIntoView({ block: 'center' }); }); await wait(300);
-      const d0 = await p.evaluate((id) => { const cv = document.querySelector('.usmp-canvas'), r = cv.getBoundingClientRect(), d = cv.cxCorner.at(id); return [r.left + d[0], r.top + d[1]]; }, c.id);
-      await p.mouse.move(d0[0], d0[1]); await p.mouse.down(); for (let k = 1; k <= 6; k++) { await p.mouse.move(d0[0] + k * 7, d0[1] + k * 5); await wait(20); } await p.mouse.up(); await wait(600);
-      const d1 = await p.evaluate((id) => { const cv = document.querySelector('.usmp-canvas'), r = cv.getBoundingClientRect(), d = cv.cxCorner.at(id); return [r.left + d[0], r.top + d[1]]; }, c.id);
-      expect(Math.hypot(d1[0] - d0[0], d1[1] - d0[1]) > 15, `dragging a dot on the corner map did not move it (${JSON.stringify([d0, d1])})`); }
+      const dot = (id) => p.evaluate((id) => { const cv = document.querySelector('.usmp-canvas'), r = cv.getBoundingClientRect(), d = cv.cxCorner.at(id); return [r.left + d[0], r.top + d[1]]; }, id);
+      const d0 = await dot(c.id), tip = [d0[0] + 42, d0[1] + 30];
+      await p.mouse.move(d0[0], d0[1]); await p.mouse.down(); for (let k = 1; k <= 6; k++) { await p.mouse.move(d0[0] + k * 7, d0[1] + k * 5); await wait(20); }
+      await wait(150); const d1 = await dot(c.id); await p.mouse.up(); await wait(600);
+      expect(Math.hypot(d1[0] - d0[0], d1[1] - d0[1]) > 15 && Math.hypot(d1[0] - tip[0], d1[1] - tip[1]) < 6, `dragging a dot on the corner map did not move it with the pointer (start, dot, pointer: ${JSON.stringify([d0, d1, tip])})`); }
     // Back returns to the same place on the map: the same zoom, the same pick, the same sheet, and the person leaves the address
     await clickText(p, 'Back to the map', '.usmp-back'); await wait(900);
     let after = await mapState(p);
