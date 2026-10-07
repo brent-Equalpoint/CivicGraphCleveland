@@ -1756,7 +1756,9 @@ const CHECKS = {
     await clickText(p, 'Done', '.usm-panel .usm-done');
     await clickText(p, 'Index', '.usm-pills button'); await wait(900);
     { const o = await ix(); expect(!!o && (o.groups.find((g) => g[0] === 'members') || [])[1] > 500, 'with the map filtered to the Senate, the Index lost the House'); }
-    await clickText(p, 'Tree', '.usm-pills button'); expect((await count(p, '.us-tree details')) > 20, 'the Tree view is nearly empty');
+    // the Tree (ext/cx-us-tree.jsx; its own check is us-tree): the top card, the three branches, and their lists, from the whole record
+    await clickText(p, 'Tree', '.usm-pills button'); await wait(900);
+    expect((await count(p, '.ust-root')) === 1 && (await count(p, '.ust-branch')) === 3 && (await count(p, '.ust-list')) > 20, 'the Tree view does not show the top card, three branches, and their lists');
     await done(p);
     // the phone: Federal is a folder tab in People, shown as profiles; the map opens full screen from it
     const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
@@ -2490,6 +2492,283 @@ const CHECKS = {
         expect(!bad && !PARTY.test(t), `in Spanish the Index (${where}) says "${bad && bad[0]}"`);
         if (where === 'front') { await (await e.$('.usi-names button')).click(); await wait(1000); }
       }
+      await done(e);
+    }
+  },
+  /* The Tree (ext/cx-us-tree.jsx), ported from Brent's VC Fest Tree kit, with the kit's own assertions (tree-kit/src/test_tree.py) where they
+     apply. The top card and the three branches show counts that equal the record (worked out here from site/us/, not from the app's code), and
+     each branch lists its lists, with their counts, in the record's order (the circuits in the order of 28 U.S.C. 41), never by count. The top
+     card closes and opens every branch; a branch closes; a list opens as a drawer right after its card in the reading order, with names
+     alphabetical by last name and the record's own word beside each (a committee's members: the record's role word, checked against the record);
+     Show more pages a long list; Open all and Close all; zoom in, out, Fit, Ctrl and the wheel, and a mouse drag. No strength, score, ranking, or
+     party word and no dash in our own words (each piece of text read on its own), in English and Spanish. The keyboard: Tab in the picture's
+     order, arrows inside a column and between columns, Home and End, Enter and Space. Back steps back one opening at a time (a drawer closed by
+     hand is passed quietly) and Forward opens it again. A name's details card (a committee's two lines and the review notice, why it is linked,
+     Open profile, Show on the map, Explore in Index, the record's website) takes the focus and closes with Escape and the back gesture without
+     closing the drawers. The search box opens the tree where a name sits and points to it. Reduced motion: nothing moves and no line draws in.
+     On a phone: exactly the screen's width with no sideways page scroll (the picture scrolls inside its frame), one tool row, the card at the
+     bottom closing with Done, a tap outside, and the back gesture, a pinch zooms, and 44 px targets at 390 and 320. Runs in CHECK_MODE,
+     CHECK_THEME, and CHECK_LANG. */
+  async 'us-tree'() {
+    const ES = process.env.CHECK_LANG === 'es';
+    const d = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'landscape-2026.json'), 'utf8'));
+    const X = JSON.parse(fs.readFileSync(path.join(SITE, 'us', 'explainers-2026.json'), 'utf8'));
+    const ex = d.executive || {}, J = d.judiciary, C = J.courts;
+    const ORDER28 = ['District of Columbia', 'First', 'Second', 'Third', 'Fourth', 'Fifth', 'Sixth', 'Seventh', 'Eighth', 'Ninth', 'Tenth', 'Eleventh', 'Federal'];   // 28 U.S.C. 41
+    const circ = (c) => ORDER28.indexOf((c.name.match(/for the (.+) Circuit$/) || [])[1]);
+    const app = C.filter((c) => c.type === 'appeals').sort((a, b) => circ(a) - circ(b) || a.name.localeCompare(b.name));
+    const sup = C.find((c) => c.type === 'supreme'), others = C.filter((c) => c.type === 'other'), tops = d.agencies.filter((a) => !a.parent_id), dept = tops.filter((a) => /\bDepartment\b/.test(a.name));
+    const on = (id) => J.judges.filter((j) => j.court_id === id).length, mem = (ch) => d.members.filter((m) => m.chamber === ch).length, com = (ch) => d.committees.filter((c) => c.chamber === ch).length;
+    const pres = ex.presidents || [];
+    const want = {
+      root: { members: d.members.length, committees: d.committees.length, agencies: d.agencies.length, courts: C.length },
+      'b:leg': { lists: 5, members: d.members.length, committees: d.committees.length },
+      'b:exe': { lists: 5, people: pres.length + (ex.vice_president ? 1 : 0) + (ex.cabinet || []).length, agencies: d.agencies.length },
+      'b:jud': { lists: 1 + app.length + 1 + (others.length ? 1 : 0) + 1, courts: C.length, judges: J.judges.length },
+      'l:leg.senate': { members: mem('senate') }, 'l:leg.house': { members: mem('house') }, 'l:leg.scom': { committees: com('senate') }, 'l:leg.hcom': { committees: com('house') }, 'l:leg.jcom': { committees: com('joint') },
+      'l:exe.lead': { people: pres.filter((x) => x.current).length + (ex.vice_president ? 1 : 0) }, 'l:exe.cab': { people: (ex.cabinet || []).length }, 'l:exe.dept': { departments: dept.length }, 'l:exe.other': { agencies: tops.length - dept.length }, 'l:exe.former': { people: pres.filter((x) => !x.current).length },
+      'l:jud.supreme': { judges: on(sup.id) }, ...Object.fromEntries(app.map((c) => [`l:jud.${c.id}`, { judges: on(c.id) }])), 'l:jud.district': { courts: C.filter((c) => c.type === 'district').length },
+      ...(others.length ? { 'l:jud.other': { courts: others.length } } : {}), 'l:jud.judges': { judges: J.judges.length },
+    };
+    const ORDER = { 'b:leg': ['l:leg.senate', 'l:leg.house', 'l:leg.scom', 'l:leg.hcom', 'l:leg.jcom'], 'b:exe': ['l:exe.lead', 'l:exe.cab', 'l:exe.dept', 'l:exe.other', 'l:exe.former'],
+      'b:jud': ['l:jud.supreme', ...app.map((c) => `l:jud.${c.id}`), 'l:jud.district', ...(others.length ? ['l:jud.other'] : []), 'l:jud.judges'] };
+    const lastOf = new Map(d.members.map((m) => [m.name, m.last]));
+    const OURS = /\b(strong|some|light|fits?|match(es|ed)?|aligned|scores?|percent|rank|ranked|best)\b|%/i;
+    const OURS_ES = /\b(fuertes?|algun[oa]s?|liger[oa]|leve|ajustes?|encaja|coincid\w*|alinead\w*|puntuaci[oó]n|puntaje|porcentaje|clasificaci[oó]n|mejor(es)?)\b|%|por ciento/i;
+    const PARTY = /\b(Republican|Democrat|Democratic|Independent|party|partido|republican[oa]|dem[oó]crata|independiente)\b/i;
+    const ROLE = /^(Member|Chair|Chairman|Chairwoman|Ranking member|Vice chair|Vice chairman|Vice chairwoman|Ex officio|Cochairman|Cochair)$/;
+    const treeOpen = async (p) => { await p.evaluate(() => { const b = [...document.querySelectorAll('.usm-pills button')][3]; if (b) b.click(); }); for (let t = 0; t < 40 && !(await has(p, '.ust-root')); t++) await wait(150); await wait(700); };
+    const tree = (p) => p.evaluate(() => { const r = document.querySelector('.ust'); return r && r.cxTree ? JSON.parse(JSON.stringify({ ...r.cxTree, scale: Number(r.dataset.scale || 1) })) : null; });
+    // the counts each card shows, read from its words (the number in each piece), with what each piece counts
+    const counts = (p) => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('.ust-card[data-tid]')].map((c) => [c.dataset.tid, Object.fromEntries([...c.querySelectorAll('.ust-cap span[data-k]')].map((s) => [s.dataset.k, Number(((s.textContent || '').match(/\d[\d,]*/) || ['NaN'])[0].replace(/,/g, ''))]))])));
+    const tids = (p, sel) => p.evaluate((s) => [...document.querySelectorAll(s)].map((e) => e.dataset.tid), sel);
+    const click = async (p, sel) => { await p.evaluate((s) => { const e = document.querySelector(s); if (e) { e.scrollIntoView({ block: 'center', inline: 'center' }); e.click(); } }, sel); await wait(900); };
+    const expanded = (p, tid) => p.evaluate((t) => { const e = document.querySelector(`[data-tid="${t}"]`); return e ? e.getAttribute('aria-expanded') : null; }, tid);
+    // our own words: every piece of text on its own (textContent glues "map" and "Strong" into one word no pattern can see), the record's names left out
+    const pieces = (p, sel) => p.evaluate((s) => { const out = []; for (const r of document.querySelectorAll(s)) { const c = r.cloneNode(true); c.querySelectorAll('[data-no-translate], .ust-fit').forEach((e) => e.remove()); const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT); let n; while ((n = w.nextNode())) { const t = n.nodeValue.replace(/\s+/g, ' ').trim(); if (t) out.push(t); } } return out; }, sel);
+    const words = async (p, where, sel = '.ust, .ust-info') => {
+      for (const t of await pieces(p, sel)) {
+        const bad = t.match(OURS) || t.match(OURS_ES);
+        expect(!bad, `${where}: the Tree says "${bad && bad[0]}" in "${t.slice(0, 60)}"`);
+        expect(!PARTY.test(t), `${where}: a party word in the Tree: "${t.slice(0, 60)}"`);
+        expect(!/[–—]/.test(t), `${where}: a dash in the Tree: "${t.slice(0, 60)}"`);
+      }
+    };
+    const small = (p, scope) => p.evaluate((sc) => [...document.querySelectorAll(sc)].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height || el.closest('[inert]')) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} "${(el.innerText || el.getAttribute('aria-label') || '').trim().slice(0, 24)}" ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
+    const active = (p) => p.evaluate(() => { const a = document.activeElement; return a ? { tid: a.dataset.tid || null, col: a.dataset.col || null, k: a.dataset.k || null, ctx: a.dataset.ctx || null, inInfo: !!a.closest('.ust-info'), name: ((a.querySelector && a.querySelector('.ust-rt b')) || {}).textContent || '' } : null; });
+    const desc = (a) => a.length > 2 && a.every((v, i) => !i || a[i - 1] >= v) && a[0] > a[a.length - 1];
+
+    // ---------- a computer ----------
+    const p = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1500 });
+    await mapReady(p); await treeOpen(p);
+    expect(await has(p, '.ust-root') && (await count(p, '.ust-branch')) === 3, 'the Tree did not open with its top card and three branches');
+    { const pill = await p.evaluate(() => { const e = document.querySelector('.usm-pills button.on'), c = getComputedStyle(e); return { t: e.innerText.trim(), bg: c.backgroundColor, fg: c.color, sh: c.boxShadow, l: c.borderLeftWidth, r: c.borderRightWidth }; });
+      expect(/^(Tree|Árbol)$/.test(pill.t) && pill.bg === 'rgb(47, 102, 243)' && pill.fg === 'rgb(255, 255, 255)' && !/inset/.test(pill.sh) && pill.l === pill.r, `the Tree pill is not solid blue with white words and even sides: ${JSON.stringify(pill)}`); }
+    let c0 = await counts(p);
+    for (const k of ['root', 'b:leg', 'b:exe', 'b:jud', ...Object.keys(want).filter((x) => x.startsWith('l:'))]) expect(JSON.stringify(c0[k]) === JSON.stringify(want[k]), `${k} shows ${JSON.stringify(c0[k])}; the record has ${JSON.stringify(want[k])}`);
+    for (const [b, ids] of Object.entries(ORDER)) {
+      const got = await p.evaluate((b) => { const all = [...document.querySelectorAll('.ust-nodes > [data-tid]')].map((e) => e.dataset.tid); const at = all.indexOf(b), nx = all.findIndex((t, i) => i > at && t.startsWith('b:')); return all.slice(at + 1, nx < 0 ? undefined : nx).filter((t) => t.startsWith('l:')); }, b);
+      expect(JSON.stringify(got) === JSON.stringify(ids), `${b} lists ${got.length} lists in this order: ${got.slice(0, 4)}...; the record's order is ${ids.slice(0, 4)}...`);
+      const n = ids.map((id) => Object.values(c0[id] || {})[0]);
+      expect(!desc(n), `${b}'s lists are ordered by their counts (${n})`);
+    }
+    await words(p, 'the start');
+    expect((await p.evaluate(() => [...document.querySelectorAll('.ust-card')].every((c) => [...c.querySelectorAll('b, small')].every((t) => t.getBoundingClientRect().bottom <= c.getBoundingClientRect().bottom + 1 && t.getBoundingClientRect().top >= c.getBoundingClientRect().top - 1)))), 'a card does not fit its words');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the Tree: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    // the kit's computer checks: the top card closes every branch and opens them again; a branch closes
+    await click(p, '.ust-root');
+    expect((await count(p, '.ust-list')) === 0 && (await p.evaluate(() => [...document.querySelectorAll('.ust-branch')].every((e) => e.getAttribute('aria-expanded') === 'false'))), 'the top card did not close every branch');
+    await click(p, '.ust-root');
+    expect((await count(p, '.ust-list')) === Object.values(ORDER).flat().length, 'the top card did not open every branch again');
+    await click(p, '[data-tid="b:leg"]');
+    expect((await expanded(p, 'b:leg')) === 'false' && (await tids(p, '.ust-list')).every((t) => !t.startsWith('l:leg.')), 'a branch did not close');
+    await click(p, '[data-tid="b:leg"]');
+    // with motion on (Calm, a computer's default) a drawer slides open, part way a moment later, then comes to rest
+    await p.evaluate(() => document.querySelector('[data-tid="l:leg.hcom"]').click()); await wait(140);
+    { const mid = await p.evaluate(() => { const dr = document.querySelector('[data-tid="d:leg.hcom"]'); return { moving: document.querySelector('.ust').dataset.moving === '1', h: dr ? dr.offsetHeight : 0, full: dr && dr.firstChild ? dr.firstChild.offsetHeight : 0 }; });
+      await wait(1000);
+      const rest = await p.evaluate(() => { const dr = document.querySelector('[data-tid="d:leg.hcom"]'); return !document.querySelector('.ust').dataset.moving && !!dr && dr.offsetHeight >= dr.firstChild.offsetHeight; });
+      expect(mid.moving && mid.h > 0 && mid.h < mid.full && rest, `with motion on, a drawer did not slide open and come to rest: ${JSON.stringify(mid)} ${rest}`); }
+    await click(p, '[data-tid="l:leg.hcom"]');
+    // a list opens as a drawer, right after its card, with names alphabetical by last name; it is announced; Show more pages it
+    await click(p, '[data-tid="l:leg.senate"]');
+    expect((await expanded(p, 'l:leg.senate')) === 'true' && (await p.evaluate(() => { const c = document.querySelector('[data-tid="l:leg.senate"]'), dr = document.getElementById(c.getAttribute('aria-controls')); return !!dr && c.nextElementSibling === dr; })), 'the Senate did not open as a drawer right after its card (reading order and aria-controls)');
+    expect(new RegExp(ES ? 'Ahora se muestra' : 'Now showing').test((await txt(p, '.ust [aria-live]')) || '') && /100/.test((await txt(p, '.ust [aria-live]')) || ''), `opening the Senate was not announced with its count: "${await txt(p, '.ust [aria-live]')}"`);
+    { const nm = await p.evaluate(() => [...document.querySelectorAll('.ust-nm[data-ctx="leg.senate"] .ust-rt b')].map((b) => b.textContent)), ln = nm.map((n) => lastOf.get(n) || n);
+      expect(nm.length === 60 && ln.every((x, i) => !i || ln[i - 1].localeCompare(x) <= 0), `the Senate drawer does not show the first 60 senators alphabetical by last name (${nm.length})`);
+      const more = (await txt(p, '[data-tid="d:leg.senate"] .ust-more')) || '';
+      expect(ES || /^Show 40 more of 100$/.test(more.trim()), `the Senate drawer does not say "Show 40 more of 100": "${more}"`);
+      await click(p, '[data-tid="d:leg.senate"] .ust-more');
+      expect((await count(p, '.ust-nm[data-ctx="leg.senate"]')) === 100, 'Show more did not show the other 40 senators'); }
+    // a committee opens its members with the record's own word for each
+    await click(p, '[data-tid="l:leg.scom"]');
+    const firstCom = d.committees.filter((c) => c.chamber === 'senate').sort((a, b) => a.name.localeCompare(b.name))[0];
+    await click(p, `[data-tid="d:leg.scom"] .ust-pmb`);
+    { const rows = await p.evaluate((cx) => [...document.querySelectorAll(`.ust-nm[data-ctx="${cx}"]`)].map((b) => ({ n: b.querySelector('.ust-rt b').textContent, w: (b.querySelector('.ust-w') || {}).textContent || '' })), `leg.scom/c:${firstCom.id}`);
+      const role = new Map(d.members.map((m) => [m.name, (m.committees.find((x) => x.id === firstCom.id) || {}).role]).filter((x) => x[1]));
+      expect(rows.length >= role.size, `${firstCom.name} lists ${rows.length} rows; the record has ${role.size} members`);
+      if (!ES) for (const r of rows) expect(ROLE.test(r.w) && r.w.toLowerCase() === String(role.get(r.n) || '').toLowerCase(), `${firstCom.name}: ${r.n}'s word is "${r.w}"; the record says "${role.get(r.n)}"`);
+      else expect(rows.every((r) => r.w), `${firstCom.name}: a member has no word`);
+      const w0 = (await txt(p, `.ust-sub .usx-what`)) || '';   // in Spanish the line is shown in Spanish
+      expect(ES ? w0.length > 10 : w0 === (X.lines[firstCom.id] || [''])[0], `${firstCom.name}'s drawer does not start with what it does: "${w0}"`); }
+    await words(p, 'a committee open');
+    expect(!(await small(p, '.ust button, .ust a[href]')).length, `controls under 44 px in the Tree: ${(await small(p, '.ust button, .ust a[href]')).slice(0, 4)}`);
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the Tree with a committee open: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    // the details card: a committee's two lines and the review notice, where it sits, the buttons, the focus; Escape and Back close only it
+    await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`); await wait(400);
+    { const card = await p.evaluate(() => { const c = document.querySelector('.ust-info'); if (!c) return null; return { t: c.innerText, what: (c.querySelector('.usx-what') || {}).textContent || '', rev: (c.querySelector('.usx-review') || {}).textContent || '', btn: [...c.querySelectorAll('.usi-card-acts button')].length, web: (c.querySelector('.usi-card-acts a') || {}).href || '' }; });
+      expect(!!card && card.t.includes(firstCom.name) && (ES ? card.what.length > 10 : card.what === (X.lines[firstCom.id] || [''])[0]) && card.rev && card.btn === 3 && /^https?:\/\//.test(card.web),`the committee's details card lacks its name, its lines, the review notice, the three buttons, or the website: ${JSON.stringify(card).slice(0, 200)}`);
+      if (card && !ES) expect(/not reviewed/.test(card.rev), 'the details card does not say a person has not reviewed the lines'); }
+    expect((await active(p)).inInfo, 'the details card did not take the focus');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the details card: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    expect(!(await small(p, '.ust-info button, .ust-info a[href]')).length, `controls under 44 px on the details card: ${(await small(p, '.ust-info button, .ust-info a[href]')).slice(0, 4)}`);
+    await words(p, 'the details card', '.ust-info');
+    await p.keyboard.press('Escape'); await wait(700);
+    expect(!(await has(p, '.ust-info')) && (await expanded(p, 'l:leg.scom')) === 'true' && (await active(p)).k === `c:${firstCom.id}`, 'Escape did not close only the card and give the focus back to its name');
+    await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`);
+    await p.goBack(); await wait(900);
+    expect(!(await has(p, '.ust-info')) && (await expanded(p, 'l:leg.scom')) === 'true', 'the back gesture did not close only the card');
+    // a member inside the committee: why it is linked, with the record's word
+    await click(p, `.ust-sub .ust-nm`);
+    expect(/Why it is linked|Por qué está vinculado/.test((await txt(p, '.ust-info')) || '') && ((await txt(p, '.ust-info .usi-why')) || '').includes(firstCom.name), 'a member\'s card does not say why they are linked, with the committee');
+    await p.keyboard.press('Escape'); await wait(600);
+    // Open profile, then Back to the Tree with the drawers still open
+    await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`);
+    await p.evaluate(() => document.querySelector('.ust-info .usi-card-acts .usm-pri').click()); await wait(1500);
+    expect(await has(p, '.usm-prof') && ((await txt(p, '.usm-prof h1')) || '').includes(firstCom.name), 'Open profile on the card did not open the committee\'s profile');
+    expect(ES || /Back to the Tree/.test((await txt(p, '.usmp-back')) || ''), 'the profile opened from the Tree does not offer Back to the Tree');
+    await p.click('.usmp-back'); await wait(1000);
+    expect(!(await has(p, '.usm-prof')) && (await expanded(p, 'l:leg.scom')) === 'true' && (await expanded(p, 'l:leg.senate')) === 'true', 'Back from the profile did not return to the same Tree');
+    // the keyboard: Tab in the picture's order; arrows in a column and between columns; Home and End; Enter and Space
+    await click(p, '.ust-bar .usm-btn:nth-of-type(2)');   // Close all
+    expect((await count(p, '.ust-drawer')) === 0, 'Close all left a drawer open');
+    await p.focus('.ust-root'); await p.keyboard.press('Tab'); await wait(100);
+    expect((await active(p)).tid === 'b:leg', `Tab from the top card went to ${JSON.stringify(await active(p))}, not the first branch`);
+    await p.focus('.ust-root'); await p.keyboard.press('ArrowDown'); await wait(100);
+    expect((await active(p)).tid === 'b:leg', 'the down arrow from the top card did not reach the first branch');
+    await p.keyboard.press('ArrowDown'); await wait(100);
+    expect((await active(p)).tid === 'l:leg.senate', 'the down arrow did not reach the first list');
+    await p.keyboard.press('ArrowRight'); await wait(100);
+    expect((await active(p)).col === '1', 'the right arrow did not move to the next branch');
+    await p.keyboard.press('ArrowLeft'); await wait(100);
+    expect((await active(p)).col === '0', 'the left arrow did not move back');
+    await p.keyboard.press('End'); await wait(100);
+    expect((await active(p)).tid === 'l:leg.jcom', 'End did not go to the bottom of the column');
+    await p.keyboard.press('Home'); await wait(100);
+    expect((await active(p)).tid === 'b:leg', 'Home did not go to the top of the column');
+    await p.keyboard.press('ArrowDown'); await p.keyboard.press('Enter'); await wait(900);
+    expect((await expanded(p, 'l:leg.senate')) === 'true', 'Enter did not open the list');
+    await p.keyboard.press(' '); await wait(900);
+    expect((await expanded(p, 'l:leg.senate')) === 'false', 'Space did not close the list');
+    // Back steps back one opening at a time, and Forward opens it again; a drawer closed by hand is passed quietly
+    await click(p, '[data-tid="l:leg.senate"]'); await click(p, '[data-tid="l:leg.house"]');
+    await p.goBack(); await wait(900);
+    expect((await expanded(p, 'l:leg.house')) === 'false' && (await expanded(p, 'l:leg.senate')) === 'true' && (await has(p, '.ust')), 'Back did not close only the list opened last');
+    await p.goForward(); await wait(900);
+    expect((await expanded(p, 'l:leg.house')) === 'true', 'Forward did not open it again');
+    await click(p, '[data-tid="l:leg.house"]');   // closed by hand
+    await p.goBack(); await wait(900);
+    expect((await expanded(p, 'l:leg.senate')) === 'false' && (await has(p, '.ust')), 'after a list was closed by hand, Back did not close the one before it');
+    // Open all and Close all; zoom in, out, Fit; Ctrl and the wheel; a drag moves the picture
+    await click(p, '.ust-bar .usm-btn:nth-of-type(1)'); await wait(600);
+    expect(await p.evaluate(() => [...document.querySelectorAll('.ust-list')].every((e) => e.getAttribute('aria-expanded') === 'true')), 'Open all did not open every list');
+    expect((await p.evaluate(() => { const r = [...document.querySelectorAll('.ust-drawer .ust-nm')].map((e) => e.getBoundingClientRect()).sort((a, b) => a.left - b.left || a.top - b.top); let worst = 0; for (let i = 1; i < r.length; i++) if (Math.abs(r[i].left - r[i - 1].left) < 2) worst = Math.max(worst, r[i - 1].bottom - r[i].top); return worst; })) <= 0.5, 'names overlap with everything open');
+    const s0 = (await tree(p)).scale;
+    await p.click('.ust-zoom button:nth-of-type(2)'); await wait(200); const s1 = (await tree(p)).scale;
+    await p.click('.ust-zoom button:nth-of-type(1)'); await p.click('.ust-zoom button:nth-of-type(1)'); await wait(200); const s2 = (await tree(p)).scale;
+    await p.click('.ust-zoom button:nth-of-type(3)'); await wait(700); const s3 = (await tree(p)).scale;
+    expect(s1 > s0 && s2 < s1 && s3 === 1, `zoom in, out, and Fit gave ${[s0, s1, s2, s3]}`);
+    { const box = await p.evaluate(() => { const r = document.querySelector('.ust-scroll').getBoundingClientRect(); return { x: r.left + 40, y: r.top + 300 }; });
+      await p.mouse.move(box.x, box.y); await p.keyboard.down('Control'); await p.mouse.wheel({ deltaY: -240 }); await p.keyboard.up('Control'); await wait(200);
+      expect((await tree(p)).scale > 1, 'Ctrl and the wheel did not zoom');
+      await p.click('.ust-zoom button:nth-of-type(3)'); await wait(700);
+      const t0 = await p.evaluate(() => document.querySelector('.ust-scroll').scrollTop);
+      await p.mouse.move(box.x, box.y); await p.mouse.down(); await p.mouse.move(box.x, box.y - 120, { steps: 6 }); await p.mouse.move(box.x, box.y - 240, { steps: 6 }); await p.mouse.up(); await wait(200);
+      expect((await p.evaluate(() => document.querySelector('.ust-scroll').scrollTop)) > t0 + 100, 'a mouse drag did not move the picture'); }
+    await click(p, '.ust-bar .usm-btn:nth-of-type(2)');
+    expect((await count(p, '.ust-drawer')) === 0 && (await count(p, '.ust-list')) > 0, 'Close all did not close the lists');
+    // the search box opens the tree where a name sits and points to it
+    { const who = d.members.find((m) => m.chamber === 'senate' && m.last === 'Klobuchar') || d.members.find((m) => m.chamber === 'senate');
+      await p.click('.usm-search input', { clickCount: 3 }); await p.type('.usm-search input', who.last); await wait(400);
+      await p.evaluate(() => { const b = document.querySelector('.usm-results button'); if (b) b.click(); }); await wait(1400);
+      const a = await active(p);
+      expect(a.name === who.name && (await expanded(p, 'l:leg.senate')) === 'true', `the search box did not point to ${who.name} in the Tree: ${JSON.stringify(a)}`);
+      // an agency under an agency under a top-level one: every drawer on the way opens
+      const deep = d.agencies.find((x) => x.parent_id && (d.agencies.find((y) => y.id === x.parent_id) || {}).parent_id);
+      if (deep) {
+        await p.click('.usm-search input', { clickCount: 3 }); await p.type('.usm-search input', deep.name); await wait(400);
+        await p.evaluate((nm) => { const b = [...document.querySelectorAll('.usm-results button')].find((x) => (x.querySelector('strong') || {}).textContent === nm); if (b) b.click(); }, deep.name); await wait(1400);
+        expect((await active(p)).name === deep.name, `the search box did not open the drawers down to ${deep.name}: ${JSON.stringify(await active(p))}`);
+      } }
+    // Show on the map and Explore in Index from the card
+    await click(p, `[data-tid="l:leg.scom"]`);
+    await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`);
+    await p.evaluate(() => [...document.querySelectorAll('.ust-info .usi-card-acts button')][2].click()); await wait(1400);
+    { const s = await p.evaluate(() => { const r = document.querySelector('.usi'); return r && r.cxIndex ? r.cxIndex.stack : null; }); expect(!!s && s[0] === `c:${firstCom.id}`, `Explore in Index did not open the Index on the committee: ${JSON.stringify(s)}`); }
+    await treeOpen(p);
+    expect((await count(p, '.ust-drawer')) === 0, 'the Tree did not start closed after leaving it');
+    await click(p, `[data-tid="l:leg.scom"]`);
+    await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`);
+    await p.evaluate(() => [...document.querySelectorAll('.ust-info .usi-card-acts button')][1].click()); await wait(1800);
+    expect(!(await has(p, '.ust')) && (await mapReady(p)) && (await mapState(p)).focus === firstCom.name, 'Show on the map did not pick the committee on the map');
+    await done(p);
+
+    // reduced motion: nothing moves, no line draws in
+    const r = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1500, media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await mapReady(r); await treeOpen(r);
+    await r.evaluate(() => document.querySelector('[data-tid="l:leg.scom"]').click()); await wait(60);
+    expect(await r.evaluate(() => !document.querySelector('.ust').dataset.moving && !document.querySelector('.ust-svg path[style*="dasharray"]') && document.getAnimations().filter((x) => x.playState === 'running' && x.effect && x.effect.target && x.effect.target.closest && x.effect.target.closest('.ust')).length === 0), 'something in the Tree moves or a line draws in under Reduce Motion');
+    expect((await expanded(r, 'l:leg.scom')) === 'true' && (await count(r, '[data-tid="d:leg.scom"] .ust-nm')) > 5, 'under Reduce Motion the drawer did not open at once');
+    await done(r);
+
+    // ---------- a phone ----------
+    const ph = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 });
+    await mapReady(ph); await ph.tap('.usm-pills button:nth-child(4)'); for (let t = 0; t < 40 && !(await has(ph, '.ust-root')); t++) await wait(150); await wait(700);
+    const geo = await ph.evaluate(() => { const t = document.querySelector('.ust'), f = document.querySelector('.usm-text'), s = document.querySelector('.ust-scroll'); return { w: t.getBoundingClientRect().width, fw: f.getBoundingClientRect().width, vw: innerWidth, doc: document.documentElement.scrollWidth, sw: s.scrollWidth, cw: s.clientWidth }; });
+    expect(Math.abs(geo.w - geo.vw) < 1 && Math.abs(geo.fw - geo.vw) < 1 && geo.doc <= geo.vw && geo.sw > geo.cw, `the phone Tree is not exactly the screen's width, the page scrolls sideways, or the picture does not scroll inside its frame: ${JSON.stringify(geo)}`);
+    expect(await ph.evaluate(() => { const t = [...document.querySelectorAll('.ust-bar button')].map((b) => b.getBoundingClientRect().top); return Math.max(...t) - Math.min(...t) < 2; }), 'the phone tool bar is not one row');
+    c0 = await counts(ph);
+    for (const k of ['root', 'b:leg', 'b:exe', 'b:jud']) expect(JSON.stringify(c0[k]) === JSON.stringify(want[k]), `phone: ${k} shows ${JSON.stringify(c0[k])}; the record has ${JSON.stringify(want[k])}`);
+    await ph.evaluate(() => document.querySelector('[data-tid="l:leg.senate"]').scrollIntoView({ block: 'center', inline: 'center' })); await wait(300);
+    await ph.tap('[data-tid="l:leg.senate"]'); await wait(1000);
+    expect((await expanded(ph, 'l:leg.senate')) === 'true', 'phone: a tap did not open the Senate');
+    const rowSel = '.ust-nm[data-ctx="leg.senate"]';
+    const tapRow = async () => { await ph.evaluate((s) => document.querySelector(s).scrollIntoView({ block: 'center', inline: 'center' }), rowSel); await wait(300); await ph.tap(rowSel); await wait(1000); };
+    await tapRow();
+    expect(await has(ph, '.ust-info') && (await ph.evaluate(() => Math.abs(document.querySelector('.ust-info').getBoundingClientRect().bottom - innerHeight) < 2)), 'phone: the details card did not open at the bottom');
+    await words(ph, 'the phone card', '.ust-info');
+    await ph.tap('.ust-info .usm-done'); await wait(700);
+    expect(!(await has(ph, '.ust-info')) && (await ph.evaluate((s) => document.activeElement === document.querySelector(s), rowSel)), 'phone: Done did not close the card and give the focus back');
+    await tapRow(); await ph.touchscreen.tap(195, 60); await wait(700);
+    expect(!(await has(ph, '.ust-info')), 'phone: a tap outside did not close the card');
+    await tapRow(); await ph.goBack(); await wait(900);
+    expect(!(await has(ph, '.ust-info')) && (await expanded(ph, 'l:leg.senate')) === 'true', 'phone: the back gesture did not close only the card');
+    await ph.goBack(); await wait(900);
+    expect((await expanded(ph, 'l:leg.senate')) === 'false' && (await has(ph, '.ust')), 'phone: the back gesture did not close the drawer');
+    expect(!(await small(ph, '.ust button, .ust a[href]')).length, `phone controls under 44 px: ${(await small(ph, '.ust button, .ust a[href]')).slice(0, 4)}`);
+    // a pinch zooms the picture, not the page
+    { const sc = await ph.evaluate(() => { const r = document.querySelector('.ust-scroll').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + r.height / 2 }; });
+      const cdp = await ph.createCDPSession(); const tch = (type, pts) => cdp.send('Input.dispatchTouchEvent', { type, touchPoints: pts.map(([x, y], id) => ({ x, y, id })) });
+      await tch('touchStart', [[sc.x - 30, sc.y], [sc.x + 30, sc.y]]);
+      for (let k = 1; k <= 8; k++) { await tch('touchMove', [[sc.x - 30 - k * 10, sc.y], [sc.x + 30 + k * 10, sc.y]]); await wait(20); }
+      await tch('touchEnd', []); await wait(300);
+      expect((await tree(ph)).scale > 1.2 && (await ph.evaluate(() => (visualViewport ? visualViewport.scale : 1) === 1)), `a pinch did not zoom the tree (scale ${(await tree(ph)).scale}) or zoomed the page`); }
+    await done(ph);
+    // a narrow phone with reduced motion: nothing wider than the screen, every target 44 px
+    const n = await open('/?panel=us&view=graph#phone', { mobile: true, easy: false, width: 320, height: 640, settle: 1800, media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await mapReady(n); await n.tap('.usm-pills button:nth-child(4)'); for (let t = 0; t < 40 && !(await has(n, '.ust-root')); t++) await wait(150); await wait(500);
+    await n.evaluate(() => [...document.querySelectorAll('.ust-bar button')][0].click()); await wait(500);
+    expect(await n.evaluate(() => document.documentElement.scrollWidth <= innerWidth), '320 wide: the page scrolls sideways');
+    expect(!(await small(n, '.ust button, .ust a[href]')).length, `320 wide: controls under 44 px: ${(await small(n, '.ust button, .ust a[href]')).slice(0, 4)}`);
+    expect(await n.evaluate(() => [...document.querySelectorAll('.ust-card')].every((c) => [...c.querySelectorAll('b, small')].every((t) => t.getBoundingClientRect().bottom <= c.getBoundingClientRect().bottom + 1))), '320 wide: a card does not fit its words');
+    await done(n);
+    // the same words in Spanish: no strength, score, ranking, or party word there either
+    if (!ES) {
+      const e = await open('/?panel=us#desktop', { width: 1440, height: 900, settle: 1800, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} })()` });
+      await mapReady(e); await treeOpen(e);
+      await e.evaluate(() => [...document.querySelectorAll('.ust-bar button')][0].click()); await wait(1500);
+      await words(e, 'in Spanish, everything open');
+      expect(JSON.stringify((await counts(e)).root) === JSON.stringify(want.root), 'in Spanish the top card counts differ from the record');
       await done(e);
     }
   },
@@ -3488,6 +3767,9 @@ const AXE_PAGES = [
   ['desktop us index', '/?panel=us#desktop', { settle: 1800, after: 'usIndex' }], ['desktop us index person', '/?panel=us#desktop', { settle: 1800, after: 'usIndexPerson' }],
   ['desktop us index card', '/?panel=us#desktop', { settle: 1800, after: 'usIndexCard' }], ['phone us index', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndex' }],
   ['phone us index committee', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndexCommittee' }], ['phone us index card', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndexCard' }],
+  // the Tree (ext/cx-us-tree.jsx): a committee's members open, and a name's details card, on a computer and a phone
+  ['desktop us tree', '/?panel=us#desktop', { settle: 1800, after: 'usTree' }], ['desktop us tree card', '/?panel=us#desktop', { settle: 1800, after: 'usTreeCard' }],
+  ['phone us tree', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usTree' }], ['phone us tree card', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usTreeCard' }],
   // what a committee does (ext/cx-us-text.jsx): its sheet with the official words open, a role's note, the subcommittees opened, and the story
   ['desktop us committee sheet', '/?panel=us#desktop', { settle: 1800, after: 'usCommittee' }], ['desktop us role note', '/?panel=us&who=house-committee-on-ways-and-means#desktop', { settle: 2600, after: 'usRole' }],
   ['phone us committee subcommittees', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usSubs' }], ['phone us committee story', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usStory' }],
@@ -3545,6 +3827,22 @@ const AXE_AFTER = {
     const root = document.querySelector('.usi'), gi = root && root.cxIndex ? root.cxIndex.groups.findIndex((x) => x.key === 'subcommittees') : -1;
     const g = document.querySelector(`[data-g="${gi}"]`); if (g) g.click(); await w(500);
     const n = document.querySelector('.usi-names button, .usi-list button'); if (n) n.click(); await w(1400);
+  },
+  // the Tree: open it from its pill, open Senate committees and the first committee's members (and, for the card, that committee's details)
+  usTree: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][3]; if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.ust-root'); t++) await w(150);
+    await w(600);
+    const l = document.querySelector('.ust-list[data-tid="l:leg.scom"]'); if (l) { l.scrollIntoView({ block: 'center', inline: 'center' }); l.click(); } await w(900);
+    const s = document.querySelector('[data-tid="d:leg.scom"] .ust-pmb'); if (s) s.click(); await w(1200);
+  },
+  usTreeCard: async () => {
+    const w = (ms) => new Promise((r) => setTimeout(r, ms)); const b = [...document.querySelectorAll('.usm-pills button')][3]; if (b) b.click();
+    for (let t = 0; t < 40 && !document.querySelector('.ust-root'); t++) await w(150);
+    await w(600);
+    const l = document.querySelector('.ust-list[data-tid="l:leg.scom"]'); if (l) { l.scrollIntoView({ block: 'center', inline: 'center' }); l.click(); } await w(900);
+    const n = document.querySelector('[data-tid="d:leg.scom"] .ust-nm'); if (n) n.click(); await w(1200);
+    document.querySelectorAll('.ust-info .usx-official').forEach((x) => { x.open = true; }); await w(300);
   },
   usCommittee: async () => {   // pick the Ways and Means Committee on the map, then open its own words
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -3735,6 +4033,8 @@ const CV_PAGES = [
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
   // the Index: kinds by shape and word, a senator's page on a computer and the front page on a phone
   ['desktop us index person', '/?panel=us#desktop', { settle: 1800, after: 'usIndexPerson' }], ['phone us index', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usIndex' }],
+  // the Tree: branch colors with their titles, kinds by shape and a heading
+  ['desktop us tree', '/?panel=us#desktop', { settle: 1800, after: 'usTree' }], ['phone us tree', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'usTree' }],
   // how you line up: Compare members with step 2 on and answered, and a profile with the counts open
   ['desktop us compare step 2', '/?panel=us#desktop', { settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }], ['phone us compare step 2', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, pre: ALIGN_PREVIEW, after: 'alignAnswered' }],
   ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }],

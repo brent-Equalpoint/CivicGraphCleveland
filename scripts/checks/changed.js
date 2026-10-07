@@ -38,8 +38,9 @@ const RULES = [
   [(f) => f.startsWith('site/') || f.startsWith('dist/') || f.startsWith('build/'), []],   // outputs, not inputs
   [(f) => ['ext/cx.css', 'ext/cxm.css', 'ext/cx-bento.css', 'ext/cx-light.css', 'ext/cxm-core.jsx', 'ext/cx-ui.jsx', 'ext/cx-data.jsx', 'ext/cx-i18n.jsx', 'build.py', 'bento.py', 'light.py', 'design/tokens.json', 'design/legacy.json', 'scripts/checks/run.js', 'scripts/checks/pool.js', 'scripts/checks/lists.js', 'package.json', 'package-lock.json'].includes(f), ALL],
   [(f) => f === 'ext/cxm-people.jsx' || f === 'ext/cxm-federal.jsx', ['people-tabs', 'profiles', 'us-graph', 'us-map', 'alignment', 'screen-states', ...SWEEP]],
-  [(f) => f === 'ext/cx-us.jsx' || f === 'ext/cx-us-map.jsx' || f === 'ext/cx-us-model.jsx' || f === 'ext/cx-us-text.jsx' || f === 'ext/cx-d3.js', ['us-graph', 'us-index', 'us-map', 'us-map-touch', 'us-map-sheet', 'us-map-narrow', 'us-profile', 'us-explain', 'alignment', 'people-tabs', 'perf-budget', ...SWEEP]],
-  [(f) => f === 'ext/cx-us-index.jsx', ['us-index', 'us-graph', 'us-profile', 'us-explain', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Index (Brent's Index kit)
+  [(f) => f === 'ext/cx-us.jsx' || f === 'ext/cx-us-map.jsx' || f === 'ext/cx-us-model.jsx' || f === 'ext/cx-us-text.jsx' || f === 'ext/cx-d3.js', ['us-graph', 'us-index', 'us-tree', 'us-map', 'us-map-touch', 'us-map-sheet', 'us-map-narrow', 'us-profile', 'us-explain', 'alignment', 'people-tabs', 'perf-budget', ...SWEEP]],
+  [(f) => f === 'ext/cx-us-index.jsx', ['us-index', 'us-tree', 'us-graph', 'us-profile', 'us-explain', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Index (Brent's Index kit); the Tree reads its pages
+  [(f) => f === 'ext/cx-us-tree.jsx', ['us-tree', 'us-graph', 'us-index', 'us-profile', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Tree (Brent's Tree kit)
   [(f) => f === 'ext/cx-align.jsx' || f === 'ext/cx-align-text.jsx' || f === 'data/alignment-reviewed.json', ['alignment', 'us-graph', 'us-profile', 'us-map-sheet', 'security-policy', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // how you line up
   [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'screen-states', ...SWEEP]],
   [(f) => f === 'ext/cx-levies.jsx', ['levies', 'story-fit', 'titles-never-cut', ...SWEEP]],

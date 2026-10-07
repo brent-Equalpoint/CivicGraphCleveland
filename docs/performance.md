@@ -187,3 +187,8 @@ the shared record component, a person's list, and the ward view (`ext/cx-record.
 and the five differences). The dated actions themselves (`site/council/record-2026.json`, 210 KB, about 11 KB gzip) are not in the page: they load
 the first time a record or a list needs them, never on Today (`votes-actions` and `perf-budget` fail if Today asks for them).
 
+Re-recorded on purpose Oct 6, 2026 (the Tree, `ext/cx-us-tree.jsx`, Brent's VC Fest Tree kit): the app's code is 587,010 bytes gzip (from the
+record of 560,426; main was already at about 575,700, 2.7% over, after the Index). The Tree adds about 11 KB gzip (the file compiles to 45 KB
+before gzip, 12 KB gzip alone; esbuild keeps its comments). Today's first load grew by the same page (852,975 bytes). Nothing new is fetched:
+the Tree is built from the federal record the map already loaded, only when the Tree opens, and a drawer's names only when it first opens.
+
