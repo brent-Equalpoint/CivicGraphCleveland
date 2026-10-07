@@ -76,6 +76,36 @@ why it is linked, who sits on it, the committee's website and profile). Every pa
   Accessibility screens are the app's (Settings on the map).
 - **Checked by** `us-index` (and the Index pages in `axe`, `no-bleed`, `text-overlap`, `color-vision`).
 
+## What the Tree is now (Oct 6)
+
+The Tree view is Brent's VC Fest Tree kit, ported into our own source (`ext/cx-us-tree.jsx`, styles in `ext/cxm.css` under `.ust-`; the kit is
+not vendored). It replaces the nested outline (`CX_UsTree` stays only for the old Sky, which is off the page). A top-down picture: "The United
+States federal government" in a light card at the top with its counts from the record (members of Congress, committees, agencies, courts); the
+three branches as columns under it on curved lines, each in its color from the map's key (the Senate's blue, the executive's amber, the
+courts' pink), with its title, its counts ("5 lists · 539 members · 49 committees"), and a round toggle; each branch's lists as cards; a list
+opens as a drawer of names, each with the record's own word.
+
+- **The lists.** Legislative: Senate, House (members, alphabetical by last name, with their state or district), Senate committees, House
+  committees, Joint committees (each committee opens its leaders and members with the record's role word, and starts with what it does).
+  Executive: President and Vice President, Cabinet (the record's order and titles, with the note that which agency a title leads is not linked
+  yet), Departments, Other agencies (each opens the agencies under it, at any depth), Former Presidents (each opens the judges they appointed).
+  Judicial: Supreme Court, each of the 13 courts of appeals in the order of 28 U.S.C. 41 (with its judges), District courts (by circuit, each
+  closed until opened), Other courts, and every judge (with the old Tree's note on what is not in our record). "Other agencies" rather than
+  "Independent agencies": the record does not say which agencies are independent.
+- **A name** opens a details card in the map's own sheet: what it is, where it sits in the Tree, why it is linked (the record's word), a
+  committee's two plain lines with their review notice, Open profile, Show on the map, Explore in Index, and the record's own website.
+- **Moving.** Open all, Close all, zoom out, zoom in, Fit, a mouse drag, Ctrl with the wheel (and a trackpad's pinch), and a pinch on a phone;
+  the picture scrolls inside its frame and the page never scrolls sideways. On a phone each branch is a column a little narrower than the
+  screen, so the next one peeks in. Each opening is a step in history (`trR` in `CX_UsMap`): Back and the back gesture close what was opened
+  last, Forward opens it again, and leaving the Tree takes its steps out first. The search box finds a name in the Tree and points to it.
+- **Keyboard.** Tab goes through the picture in its order; up and down move inside a column, left and right to the nearest thing in the next
+  column, Home and End to the top and bottom of a column; Enter and Space open and close; Escape closes the card.
+- **Changed from the kit on purpose:** no strength words or colors, the record's word instead; 44 px rows that wrap; the map's shapes and color
+  families with each group's heading as the word; no party; lists in the record's order or alphabetical, never by count; a long list shows 60
+  names at a time with Show more; the app's top bar, Settings, and sheet instead of the kit's menu, About, and Accessibility; no `#id` link (a
+  link to a person still opens their profile, and the search box points to a name in the Tree); drag, pinch, and the wheel as well as the buttons.
+- **Checked by** `us-tree` (and the Tree's pages in `axe`, `no-bleed`, `text-overlap`, `color-vision`).
+
 ## The shape of the whole feature
 
 Four places, all reading one model:
@@ -137,3 +167,4 @@ Each phase ends with the full gate passing and a screenshot review before the ne
 10. A phone held upright gets a tall map (2026-10-05): the same physics and seed, started in three rows, so the map fills the screen instead of leaving bands above and below. The build writes both shapes to `site/us/map-2026.json` (`xy` and `tall`).
 11. The profile page (2026-10-05): a link names the person by a readable name (`?panel=us&who=bernie-moreno`), never the viewer. Bills sponsored are not in our record, so a member's third number is subcommittees, and the page says sponsored bills are not in the record yet.
 12. The Index (2026-10-06, Brent): Brent owns the VC Fest Index kit, so its layout and interactions are ported straight into our source with a one-line note of where the design comes from; no vendored copy, README, or owner credit. It replaces the old list of category cards and one long list (`CX_UsDoors` stays only for the old Sky, which is off the page). See "What the Index is now" above.
+13. The Tree (2026-10-06, Brent): the same for Brent's VC Fest Tree kit, ported into `ext/cx-us-tree.jsx` with a one-line note of where the design comes from. It replaces the nested outline (`CX_UsTree` stays only for the old Sky). See "What the Tree is now" above.

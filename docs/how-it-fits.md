@@ -30,6 +30,7 @@ Who writes what: only `scripts/refresh.py` writes `data/`; `i18n/es.json` is bui
 | How you line up (questions, counts) | `ext/cx-align-text.jsx` (between the markers), `ext/cx-align.jsx` | `node scripts/test_alignment.js`, `--only alignment`; a person runs `python build.py --mark-alignment-reviewed "Name"` |
 | Votes, actions, and positions on a city record, a person's list, a ward | `ext/cx-record.jsx` (shared by both layouts), its plain words in `ext/cx-votes-text.jsx` between the VOTES-TEXT markers; the roll calls and the City Record's actions in `scripts/fetch_cityrecord.py` (`python scripts/refresh.py --votes`); the dated actions file in `scripts/council_record.py` (a pure function of `data/`, written by `build.py` to `site/council/record-2026.json`) | `python scripts/test_votes_actions.py`, `python scripts/test_cityrecord.py`, `--only votes-actions`; a person runs `python build.py --mark-votes-text-reviewed "Name"` |
 | The United States Index (groups, pages, rows, the globe) | `ext/cx-us-index.jsx` (the pages are built from the map's model when opened), styles in `ext/cxm.css` (`.usi-`); its history steps live in `CX_UsMap` (`ix`, `ixR`) | `--only us-index`, plus `CHECK_MODE=light`, `CHECK_THEME=original`, `CHECK_LANG=es` |
+| The United States Tree (branches, lists, drawers, the details card) | `ext/cx-us-tree.jsx` (built from the Index's pages, `cxUsiPage`, when the Tree opens), styles in `ext/cxm.css` (`.ust-`); its history steps live in `CX_UsMap` (`trR`), its card is `openX({ type: 'tree' })` | `--exact us-tree`, plus `CHECK_MODE=light`, `CHECK_THEME=original`, `CHECK_LANG=es` |
 | Anything saved in the browser (a new `localStorage` or `sessionStorage` name, a cache) | the code, then its line in the privacy policy's list (`ext/cx-privacy.jsx`) and a row in `docs/privacy-claims.md` | `python scripts/test_privacy.py`, `--only privacy-policy`; the policy's words need a person's approval again |
 | A color, size, radius, weight | `design/tokens.json` first | `node scripts/design/audit.js`, `cvd.js`, `DESIGN_UPDATE=1 ... --only design-look` and read the diff |
 | Data or a fetcher | `scripts/fetch_*.py`, run by `refresh.py` | `python scripts/refresh.py --check`, the unit tests |
@@ -178,4 +179,15 @@ the commit is red and the issue "Checks failed on main" names the failing checks
   until it did).
 - **The map's phone sheet opens part way and clips its body until it is pulled up.** That suits the map's sheet; a sheet that is the whole
   content (the Index's details card) opens all the way (`CX_UsMapSheet tall`), or `no-bleed` sees cut-off text.
+- **A built page cannot be edited to plant a fault.** The Content-Security-Policy allows the page's inline scripts only by their hash, so a copy of
+  `site/` with one word changed opens with no app at all. Plant the fault in `ext/`, rebuild, run the check, put the source back, and rebuild.
+- **esbuild keeps comments.** Every comment in `ext/*.jsx` is in the page's code and counts toward `perf-budget` (the Tree's file compiles to 45 KB).
+- **A link styled as a button takes the desktop app's link color.** `.atlas-shell a` outranks `.usm-btn`, so an `<a className="usm-btn">` in the
+  map's sheet is orange in Original, 4.39:1 on the button's tint in light Original (axe fails). Set its color on `a.usm-btn` where it is used.
+- **A ResizeObserver reports every element it starts watching, at once.** The Tree first watched everything again after each render and laid
+  out again on each report, which cut every slide short after one frame (no check caught it until `us-tree` looked at a drawer mid-slide).
+  Watch only new elements, compare with the sizes the layout used, and wait for a move to end.
+- **The Tree's steps in history are passed quietly when empty.** Opening something is a step (`trR.push`); closing it by hand takes it out of
+  the steps (`trR.drop`), and the newest empty steps leave history at once. A step left empty further down is passed on the way back, so no
+  back press does nothing. Leaving the Tree (a pill, the menu, Show on the map, Explore in Index) takes its steps out first (`trLeave`).
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).

@@ -135,7 +135,10 @@ moves nothing, a drag scrubs from where it took hold; cards keep their height; t
 holds; a page's groups keep the record's order and its rows the record's own words; no strength, score, ranking, or party word in our words, in
 English or Spanish; Back, Escape, Backspace, and the back gesture step back one name to the same list and scroll, and Forward goes in; the keyboard
 path; long lists page; the details card closes four ways; the chosen pill and group are solid accent; the globe holds still under Reduce Motion;
-one column the screen's width on a phone; 44 px targets), `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
+one column the screen's width on a phone; 44 px targets), `us-tree` (the United States Tree: the top card, the branches, and every list count
+what the record holds; lists in the record's order, never by count; drawers with the record's own word; no strength, score, ranking, or party
+word, in English or Spanish; the keyboard path; Back steps back one opening; the details card closes without closing the drawers; zoom, drag,
+and pinch; nothing moves under Reduce Motion; exactly the screen's width on a phone; 44 px targets), `screen-states`, `shell`, `offline-shell`, `update-wins`, `privacy-policy` (the policy opens at
 /privacy and ?panel=privacy and from every link to it, and its list of what is saved in the browser is what the app writes), `us-explain` (every committee,
 subcommittee, and role has our two short lines or the official words or "No description on file"; no ranking word, no dash, the word limits; the sheet, profile,
 hover card, and Index say the same first line; the review notice and the official words with their source and date; a role note closes four ways), `votes-actions` (a city record's names under each printed word and a count line that adds up, a source and a pulled date on every row, a file with no names says why and shows no nay, sponsorship rows say sponsorship, a person's list has no overall number or ranking word, the ward view with and without a ward chosen and the ward in no address, storage, or request, a ceremonial resolution as one short line, the record data loaded only when needed, Spanish, light in both styles).

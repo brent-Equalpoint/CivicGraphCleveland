@@ -104,3 +104,12 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 4. **A president's count** reads "234 jueces nombrados" and, for one, "1 nombramiento de juez o jueza", to avoid guessing a judge's gender.
 5. **Moving around:** "Elija un grupo y luego un nombre.", "Elija un nombre para seguir.", "Volver al inicio", "Dónde está" (the crumbs, read by a screen reader), "Ahora se muestra" (spoken after each move), and "y 525 más · página 1 de 39" for a long list on a computer.
 6. **The details card:** "Por qué está vinculado", "Abrir el perfil del comité", "Sitio web oficial".
+
+## The United States Tree (Oct 6, 2026)
+20 new entries in `i18n/manual.json` for `ext/cx-us-tree.jsx` (16 exact, 4 patterns); everything else the Tree shows was already in the dictionary (the branch and list names, the Index's group names and record words, the counts). Names from the record stay as the record writes them and are marked so the translator leaves them alone, and so are the cabinet titles and the agencies' short names beside a name, which are the record's own words.
+1. **The top card:** "El gobierno federal de los Estados Unidos", with its counts ("539 miembros del Congreso · 49 comités · 260 agencias · 106 tribunales").
+2. **A branch is "poder"**, as in "Poder legislativo": "Todos los poderes están abiertos.", "Todos los poderes están cerrados.", and the hint "Toque un poder o una lista para ver lo que contiene. Toque un nombre para ver sus detalles." A branch's count of lists reads "5 listas".
+3. **The tool row:** "Abrir todo", "Cerrar todo", "Ajustar" (Fit, already in the dictionary), and "Acercar o alejar" for the zoom group read by a screen reader. Check that "Abrir todo" and "Cerrar todo" read naturally for opening and closing every list.
+4. **Spoken updates:** "Ahora se muestra" (as in the Index), "Todo está abierto.", "Todas las listas están cerradas.", and "Se cerró" for a drawer that closes, chosen so it does not need a gender.
+5. **New words in a drawer:** "Por circuito" (the district courts grouped by their court of appeals), "Otros tribunales de distrito", "15 departamentos", and the Cabinet's note "Todavía no se vincula qué agencia dirige cada cargo del gabinete. Eso necesita la revisión de una persona."
+6. **The details card** says where a name sits: "En Poder legislativo › Comités del Senado › ..." ("In" is "En").
