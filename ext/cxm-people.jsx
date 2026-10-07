@@ -156,7 +156,8 @@ function CxmProfiles() {
         </dl>
         <p className="cxm-fine">This is not a vote record and not a score. Sponsoring a proposal is not voting for it. How each member voted, where the City Record prints it, is on the full profile. Everything comes from Cleveland's official legislative record, retrieved {CX_LEG.retrieved_at.slice(0, 10)}.</p>
       </CxmDrop>
-      <CxmProfileStrip label="Jump to a council member" items={deck.map((s) => ({ id: s.id, title: s.name, img: cxmAsset(s.portrait), label: s.ward ? `W${s.ward}` : `City` }))} activeId={seat.id} onPick={(id) => setPeople((p) => ({ ...p, seat: id }))} />
+      {/* one tap on a face opens that member's Profile (the neutral page; docs/plan-profiles.md: two taps from anywhere), with their card under it */}
+      <CxmProfileStrip label="Open a council member's profile" items={deck.map((s) => ({ id: s.id, title: s.name, img: cxmAsset(s.portrait), label: s.ward ? `W${s.ward}` : `City` }))} activeId={seat.id} onPick={(id) => { setPeople((p) => ({ ...p, seat: id })); openSheet(`profile`, { seat: id }); }} />
       <CxmProfileCard key={seat.id} avatar={<CxmPortrait seat={seat} size={84} />} onStep={step} label={`${seat.name}, profile ${i + 1} of ${deck.length}`}
         kicker={<>{isAdmin ? `CITY DEPARTMENTS` : `WARD ${seat.ward}`}{seat.id === (home?.ward ? `ward-${home.ward}` : ``) && <b className="cxm-yours"> · YOUR WARD</b>}</>}
         name={seat.name} sub={`${role} · Cleveland`}

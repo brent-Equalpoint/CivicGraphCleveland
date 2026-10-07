@@ -906,6 +906,35 @@ const CHECKS = {
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'People scrolls sideways');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await done(p);
+    // one tap on a face in the Cleveland strip opens that member's Profile (the neutral page), and their card is under it when it closes; the strip
+    // and the card are drawn as before (the same parts, sizes, and places as the face before it was tapped)
+    { const q = await open('/?panel=leaders#phone', { mobile: true, easy: false, settle: 1500 });
+      const face = (q2) => q2.evaluate(() => [...document.querySelectorAll('.cxm-strip button')].map((b) => { const r = b.getBoundingClientRect(), c = getComputedStyle(b); return [Math.round(r.width), Math.round(r.height), c.backgroundColor, c.color, c.borderTopWidth, c.borderRadius, c.fontSize].join(' '); }));
+      const look0 = await face(q);
+      await q.evaluate(() => { const b = [...document.querySelectorAll('.cxm-strip button')].find((x) => x.innerText.trim() === 'W7'); if (b) b.click(); }); await wait(900);
+      expect(/\b(Ward|Distrito) 7\b/.test((await txt(q, '.cxm-sheet .sp-office')) || '') && (await count(q, '.cxm-sheet .sp h1')) === 1, `one tap on the Ward 7 face did not open the Ward 7 Profile: ${await txt(q, '.cxm-sheet .sp-office')}`);
+      expect(/panel=profiles&seat=ward-7/.test(await q.evaluate(() => location.search)), `the open Profile does not name its seat in the address: ${await q.evaluate(() => location.search)}`);
+      await q.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); if (x) x.click(); }); await wait(500);
+      expect(/WARD 7/.test((await txt(q, '.cxm-profile .cxm-kicker')) || '') && (await txt(q, '.cxm-strip button[aria-pressed="true"]')).trim() === 'W7', 'closing the Profile did not leave the Ward 7 card under it');
+      const look1 = await face(q);
+      expect(JSON.stringify(look1.map((x, i) => (i === 0 || i === 6 ? null : x))) === JSON.stringify(look0.map((x, i) => (i === 0 || i === 6 ? null : x))), `the face strip is drawn differently after a tap: ${look0.join(' | ')} / ${look1.join(' | ')}`);
+      await done(q); }
+    // a profile's address opens the same Profile on both layouts: the ward record's link (?panel=profiles&seat=, read from the page), the profile
+    // plan's (?panel=profile&seat=), and the Mayor's
+    { const w = await open('/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE });
+      await w.evaluate(AXE_AFTER.wardOpen); await wait(700);
+      const href = await w.evaluate(() => { const a = [...document.querySelectorAll('.rc-who a[href*="seat="]')][0]; return a ? a.getAttribute('href') : null; });
+      await done(w);
+      expect(href === '?panel=profiles&seat=ward-7', `the ward record's profile link is ${href}`);
+      for (const url of [href || '?panel=profiles&seat=ward-7', '?panel=profile&seat=ward-8', '?panel=profile&seat=mayor']) {
+        const ph = await open(`/${url}#phone`, { mobile: true, easy: false, settle: 1500 });
+        const phone = { office: ((await txt(ph, '.cxm-sheet .sp-office')) || '').trim(), name: ((await txt(ph, '.cxm-sheet .sp h1')) || '').trim(), people: await ph.evaluate(() => { const t = document.querySelectorAll('.cxm-tabs button')[3]; return !!t && t.classList.contains('on'); }) };
+        await done(ph);
+        const dk = await open(`/${url}#desktop`, { settle: 1500 });
+        const desk = { office: ((await txt(dk, '.sp-page .sp-office')) || '').trim(), name: ((await txt(dk, '.sp-page .sp h1')) || '').trim(), lost: /could not find that page/.test((await txt(dk, '.cx-notice')) || '') };
+        await done(dk);
+        expect(phone.office && phone.office === desk.office && phone.name === desk.name && phone.people && !desk.lost, `${url}: the phone opens ${JSON.stringify(phone)}, the desktop ${JSON.stringify(desk)}`);
+      } }
   },
   async 'security-policy'() {
     // "Nothing personal leaves the browser" as something the browser enforces. The hosted page carries a Content-Security-Policy: every inline script is allowed by its
@@ -5013,6 +5042,21 @@ CHECKS['records-tab'] = async () => {
       expect(top === null || top >= g.bar, `the bubble sits over the folder tabs (${top} < ${g.bar})`);
     }
     await done(q); }
+  // 7. tapping the Records tab while on it returns it to its top level: an open room closes, and a record open over it too; the folder stays Rooms.
+  // From another tab, the Records tab still brings back the room that was open.
+  for (const url of ['/?room=voting#phone', '/?room=council&node=ward-7#phone']) {
+    const q = await open(url, { mobile: true, easy: false, settle: 1500 });
+    const at = () => q.evaluate(() => ({ room: !!document.querySelector('.cxm-main .cxm-back'), sheet: !!document.querySelector('.cxm-sheet'), rail: !!document.querySelector('.cxm-rail'), tiles: document.querySelectorAll('#rf-folder-panel .cxm-roomtile').length, search: location.search }));
+    expect((await at()).room, `${url} did not open its room`);
+    if (/node=/.test(url)) { await q.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400); }
+    await tap(q, 0); await wait(500); await tap(q, 1); await wait(900);
+    expect((await at()).room && (await recFolderOf(q)) === 'rooms', `${url}: coming back to the Records tab from Today lost the open room`);
+    if (/node=/.test(url)) { await q.evaluate(() => { const b = [...document.querySelectorAll('#rf-folder-panel button')].find((x) => /Ward 7|Kerry McCormack|Distrito 7/.test(x.innerText)); if (b) b.click(); }); await wait(700); }
+    await tap(q, 1); await wait(900);
+    const s = await at();
+    expect(!s.room && !s.sheet && s.rail && s.tiles === 17 && (await recFolderOf(q)) === 'rooms' && !/room=|node=/.test(s.search), `${url}: tapping the Records tab while on it did not return Rooms to its top level: ${JSON.stringify(s)}`);
+    await done(q);
+  }
 };
 
 /* Records > Latest, "Changed in the latest pull" (ext/cx-records.jsx, cxLatestPull in ext/cx-live.jsx; docs/plan-mobile-restructure.md). The number on the

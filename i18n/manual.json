@@ -1994,7 +1994,8 @@
   "New in Council's record.": "Nuevo en el registro del Concejo.",
   "Sponsor added.": "Se añadió un patrocinador.",
   "Nothing that changed in the latest pull matches this ward and kind. That is not the same as nothing happening.": "Nada de lo que cambió en la última actualización coincide con este distrito y este tipo. Eso no es lo mismo que si no hubiera pasado nada.",
-  "Nothing in Council's legislation record changed between the last two pulls. That is not the same as nothing happening.": "Nada cambió en el registro de legislación del Concejo entre las dos últimas actualizaciones. Eso no es lo mismo que si no hubiera pasado nada."
+  "Nothing in Council's legislation record changed between the last two pulls. That is not the same as nothing happening.": "Nada cambió en el registro de legislación del Concejo entre las dos últimas actualizaciones. Eso no es lo mismo que si no hubiera pasado nada.",
+  "Open a council member's profile": "Abrir el perfil de un miembro del Concejo"
  },
  "masked": {
   "{n} lists": "{n} listas",

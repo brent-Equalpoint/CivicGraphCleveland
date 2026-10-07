@@ -174,8 +174,9 @@ function useCxmPrio() {
 /* ---------- links: the same room, record and panel addresses as the desktop app ---------- */
 /* v5.16: when a link points at something that does not exist, say so once instead of silently showing Today */
 const CXM_NOTICE = { v: null };
+const CXM_SEAT_RX = /^(ward-([1-9]|1[0-5])|mayor)$/;   // a seat a profile link may name: a ward's member or the Mayor
 function cxmFromUrl() {
-  const out = { tab: `today`, room: null, sheet: null, mode: null, page: null, folder: null };
+  const out = { tab: `today`, room: null, sheet: null, mode: null, page: null, folder: null, seat: null };
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
@@ -183,13 +184,19 @@ function cxmFromUrl() {
   // At City Hall), and Rooms (explore, and every ?room= link); privacy is the one full page over the tabs
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
     ledger: [`today`, `ledger`], meetings: [`explore`, null, null, null, `meetings`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
-    privacy: [`today`, null, null, `privacy`], records: [`explore`, null, null, null, `latest`], explore: [`explore`, null, null, null, `rooms`] };
+    privacy: [`today`, null, null, `privacy`], records: [`explore`, null, null, null, `latest`], explore: [`explore`, null, null, null, `rooms`], profile: [`people`, null, `profiles`] };
   // a record link (?panel=leg&file=906-2026) opens that file's record over Today; the address names the file, never the viewer
   if (panel === `leg`) {
     const f = q.get(`file`);
     if (f && /^\d{1,5}-\d{4}$/.test(f) && cxmMatter(f)) return { ...out, sheet: { type: `leg`, file: f } };
     CXM_NOTICE.v = `We could not find that record, so here is the start.`;
     return out;
+  }
+  // a Cleveland profile link (?panel=profiles&seat=ward-7, the ward record's and the Profiles page's address; ?panel=profile&seat=ward-8, the profile
+  // plan's, renamed in ext/cx-seat.jsx) opens that seat's Profile over People, with that member's My leaders card under it, as the desktop opens it
+  if ((panel === `profiles` || panel === `profile`) && CXM_SEAT_RX.test(q.get(`seat`) || ``)) {
+    const seat = q.get(`seat`);
+    return { ...out, tab: `people`, mode: `profiles`, seat, sheet: { type: `profile`, seat } };
   }
   // a profile link (?panel=us&who=bernie-moreno) opens the map, where the profile page lives
   if (panel && P[panel]) { const [tab, sheet, mode, page, folder] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null, folder: folder || null }; }
@@ -215,6 +222,7 @@ function cxmToUrl(tab, room, top, peopleMode, page, folder) {
   else if (tab === `explore` && folder === `meetings`) p.set(`panel`, `meetings`);   // Records > Meetings (At City Hall), and a record opened from it, keep its address (never the ward or anything typed)
   else if (tab === `explore` && folder === `latest`) p.set(`panel`, `records`);   // Records > Latest, and a record opened from it, keep its address (never a filter or the ward)
   else if (top && top.type === `leg` && /^\d{1,5}-\d{4}$/.test(top.file || ``)) { p.set(`panel`, `leg`); p.set(`file`, top.file); }   // a record names its file, never the viewer
+  else if (top && top.type === `profile` && CXM_SEAT_RX.test(top.seat || ``)) { p.set(`panel`, `profiles`); p.set(`seat`, top.seat); }   // a Profile names its seat, as the desktop's Profiles page does
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
   else if (tab === `people` && peopleMode === `graph`) { p.set(`panel`, `us`); p.set(`view`, `graph`); if (who && /^[a-z0-9:-]{1,120}$/i.test(who)) p.set(`who`, who); }
@@ -316,7 +324,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [recFolder, setRecFolder] = u.useState(start.folder || `latest`);   // the Records tab's folder: Latest the first time, then the last one chosen, for this visit only (memory, never saved)
   const [recAsk, setRecAsk] = u.useState({ pull: !1, n: 0 });   // how Latest was last asked for: pull, with "Changed in the latest pull" chosen (the Updated strip); n starts its list afresh
   const [placeHood, setPlaceHood] = u.useState(CX_PLACE.hood || null);
-  const [people, setPeople] = u.useState({ mode: start.mode || `profiles`, seat: null, office: `council`, q: 0 });
+  const [people, setPeople] = u.useState({ mode: start.mode || `profiles`, seat: start.seat || null, office: `council`, q: 0 });
   const [seen, setSeen] = u.useState({});
   const mainRef = u.useRef(null);
 
@@ -400,9 +408,10 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             </CxBoundary>
             <p className="cxm-foot">Public sources. Visible gaps. No scores. Council records pulled {cxFresh().when} (Eastern), checked every night.</p>
           </main>
+          {/* tapping the Records tab while on it returns it to its top level: an open room in Rooms closes (go closes a sheet over it) */}
           <nav className="cxm-tabs" aria-label="Sections">
             {TABS.map(([id, label, Icon]) => (
-              <button key={id} type="button" className={tab === id ? `on` : ``} aria-current={tab === id ? `page` : undefined} onClick={() => go(id)}>
+              <button key={id} type="button" className={tab === id ? `on` : ``} aria-current={tab === id ? `page` : undefined} onClick={() => { if (id === `explore` && tab === id) setRoom(null); go(id); }}>
                 <Icon size={22} /><span>{label}</span>
               </button>
             ))}

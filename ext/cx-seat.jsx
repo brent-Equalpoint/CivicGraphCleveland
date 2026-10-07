@@ -49,6 +49,17 @@ function cxOpenProfile(seatId) {
   CX_SEAT_SEL.v = seatId;
   CX_NAV.panel(`profiles`);
 }
+/* A profile's address. The profile plan writes ?panel=profile&seat=ward-8 (docs/plan-profiles.md); the Profiles page, and the ward record's profile
+   link, use ?panel=profiles&seat=ward-8. Both open the same profile on both layouts: the desktop app knows only `profiles`, so the plan's address is
+   renamed before either app reads it (the phone reads `seat` in cxmFromUrl). The address names a seat, never the viewer. */
+(function cxProfileAddress() {
+  try {
+    const url = new URL(globalThis.location.href);
+    if (url.searchParams.get(`panel`) !== `profile`) return;
+    url.searchParams.set(`panel`, `profiles`);
+    globalThis.history.replaceState(globalThis.history.state, ``, url.href);
+  } catch {}
+})();
 function cxSeatNode(id) {
   for (const r of Uh) { const n = r.nodes.find((x) => x.id === id); if (n) return n; }
   return null;
