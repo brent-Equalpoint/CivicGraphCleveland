@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-05T19:25:00+00:00",
+"retrieved_at": "2026-10-07T13:47:49+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -4060,6 +4060,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved",
+"City Council"
 ]
 ],
 "759-2026": [
@@ -4410,6 +4415,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved",
+"City Council"
 ]
 ],
 "903-2026": [
@@ -4651,6 +4661,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved as amended",
+"City Council"
 ]
 ],
 "922-2026": [
@@ -4660,7 +4675,13 @@
 "Municipal Services and Properties Committee"
 ]
 ],
-"923-2026": [],
+"923-2026": [
+[
+"2026-10-06",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
 "924-2026": [
 [
 "2026-09-23",
@@ -4671,6 +4692,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved as amended",
+"City Council"
 ]
 ],
 "925-2026": [
@@ -4722,6 +4748,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved",
+"City Council"
 ]
 ],
 "928-2026": [],
@@ -5069,6 +5100,11 @@
 "2026-09-29",
 "withdrawn",
 "Development, Planning and Sustainability Committee"
+],
+[
+"2026-10-06",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
 ]
 ],
 "1032-2026": [
@@ -5112,6 +5148,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved",
+"City Council"
 ]
 ],
 "1036-2026": [
@@ -5459,6 +5500,11 @@
 "2026-10-05",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-05",
+"approved",
+"City Council"
 ]
 ],
 "1167-2026": [],
@@ -5522,16 +5568,46 @@
 ],
 "1199-2026": [],
 "1203-2026": [],
-"1204-2026": [],
+"1204-2026": [
+[
+"2026-10-05",
+"approved",
+"City Council"
+]
+],
 "1205-2026": [],
 "1229-2026": [],
 "1230-2026": [],
 "1231-2026": [],
-"1232-2026": [],
-"1233-2026": [],
-"1234-2026": [],
+"1232-2026": [
+[
+"2026-10-05",
+"adopted",
+"City Council"
+]
+],
+"1233-2026": [
+[
+"2026-10-05",
+"approved",
+"City Council"
+]
+],
+"1234-2026": [
+[
+"2026-10-05",
+"approved",
+"City Council"
+]
+],
 "1235-2026": [],
-"1236-2026": []
+"1236-2026": [
+[
+"2026-10-05",
+"adopted",
+"City Council"
+]
+]
 },
 "addresses": {
 "4025 East 131st Street": {
