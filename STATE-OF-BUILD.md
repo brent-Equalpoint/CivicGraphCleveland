@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  a1f6279898bf01844ce9ba66ac60bf03d9952c15a80bb2f6cdb482af7ed35c23
-Size     6,326,580 bytes
+SHA-256  e634c57e100ffe5ba8dcb111e885e845d45526aba18aece1c3cf0e6635e6a221
+Size     6,329,761 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -318,6 +318,7 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       Records holding a tab list named Records).
 
 50. **Oct 7: the Updated strip counts the latest pull, and the phone learns Profile links and one-tap Profiles (step 3 of Option A; released with the gate).**
+    - **Update (Oct 7, item 54): the "Changed in the latest pull" chip, its note, the per-card change lines, and the strip's number below were removed at Brent's request; the strip says "What's new" and opens What's new again. The Profile links and People labels stand.**
     - **"Changed in the latest pull."** The strip said "78 changes this week" (What's new's count of 5 pulls over 7 days). It now says "12 records
       changed", the records the latest pull (Oct 5, 3:24 p.m.) changed, and opens Records > Latest with a new chip, "Changed in the latest pull", on
       (solid blue, white text, no line, at the end of the When row). Strip and list both read 12, one row per file, and the check `records-changed`
@@ -407,7 +408,7 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
 
 52. **Oct 7: the Records filters are one tidy row each, early voting reads "Has begun", and the My place neighborhood list sets your place (CSS and small changes; the chips shipped by the fast lane at 2a3e62d).**
     - **Records filter chips** (`ext/cxm.css`, `.rf-` rules only; Brent chose the smaller version of the design review). When is three equal pills with "Changed in
-      the latest pull" as a full-width pill under them; Kind is one row with the count under each word; Order is two equal pills; the four group labels are hidden
+      the latest pull" as a full-width pill under them (removed in item 54); Kind is one row with the count under each word; Order is two equal pills; the four group labels are hidden
       (each group keeps its `aria-label`, and the Ward label stays for screen readers). The first record moved up from y=867 (English) or 967 (Spanish) to 718 on
       a 390 by 844 phone. A keyboard-focused pill stays a pill (the global focus rule had turned it into an 8 px rectangle). `design-look` changed in 8 lines, all
       padding and line height of `.rf-pills button`, recorded on purpose. The fuller version (Order as one pill by the count, the lead sentence moved, a count on the
@@ -445,7 +446,42 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       County Council districts, U.S. House, and state legislature offices already had words. Not tried on a real phone.
     - **Build.** Two clean builds gave the same hashes: the offline file `0601713b5b2e30c53db955805a0f5b42363b305ccd88337ca7393320f4d51611`, `site/index.html`
       `b8824018a2d0f8fbf935368d7761a4043f0382b1ab39670072f8bd8029a498b4`.
-54. **Oct 7: the Governor and Lieutenant Governor contest says what the Lieutenant Governor is and does (branch `worktree-agent-aee1212bb446347de`, from main at `0f20573`; not released; numbering to be settled on merge).**
+54. **Oct 7: "Changed in the latest pull" is removed from Records > Latest, the Updated strip says What's new again, and the Records filter chips are rounded squares (on a branch, not released).**
+    - **For a resident.** Latest's When row is three chips again: Last 7 days, Last 30 days, All time. The pull chip, the note about two pulls, the "files left
+      Council's list" note, the "See this week's changes" button, and the "Changed in the latest pull" lines on cards are gone. The Updated strip under the header
+      is a plain link: "Updated 2 days ago, 3:24 p.m." on the left and "What's new" on the right, which opens What's new (and "Newer records may exist" when the
+      data is 3 or more days old, as before); a screen reader hears "Opens What's new." `?panel=news` still opens What's new. The Records filter chips (When, Kind,
+      Order) are rounded squares with the same 12 px corners as the Details and Show more buttons, not pills; the chosen chip is still solid blue with white text and no
+      line. The People and Records folder tabs, the ward chips on cards, and every other pill are as they were. Cards, kinds, ward, order, and Show more are unchanged.
+    - **Code.** Removed: `CX_REC_PULL`, the `f.days === 'pull'` path in `cxRecFilter`, `cxRecChanged`, `CX_RecChanged`, and the `changed` and `at` arguments of
+      `cxRecCard` (`ext/cx-records.jsx`); `cxLatestPull` and `cxWhenET` (`ext/cx-live.jsx`; nothing else used them); `recAsk` and `openRecords(folder, pull)` in
+      `ext/cxm-core.jsx` (`openRecords(folder)` is as it was before item 50); the strip's count (`ext/cxm-live.jsx`); the pull chip's CSS line and the two `999px`
+      radii of `.rf-pills button` and its `:focus-visible` rule, now `12px` (`ext/cxm.css`; no token added, `audit.js` passes). Spanish: the 20 entries only these
+      words used were removed from `i18n/manual.json` (including "Opens Records.", which only the strip used before item 50), then `merge.js`, `test_i18n.py`
+      (13 tests), and `crawl.js` were run.
+    - **Checks.** `records-changed` is retired (deleted from `scripts/checks/run.js` and `scripts/checks/changed.js`; `lists.js` was not touched and never named it).
+      `records-feed` now asserts the When row is exactly 7, 30, and 0 (English words Last 7 days, Last 30 days, All time), that no "Changed in the latest pull" or
+      pull note is on Latest, that every filter chip has 12 px corners, and that the Updated strip says What's new with no number, hints "Opens What's new.", opens the
+      What's new sheet and not Records, and keeps `?panel=news`. `records-tab` now expects exactly nine filter chips on Latest and that the strip opens What's new over
+      Records without changing the folder (it was a door to Latest). Planted faults, each caught: the pull chip put back (a copy of `site/` served with the CSP meta
+      removed so the edited script runs; the When row, the page words, and the chip count all failed), the strip opening the Records tab (failed: not What's new, no
+      `?panel=news`), and the chips' radius back to 999px (failed: not 12 px). The unedited copy passed. `design-look` was rewritten on purpose: `design/look.json`
+      changed in 8 lines, all `borderRadius` `999px` to `12px` on `.rf-pills button.on` and `.rf-pills button:not(.on)` in the phone Records screen, in dark and
+      light, Bento and Original. I looked at 390 by 844 and 320 by 640, dark and light, Bento and Original, English and Spanish (16 screenshots): the chips are
+      rounded squares, the chosen one is solid blue with white text, and nothing is cut off or wider than the screen.
+    - **Merged with main.** This branch was based on `2a3e62d`; `main` had moved to the agenda calendar (item 51), the filters and early voting (item 52), and the office
+      words (item 53), so main was merged in. Two conflicts, both in `scripts/checks/`: `changed.js` kept both sides minus `records-changed`, and `run.js` kept main's new
+      checks but not the `records-changed` block. The office-text check borrows `RC_SP` from that block, so that one line stays, above the runner. The nightly data was
+      not touched.
+    - **Not done, or needs a person.** Not tried on a real phone. `text-budget` passes on the recorded counts and was not re-recorded: this change drops only a few words
+      (the strip's count and hint, outside the counted screens' main text), and the counts that moved on other screens came from the work merged from main, not from here.
+      The full list passed on the merged build: tab-blue, records-feed, records-tab, city-hall, targets, text-budget, axe, no-bleed, text-overlap, screen-states, shell,
+      perf-budget, update-wins, today-order, design-look, plus records-feed and records-tab in light (Bento and Original) and in Spanish (21 of 21); `audit.js`,
+      `test_release_plan.js` (19), `test_i18n.py` (13), and `crawl.js` (no new English from these words). `release.py` was not run.
+    - **Build.** Two clean builds gave the same hashes: the offline file `e634c57e100ffe5ba8dcb111e885e845d45526aba18aece1c3cf0e6635e6a221`, `site/index.html`
+      `8c0a4a5772edd3eaf9016b60a2e5cb6a710325697ae5b99840c72f458c25692f`.
+
+55. **Oct 7: the Governor and Lieutenant Governor contest says what the Lieutenant Governor is and does (branch `worktree-agent-aee1212bb446347de`, from main at `0f20573`; not released; after item 54 on main; renumber on merge if needed).**
     - **What a resident sees.** On the contest page, the candidate record, and "What might your choices affect?" on the phone, and on the contest page, the record's
       drawer, and the "What could change?" cards on the computer, the Governor's words are exactly what they were. After them comes a separate line, labeled
       "Lieutenant Governor.", with its own source link ("Lieutenant Governor source", Ohio Constitution Article III, Section 15) and the same small notice as the five

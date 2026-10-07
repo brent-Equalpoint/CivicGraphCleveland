@@ -4830,6 +4830,16 @@ CHECKS['records-feed'] = async () => {
   expect(JSON.stringify(r.cards.map((c) => c.id)) === JSON.stringify(def.slice(0, 20).map((x) => x.id)), 'the first cards are not the newest rows of the file, in its order');
   expect(r.cards.every((c) => c.kind && /^\d{4}-\d{2}-\d{2}$/.test(c.date) && c.src.length === 1 && /^https:\/\//.test(c.src[0]) && c.pulled), `a card has no kind, date, source link, or pulled date: ${JSON.stringify(r.cards.find((c) => !(c.kind && c.src.length === 1 && c.pulled)))}`);
   expect(r.pressed.length === 3 && r.pressed.every((x) => x.bg === 'rgb(47, 102, 243)' && x.color === 'rgb(255, 255, 255)' && x.shadow === 'none'), `a chosen filter is not solid blue with white text and no line: ${JSON.stringify(r.pressed)}`);
+  // the When row is exactly Last 7 days, Last 30 days, All time (nothing compares pulls), the chips are rounded squares (12 px, the neighbouring
+  // buttons' corners), and nothing on Latest says "Changed in the latest pull" or leads to a list of changed records
+  { const w = await p.evaluate(() => ({
+      when: [...document.querySelectorAll('[data-f="days"] .rf-pills button')].map((b) => ({ v: b.dataset.v, t: b.innerText.replace(/\s+/g, ' ').trim() })),
+      radii: [...document.querySelectorAll('.rf-pills button')].map((b) => getComputedStyle(b).borderTopLeftRadius + '/' + getComputedStyle(b).borderBottomRightRadius),
+      page: (document.querySelector('.rf-page') || { innerText: '' }).innerText, pull: !!document.querySelector('.rf-pull, .rf-changed, .rf-news, [data-v="pull"]') }));
+    expect(JSON.stringify(w.when.map((x) => x.v)) === JSON.stringify(['7', '30', '0']), `the When row is not Last 7 days, Last 30 days, All time: ${JSON.stringify(w.when)}`);
+    if (!ES) expect(JSON.stringify(w.when.map((x) => x.t)) === JSON.stringify(['Last 7 days', 'Last 30 days', 'All time']), `the When row says ${JSON.stringify(w.when.map((x) => x.t))}`);
+    expect(!/Changed in the latest pull|Cambiaron? en la última actualización|between the pull of|left Council's list/.test(w.page) && !w.pull, `Latest still has the "Changed in the latest pull" feature: ${(w.page.match(/Changed in the latest pull|Cambiaron? en la última actualización|between the pull of|left Council's list/) || ['a pull note or chip'])[0]}`);
+    expect(w.radii.length >= 9 && w.radii.every((x) => x === '12px/12px'), `a Records filter chip is not a rounded square (12px corners): ${JSON.stringify([...new Set(w.radii)])}`); }
   for (const [d, t] of [[7, 'all'], [0, 'all'], [0, 'legislation'], [30, 'meeting'], [0, 'vote'], [7, 'vote']]) {
     await pick(p, 'days', d); await pick(p, 'type', t); await wait(250);
     r = await read(p);
@@ -4908,9 +4918,8 @@ CHECKS['records-feed'] = async () => {
     await done(q); }
   // 14. Today: Latest is exactly three cards, the file's newest rows dated by today (a meeting once its day has passed), in its order, under the
   // next-meeting card; Today reads only the
-  // front of the list; "See all records" opens Records > Latest with the default choices, and the Today tab returns; the Updated strip opens Latest with
-  // "Changed in the latest pull" chosen (records-changed holds its number and rows to the change log); What's new and City Hall receipts are gone from
-  // Today, and What's new still opens from ?panel=news
+  // front of the list; "See all records" opens Records > Latest with the default choices, and the Today tab returns; the Updated strip says What's new
+  // and opens What's new, never Latest; What's new and City Hall receipts are gone from Today, and What's new still opens from ?panel=news
   { const t = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
     for (let i = 0; i < 20 && (await count(t, '.rf-latest .rf-card')) < 3; i++) await wait(150);
     const ids = await t.evaluate(() => [...document.querySelectorAll('.rf-latest .rf-card')].map((c) => c.dataset.id));
@@ -4928,11 +4937,13 @@ CHECKS['records-feed'] = async () => {
     expect((await read(t)).count === want({ days: 30 }).length, '"See all records" opened Records with other choices than the defaults');
     await t.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(700);
     expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the Today tab did not return to Today from Records');
+    // the Updated strip is a plain link to What's new: it says so, opens the sheet, and does not leave Today for Latest; it says no count of changes
+    { const strip = await t.evaluate(() => ({ b: ((document.querySelector('.cxm-fresh b') || {}).innerText || '').replace(/\s+/g, ' ').trim(), hint: ((document.querySelector('.cxm-fresh-hint') || {}).textContent || '').trim() }));
+      expect(/^(What's new|Novedades|Newer records may exist|Puede haber registros más recientes)/.test(strip.b) && !/\d/.test(strip.b), `the Updated strip says "${strip.b}", not What's new and no count`);
+      expect(/^Opens What's new\.$|^Abre Novedades\.$/.test(strip.hint), `the Updated strip does not tell a screen reader it opens What's new: ${strip.hint}`); }
     await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(1200);
-    const pulled = rcLatestPull().pull;
-    expect((await recFolderOf(t)) === (pulled ? 'latest' : null) && /panel=records/.test(await t.evaluate(() => location.search)) === !!pulled, 'the Updated strip did not open Records > Latest');
-    if (pulled) expect((await t.evaluate(() => (document.querySelector('[data-f="days"] button[aria-pressed="true"]') || {}).dataset.v)) === 'pull', 'the Updated strip opened Records without "Changed in the latest pull" chosen');
-    expect(/Opens the records changed in the latest pull\.|Abre los registros que cambiaron en la última actualización\.|Opens What's new\.|Abre Novedades\./.test((await txt(t, '.cxm-fresh-hint')) || ''), `the Updated strip does not tell a screen reader where it goes: ${await txt(t, '.cxm-fresh-hint')}`);
+    expect((await has(t, '.cxm-sheet')) && /What's new|Novedades/.test((await txt(t, '.cxm-sheet .cxm-h2')) || '') && !(await has(t, '.rf-page')) && !/panel=records/.test(await t.evaluate(() => location.search)), 'the Updated strip did not open What\'s new (it opened Records, or nothing)');
+    expect(/panel=news/.test(await t.evaluate(() => location.search)), 'What\'s new, opened from the Updated strip, lost its ?panel=news address');
     await done(t); }
   { const q = await open('/?panel=news#phone', { mobile: true, easy: false }); expect(await has(q, '.cxm-sheet') && /What's new|Novedades/.test((await txt(q, '.cxm-sheet .cxm-h2')) || ''), '?panel=news no longer opens What\'s new'); await done(q); }
   // 13. a phone page: the desktop has no Records page yet
@@ -4989,7 +5000,7 @@ CHECKS['records-tab'] = async () => {
   // 2. each folder holds what it moved in: Latest the filters and cards, Meetings Next up and five day tabs, Rooms the rail, the rooms, and the guide
   for (let i = 0; i < 20 && (await p.evaluate(() => document.querySelectorAll('#rf-folder-panel .rf-card').length)) === 0; i++) await wait(150);
   r = await p.evaluate(RT_READ);
-  expect(r.latest.pills >= 9 && r.latest.cards >= 1, `Latest does not show the filters and the cards: ${JSON.stringify(r.latest)}`);
+  expect(r.latest.pills === 9 && r.latest.cards >= 1, `Latest does not show the nine filter chips (When 3, Kind 4, Order 2) and the cards: ${JSON.stringify(r.latest)}`);
   expect(r.wide <= 0 && r.app === r.iw, `Latest is not exactly the screen's width (${r.app} of ${r.iw}, ${r.wide} px sideways)`);
   expect(!r.small.length, `Latest: controls under 44px: ${r.small.slice(0, 4)}`);
   { const bad = await axeBad(p); expect(bad.length === 0, `axe on Records > Latest: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
@@ -5025,7 +5036,7 @@ CHECKS['records-tab'] = async () => {
   await tap(p, 1); await wait(900);
   expect((await recFolderOf(p)) === 'latest', 'a new visit did not open Records on Latest (the folder must be kept in memory only)');
   await done(p);
-  // 4. every link and door lands in the right folder: the old ?panel= addresses, a room, a room's record, the Today cards, the Updated strip, the Rooms door, Search
+  // 4. every link and door lands in the right folder: the old ?panel= addresses, a room, a room's record, the Today cards, the Rooms door, Search (the Updated strip opens What's new)
   const LINKS = [['/?panel=records#phone', 'latest', /panel=records/], ['/?panel=meetings#phone', 'meetings', /panel=meetings/], ['/?panel=explore#phone', 'rooms', /^$/],
     ['/?room=voting#phone', 'rooms', /room=voting/], ['/?room=council&node=ward-7#phone', 'rooms', /room=council&node=ward-7/]];
   for (const [url, want, addr] of LINKS) {
@@ -5045,12 +5056,16 @@ CHECKS['records-tab'] = async () => {
   const steps = [
     ['the next-meeting card on Today', 'meetings', () => t.evaluate(() => document.querySelector('.mt-card').click())],
     ['"See all records" on Today', 'latest', async () => { for (let i = 0; i < 20 && !(await has(t, '.rf-all')); i++) await wait(150); await t.evaluate(() => document.querySelector('.rf-all').click()); }],
-    ['the Updated strip', 'latest', () => t.evaluate(() => document.querySelector('.cxm-fresh').click())],
   ];
   for (const [what, want, act] of steps) {
     await tap(t, 0); await wait(500); await act(); await wait(1100);
     expect((await recFolderOf(t)) === want, `${what} opened ${(await recFolderOf(t)) || 'no Records folder'}, not ${want}`);
   }
+  // the Updated strip is a plain link to What's new: from Records it opens the What's new sheet over the folder, and the folder does not change
+  { const was = await recFolderOf(t);
+    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(900);
+    expect((await has(t, '.cxm-sheet')) && /What's new|Novedades/.test((await txt(t, '.cxm-sheet .cxm-h2')) || '') && (await recFolderOf(t)) === was, `the Updated strip did not open What's new over Records (${await recFolderOf(t)}, was ${was})`);
+    await t.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(500); }
   await folder(t, 'rooms'); await wait(800);
   await t.evaluate(() => [...document.querySelectorAll('.cxm-door')][0].click()); await wait(800);
   expect((await recFolderOf(t)) === 'meetings', 'the At City Hall door in Rooms did not open the Meetings folder');
@@ -5101,137 +5116,6 @@ CHECKS['records-tab'] = async () => {
     expect(!s.room && !s.sheet && s.rail && s.tiles === 17 && (await recFolderOf(q)) === 'rooms' && !/room=|node=/.test(s.search), `${url}: tapping the Records tab while on it did not return Rooms to its top level: ${JSON.stringify(s)}`);
     await done(q);
   }
-};
-
-/* Records > Latest, "Changed in the latest pull" (ext/cx-records.jsx, cxLatestPull in ext/cx-live.jsx; docs/plan-mobile-restructure.md). The number on the
-   Updated strip, the count on the list it opens, and the rows of that list are the same records: the files the newest entry of data/changes-2026.json
-   changed, when that entry is the pull the app shows (data/legistar-2026.json), still in Council's list; worked out here from data/ and the built
-   records file, never from the app's code. The strip opens Latest with the choice on (solid blue, white text, no accent line); each row says what changed
-   in the record's own words with the pull's time; the note names both pulls and leads to What's new; no score or ranking word, no person's name, and
-   no dash in our own words; the choice stays out of the address and storage, and the tab bar brings back the usual choices. Runs under CHECK_MODE,
-   CHECK_THEME, and CHECK_LANG. */
-const RC_ET_DAY = (iso) => new Date(iso).toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
-const RC_SHORT = (day) => new Date(`${String(day).slice(0, 10)}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
-const RC_CLOCK = (iso) => new Date(iso).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', timeZone: 'America/New_York' }).replace('AM', 'a.m.').replace('PM', 'p.m.');
-const RC_SP = (s) => String(s || '').replace(/[  ]/g, ' ').replace(/\s+/g, ' ').trim();
-function rcLatestPull() {
-  const ch = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'changes-2026.json'), 'utf8'));
-  const leg = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8'));
-  const matters = new Map(leg.matters.map((m) => [m.file, m]));
-  const up = [...ch.updates].sort((a, b) => (a.at < b.at ? 1 : -1))[0];
-  const stale = Math.round((Date.parse(`${etToday()}T12:00:00Z`) - Date.parse(`${RC_ET_DAY(leg.retrieved_at)}T12:00:00Z`)) / 86400000) >= 3;
-  if (!up || up.at !== leg.retrieved_at) return { pull: null, stale };
-  const files = new Map(), gone = [];
-  for (const c of up.changes) { if (c.gone || !matters.has(c.f)) gone.push(c.f); else files.set(c.f, c); }
-  return { pull: { at: up.at, from: up.from, files, gone }, matters, stale };
-}
-/* what a row must say, from the change itself: the record's own status and action words */
-function rcLines(c, m) {
-  const out = [];
-  if (c.new) out.push(m && m.intro ? `New in Council's record, introduced ${RC_SHORT(m.intro)}.` : `New in Council's record.`);
-  if (c.st) out.push(`Status changed from “${c.st[0]}” to “${c.st[1]}”.`);
-  if (c.sp && c.sp.length) out.push(c.sp.length === 1 ? 'Sponsor added.' : `${c.sp.length} sponsors added.`);
-  for (const s of c.steps || []) out.push(`Action added: ${s[2] || 'City Council'}, “${s[1]}”, ${RC_SHORT(s[0])}.`);
-  return out;
-}
-CHECKS['records-changed'] = async () => {
-  const ES = process.env.CHECK_LANG === 'es';
-  const { pull, matters, stale } = rcLatestPull();
-  const feed = JSON.parse(fs.readFileSync(path.join(SITE, 'records', 'records-2026.json'), 'utf8'));
-  const people = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'people-2026.json'), 'utf8')).people.map((x) => x.name);
-  const strip = (p) => p.evaluate(() => ({ more: ((document.querySelector('.cxm-fresh b') || {}).innerText || '').replace(/\s+/g, ' ').trim(), hint: ((document.querySelector('.cxm-fresh-hint') || {}).textContent || '').trim() }));
-  const stripN = (t) => { if (/^(No records changed|Ningún registro cambió)/.test(t)) return 0; const m = t.match(/^(\d[\d,]*) (records? changed|registros? cambi)/); return m ? Number(m[1].replace(/,/g, '')) : null; };
-  const read = (p) => p.evaluate(() => ({
-    count: Number(((document.querySelector('.rf-page .rf-count span') || {}).innerText || '').replace(/\D/g, '')),
-    cards: [...document.querySelectorAll('.rf-page .rf-list > .rf-card')].map((c) => ({ id: c.dataset.id, type: c.dataset.type, lead: ((c.querySelector('.rf-changed > span:first-child') || {}).innerText || ''), lines: [...c.querySelectorAll('.rf-changed .rf-body')].map((x) => x.innerText) })),
-    chip: (() => { const b = document.querySelector('[data-f="days"] button[data-v="pull"]'); if (!b) return null; const c = getComputedStyle(b); return { on: b.getAttribute('aria-pressed') === 'true', name: b.innerText.trim(), bg: c.backgroundColor, color: c.color, shadow: c.boxShadow, lines: ['Top', 'Right', 'Bottom', 'Left'].filter((s) => parseFloat(c[`border${s}Width`]) > 0 && c[`border${s}Color`] !== c.backgroundColor) }; })(),
-    pressed: [...document.querySelectorAll('.rf-pills button[aria-pressed="true"]')].map((b) => b.dataset.v),
-    kinds: Object.fromEntries([...document.querySelectorAll('[data-f="type"] button')].map((b) => [b.dataset.v, (b.querySelector('.rf-n') || {}).innerText || null])),
-    note: ((document.querySelector('.rf-page .rf-pull') || {}).innerText || ''), changed: document.querySelectorAll('.rf-page .rf-changed').length,
-  }));
-  const more = async (p) => { for (let i = 0; i < 40 && (await has(p, '.rf-page .rf-show')); i++) { await p.evaluate(() => document.querySelector('.rf-page .rf-show').click()); await wait(300); } };
-  const store = (p) => p.evaluate(() => JSON.stringify({ href: location.href, local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie }));
-  // 0. no compared pull: the strip claims no number and opens What's new; Latest offers no such choice
-  if (!pull) {
-    const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
-    const s = await strip(p);
-    expect(stripN(s.more) === null, `with no compared pull, the Updated strip still shows a number: ${s.more}`);
-    await p.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(900);
-    expect(await has(p, '.cxm-sheet') && /What's new|Novedades/.test((await txt(p, '.cxm-sheet .cxm-h2')) || ''), 'with no compared pull, the Updated strip does not open What\'s new');
-    await done(p);
-    const q = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800 });
-    expect(!(await has(q, '[data-f="days"] button[data-v="pull"]')), 'Latest offers "Changed in the latest pull" with no compared pull');
-    await done(q);
-    return;
-  }
-  // 1. the list the data says: each changed file has exactly one legislation row in the records file, in the file's order
-  const rows = feed.rows.filter((r) => r.type === 'legislation' && pull.files.has(r.file));
-  const missing = [...pull.files.keys()].filter((f) => !rows.some((r) => r.file === f));
-  expect(!missing.length && rows.length === pull.files.size, `the latest pull changed ${pull.files.size} files still in Council's list, but the records file has rows for ${rows.length} (no row: ${missing.join(', ')})`);
-  // 2. the strip's number is that count, and says which count it is; it opens Latest with the choice on
-  const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
-  const s = await strip(p);
-  if (stale) expect(/Newer records may exist|registros más recientes/i.test(s.more), `the strip is stale but says ${s.more}`);
-  else expect(stripN(s.more) === pull.files.size, `the Updated strip says "${s.more}", the latest pull changed ${pull.files.size} records`);
-  expect(/Opens the records changed in the latest pull\.|Abre los registros que cambiaron en la última actualización\./.test(s.hint), `the strip does not tell a screen reader where it goes: ${s.hint}`);
-  await p.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(1600);
-  for (let i = 0; i < 20 && !(await has(p, '.rf-page .rf-count')); i++) await wait(150);
-  expect((await recFolderOf(p)) === 'latest' && /panel=records/.test(await p.evaluate(() => location.search)) && !(await has(p, '.cxm-sheet')), 'the Updated strip did not open Records > Latest');
-  await more(p);
-  let r = await read(p);
-  expect(r.chip && r.chip.on, `the Updated strip did not open Latest with "Changed in the latest pull" on: ${JSON.stringify(r.pressed)}`);
-  expect(r.chip && r.chip.bg === 'rgb(47, 102, 243)' && r.chip.color === 'rgb(255, 255, 255)' && r.chip.shadow === 'none' && !r.chip.lines.length, `the chosen "Changed in the latest pull" is not solid blue with white text and no accent line: ${JSON.stringify(r.chip)}`);
-  expect(r.chip && (ES ? r.chip.name === 'Cambiaron en la última actualización' : r.chip.name === 'Changed in the latest pull'), `the choice is named "${r.chip && r.chip.name}"`);
-  if (!stale) expect(r.count === stripN(s.more), `the strip says ${stripN(s.more)}, the list it opens counts ${r.count}`);
-  expect(r.count === rows.length && r.cards.length === rows.length, `the list counts ${r.count} and shows ${r.cards.length} cards; the latest pull changed ${rows.length} records`);
-  expect(JSON.stringify(r.cards.map((c) => c.id)) === JSON.stringify(rows.map((x) => x.id)), `the rows are not the changed records in the file's order: ${r.cards.slice(0, 20).map((c) => c.id).join(', ')}${r.cards.length > 20 ? ' ...' : ''} / ${rows.map((x) => x.id).join(', ')}`);
-  expect(Number(String(r.kinds.legislation).replace(/\D/g, '')) === rows.length && Number(String(r.kinds.meeting).replace(/\D/g, '')) === 0 && Number(String(r.kinds.vote).replace(/\D/g, '')) === 0, `the kinds under the choice are ${JSON.stringify(r.kinds)}`);
-  // 3. each row says what changed, in the record's own words, with the pull's time
-  const lead = RC_SP(`Changed in the latest pull, ${RC_SHORT(RC_ET_DAY(pull.at))}, ${RC_CLOCK(pull.at)}`);
-  for (const c of r.cards.slice(0, 60)) {
-    if (!pull.files.has(c.id)) continue;   // a row the pull did not change is already reported above
-    const f = c.id, want = rcLines(pull.files.get(f), matters.get(f));
-    if (ES) {
-      expect(/^Cambió en la última actualización, \d{1,2} [a-z]{3}/.test(RC_SP(c.lead)), `${f}: the row does not say in Spanish when it changed: ${c.lead}`);
-      expect(c.lines.length === want.length && c.lines.every((l, i) => (/^Status/.test(want[i]) ? /^El estado cambió de/ : /^Action/.test(want[i]) ? /^Acción añadida:/ : /^New/.test(want[i]) ? /^Nuevo en el registro del Concejo/ : /patrocinador/).test(RC_SP(l))), `${f}: the row's changes in Spanish are ${JSON.stringify(c.lines)}`);
-    } else {
-      expect(RC_SP(c.lead) === lead, `${f}: the row says "${c.lead}", not "${lead}"`);
-      expect(JSON.stringify(c.lines.map(RC_SP)) === JSON.stringify(want.map(RC_SP)), `${f}: the row says ${JSON.stringify(c.lines)}, the change log says ${JSON.stringify(want)}`);
-    }
-  }
-  // 4. the note names both pulls, says what is not compared, and leads to What's new; our own words have no score, ranking, name, or dash
-  const note = RC_SP(r.note);
-  if (!ES) expect(note.includes(RC_SP(`between the pull of ${RC_SHORT(RC_ET_DAY(pull.from))}, ${RC_CLOCK(pull.from)} and the pull of ${RC_SHORT(RC_ET_DAY(pull.at))}, ${RC_CLOCK(pull.at)}`)) && /Votes and meetings are not compared/.test(note), `the note does not name both pulls and what is not compared: ${note}`);
-  else expect(/entre la actualización del/.test(note) && /no se comparan/.test(note), `the note is not in Spanish: ${note}`);
-  if (pull.gone.length) expect(/left Council's list|salieron? de la lista/.test((await txt(p, '.rf-page')) || ''), 'files no longer listed are not mentioned');
-  const own = await p.evaluate(RF_OWN);
-  expect(!RF_SCORE.test(own) && !RF_SCORE_ES.test(own) && !/[–—]/.test(own), `a score, ranking word, or dash in our own words: ${(own.match(RF_SCORE) || own.match(RF_SCORE_ES) || own.match(/.{20}[–—].{20}/) || [])[0]}`);
-  expect(!people.some((n) => own.includes(n)) && !RF_NAME.test(own), `a person is named in our own words on "Changed in the latest pull": ${people.filter((n) => own.includes(n)).slice(0, 3)}`);
-  // 5. the screen's width, full targets, axe
-  expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth), '"Changed in the latest pull" is wider than the screen');
-  const small = await p.evaluate(() => [...document.querySelectorAll('.rf-page :is(button, a[href], select, summary)')].filter((el) => { const b = el.getBoundingClientRect(); if (!b.width || !b.height) return false; if (el.tagName === 'A' && getComputedStyle(el).display === 'inline') return false; return b.height < 44 || b.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().height)}px`));
-  expect(!small.length, `"Changed in the latest pull": controls under 44px: ${small.slice(0, 4)}`);
-  { const bad = await axeBad(p); expect(bad.length === 0, `axe on "Changed in the latest pull": ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
-  // 6. the choice stays out of the address and storage; another time choice takes the change lines away, and the choice brings them back
-  const s0 = await store(p);
-  await p.evaluate(() => document.querySelector('[data-f="days"] button[data-v="30"]').click()); await wait(400);
-  r = await read(p);
-  expect(r.changed === 0 && !(r.chip && r.chip.on) && r.pressed.includes('30') && !r.note, 'choosing Last 30 days left the change lines or the note');
-  await p.evaluate(() => document.querySelector('[data-f="days"] button[data-v="pull"]').click()); await wait(400);
-  await more(p);
-  r = await read(p);
-  expect(r.chip && r.chip.on && r.count === rows.length && r.changed === rows.length, `choosing "Changed in the latest pull" again shows ${r.count} records and ${r.changed} change lines, not ${rows.length}`);
-  expect((await store(p)) === s0 && !/pull|days=|changed/i.test(await p.evaluate(() => location.search)), `choosing the latest pull changed the address or storage: ${await p.evaluate(() => location.search)}`);
-  // 7. What's new stays one tap away from the note
-  await p.evaluate(() => document.querySelector('.rf-page .rf-news').click()); await wait(800);
-  expect(await has(p, '.cxm-sheet') && /What's new|Novedades/.test((await txt(p, '.cxm-sheet .cxm-h2')) || ''), 'the note\'s link does not open What\'s new');
-  await p.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
-  // 8. the tab bar brings Latest back with the usual choices
-  await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(500);
-  await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[1].click()); await wait(1200);
-  r = await read(p);
-  expect((await recFolderOf(p)) === 'latest' && r.pressed.includes('30') && !(r.chip && r.chip.on) && r.changed === 0, `the Records tab did not bring Latest back with the usual choices: ${JSON.stringify(r.pressed)}`);
-  await done(p);
 };
 
 /* The agenda calendar in Records > Meetings (ext/cx-meetings.jsx, docs/plan-agenda-calendar.md): a part added under For you, nothing above it changed.
@@ -5653,6 +5537,9 @@ CHECKS['office-text'] = async () => {
   }
   await done(d);
 };
+
+/* collapse every kind of space to one, so a wrapped or padded line compares equal to its words (the office-text checks use it) */
+const RC_SP = (s) => String(s || '').replace(/[  ]/g, ' ').replace(/\s+/g, ' ').trim();
 
 (async () => {
   if (argv('--list')) { console.log(Object.keys(CHECKS).join('\n')); return; }

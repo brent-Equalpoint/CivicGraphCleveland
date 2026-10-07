@@ -59,15 +59,11 @@ const CX_REC_TIMES = [[7, `Last 7 days`], [30, `Last 30 days`], [0, `All time`]]
 const CX_REC_TYPES = [[`all`, `All`], [`legislation`, `Legislation`], [`meeting`, `Meetings`], [`vote`, `Votes`]];
 const CX_REC_SORTS = [[`new`, `Newest first`], [`old`, `Oldest first`]];
 const CX_REC_START = { days: 30, type: `all`, ward: 0, sort: `new` };
-/* "Changed in the latest pull" is a When choice: the legislation rows of the files the latest pull changed (cxLatestPull in ext/cx-live.jsx), whatever
-   their date. It is offered only when the change log has that pull. The Updated strip opens Latest with it chosen. */
-const CX_REC_PULL = [`pull`, `Changed in the latest pull`];
-/* The cards that pass the filters, in the chosen order. f = { days (0: all time; `pull`: the files in f.pull, a Map), type (`all` or a kind), ward
-   (0: any), sort (`new` or `old`) }; today is a day in Eastern time. Days count back from today, today being the first; a meeting still to come is in
-   every window. The list is already newest first, so oldest first is the same list turned around. */
+/* The cards that pass the filters, in the chosen order. f = { days (0: all time), type (`all` or a kind), ward (0: any), sort (`new` or `old`) };
+   today is a day in Eastern time. Days count back from today, today being the first; a meeting still to come is in every window. The list is
+   already newest first, so oldest first is the same list turned around. */
 function cxRecFilter(rows, f, today) {
-  const when = f.days === `pull` ? (r) => r.type === `legislation` && !!f.pull && f.pull.has(r.file) : (r) => !f.days || cxDays(r.date, today) < f.days;
-  const out = (rows || []).filter((r) => when(r) && (!f.type || f.type === `all` || r.type === f.type) && (!f.ward || r.wards.some((w) => w[0] === f.ward)));
+  const out = (rows || []).filter((r) => (!f.days || cxDays(r.date, today) < f.days) && (!f.type || f.type === `all` || r.type === f.type) && (!f.ward || r.wards.some((w) => w[0] === f.ward)));
   return f.sort === `old` ? out.reverse() : out;
 }
 /* how many cards of each kind the other filters leave (shown on the kind choices; never on All) */
@@ -107,24 +103,6 @@ function cxRecSrcShort(r) {
 function cxRecMeetState(r, today) {
   return r.date < today ? `Met.` : r.date === today ? `Meets today.` : `Scheduled.`;
 }
-/* what the latest pull changed on one file, in the record's own words (its status words and action words, quoted): new in the list, the status
-   before and after, sponsors added (counted; their names are in Details), each action added with its body and date */
-function cxRecChanged(c, m) {
-  const out = [];
-  if (c.new) out.push(m && m.intro ? `New in Council's record, introduced ${cxShortDate(m.intro)}.` : `New in Council's record.`);
-  if (c.st) out.push(`Status changed from “${c.st[0]}” to “${c.st[1]}”.`);
-  if (c.sp && c.sp.length) out.push(c.sp.length === 1 ? `Sponsor added.` : `${c.sp.length} sponsors added.`);
-  for (const s of c.steps || []) out.push(`Action added: ${s[2] || `City Council`}, “${s[1]}”, ${cxShortDate(s[0])}.`);
-  return out;
-}
-function CX_RecChanged({ c, m, at }) {
-  return (
-    <p className="rf-what rf-changed">
-      <span>{`Changed in the latest pull, ${cxWhenET(at)}`}</span>
-      {cxRecChanged(c, m).map((t) => <span key={t} className="rf-body">{t}</span>)}
-    </p>
-  );
-}
 /* the roll call in the page (CX_VOTES) that a vote card is about, for its names */
 function cxRecVoteOf(r) {
   return [cxVoteRecord(r.file), ...cxVoteOthers(r.file)].find((v) => v && v.date === r.date && v.question === r.question) || null;
@@ -139,8 +117,7 @@ function CX_RecSrcLine({ r }) {
     <p className="rf-src"><span>Source:</span>{` `}<a href={r.url} target="_blank" rel="noreferrer">{cxRecSrcShort(r)}<span className="sp-ext"> (opens in a new tab)</span></a><span>{`, pulled ${cxmDate(cxDayET(Date.parse(r.pulled)))}.`}</span></p>
   );
 }
-/* changed: what the latest pull changed on this file, and at: when that pull was (only under "Changed in the latest pull") */
-function CX_RecCard({ r, today, onFile, onPerson, first, changed, at }) {
+function CX_RecCard({ r, today, onFile, onPerson, first }) {
   const [open, setOpen] = u.useState(!1);
   const id = `rf-d${u.useId().replace(/[^A-Za-z0-9]/g, ``)}`;   // the same record can be on Today and on Records at once
   const m = r.file ? cxmMatter(r.file) : null;
@@ -149,7 +126,6 @@ function CX_RecCard({ r, today, onFile, onPerson, first, changed, at }) {
     return (
       <li className="rf-card rf-short" data-type={r.type} data-id={r.id} data-date={r.date}>
         <p className="rf-line" tabIndex={-1} ref={first}><span className="rf-type">Ceremonial resolution</span>{` · `}<span>{cxmDate(r.date)}</span>{` · `}{file}{` · `}<span data-rec="">{cxHeadline(r.title)}</span>{` · `}<span>{cxRecAct(r)}</span></p>
-        {changed ? <CX_RecChanged c={changed} m={m} at={at} /> : null}
         <CX_RecSrcLine r={r} />
       </li>
     );
@@ -162,7 +138,6 @@ function CX_RecCard({ r, today, onFile, onPerson, first, changed, at }) {
       {r.type === `legislation` && <p className="rf-what"><span>{cxRecAct(r)}</span>{r.body && r.body !== `City Council` ? <span className="rf-body">{r.body}</span> : null}{cxRecNow(r) ? <span className="rf-now">{cxRecNow(r)}</span> : null}</p>}
       {r.type === `meeting` && <p className="rf-what"><span>{cxRecMeetState(r, today)}</span>{` `}<span>{r.items ? cxmPl(r.items, `item on the agenda.`, `items on the agenda.`) : `No legislation on the agenda.`}</span></p>}
       {r.type === `vote` && <p className="rf-what"><span>{CX_VT.question[r.question] || r.question}</span>{`: `}<strong className="rf-count-line">{cxRecCounts(r.count)}</strong></p>}
-      {changed ? <CX_RecChanged c={changed} m={m} at={at} /> : null}
       {r.wards.length > 0 && <p className="rf-wards">{r.wards.map((t) => <span key={t[0]} className="rf-chip" data-ward={t[0]}>{cxRecTie(t)}</span>)}</p>}
       <CX_RecSrcLine r={r} />
       <button type="button" className="rf-more" aria-expanded={open} aria-controls={id} onClick={() => setOpen(!open)}><span>{open ? `Hide details` : `Details`}</span><CXI.Chevron size={16} className="cxm-chev" /></button>
@@ -223,21 +198,17 @@ function CX_RecPills({ name, label, items, value, onChange, counts }) {
     </div>
   );
 }
-/* home: the ward chosen on this device (or none), offered as "Names my ward"; it is kept only in this page's memory. start `pull`: open with
-   "Changed in the latest pull" chosen (the Updated strip). onNews: open What's new, which lists every change of the week and files no longer listed. */
-function CX_Records({ home = null, onFile, onPerson, onNews, start = null, step = 20 }) {
+/* home: the ward chosen on this device (or none), offered as "Names my ward"; it is kept only in this page's memory */
+function CX_Records({ home = null, onFile, onPerson, step = 20 }) {
   const data = useCxRecs(!1);
-  const pull = cxLatestPull();
-  const [f, setF] = u.useState(() => (start === `pull` && pull ? { ...CX_REC_START, days: `pull` } : CX_REC_START));
+  const [f, setF] = u.useState(CX_REC_START);
   const [n, setN] = u.useState(step);
   const [mine, setMine] = u.useState(!1);
   const firstNew = u.useRef(null), focusAt = u.useRef(-1);
   const today = cxTodayET();
   const ward = mine && home ? home : f.ward;
-  const onPull = f.days === `pull` && !!pull;
-  const times = pull ? [...CX_REC_TIMES, CX_REC_PULL] : CX_REC_TIMES;
-  const shown = u.useMemo(() => (data ? cxRecFilter(data.rows, { ...f, ward, pull: pull ? pull.files : null }, today) : []), [data, f, ward, today]);
-  const kinds = u.useMemo(() => (data ? cxRecKindCounts(data.rows, { ...f, ward, pull: pull ? pull.files : null }, today) : null), [data, f, ward, today]);
+  const shown = u.useMemo(() => (data ? cxRecFilter(data.rows, { ...f, ward }, today) : []), [data, f, ward, today]);
+  const kinds = u.useMemo(() => (data ? cxRecKindCounts(data.rows, { ...f, ward }, today) : null), [data, f, ward, today]);
   u.useEffect(() => { if (focusAt.current >= 0 && firstNew.current) { firstNew.current.focus({ preventScroll: !1 }); focusAt.current = -1; } }, [n]);
   const set = (k, v) => { setF((x) => ({ ...x, [k]: v })); setN(step); };
   if (!data) {
@@ -250,7 +221,7 @@ function CX_Records({ home = null, onFile, onPerson, onNews, start = null, step 
     <div className="rf">
       <p className="rf-lead">Every dated record in City Council's 2026 public record: legislation, meetings, and roll call votes.</p>
       <div className="rf-filters">
-        <CX_RecPills name="days" label="When" items={times} value={f.days} onChange={(v) => set(`days`, v)} />
+        <CX_RecPills name="days" label="When" items={CX_REC_TIMES} value={f.days} onChange={(v) => set(`days`, v)} />
         <CX_RecPills name="type" label="Kind" items={CX_REC_TYPES} value={f.type} onChange={(v) => set(`type`, v)} counts={kinds} />
         <label className="cxm-field rf-ward"><span>Ward</span>
           <select value={wardValue} onChange={(e) => { const v = e.target.value; setMine(v === `mine`); set(`ward`, v === `mine` || !v ? 0 : Number(v)); }}>
@@ -262,18 +233,9 @@ function CX_Records({ home = null, onFile, onPerson, onNews, start = null, step 
         <CX_RecPills name="sort" label="Order" items={CX_REC_SORTS} value={f.sort} onChange={(v) => set(`sort`, v)} />
       </div>
       <p className="rf-count" role="status" aria-live="polite"><span>{shown.length.toLocaleString(`en-US`)}</span>{` `}<span>{shown.length === 1 ? `record` : `records`}</span></p>
-      {onPull ? (
-        <>
-          <p className="cxm-fine rf-pull"><span>{`What changed in Council's legislation record between the pull of ${cxWhenET(pull.from)} and the pull of ${cxWhenET(pull.at)}`}</span>{` `}<span>Votes and meetings are not compared between pulls; choose a time to see them.</span></p>
-          {pull.gone.length > 0 && <p className="cxm-fine">{pull.gone.length === 1 ? `1 file left Council's list in this pull and has no record to show. What's new lists it.` : `${pull.gone.length} files left Council's list in this pull and have no record to show. What's new lists them.`}</p>}
-          {onNews && <button type="button" className="cxm-link rf-news" onClick={onNews}>See this week's changes in What's new</button>}
-        </>
-      ) : null}
       {ward ? <p className="cxm-fine">A record is tied to a ward when its title names the ward, its ordinance text ties ward money to it, or an address in its title is in the ward. Sponsorship by the ward's member is not counted here.</p> : null}
       {shown.length ? (
-        <ol className="rf-list">{shown.slice(0, n).map((r, i) => cxRecCard(r, { today, onFile, onPerson, first: i === focusAt.current ? firstNew : undefined, changed: onPull ? pull.files.get(r.file) : null, at: onPull ? pull.at : null }))}</ol>
-      ) : onPull ? (
-        <CxmEmpty title="No records match these choices" body={pull.files.size ? `Nothing that changed in the latest pull matches this ward and kind. That is not the same as nothing happening.` : `Nothing in Council's legislation record changed between the last two pulls. That is not the same as nothing happening.`} actions={[[`Clear the filters`, () => { setMine(!1); setF(CX_REC_START); setN(step); }]]} />
+        <ol className="rf-list">{shown.slice(0, n).map((r, i) => cxRecCard(r, { today, onFile, onPerson, first: i === focusAt.current ? firstNew : undefined }))}</ol>
       ) : (
         <CxmEmpty title="No records match these choices" body="Nothing in the record is dated in this window with this ward and kind. That is not the same as nothing happening." actions={[[`Clear the filters`, () => { setMine(!1); setF(CX_REC_START); setN(step); }]]} />
       )}
@@ -288,13 +250,12 @@ function CX_Records({ home = null, onFile, onPerson, onNews, start = null, step 
 }
 
 /* ---------- the phone: Records > Latest (?panel=records), the same banner and list that were the full page, now inside the tab ---------- */
-/* recAsk: how Latest was last asked for (cxm-core.jsx); the Updated strip asks for "Changed in the latest pull", and each ask starts the list afresh */
 function CxmRecords() {
-  const { openSheet, openProfile, home, recAsk } = useCxm();
+  const { openSheet, openProfile, home } = useCxm();
   return (
     <div className="rf-page cxm-rise">
       <CxmBanner kind="receipts" title="Records" />
-      <CX_Records key={recAsk.n} start={recAsk.pull ? `pull` : null} home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={openProfile} onNews={() => openSheet(`news`)} />
+      <CX_Records home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={openProfile} />
     </div>
   );
 }

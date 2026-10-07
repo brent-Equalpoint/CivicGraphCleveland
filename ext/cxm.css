@@ -556,12 +556,11 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 .rf-label { display: none; }   /* the group keeps its aria-label; the choices say what they are */
 .rf-pills { display: grid; gap: 6px; }
 .rf-group[data-f="days"] .rf-pills { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.rf-group[data-f="days"] .rf-pills button[data-v="pull"] { grid-column: 1 / -1; }
 .rf-group[data-f="sort"] .rf-pills { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .rf-group[data-f="type"] .rf-pills { display: flex; flex-wrap: wrap; }
-.rf-pills button { min-height: 44px; width: 100%; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: var(--tile); color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.1; text-wrap: balance; display: inline-flex; align-items: center; justify-content: center; text-align: center; gap: 6px; }
+.rf-pills button { min-height: 44px; width: 100%; padding: 4px 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--tile); color: var(--ink); font-size: 14px; font-weight: 500; line-height: 1.1; text-wrap: balance; display: inline-flex; align-items: center; justify-content: center; text-align: center; gap: 6px; }
 .rf-pills button.on { background: #2f66f3; border-color: #2f66f3; color: #ffffff; font-weight: 600; }
-.rf-pills button:focus-visible { border-radius: 999px; }   /* the global focus rule would turn a pill into a rounded rectangle */
+.rf-pills button:focus-visible { border-radius: 12px; }   /* the focus ring keeps the chip's own corners */
 .rf-group[data-f="type"] .rf-pills button { flex: 1 1 auto; width: auto; min-width: min-content; flex-direction: column; gap: 0; padding-left: 4px; padding-right: 4px; }
 .rf-group[data-f="type"] .rf-pills button[data-v="all"] { flex: 0 0 auto; min-width: 44px; }
 .rf-n { font-family: var(--mono); font-size: 13px; line-height: 1.1; }
