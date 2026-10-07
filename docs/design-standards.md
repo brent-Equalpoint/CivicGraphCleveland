@@ -53,6 +53,10 @@ no em dashes, no left accent stripes, both styles, both layouts) outrank everyth
   `CX_MAIN_PAGES` and taken out of the menu, never shown in both. A page that covers the strip (the United States map) always keeps a visible
   way back to it, including its loading and offline messages. Row one must show all nine tabs at 1100 px in English and at 1280 px in Spanish;
   narrower, it fades and says how many more. (`nav-desktop`, `targets`)
+- **A phone tab with parts uses People's folder tabs (`CxmFolders`).** Records holds Latest, Meetings, and Rooms; People holds Cleveland and
+  Federal. A folder row above a list that scrolls stays outside the scroll, so the list (and a rail along it) starts under the row; it is a named
+  landmark; and the tab remembers its folder for the visit, in memory only. A finished screen moved into a folder moves unchanged: the same
+  components, words, and look, and every old link and door lands on it. (`records-tab`, `people-tabs`, `design-look`)
 - **Every screen has a way out and a way back**, and returning lands where you left. (`stories-deeper`)
 - **Empty, blocked, and bad-link states say what happened, why, and one next step.** (`screen-states`)
 - **Easy mode keeps the plain version of everything**, without maps, filters, or controls that need explaining. (`easy-phone`, `easy-desktop`)
@@ -127,7 +131,7 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 `color-vision` (no color-only marks, every mark color registered; the math is `scripts/design/cvd.js`), `design-look` (how the built screens look, both styles, against `design/look.json`), `no-bleed` (text out of its box, on every screen), `story-fit` (every frame of every story, phone and desktop), `titles-never-cut`,
 `targets` (44 px, the phone and the desktop strip), `nav-desktop` (the desktop strip: chosen item in view, one thing chosen, Tab and arrow keys,
 reachable with a mouse alone, Jump to and My pages, the three main tabs and the way back from the United States map), `axe` (accessibility and contrast, Bento and Original), `print`, `sheet-pull`, `stories-*`, `easy-*`,
-`tab-blue` (every selected tab, pill, and folder on the desktop strip and the phone is solid blue with white text, in both styles, light and dark, and none has an accent line), `explore-bubble` (on Explore at 390 and 320 px: the guide's bubble, the lit tick, and the highlighted heading name the highlighted card's level at every
+`tab-blue` (every selected tab, pill, and folder on the desktop strip and the phone is solid blue with white text, in both styles, light and dark, and none has an accent line), `records-tab` (the phone's five tabs, Today, Records, My place, People, Ballot; Records opens on Latest; its folder tabs look exactly like People's and the chosen one is solid blue with white text and no line; each folder holds what moved into it; every old link, door, card, and story lands in the right folder; the folder is remembered for the visit and nothing is saved; the folder tabs stay put while the list scrolls; on Rooms the rail starts at the list's top under them and the guide's bubble keeps its rules; the screen's width; 44 px targets; axe), `explore-bubble` (on Records > Rooms at 390 and 320 px: the guide's bubble, the lit tick, and the highlighted heading name the highlighted card's level at every
 rest; the bubble covers no question or heading and stays in the list; 4.5:1 on the real pixels; at rest only, once a level, at most one after a fling,
 none going back up, gone 3 s after a jump to the top; Spanish from its first frame; reduced motion and reduced transparency; 44 px ticks, a bare tap
 moves nothing, a drag scrubs from where it took hold; cards keep their height; the rail's current place shows in light),

@@ -1,6 +1,6 @@
 # Plan: a live agenda for Council meetings
 
-Status: proposed, nothing built, written 2026-10-06 for Brent and the team. It builds on `docs/plan-city-hall-page.md` (the At City Hall page, built on the phone, no desktop page yet) and on the Agenda tab of the VC Fest 26 guide, which we own and can port into `ext/`.
+Status: proposed, nothing built, written 2026-10-06 for Brent and the team. It builds on `docs/plan-city-hall-page.md` (the At City Hall page, built on the phone, no desktop page yet; since Oct 7 it is the Meetings folder of the phone's Records tab, `docs/plan-mobile-restructure.md` step 2, so "the At City Hall full page" below means that folder) and on the Agenda tab of the VC Fest 26 guide, which we own and can port into `ext/`.
 
 ## Brent's ask
 
