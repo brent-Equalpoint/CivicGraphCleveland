@@ -8,8 +8,8 @@
 #
 # Four parts, so the checks fit well inside the time limit: the refresh and build on one machine; the browser checks of exactly that
 # build split across three machines (run.js --shard k/3, 2 at a time on each of their 4 processors, as in the Checks workflow); the publish
-# only when every part passed; then the note to the team. On one machine the checks alone took 25 minutes and a run was stopped at its
-# 30-minute limit (Oct 6, 2026); each part now takes about 7.
+# only when every part passed; then the note to the team. On one machine the checks ran 25 minutes without finishing and the run was
+# stopped at its 30-minute limit (Oct 6, 2026); split, each part takes about 8 minutes and a dry run took 14 min 30 s in all (Oct 7).
 # Run it by hand with "dry run" ticked to try it on any branch: the refresh, the build, and every check run, nothing is published, and no
 # issue is opened or closed.
 name: Nightly records refresh

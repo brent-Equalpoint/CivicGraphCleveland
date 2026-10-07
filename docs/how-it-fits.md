@@ -83,6 +83,18 @@ the commit is red and the issue "Checks failed on main" names the failing checks
 - **A backtick path that starts `/portraits/` is rewritten by the build** (`asset paths`, expected 18). Build a new portrait path by joining strings, as `CxFace` does.
 - **Photos need Pillow** (`pip install pillow`). `fetch_portraits.py` skips with a warning without it, and the nightly job installs it.
 - **CI is Linux; your machine is not.** The nightly job and the Checks workflow run on Ubuntu, where the default font is narrower than Windows', so a control can measure under 44 px there and not here (the skip link did). Give a tap target an explicit `min-height: 44px`. A test that imports something only your machine already loaded (`importlib.util`) will also fail in CI; import what you use. Look at CI after a push: `gh run list --limit 4`.
+- **Headless Chrome on GitHub's Linux runners has no mouse.** With no display and no input device, a computer-sized page there matched
+  `(hover: none)` and `(pointer: none)`; on Windows it matches `(hover: hover)` and `(pointer: fine)`. The map's hover card (`canHover` in
+  `ext/cx-us-map.jsx`) and every hover style never appeared, so `us-map` and `us-explain` failed only on GitHub (Oct 6). `run.js` starts Chrome
+  with Blink's own pointer settings (`DESK_MOUSE`) and stops at once, with the reason, if a computer-sized page does not report a mouse. A phone
+  page still gets `(pointer: coarse)` from puppeteer's touch emulation. `Emulation.setEmulatedMedia` cannot change `hover` or `pointer`.
+- **The frame rate changes where a moving thing is.** Headless Chrome draws about 150 frames a second on Windows and 60 on Linux, and the
+  force layouts move one step a frame. A dot let go on the corner map springs back and swings past its start, so 600 ms later it was 26 px away
+  on Windows and 15 px on Linux (`us-profile` wanted more than 15). Read a dragged thing while the button is held, or wait for it to rest.
+- **The nightly checks the build it publishes.** `.github/workflows/refresh.yml` refreshes and builds on one machine, packs `data/`, `site/`,
+  `bench/`, and `dist/`, and checks that exact build on three machines (`--shard k/3`, 2 at a time); the publish job commits only when every part
+  passed (`git add -A data site bench`). A new built file under `site/` is published with no change here; one anywhere else needs a line in
+  the publish step. "Run workflow" with "dry run" ticked runs everything on any branch except the publish and the issue.
 - **Do not use regex lookbehind (`(?<=...)`) in `ext/`.** Safari before 16.4 cannot parse it, and a parse error breaks the whole bundle. Split with `match(/[^.!?]+[.!?]*/g)` instead.
 - **Make dynamic sentences translatable by splitting them.** A sentence glued from a name, a verb, and a date is one text node and cannot be translated well. Render the name, the verb phrase ("meets Monday."), and the date as separate spans, and add each piece to `i18n/manual.json` (the pieces, not the whole sentence). `CxMtgHead` does this.
 - **Receipts, not scores.** No percentages, rankings, or labels. A missing record is not a no. Nothing personal in a link or request.
