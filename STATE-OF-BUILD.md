@@ -530,6 +530,28 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       (`scripts/checks/changed.js`), so a stylesheet-only change in the fast lane runs them too. `scripts/test_release_plan.js` pins both lists (19 of 19).
       Cost: a few minutes more at each full release. Shipped with the full gate (it changes the gate files).
 
+60. **Oct 7: a file that does not arrive now says so, with Try again; the Ballot knows the election is over; a candidate with no record reads as coverage, not a failure (branch `worktree-agent-a36cbeb25f711d24d`; not released).**
+    - Brent: "Next fix what breaks." These are the concrete defects the states inventory found (`docs/plan-states.md`, section 2), fixed with the smallest piece of Stage 1 they need.
+      What a resident sees: **People > Federal** no longer stays on "Loading the people in Washington..." for ever. At 8 seconds it says "Still loading. The record is slow right now."
+      with Try again; at 12 seconds, or as soon as the file fails, "We could not load the people in Washington." with a line that the rest of the app still works and Try again, which asks
+      for the file again (not the page). **Records > Meetings**, when the meetings file fails on the hosted site, says "We could not load the meetings record." with Try again, never
+      "needs the hosted site"; the same words and button sit inside a meeting's Details on Records > Latest. The single offline file keeps its own words ("The meeting record needs the
+      hosted site. It is not part of the offline file.") and has no Try again, since it has no server. **My ballot**: 30 days after Nov 3 the top says "The November 3 election is over."
+      and "Your ballot, to look back on. Follow the evidence." (no "Polls open", no "Take your time"); the dates list below it already carried the official results link. Before, and on
+      Election Day, the lines are unchanged. **The candidate box** is "No record on file yet. This candidate is on the official list. We have not added any votes or statements for them, and that is
+      not the same as nothing existing. No match or outcome is inferred." (it said "No reviewed policy record loaded yet", which read like a load failure); the official candidate entry link stays under it.
+    - Code: `useCxWait`, `CxFail`, `cxIsWeb` in `ext/cx-live.jsx` (the clock and the state, on top of `CxmEmpty`, which now takes `state` and stamps `data-cx-state`); `cxUsLoad(again)` in `ext/cx-us.jsx`
+      and `cxMtgRetry`, `CxMtgFail` in `ext/cx-meetings.jsx` (an older request that ends later cannot undo a newer one); the screens in `ext/cxm-federal.jsx`, `ext/cx-meetings.jsx`, `ext/cx-records.jsx`
+      (`CX_RecMeetDetails`), `ext/cxm-ballot.jsx`. No new color, size, radius or weight; `design-look`, `text-budget`, and `perf-budget` pass without a new record. 14 Spanish strings in `i18n/manual.json`
+      (draft, like the rest). Two clean builds: `site/index.html` `c3ed1688...bdcb`, offline file `1349c7bc...011c`.
+    - New browser check `load-states` (`scripts/checks/run.js`, with a new `net` option on `open()`: fail, hang, or refuse a file with the hosted page's service worker bypassed, count how often it was asked for,
+      lift it mid-test). It forces: Federal failing, hanging (Loading, then Still loading at 8 seconds, then could not load at 12), and recovering on Try again; Meetings failing and recovering, and in a
+      meeting's Details; the offline file's words with no button; the Ballot at before, on, and 30 days after Nov 3; the candidate box. Run in dark, light Bento, light Original, and Spanish. It fails on planted
+      faults (`LOAD_STATES_PLANT=forever|nobutton|polls|oldbox|small|dash|noresults`, each run and each failed) and on the previous committed `site/` (24 failures), and passes on this build.
+    - Not done, on purpose: the other loading-forever screens (the Index, the Tree, Compare members, the member sheet, the Bench, the Record sheet's votes), offline words, and the desktop twin of the candidate box
+      (the compiled app's "No reviewed policy record loaded yet" has no `build.py` patch). They are Stages 1 to 7 of `docs/plan-states.md`. `load-states` is not yet in `scripts/checks/changed.js` or `lists.js`
+      (the full gate runs it because it runs every check; the fast lane and the light and Spanish lists do not yet).
+
 ---
 
 ## 3. What is in the app right now

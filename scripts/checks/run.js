@@ -92,6 +92,21 @@ async function open(url, o = {}) {
     await p.setRequestInterception(true);
     p.on('request', (r) => { const u = new URL(r.url()); if (o.mock[u.pathname]) r.respond({ status: 200, contentType: 'application/json', body: JSON.stringify(o.mock[u.pathname]) }); else r.continue(); });
   }
+  if (o.net) {  // { '/us/landscape-2026.json': 'abort' | 'hang' | 503 }: fail, hang or refuse these files. p.net can be changed later (set a path to null to let it through), p.netHits counts how often each was asked for.
+    // The hosted page installs a service worker, and it answers a request before the browser's interception sees it, so a "failed file" test passes silently unless the worker is bypassed.
+    const cdp = await p.createCDPSession(); await cdp.send('Network.enable'); await cdp.send('Network.setBypassServiceWorker', { bypass: true });
+    p.net = { ...o.net }; p.netHits = {};
+    await p.setRequestInterception(true);
+    p.on('request', (r) => {
+      if (r.isInterceptResolutionHandled()) return;
+      const k = new URL(r.url()).pathname, how = p.net[k];
+      if (k in p.net) p.netHits[k] = (p.netHits[k] || 0) + 1;
+      if (how === undefined || how === null) return r.continue();
+      if (how === 'hang') return;   // never answered, like a stuck connection
+      if (how === 'abort') return r.abort('failed');
+      return r.respond({ status: how, contentType: 'text/plain', body: 'unavailable' });
+    });
+  }
   if (o.mode !== 'system') await p.evaluateOnNewDocument((m) => { try { localStorage.setItem('cx-mode', m); } catch (e) {} }, o.mode || (process.env.CHECK_MODE === 'light' ? 'light' : 'dark'));   // dark unless CHECK_MODE=light (the browser's own setting is light, so System would be light); o.mode:'system' leaves the choice alone
   if (process.env.CHECK_LANG === 'es') await p.evaluateOnNewDocument(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} });   // CHECK_LANG=es: run the layout checks (no-bleed, targets, axe) in Spanish
   if (o.easy !== undefined || o.theme || o.pre) {
@@ -5536,6 +5551,190 @@ CHECKS['office-text'] = async () => {
     expect(!o.includes(nm(OFFICE_GENERIC)), `desktop "What could change?", ${office}: shows the generic line`);
   }
   await done(d);
+};
+
+/* Load states (docs/plan-states.md, section 2 and Stage 1; STATE-OF-BUILD item 60): what a resident sees when a file does not arrive, and what the Ballot says on
+   which side of the election it is read. Each is forced: the file is failed, hung for twelve seconds, then let through so Try again can be seen to work; the clock
+   is moved to before, on, and 30 days after Nov 3; the candidate box is read as written. The hosted page installs a service worker that answers before the browser
+   can intercept, so open() is told to bypass it (Network.setBypassServiceWorker) or a failed file would pass silently; the check also asserts the file was really asked for.
+   People > Federal: failed (words, one Try again of 44 px, the rest of the app named, never "Loading" for ever), hung (loading, then Still loading at 8 s, then could not load
+   at 12 s), and back to the people after Try again. Meetings: a failed fetch on the hosted site says it could not load the record and has Try again (never "needs the hosted site");
+   the same box inside a meeting's Details on Records; the single offline file keeps the offline words and offers no Try again. The Ballot: before and on Election Day it says
+   Polls open; 30 days after it says the election is over, has no Polls open and no Take your time, and keeps the official results link. The candidate box is a coverage line, not a load failure.
+   LOAD_STATES_PLANT=forever|nobutton|polls|oldbox|small|dash|noresults mutates the page just before it is read: every plant must fail. */
+CHECKS['load-states'] = async () => {
+  const ES = process.env.CHECK_LANG === 'es';
+  const sp = (s) => (ES ? (ES_WORDS[s] || s) : s);
+  const PLANT = process.env.LOAD_STATES_PLANT || '';
+  const FED = '/us/landscape-2026.json', MTG = '/meetings/meetings-2026.json';
+  const DASH = /[–—]/;
+  const T = {
+    slowTitle: 'Still loading. The record is slow right now.', slowBody: 'Your connection may be slow. You can keep waiting or try again. The rest of the app still works.',
+    fedTitle: 'We could not load the people in Washington.', fedBody: 'This page reads the federal record from this website, and it did not arrive. Check your connection, then try again. The rest of the app still works.',
+    mtgTitle: 'We could not load the meetings record.', mtgBody: "This page reads the Clerk's meeting record from this website, and it did not arrive. Check your connection, then try again. The rest of the app still works.",
+    agBody: 'The agenda by kind comes from this website, and it did not arrive. The links below still open it. Check your connection, then try again.',
+    mtgOffTitle: 'The meeting record needs the hosted site.', mtgOffBody: 'It is not part of the offline file. The rest of this file still works.',
+    fedOffTitle: 'The people in Washington are not in the offline file.', fedOffBody: 'They load from the hosted site. People in Cleveland and the rest of this file still work.',
+    kickerLive: 'Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.', ledeLive: 'Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.',
+    kickerOver: 'The November 3 election is over.', ledeOver: 'Your ballot, to look back on. Follow the evidence.',
+    boxHead: 'No record on file yet.', boxBody: 'This candidate is on the official list. We have not added any votes or statements for them, and that is not the same as nothing existing. No match or outcome is inferred.',
+  };
+  const at = (iso) => `(() => { const R = Date, off = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
+  // a planted fault: change the page just before it is read, so the assertions below have to catch it
+  const plant = (p) => !PLANT ? null : p.evaluate((k) => {
+    const b = document.querySelector('.cxm-empty[data-cx-state]');
+    if (k === 'forever') document.querySelectorAll('[data-cx-state="slow"], [data-cx-state="failed"]').forEach((e) => { const l = document.createElement('p'); l.setAttribute('data-cx-state', 'loading'); l.className = 'cxm-mut'; l.textContent = 'Loading...'; e.replaceWith(l); });
+    if (k === 'nobutton') document.querySelectorAll('.cxm-empty[data-cx-state] button').forEach((x) => x.remove());
+    if (k === 'small') document.querySelectorAll('.cxm-empty[data-cx-state] button').forEach((x) => { x.style.minHeight = '30px'; x.style.height = '30px'; });
+    if (k === 'dash' && b) b.querySelector('p').textContent += ' — try later';
+    if (k === 'polls') { const q = document.querySelector('.cxm-page .cxm-kicker'); if (q) q.textContent += ' Polls open 6:30 a.m. to 7:30 p.m.'; }
+    if (k === 'noresults') document.querySelectorAll('.cxm-page a[href*="boe.cuyahogacounty.gov"]').forEach((a) => a.remove());
+    if (k === 'oldbox') document.querySelectorAll('.cxm-status-line strong').forEach((x) => { if (/No record on file yet/.test(x.textContent)) x.textContent = 'No reviewed policy record loaded yet.'; });
+  }, PLANT);
+  // the state box on screen, if any: its name, words, buttons, and shape
+  const box = async (p, root = 'body') => { await plant(p); return p.evaluate((root) => {
+    const b = (document.querySelector(root) || document).querySelector('[data-cx-state]');
+    if (!b) return null;
+    const c = getComputedStyle(b), btn = [...b.querySelectorAll('button, a[href]')];
+    return { state: b.getAttribute('data-cx-state'), tag: b.tagName, role: b.getAttribute('role'), text: (b.innerText || '').trim(),
+      title: ((b.querySelector('strong') || {}).innerText || '').trim(), body: ((b.querySelector('p') || {}).innerText || '').trim(),
+      buttons: btn.map((x) => { const r = x.getBoundingClientRect(); return { label: (x.innerText || '').trim(), w: Math.round(r.width), h: Math.round(r.height) }; }),
+      stripe: c.borderLeftWidth !== c.borderTopWidth || c.borderLeftWidth !== c.borderRightWidth, wide: document.documentElement.scrollWidth > innerWidth };
+  }, root); };
+  const words = (tag, b, title, body) => {
+    expect(b.title === sp(title), `${tag}: the title is "${b.title}", not "${sp(title)}"`);
+    expect(b.body === sp(body), `${tag}: the words are "${b.body.slice(0, 90)}", not "${sp(body).slice(0, 90)}"`);
+    expect(b.body.split(/\s+/).length >= 6 && b.title.split(/\s+/).length >= 3, `${tag}: the title or the words are too short to say what happened and what to do`);
+    expect(!DASH.test(b.text), `${tag}: a dash in the words`);
+    expect(!(ES ? RF_SCORE_ES : RF_SCORE).test(b.text), `${tag}: a score or ranking word in the words: ${b.text.slice(0, 80)}`);
+    expect(!/undefined|NaN|\[object|TypeError|Error:/.test(b.text), `${tag}: error text in the words`);
+  };
+  const tryAgain = (tag, b, n = 1) => {
+    expect(b.buttons.length === n && b.buttons[0].label === sp('Try again'), `${tag}: no Try again button (buttons: ${JSON.stringify(b.buttons.map((x) => x.label))})`);
+    expect(b.buttons.every((x) => x.w >= 44 && x.h >= 44), `${tag}: a button under 44 by 44 px: ${JSON.stringify(b.buttons)}`);
+    expect(!b.stripe && !b.wide && b.role === 'status', `${tag}: the box has an accent stripe, makes the page wider than the screen, or is not announced (stripe ${b.stripe}, wide ${b.wide}, role ${b.role})`);
+  };
+  const tap = async (p, label) => { const h = await p.evaluateHandle((l) => [...document.querySelectorAll('.cxm-empty button')].find((x) => x.innerText.trim() === l) || null, sp(label)); const el = h.asElement(); if (!el) return false; await el.click(); return true; };
+
+  // 1. People > Federal, the file fails: words, one next step, the rest of the app named, and Try again brings the people back
+  let p = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1500, net: { [FED]: 'abort' } });
+  expect((p.netHits[FED] || 0) >= 1, 'the federal file was never asked for through the check, so a failure here would prove nothing (is the service worker bypassed?)');
+  let b = await box(p);
+  if (!b || b.state !== 'failed') expect(false, `Federal, file failed: expected the could-not-load state, found ${b ? `"${b.state}": ${b.text.slice(0, 80)}` : 'no state at all (the screen is blank or the page is not People > Federal)'}`);
+  else {
+    words('Federal, file failed', b, T.fedTitle, T.fedBody); tryAgain('Federal, file failed', b);
+    const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast' || x.id === 'link-name' || x.id === 'button-name');
+    expect(bad.length === 0, `Federal, file failed: axe: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target}`).join('; ')}`);
+  }
+  expect(!/Loading the people in Washington|Cargando a las personas en Washington/.test(await p.evaluate(() => document.body.innerText)), 'Federal, file failed: still says it is loading');
+  expect((await count(p, '.cxm-tabs button')) === 5 && (await count(p, '.cxm-folders button')) === 2, 'Federal, file failed: the tab bar and the People folders are not still there to use');
+  p.net[FED] = null;
+  expect(await tap(p, 'Try again'), 'Federal, file failed: nothing to tap'); await wait(1800);
+  expect((p.netHits[FED] || 0) >= 2, 'Federal: Try again did not ask for the file again');
+  expect((await box(p)) === null && (await count(p, '.cxm-profile')) === 1, 'Federal: after Try again with the file back, the people did not appear');
+  await done(p);
+
+  // 2. People > Federal, the file hangs: Loading, then Still loading at 8 seconds, then could not load at 12; Try again then works
+  p = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1200, net: { [FED]: 'hang' } });
+  const t0 = Date.now(), seen = {};
+  while (Date.now() - t0 < 15500 && !seen.failed) {
+    const x = await box(p);
+    if (x && !seen[x.state]) seen[x.state] = { at: Date.now() - t0, b: x };
+    await wait(250);
+  }
+  expect(!!seen.loading && seen.loading.at < 1500, `Federal, file hung: no Loading line at first (${JSON.stringify(Object.keys(seen))})`);
+  expect(!!seen.slow, 'Federal, file hung: never said Still loading (the screen stays on Loading with no limit)');
+  expect(!!seen.failed, 'Federal, file hung: never said it could not load, 15 seconds on');
+  if (seen.slow) { words('Federal, hung, slow', seen.slow.b, T.slowTitle, T.slowBody); tryAgain('Federal, hung, slow', seen.slow.b); expect(seen.slow.at >= 3000 && seen.slow.at <= 8300, `Federal, hung: Still loading came ${seen.slow.at} ms after the page settled, not at 8 seconds from the screen opening`); }
+  if (seen.failed) { words('Federal, hung, failed', seen.failed.b, T.fedTitle, T.fedBody); tryAgain('Federal, hung, failed', seen.failed.b); }
+  if (seen.slow && seen.failed) expect(Math.abs((seen.failed.at - seen.slow.at) - 4000) < 1100, `Federal, hung: could not load came ${seen.failed.at - seen.slow.at} ms after Still loading, not 4 seconds (8 and 12)`);
+  p.net[FED] = null;
+  expect(await tap(p, 'Try again'), 'Federal, file hung: nothing to tap'); await wait(250);
+  const re = await box(p);
+  expect(!re || re.state === 'loading', `Federal: Try again did not go back to Loading (${re && re.state})`);
+  await wait(1800);
+  expect((await box(p)) === null && (await count(p, '.cxm-profile')) === 1, 'Federal: after Try again from a hung file with the file back, the people did not appear');
+  await done(p);
+
+  // 3. Records > Meetings, the fetch fails on the hosted site: it could not load, with Try again, and never "needs the hosted site"
+  p = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 1500, net: { [MTG]: 'abort' } });
+  expect((p.netHits[MTG] || 0) >= 1, 'the meetings file was never asked for through the check (is the service worker bypassed?)');
+  b = await box(p, '.mt-page');
+  if (!b || b.state !== 'failed') expect(false, `Meetings, fetch failed: expected the could-not-load state, found ${b ? `"${b.state}": ${b.text.slice(0, 80)}` : 'no state at all'}`);
+  else { words('Meetings, fetch failed', b, T.mtgTitle, T.mtgBody); tryAgain('Meetings, fetch failed', b); }
+  expect(!/needs the hosted site|offline file|necesita el sitio/.test(await p.evaluate(() => document.querySelector('.mt-page').innerText)), 'Meetings, fetch failed on the hosted site: says it needs the hosted site');
+  p.net[MTG] = null;
+  expect(await tap(p, 'Try again'), 'Meetings: nothing to tap'); await wait(1800);
+  expect((p.netHits[MTG] || 0) >= 2, 'Meetings: Try again did not ask for the file again');
+  expect((await box(p, '.mt-page')) === null && (await has(p, '.mt-page .mt-lead, .mt-page .mt-days')), 'Meetings: after Try again with the file back, the meetings did not appear');
+  await done(p);
+
+  // 4. Records > Latest: a meeting's Details, with the meetings file failed, uses the same box
+  p = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1500, net: { [MTG]: 'abort' } });
+  await p.evaluate(() => { const b = document.querySelector('.rf-group[data-f="type"] button:nth-of-type(3)'); if (b) b.click(); }); await wait(500);
+  await p.evaluate(() => { const b = document.querySelector('.rf-card .rf-more'); if (b) b.click(); }); await wait(800);
+  b = await box(p, '.rf-details');
+  if (!b || b.state !== 'failed') expect(false, `Records > Latest, a meeting's Details with the meetings file failed: expected the could-not-load state, found ${b ? `"${b.state}"` : 'no state at all'}`);
+  else { words("Records > Latest, a meeting's Details", b, T.mtgTitle, T.agBody); tryAgain("Records > Latest, a meeting's Details", b); }
+  await done(p);
+
+  // 5. the single offline file keeps its own words and has nothing to retry
+  for (const [what, url, title, body, sel] of [['Meetings', '?panel=meetings', T.mtgOffTitle, T.mtgOffBody, '.mt-page'], ['Federal', '?panel=us', T.fedOffTitle, T.fedOffBody, '.cxm-main']]) {
+    const ctx = await B.createBrowserContext(), q = await ctx.newPage();
+    await q.setViewport({ width: 390, height: 844, isMobile: true, hasTouch: true });
+    await q.evaluateOnNewDocument((es) => { try { localStorage.setItem('cx-easy', 'off'); localStorage.setItem('cx-mode', 'dark'); if (es) { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } } catch (e) {} }, ES);
+    await q.goto('file:///' + path.join(ROOT, 'dist', 'Cleveland-Civic-Graph-v5.html').split(path.sep).join('/') + url + '#phone', { waitUntil: 'load' }); await wait(2500);
+    const ob = await box(q, sel);
+    if (!ob || ob.state !== 'failed') expect(false, `offline file, ${what}: expected the offline words in the state box, found ${ob ? `"${ob.state}"` : 'no state at all'}`);
+    else { words(`offline file, ${what}`, ob, title, body); expect(ob.buttons.length === 0, `offline file, ${what}: a Try again with no server to ask`); }
+    await ctx.close();
+  }
+
+  // 6. the Ballot, three days: before and on Election Day it says Polls open; 30 days after it says the election is over, with the official results link
+  const pageText = (q) => q.evaluate(() => document.querySelector('.cxm-page').innerText);
+  for (const [iso, name] of [['2026-10-07T12:00:00-04:00', 'before'], ['2026-11-03T09:00:00-05:00', 'on Election Day'], ['2026-12-03T12:00:00-05:00', '30 days after']]) {
+    const q = await open('/?panel=ballot#phone', { mobile: true, easy: false, pre: at(iso), settle: 1500 }); await plant(q);
+    const g = await q.evaluate(() => ({ kicker: ((document.querySelector('.cxm-page .cxm-kicker') || {}).innerText || '').trim(), lede: ((document.querySelector('.cxm-page .cxm-lede') || {}).innerText || '').trim(),
+      results: [...document.querySelectorAll('.cxm-page a[href]')].filter((a) => /boe\.cuyahogacounty\.gov\/elections\/election-results/.test(a.href)).map((a) => ({ blank: a.target === '_blank', text: a.innerText.trim() })) }));
+    const all = await pageText(q);
+    if (name === '30 days after') {
+      expect(g.kicker === sp(T.kickerOver), `Ballot ${name}: the top line is "${g.kicker}", not "${sp(T.kickerOver)}"`);
+      expect(g.lede === sp(T.ledeOver), `Ballot ${name}: the lede is "${g.lede}", not "${sp(T.ledeOver)}"`);
+      expect(!/Polls open|Take your time|lugares de votación abren|Tómese su tiempo/i.test(all), `Ballot ${name}: still says "Polls open" or "Take your time": ${(all.match(/.{0,30}(Polls open|Take your time|lugares de votación abren|Tómese su tiempo).{0,20}/i) || [''])[0]}`);
+      expect(g.results.length >= 1 && g.results.every((r) => r.blank), `Ballot ${name}: no link to the official results that opens in a new tab (${JSON.stringify(g.results)})`);
+      expect(!DASH.test(g.kicker + g.lede), `Ballot ${name}: a dash in the top lines`);
+    } else {
+      expect(g.kicker === sp(T.kickerLive), `Ballot ${name}: the top line is "${g.kicker}", not "${sp(T.kickerLive)}"`);
+      expect(g.lede === sp(T.ledeLive), `Ballot ${name}: the lede is "${g.lede}", not "${sp(T.ledeLive)}"`);
+      expect(g.results.length === 0, `Ballot ${name}: shows the results link before the election is over`);
+    }
+    await done(q);
+  }
+
+  // 7. the candidate box: a coverage line, not a load failure; the official entry is its next step
+  const m = await open('/?panel=ballot#phone', { mobile: true, easy: false, settle: 1500 });
+  let seenBox = 0;
+  for (const office of ['County Executive', 'Treasurer of State', 'United States Senator', 'Auditor of State']) {
+    const hit = await m.evaluate((names) => { const r = [...document.querySelectorAll('.cxm-row')].find((x) => names.includes((x.querySelector('strong') || {}).innerText)); if (r) r.click(); return !!r; }, [office, sp(office)]); await wait(500);
+    if (!hit) { expect(false, `Ballot: no row "${office}"`); continue; }
+    const rec = await m.evaluate(() => { const r = document.querySelector('.cxm-cand-rec'); if (r) r.click(); return !!r; }); await wait(500);
+    if (!rec) { expect(false, `Ballot, ${office}: no Record button`); await m.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); if (x) x.click(); }); continue; }
+    await plant(m);
+    const c = await m.evaluate(() => { const s = document.querySelector('.cxm-sheet'); const l = s ? [...s.querySelectorAll('.cxm-status-line')] : []; return { boxes: l.map((x) => ({ head: ((x.querySelector('strong') || {}).innerText || '').trim(), text: x.innerText.replace(/\s+/g, ' ').trim() })), entry: s ? [...s.querySelectorAll('a.cxm-src')].some((a) => /Official candidate entry|Ficha oficial|Registro oficial/.test(a.innerText) && a.target === '_blank') : false, all: s ? s.innerText : '' }; });
+    expect(!/No reviewed policy record loaded yet|Aún no se ha cargado ningún registro/.test(c.all), `Ballot, ${office}: the candidate box still reads like a load failure ("No reviewed policy record loaded yet")`);
+    const cov = c.boxes.find((x) => x.head === sp(T.boxHead));
+    if (cov) {
+      seenBox++;
+      const whole = ES ? (ES_WORDS[`<1>${T.boxHead}</1> ${T.boxBody}`] || '').replace(/<\/?1>/g, '') : `${T.boxHead} ${T.boxBody}`;   // in Spanish the line is one sentence with its bold lead, translated whole
+      expect(cov.text === whole, `Ballot, ${office}: the coverage line reads "${cov.text}", not "${whole}"`);
+      expect(!/\bloaded\b|cargad/i.test(cov.text) && !DASH.test(cov.text), `Ballot, ${office}: the coverage line says "loaded" or has a dash`);
+      expect(c.entry, `Ballot, ${office}: no official candidate entry link under the coverage line`);
+    }
+    await m.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); if (x) x.click(); }); await wait(300);
+    await m.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); if (x) x.click(); }); await wait(300);
+  }
+  expect(seenBox >= 1, 'Ballot: no candidate record showed the coverage line "No record on file yet." in the offices tried');
+  await done(m);
 };
 
 /* collapse every kind of space to one, so a wrapped or padded line compares equal to its words (the office-text checks use it) */

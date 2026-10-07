@@ -8,10 +8,11 @@
    the sources have not yet been read by a person, and the page says so. */
 
 const CX_US = { p: null, v: null, graph: null };
-function cxUsLoad() {
+function cxUsLoad(again) {   // again: ask the server a second time after a failure (Try again on People > Federal); an older request that ends later cannot undo a newer one
+  if (again && !CX_US.v) CX_US.p = null;
   if (!CX_US.p) {
     const web = typeof fetch === `function` && /^https?:$/.test(String(globalThis.location?.protocol || ``));
-    CX_US.p = (web ? fetch(`/us/landscape-2026.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null)).then((d) => { CX_US.v = d; if (d) CX_US.graph = cxUsGraph(d); return d; });
+    CX_US.p = (web ? fetch(`/us/landscape-2026.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null)).then((d) => { if (d && !CX_US.v) { CX_US.v = d; CX_US.graph = cxUsGraph(d); } return CX_US.v; });
   }
   return CX_US.p;
 }

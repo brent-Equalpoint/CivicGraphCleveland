@@ -267,6 +267,32 @@ class CxBoundary extends u.Component {
   }
 }
 
+/* ---------- a file that has not arrived: loading, then slow, then could not load, each with a next step (docs/plan-states.md, section 3) ----------
+   useCxWait(over) is the clock: `over` is true once the request has ended with nothing. It says `loading`, `slow` after 8 seconds, `failed`
+   after 12 seconds or as soon as the request is over, and gives back a function that starts the clock again (for Try again).
+   CxFail draws the state: one line while loading, then the shared empty box (CxmEmpty) with Try again. A screen that cannot reload its file
+   (the single offline file has no server) passes no `retry` and says so in `body`. The box is marked data-cx-state for the load-states check. */
+const CX_SLOW_MS = 8000, CX_FAIL_MS = 12000;
+function cxIsWeb() { return typeof fetch === `function` && /^https?:$/.test(String(globalThis.location?.protocol || ``)); }
+function useCxWait(over) {
+  const [n, setN] = u.useState(0), [t, setT] = u.useState(0);
+  u.useEffect(() => {
+    setT(0);
+    if (over) return undefined;
+    const a = setTimeout(() => setT(1), CX_SLOW_MS), b = setTimeout(() => setT(2), CX_FAIL_MS);
+    return () => { clearTimeout(a); clearTimeout(b); };
+  }, [over, n]);
+  return [over || t === 2 ? `failed` : t === 1 ? `slow` : `loading`, () => { setT(0); setN((x) => x + 1); }];
+}
+function CxFail({ state, loading, title, body, retry }) {
+  if (state === `loading`) return <p className="cxm-mut" role="status" data-cx-state="loading">{loading}</p>;
+  const slow = state === `slow`;
+  return (
+    <CxmEmpty state={state} title={slow ? `Still loading. The record is slow right now.` : title} body={slow ? `Your connection may be slow. You can keep waiting or try again. The rest of the app still works.` : body}
+      actions={retry ? [[`Try again`, retry]] : []} />
+  );
+}
+
 /* ---------- portrait faces for leaders (16 official portraits: 15 council members and the mayor) ---------- */
 function cxFaceSrc(id) {
   const w = /^(?:council-)?ward-(\d+)$/.exec(String(id));

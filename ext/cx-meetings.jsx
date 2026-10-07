@@ -12,9 +12,20 @@ const CX_MTG = { p: null, v: null, done: !1, subs: new Set() };
 function cxMtgLoad() {
   if (!CX_MTG.p) {
     const web = typeof fetch === `function` && /^https?:$/.test(String(globalThis.location?.protocol || ``));
-    CX_MTG.p = (web ? fetch(`/meetings/meetings-2026.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null)).then((d) => { CX_MTG.v = d; CX_MTG.done = !0; CX_MTG.subs.forEach((f) => f()); return d; });
+    const mine = CX_MTG.p = (web ? fetch(`/meetings/meetings-2026.json`).then((r) => (r.ok ? r.json() : null)).catch(() => null) : Promise.resolve(null)).then((d) => { if (d || CX_MTG.p === mine) { CX_MTG.v = d; CX_MTG.done = !0; CX_MTG.subs.forEach((f) => f()); } return d; });   // an older request that fails after Try again cannot undo a newer one
   }
   return CX_MTG.p;
+}
+/* Try again after the file did not arrive: ask the server a second time (the screens redraw when the answer comes) */
+function cxMtgRetry() {
+  if (!CX_MTG.v) { CX_MTG.p = null; CX_MTG.done = !1; }
+  return cxMtgLoad();
+}
+/* the words and the Try again for a meeting record that is not here: the hosted site asks again; the single offline file has no server to ask */
+function CxMtgFail({ wait, again, title, body }) {
+  const web = cxIsWeb();
+  return <CxFail state={wait} loading="Loading the meeting record..." title={web ? `We could not load the meetings record.` : `The meeting record needs the hosted site.`}
+    body={web ? body : `It is not part of the offline file. The rest of this file still works.`} retry={web ? () => { cxMtgRetry(); again(); } : null} />;
 }
 function useCxMtg() {
   const [, bump] = u.useState(0);
@@ -626,7 +637,8 @@ function CxAgenda({ data, onPerson }) {
 /* The front page. onOpen opens a legislation record. For you shows only where the layout passes onPlace (the phone), and the calendar where it passes onPerson. */
 function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio, onPerson }) {
   const data = useCxMtg();
-  if (!data) return <p className="cxm-mut" role="status">{CX_MTG.done ? `The meeting record needs the hosted site. It is not part of the offline file.` : `Loading the meeting record...`}</p>;
+  const [wait, again] = useCxWait(!data && CX_MTG.done);
+  if (!data) return <CxMtgFail wait={wait} again={again} body={`This page reads the Clerk's meeting record from this website, and it did not arrive. Check your connection, then try again. The rest of the app still works.`} />;
   const today = cxTodayET(), s = cxMtgSplit(data, today), wk = cxMtgWeek(data, today), dec = cxMtgDecided(data, today);
   const earlier = s.months.reduce((t, g) => t + g.list.length, 0);
   return (

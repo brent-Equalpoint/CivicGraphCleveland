@@ -170,6 +170,7 @@ function CX_RecVoteDetails({ r, m, onFile, onPerson }) {
 /* a meeting: the Clerk's notice, the place, the agenda by kind (from the meeting record, on the hosted site), and its links */
 function CX_RecMeetDetails({ r, today, onFile }) {
   const data = useCxMtg();
+  const [wait, again] = useCxWait(!data && CX_MTG.done);
   const m = data ? data.meetings.find((x) => x.id === r.mid) : null;
   const past = r.date < today;
   return (
@@ -177,7 +178,7 @@ function CX_RecMeetDetails({ r, today, onFile }) {
       {m && <CxMtgNote note={m.note} className="cxm-fine" />}
       {r.place && <p className="cxm-fine">{r.place}</p>}
       {m && m.items.length > 0 && <CxMtgAgenda m={m} onOpen={onFile} past={past} />}
-      {!m && <p className="cxm-fine" role="status">{CX_MTG.done ? `The agenda by kind needs the hosted site. The links below open it.` : `Loading the agenda.`}</p>}
+      {!m && !data && (wait === `loading` ? <p className="cxm-fine" role="status">Loading the agenda.</p> : <CxMtgFail wait={wait} again={again} body={`The agenda by kind comes from this website, and it did not arrive. The links below still open it. Check your connection, then try again.`} />)}
       <CxMtgLinks m={r} past={past} />
     </div>
   );

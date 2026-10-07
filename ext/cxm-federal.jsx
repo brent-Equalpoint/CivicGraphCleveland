@@ -17,8 +17,16 @@ function CxmFederal() {
   const [st, setSt] = u.useState(CX_US_PLACE.state || `OH`);
   const [di0, setDi] = u.useState(CX_US_PLACE.district);
   const [i, setI] = u.useState(0);
-  u.useEffect(() => { let live = !0; cxUsLoad().then((d) => { if (live && d) setData(d); }); if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live && d) setVd(d); }); return () => { live = !1; }; }, []);
-  if (!data) return <p className="cxm-mut" role="status">Loading the people in Washington...</p>;
+  const [gone, setGone] = u.useState(!1);   // the file's request ended with nothing
+  const [wait, again] = useCxWait(gone), seq = u.useRef(0), live = u.useRef(!0);
+  const load = (retry) => { const mine = ++seq.current; setGone(!1); cxUsLoad(retry).then((d) => { if (!live.current || mine !== seq.current) return; if (d) setData(d); setGone(!d); }); };
+  u.useEffect(() => { live.current = !0; load(!1); if (!CX_USV.v) cxUsVotesLoad().then((d) => { if (live.current && d) setVd(d); }); return () => { live.current = !1; }; }, []);
+  if (!data) {
+    const web = cxIsWeb();   // the single offline file has no server to ask, so it says so and offers no Try again
+    return <CxFail state={wait} loading="Loading the people in Washington..." title={web ? `We could not load the people in Washington.` : `The people in Washington are not in the offline file.`}
+      body={web ? `This page reads the federal record from this website, and it did not arrive. Check your connection, then try again. The rest of the app still works.` : `They load from the hosted site. People in Cleveland and the rest of this file still work.`}
+      retry={web ? () => { again(); load(!0); } : null} />;
+  }
   const g = CX_US.graph;
   const states = [...new Set(data.members.map((m) => m.state))].sort((a, b) => cxStateName(a).localeCompare(cxStateName(b)));
   // a district the resident already chose on the ballot (or found by address) carries over, for Ohio

@@ -702,9 +702,9 @@ function CxmHomePicker() {
 
 /* ---------- v5.16 screen states: empty results, blocked storage, and links that lead nowhere ---------- */
 /* An empty result says what was looked for, why nothing came up, and gives one thing to do next. */
-function CxmEmpty({ title, body, actions }) {
+function CxmEmpty({ title, body, actions, state }) {
   return (
-    <div className="cxm-empty" role="status">
+    <div className="cxm-empty" role="status" data-cx-state={state}>
       <strong>{title}</strong>
       <p>{body}</p>
       {actions && actions.length > 0 && <div className="cxm-row2">{actions.map(([label, fn]) => <button key={label} type="button" className="cxm-btn2" onClick={fn}>{label}</button>)}</div>}

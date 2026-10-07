@@ -34,11 +34,12 @@ function CxmBallot() {
   const lv = cxmLevies();
   const setD = (k, v) => practice.update((s) => ({ ...s, districts: { ...s.districts, [k]: v } }));
   const [open, setOpen] = u.useState({});
+  const over = cxElectionPhase() === `after`;   // once the election has passed there are no polls to open, and the official results are one tap down in the dates (CxmDates)
   return (
     <div className="cxm-page cxm-rise">
-      <CxmKicker>Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.</CxmKicker>
+      <CxmKicker>{over ? `The November 3 election is over.` : `Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.`}</CxmKicker>
       <CxmH1>My ballot</CxmH1>
-      <p className="cxm-lede">Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.</p>
+      <p className="cxm-lede">{over ? `Your ballot, to look back on. Follow the evidence.` : `Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.`}</p>
       <p className="cxm-status-line"><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
       {cxmRegisterStory() && (
         <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-reg" onClick={() => setOverlay({ type: `story`, list: [cxmRegisterStory()], i: 0, f: 0 })}>
@@ -370,7 +371,7 @@ function CxmCand({ id }) {
       <h3 className="cxm-h3">Evidence, then possibilities</h3>
       <p className="cxm-mut">These are selected examples. A past vote records an action; a campaign statement records a promise. They are shown separately.</p>
       {!recs.length && (
-        <div className="cxm-status-line"><span><strong>No reviewed policy record loaded yet.</strong> This candidate is in the official list, but individual votes and policy statements have not been reviewed here. No alignment or candidate-specific outcome is inferred.</span></div>
+        <div className="cxm-status-line"><span><strong>No record on file yet.</strong> This candidate is on the official list. We have not added any votes or statements for them, and that is not the same as nothing existing. No match or outcome is inferred.</span></div>
       )}
       {recs.map((g) => {
         const w = Wm.find((x) => x.id === g.question);
