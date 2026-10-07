@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  c4c8f9b081fb733654f99e334fb4d03155d37dabc8b9562bbc2371adf845b2cb
-Size     6,335,047 bytes
+SHA-256  e634c57e100ffe5ba8dcb111e885e845d45526aba18aece1c3cf0e6635e6a221
+Size     6,329,761 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
