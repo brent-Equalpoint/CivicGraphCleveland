@@ -54,6 +54,7 @@ const RULES = [
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', 'records-feed', ...SWEEP]],   // votes, actions, and positions
+  [(f) => f === 'ext/cx-meetings.jsx', ['agenda-calendar', 'city-hall', 'records-tab', 'records-feed', 'design-look', 'color-vision', 'text-overlap', 'perf-budget', 'screen-states', ...SWEEP]],   // At City Hall (Records > Meetings) and its agenda calendar
   [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'records-changed','explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
@@ -95,6 +96,7 @@ const CSS_AREAS = [
   [/\.rc(-|\b)/, ['votes-actions', 'council-votes', 'profiles']],
   [/\.lv(-|\b)/, ['levies']],
   [/\.mt-/, ['city-hall', 'records-tab']],
+  [/\.ag(-|)/, ['agenda-calendar', 'city-hall', 'records-tab']],   // the agenda calendar in Records > Meetings
   [/\.rf(-|\b)/, ['records-feed', 'records-tab', 'records-changed', 'tab-blue']],
   [/\.cxm-(recbar|recpanel|folder|rooms|roomtile|level|rail|tick)/, ['records-tab', 'explore-bubble', 'people-tabs', 'tab-blue']],   // the Records tab's folder tabs (People's) and Rooms
   [/\.cxe(-|\b)/, ['easy-phone', 'easy-desktop']],

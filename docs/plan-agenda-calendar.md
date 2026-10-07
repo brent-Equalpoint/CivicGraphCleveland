@@ -1,6 +1,6 @@
 # Plan: a live agenda for Council meetings
 
-Status: proposed, nothing built, written 2026-10-06 for Brent and the team. It builds on `docs/plan-city-hall-page.md` (the At City Hall page, built on the phone, no desktop page yet; since Oct 7 it is the Meetings folder of the phone's Records tab, `docs/plan-mobile-restructure.md` step 2, so "the At City Hall full page" below means that folder) and on the Agenda tab of the VC Fest 26 guide, which we own and can port into `ext/`.
+Status (Oct 7): a first calendar is built on the phone as a new part of Records > Meetings, on the data we already pull, and is on a branch, not released (`STATE-OF-BUILD.md` item 51). What exists: a week of day cards under For you (day headings with Today, Tomorrow, or Yesterday and the number of meetings), each card with its time, a kind word, a status worked out from the clock in Eastern time (Upcoming, Up next, Live now, Ended, No outcome recorded yet), the official name, the room and the item count, the agenda and meeting page links, and Add to my calendar (an .ics made on the device); a roster for City Council; Previous week, Next week, and Back to this week; and a fold that says how the status works. Everything above it on the page is unchanged and in place. Checked by the new `agenda-calendar` browser check. The first slice of phase 1 and the phone half of phases 3 and 4 are done; phase 2 (the City Record parser), the lengths, committee rosters, the desktop page, "On the agenda" on a profile, the kind shapes and colors, For you as a filter, search as part of the calendar, auto scroll, and the refresh button are not started. Two choices were made without Brent and are listed under "What is built, and where it differs from this plan" at the end. Written 2026-10-06 for Brent and the team. It builds on `docs/plan-city-hall-page.md` (the At City Hall page, built on the phone, no desktop page yet; since Oct 7 it is the Meetings folder of the phone's Records tab, `docs/plan-mobile-restructure.md` step 2, so "the At City Hall full page" below means that folder) and on the Agenda tab of the VC Fest 26 guide, which we own and can port into `ext/`.
 
 ## Brent's ask
 
@@ -224,3 +224,25 @@ Total about 9 to 10 days. **First slice that ships value fastest: phase 1,** abo
 8. The regular schedule line for empty weeks: show, or leave weeks empty with the explanation.
 9. Terms of the City Record and Council's committee pages: Brent confirms they may be shown.
 10. Reviewer: Brent reads the kind label table and the status fold before release.
+
+## What is built, and where it differs from this plan (Oct 7)
+
+Built on the phone only, in `ext/cx-meetings.jsx` (between the "agenda calendar" comment and `CX_Meetings`) and `.ag-` in `ext/cxm.css`, as a new part of Records > Meetings under For you and above Just decided. Nothing that was on the page moved or changed: Next up, the week's day tabs, What is on it, For you, Just decided, Look it up, Earlier this year, and the footer are the same components in the same order.
+
+| Plan | Built |
+|---|---|
+| Day heading with a tag (Today, Tomorrow, then the count) | Yes: "Tuesday, Oct 6" and "Today · 1 meeting". Days with no meeting are left out. |
+| Time column | The Clerk's start time. No "to" line (no record gives an end). |
+| Kind label | The word from the fixed table (Council, Finance, Safety, and the rest). No shape and no color: the plan's three tier colors need a new meaning group in the tokens, which was not added. |
+| Status | Upcoming, Up next (the first upcoming meeting shown), Live now, Ended, No outcome recorded yet, from the device's clock in Eastern time, redrawn every minute while the page shows and when it comes back into view. A redraw changes only the status words: focus, scroll, and every other word stay. |
+| People | City Council only: the record's Council Members (`data/people-2026.json`, in its order) with the official portrait, each opening that member's Profile. No party, no count. A committee shows nothing, because Legistar lists no committee seats; the fold under the calendar says so. The plan's rosters from the City Record need phase 2. |
+| Add to my calendar | One meeting at a time. A `Blob` made on the device and handed to the browser as a download. The `.ics` has the Eastern time zone with its daylight saving rules, a stable UID (`meeting-<Legistar event>`), the official name, the room with "Cleveland City Hall, 601 Lakeside Avenue" where the room does not already name an address, the meeting page, the agenda link and the end-time sentence in the page's language, and no end time, no alarm, and nothing for Google. "Add this week" is not built. |
+| Week bar | Week of Oct 5, Previous week, Next week, and Back to this week (only when away from this week). Previous stops at the year's first meeting week, Next one empty week past the last. An empty week says whether it is in the past or not posted yet. The bar is not sticky, and the day tabs were left as they are, above. |
+| Items inside the card, filters, search, auto scroll, For you as a filter, "Check for a newer record" | Not built. The card shows the item count and links to the agenda; What is on it, For you, and Look it up stay where they were. |
+
+Two choices that are Brent's, taken here so the three words he asked for all show, and easy to change:
+
+1. **Live now uses an assumed window** (`CX_AG_WINDOW`, 120 minutes), which is option b of decision 1 ("a fixed two hour window for every meeting, labeled as assumed"), not the recommended option (Live now only where a length is on record, which today is nowhere). The fold says "Live now means the meeting's scheduled time is now, for up to two hours. The Clerk publishes no end time and no sign that a meeting is in session." Ended is never guessed from the clock: it needs minutes or an action on an item, else the card says "No outcome recorded yet".
+2. **The calendar sits under For you, not at the top**, so the part of the page people already use does not move. It is one line in `CX_Meetings` to put it elsewhere.
+
+Words: Records > Meetings grew from 401 to 608 words for a week with 7 meetings (about 29 words a card), recorded on purpose in `scripts/checks/text-budget.json`. A card that starts with its links and button folded would cut about 60 words; not done.

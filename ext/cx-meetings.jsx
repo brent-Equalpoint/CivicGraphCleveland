@@ -448,8 +448,183 @@ function CxMtgEarlier({ g, today, onOpen }) {
     </CxmDrop>
   );
 }
-/* The front page. onOpen opens a legislation record. For you shows only where the layout passes onPlace (the phone). */
-function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio }) {
+/* ---------- the agenda calendar (docs/plan-agenda-calendar.md, phone first) ----------
+   A week of day cards under the parts above it, each meeting with its status worked out from the clock in Eastern time, who sits on it where the
+   record has a roster, its official links, and an .ics file made on the device. Nothing here is sent anywhere, saved, or put in a link.
+   What the record gives us: a date, a start time as the Clerk typed it, the body, the room, and links. It gives no end time and no signal that a
+   meeting is in session, so:
+     Upcoming  the start time is later (the first of the meetings shown also says Up next)
+     Live now  from the start time for CX_AG_WINDOW minutes. This is the plan's decision 1, option b: a window we assume and say so, because the
+               record has no length. The fold under the calendar says so in words.
+     Ended     after the window, and only where the record shows it: minutes are posted or an item has an action recorded
+     No outcome recorded yet   after the window with neither. A missing record is not a no, and not proof the meeting did not happen.
+   Committee seats are not in the Clerk's record (Legistar lists none), so a roster shows only for City Council: the Council Members of
+   data/people-2026.json, in the record's order. Nothing is ranked, and no party is shown. */
+const CX_AG_WINDOW = 120;
+const CX_AG_KINDS = [[/^City Council$/, `Council`], [/^Committee of the Whole/, `Whole Council`], [/^City Council Caucus/, `Caucus`], [/^Council Committee Chairs/, `Committee chairs`], [/^City Council Event/, `Council event`],
+  [/^Finance/, `Finance`], [/^Safety/, `Safety`], [/^Development/, `Development`], [/^Zoning/, `Zoning`], [/^Health/, `Health`], [/^Transportation/, `Transportation`], [/^Municipal Services/, `Municipal Services`],
+  [/^Utilities/, `Utilities`], [/^Workforce/, `Workforce`], [/^Mayor.s Appointments/, `Appointments`], [/^Operations/, `Operations`]];
+const CX_AG_WORDS = { upcoming: `Upcoming`, live: `Live now`, ended: `Ended`, unrecorded: `No outcome recorded yet` };
+function cxAgKind(m) { const k = CX_AG_KINDS.find(([re]) => re.test(m.body)); return k ? k[1] : `Meeting`; }
+/* "7:00 PM" as minutes after midnight, or null when the Clerk's time is not that shape */
+function cxAgMinutes(t) {
+  const x = /^(\d{1,2}):(\d{2})\s*(AM|PM)$/i.exec(String(t || ``).trim());
+  return x ? ((Number(x[1]) % 12) + (x[3].toUpperCase() === `PM` ? 12 : 0)) * 60 + Number(x[2]) : null;
+}
+/* the day and the minute of the day in Eastern time, from the device's clock */
+function cxAgNow() {
+  const ts = cxNow(), f = cxAgNow.f || (cxAgNow.f = new Intl.DateTimeFormat(`en-US`, { timeZone: CX_TZ, hour: `numeric`, minute: `numeric`, hourCycle: `h23` }));
+  const p = Object.fromEntries(f.formatToParts(new Date(ts)).map((x) => [x.type, x.value]));
+  return { day: cxDayET(ts), min: (Number(p.hour) % 24) * 60 + Number(p.minute) };
+}
+function cxAgStatus(m, now) {
+  if (m.date > now.day) return `upcoming`;
+  const start = cxAgMinutes(m.time);
+  if (m.date === now.day) {
+    if (start === null || now.min < start) return `upcoming`;
+    if (now.min < start + CX_AG_WINDOW) return `live`;
+  }
+  return m.minutes || m.items.some((i) => i[1]) ? `ended` : `unrecorded`;
+}
+/* the Monday of the week shown is the week of today (cxMtgWeek's own choice for a weekend) moved by shift weeks; the limits are the year's first and last meeting weeks, and one empty week past the last */
+function cxAgLimits(data, base) {
+  const ds = data.meetings.map((m) => m.date).sort(), wk = (iso) => Math.round(cxMtgDays(base, cxMtgMonday(iso)) / 7);
+  return { min: Math.min(0, wk(ds[0])), max: Math.max(0, wk(ds[ds.length - 1]) + 1) };
+}
+/* the meetings of one week in the order they happen, by day, each with its status, and which one is Up next */
+function cxAgWeek(data, base, shift, now) {
+  const mon = cxMtgPlus(base, 7 * shift), end = cxMtgPlus(mon, 6);
+  const list = data.meetings.filter((m) => m.date >= mon && m.date <= end).sort((a, b) => (a.date === b.date ? (cxAgMinutes(a.time) ?? 0) - (cxAgMinutes(b.time) ?? 0) || a.id - b.id : a.date < b.date ? -1 : 1))
+    .map((m) => ({ m, st: cxAgStatus(m, now) }));
+  const next = (list.find((x) => x.st === `upcoming`) || {}).m;
+  const days = [];
+  list.forEach((x) => { let d = days[days.length - 1]; if (!d || d.iso !== x.m.date) { d = { iso: x.m.date, list: [] }; days.push(d); } d.list.push({ ...x, next: x.m === next }); });
+  return { mon, days, count: list.length, past: end < now.day };
+}
+/* the .ics text of one meeting: Eastern time with its daylight saving rules, a stable UID (the Legistar event), the official name, the room, the links, and no end time because the Clerk gives none */
+function cxAgIcsText(s) { return String(s).replace(/\\/g, `\\\\`).replace(/\r?\n/g, `\\n`).replace(/;/g, `\\;`).replace(/,/g, `\\,`); }
+function cxAgFold(line) {
+  const enc = new TextEncoder();
+  if (enc.encode(line).length <= 75) return line;
+  const out = []; let cur = ``, n = 0;
+  for (const ch of line) { const b = enc.encode(ch).length; if (n + b > (out.length ? 74 : 75)) { out.push(cur); cur = ``; n = 0; } cur += ch; n += b; }
+  out.push(cur);
+  return out.join(`\r\n `);
+}
+function cxAgIcs(m, pulled, tr = (s) => s) {
+  const at = cxAgMinutes(m.time), d = m.date.replace(/-/g, ``), place = String(m.place || ``);
+  const stamp = new Date(pulled || Date.now()).toISOString().replace(/[-:]/g, ``).replace(/\.\d+/, ``);
+  const where = !place ? `` : /Lakeside|Virtual/i.test(place) ? place : `${place}, Cleveland City Hall, 601 Lakeside Avenue`;
+  const note = [m.agenda ? `${tr(`Agenda`)}: ${m.agenda}` : ``, m.page ? `${tr(`Meeting page`)}: ${m.page}` : ``, tr(`The Clerk does not publish an end time. The agenda can change; check the meeting page.`)].filter(Boolean).join(`\n`);
+  const lines = [`BEGIN:VCALENDAR`, `VERSION:2.0`, `PRODID:-//Cleveland Civic Graph//At City Hall//EN`, `CALSCALE:GREGORIAN`, `METHOD:PUBLISH`,
+    `BEGIN:VTIMEZONE`, `TZID:America/New_York`,
+    `BEGIN:DAYLIGHT`, `TZOFFSETFROM:-0500`, `TZOFFSETTO:-0400`, `TZNAME:EDT`, `DTSTART:19700308T020000`, `RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU`, `END:DAYLIGHT`,
+    `BEGIN:STANDARD`, `TZOFFSETFROM:-0400`, `TZOFFSETTO:-0500`, `TZNAME:EST`, `DTSTART:19701101T020000`, `RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU`, `END:STANDARD`,
+    `END:VTIMEZONE`,
+    `BEGIN:VEVENT`, `UID:meeting-${m.id}@cleveland-civic-graph`, `DTSTAMP:${stamp}`,
+    at === null ? `DTSTART;VALUE=DATE:${d}` : `DTSTART;TZID=America/New_York:${d}T${String(Math.floor(at / 60)).padStart(2, `0`)}${String(at % 60).padStart(2, `0`)}00`,
+    `SUMMARY:${cxAgIcsText(m.body)}`, where ? `LOCATION:${cxAgIcsText(where)}` : ``, m.page ? `URL:${m.page}` : ``, `DESCRIPTION:${cxAgIcsText(note)}`,
+    `END:VEVENT`, `END:VCALENDAR`].filter(Boolean);
+  return lines.map(cxAgFold).join(`\r\n`) + `\r\n`;
+}
+function cxAgFile(m) { return `${m.body.toLowerCase().replace(/[^a-z0-9]+/g, `-`).replace(/^-|-$/g, ``)}-${m.date}.ics`; }
+/* made here, handed to the browser as a download, and let go: no request, nothing kept */
+function cxAgSave(name, text) {
+  const url = URL.createObjectURL(new Blob([text], { type: `text/calendar;charset=utf-8` }));
+  const a = document.createElement(`a`);
+  a.href = url;
+  a.download = name;
+  a.click();
+  setTimeout(() => URL.revokeObjectURL(url), 4000);
+}
+/* the clock, for the status words only: every minute while the page is showing, and when it comes back into view. It changes no focus and no scroll. */
+function useCxAgClock() {
+  const [, bump] = u.useState(0);
+  u.useEffect(() => {
+    const go = () => { if (!document.hidden) bump((x) => x + 1); };
+    const t = setInterval(go, 60000);
+    document.addEventListener(`visibilitychange`, go);
+    return () => { clearInterval(t); document.removeEventListener(`visibilitychange`, go); };
+  }, []);
+  return cxAgNow();
+}
+function CxAgFace({ ward, name }) {
+  const [ok, setOk] = u.useState(!0);
+  return (
+    <span className="cxm-fed-av ag-face" aria-hidden="true">
+      <span className="cxm-fed-ini">{cxmInitials(name)}</span>
+      {ward && ok && <img src={cxmAsset("/" + "portraits/ward-" + String(ward).padStart(2, "0") + ".webp")} alt="" width="32" height="32" loading="lazy" onError={() => setOk(!1)} />}
+    </span>
+  );
+}
+/* City Council's members as the record lists them (data/people-2026.json, in its order), each opening that member's Profile */
+function CxAgRoster({ onPerson }) {
+  const people = CX_PEOPLE.people.filter((p) => p.title === `Council Member`);
+  return (
+    <CxmDrop title="Who sits on it" sub={cxmPl(people.length, `member`, `members`)}>
+      <ul className="ag-people">
+        {people.map((p) => {
+          const seat = _h.find(([, n]) => cxmSamePerson(n, p.name));
+          const body = <><CxAgFace ward={seat ? seat[0] : 0} name={p.name} /><span><strong>{p.name}</strong><small><span>{p.title}</span>{seat ? <>{` · `}<span>{`Ward ${seat[0]}`}</span></> : null}</small></span></>;
+          return <li key={p.person_id}>{seat && onPerson ? <button type="button" className="ag-person" onClick={() => onPerson(`ward-${seat[0]}`)}>{body}<CXI.Arrow size={15} /></button> : <div className="ag-person">{body}</div>}</li>;
+        })}
+      </ul>
+    </CxmDrop>
+  );
+}
+function CxAgCard({ x, onAdd, onPerson }) {
+  const { m, st, next } = x, n = m.items.length;
+  return (
+    <li className="ag-card" data-id={m.id} data-k={st} data-next={next ? `1` : undefined}>
+      <p className="ag-time"><span>{cxMtgTime(m.time)}</span></p>
+      <div className="ag-main">
+        <p className="ag-kind"><span>{cxAgKind(m)}</span>{` · `}<span className="ag-st">{CX_AG_WORDS[st]}</span>{next ? <>{` · `}<span>Up next</span></> : null}</p>
+        <h5 className="ag-title">{m.body}</h5>
+        <p className="ag-place">{m.place ? <span>{m.place}</span> : null}{m.place && n ? ` · ` : null}{n ? <span>{cxmPl(n, `item`, `items`)}</span> : null}</p>
+        <CxMtgLinks m={m} />
+        <div><button type="button" className="cxm-btn2 ag-add" onClick={() => onAdd(m)}>Add to my calendar</button></div>
+      </div>
+      {m.body === `City Council` && <CxAgRoster onPerson={onPerson} />}
+    </li>
+  );
+}
+function CxAgenda({ data, onPerson }) {
+  const now = useCxAgClock(), [shift, setShift] = u.useState(0), [made, setMade] = u.useState(!1);
+  const base = cxMtgWeek(data, now.day).days[0].iso, lim = cxAgLimits(data, base);
+  const at = Math.max(lim.min, Math.min(lim.max, shift)), wk = cxAgWeek(data, base, at, now);
+  const go = (d) => { setMade(!1); setShift((x) => Math.max(lim.min, Math.min(lim.max, x + d))); };
+  const add = (m) => { cxAgSave(cxAgFile(m), cxAgIcs(m, data.retrieved_at, cxUsmTr)); setMade(!0); };
+  return (
+    <section className="ag" aria-labelledby="ag-h">
+      <h3 id="ag-h" className="cxm-h3">Calendar</h3>
+      <div className="ag-bar">
+        <p className="ag-week"><strong aria-live="polite"><span>Week of</span>{` `}<span>{cxMtgMonthDay(wk.mon)}</span></strong>{at !== 0 && <button type="button" className="cxm-link ag-back" onClick={() => { setMade(!1); setShift(0); }}>Back to this week</button>}</p>
+        <div className="ag-nav">
+          <button type="button" className="cxm-btn2" aria-disabled={at <= lim.min} onClick={() => at > lim.min && go(-1)}><CXI.Back size={16} /><span>Previous week</span></button>
+          <button type="button" className="cxm-btn2" aria-disabled={at >= lim.max} onClick={() => at < lim.max && go(1)}><span>Next week</span><CXI.Arrow size={16} /></button>
+        </div>
+      </div>
+      <p className="cxm-fine ag-made" role="status">{made ? <span>Calendar file made on this device.</span> : null}</p>
+      {wk.count === 0 ? <p className="cxm-fine ag-none">{wk.past ? `No meetings were on the Clerk's calendar for the week shown.` : `The Clerk has not posted meetings for the week shown yet. Meetings are usually posted a few days ahead.`}</p> : wk.days.map((d) => {
+        const rel = cxMtgDays(now.day, d.iso), word = rel === 0 ? `Today` : rel === 1 ? `Tomorrow` : rel === -1 ? `Yesterday` : ``;
+        return (
+          <div key={d.iso} className="ag-dayset" data-day={d.iso}>
+            <h4 className="ag-day"><span><span>{cxMtgWeekday(d.iso)}</span>{`, `}<span>{cxMtgMonthDay(d.iso)}</span></span><span className="ag-tag">{word ? <><span>{word}</span>{` · `}</> : null}<span>{cxmPl(d.list.length, `meeting`, `meetings`)}</span></span></h4>
+            <ol className="ag-list">{d.list.map((x) => <CxAgCard key={x.m.id} x={x} onAdd={add} onPerson={onPerson} />)}</ol>
+          </div>
+        );
+      })}
+      <CxmDrop title="How the status works">
+        <p className="cxm-fine">Live now means the meeting's scheduled time is now, for up to two hours. The Clerk publishes no end time and no sign that a meeting is in session.</p>
+        <p className="cxm-fine">Ended shows only when the record has minutes or an action on an item. Until then it says no outcome is recorded yet, which is not a sign the meeting did not happen.</p>
+        <p className="cxm-fine">Committee seats are not in the Clerk's record, so only City Council shows who sits on it.</p>
+      </CxmDrop>
+    </section>
+  );
+}
+
+/* The front page. onOpen opens a legislation record. For you shows only where the layout passes onPlace (the phone), and the calendar where it passes onPerson. */
+function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio, onPerson }) {
   const data = useCxMtg();
   if (!data) return <p className="cxm-mut" role="status">{CX_MTG.done ? `The meeting record needs the hosted site. It is not part of the offline file.` : `Loading the meeting record...`}</p>;
   const today = cxTodayET(), s = cxMtgSplit(data, today), wk = cxMtgWeek(data, today), dec = cxMtgDecided(data, today);
@@ -460,6 +635,7 @@ function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio }) {
       <CxMtgDays wk={wk} today={today} onOpen={onOpen} />
       {s.lead && <CxMtgOn m={s.lead} onOpen={onOpen} />}
       {onPlace && <CxMtgYou meetings={wk.days.flatMap((x) => x.list)} ward={ward} chosen={chosen} onOpen={onOpen} onPlace={onPlace} onPrio={onPrio} />}
+      {onPerson && <CxAgenda data={data} onPerson={onPerson} />}
       {dec && <CxMtgDone m={dec} today={today} onOpen={onOpen} />}
       <CxMtgLookup data={data} today={today} onOpen={onOpen} />
       {earlier > 0 && (
@@ -479,11 +655,11 @@ function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio }) {
 /* The phone: Records > Meetings (?panel=meetings, the Today card, the City Hall story, and the Rooms door). Each item opens its legislation record in a
    sheet on top. A story that opened it leaves "Back to the story" above the tabs (CxmApp's storyBack). */
 function CxmHall() {
-  const { openSheet, home, prio } = useCxm();
+  const { openSheet, openProfile, home, prio } = useCxm();
   return (
     <div className="mt-page cxm-rise">
       <CxmBanner kind="hall" kicker="Council and committee meetings" title="At City Hall" />
-      <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPrio={() => openSheet(`priorities`)} />
+      <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPrio={() => openSheet(`priorities`)} onPerson={openProfile} />
     </div>
   );
 }
