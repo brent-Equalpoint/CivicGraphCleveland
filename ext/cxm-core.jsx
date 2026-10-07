@@ -314,6 +314,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const [theme, setThemeState] = u.useState(() => document.documentElement.getAttribute(`data-cx-theme`) || `bento`);
   const [room, setRoom] = u.useState(start.room);
   const [recFolder, setRecFolder] = u.useState(start.folder || `latest`);   // the Records tab's folder: Latest the first time, then the last one chosen, for this visit only (memory, never saved)
+  const [recAsk, setRecAsk] = u.useState({ pull: !1, n: 0 });   // how Latest was last asked for: pull, with "Changed in the latest pull" chosen (the Updated strip); n starts its list afresh
   const [placeHood, setPlaceHood] = u.useState(CX_PLACE.hood || null);
   const [people, setPeople] = u.useState({ mode: start.mode || `profiles`, seat: null, office: `council`, q: 0 });
   const [seen, setSeen] = u.useState({});
@@ -331,7 +332,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const openSheet = (type, data = {}, replace = !1) => setSheets((s) => (replace ? [...s.slice(0, -1), { type, ...data }] : [...s, { type, ...data }]));
   const closeSheet = () => setSheets([]);
   const backSheet = () => setSheets((s) => s.slice(0, -1));
-  const go = (t) => { setSheets([]); setOverlay(null); setTab(t); setStoryBack(null); };
+  const go = (t) => { setSheets([]); setOverlay(null); setTab(t); setStoryBack(null); setRecAsk((a) => (a.pull ? { pull: !1, n: a.n } : a)); };
   const backToStory = () => { if (!storyBack) return; setSheets([]); setOverlay(storyBack); setStoryBack(null); };
   // the privacy policy is a full page; Back puts back the sheets it was opened from (Settings, How this is built)
   const openPrivacy = () => { setOverlay({ type: `privacy`, sheets }); setSheets([]); setStoryBack(null); };
@@ -340,8 +341,9 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     setSheets([]); setOverlay(null); setTab(`explore`); setRecFolder(`rooms`); setRoom(roomId);
     if (nodeId) setTimeout(() => openSheet(`record`, { room: roomId, node: nodeId }), 30);
   };
-  // Records, at one of its folders (latest, meetings, rooms): the tab with that folder open, as the tab bar's Records button opens it
-  const openRecords = (f) => { setSheets([]); setOverlay(null); setStoryBack(null); setTab(`explore`); setRecFolder(f); };
+  // Records, at one of its folders (latest, meetings, rooms): the tab with that folder open, as the tab bar's Records button opens it; Latest starts
+  // afresh, with "Changed in the latest pull" chosen when pull is set (the Updated strip)
+  const openRecords = (f, pull = !1) => { setSheets([]); setOverlay(null); setStoryBack(null); setTab(`explore`); setRecFolder(f); if (f === `latest`) setRecAsk((a) => ({ pull: !!pull, n: a.n + 1 })); };
   const openSeat = (seatId) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `profiles`, seat: seatId })); };
   const openOffice = (office) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `const`, office, q: 0 })); };
   const like = (id) => setLiked((l) => {
@@ -365,7 +367,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
     people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
-    openPrivacy, closePrivacy, recFolder, setRecFolder, openRecords,
+    openPrivacy, closePrivacy, recFolder, setRecFolder, openRecords, recAsk,
   };
   const top = sheets[sheets.length - 1];
   // the five tabs; the second is Records (docs/plan-mobile-restructure.md, Option A), still `explore` inside the code

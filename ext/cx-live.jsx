@@ -158,6 +158,25 @@ function cxNewsCounts(rows) {
 function cxNewsFor(rows, { ward = null, admin = !1 } = {}) {
   return rows.filter((r) => (admin ? r.admin : ward ? r.wards.includes(ward) : !0));
 }
+/* The latest pull: what changed in Council's legislation record between the last two pulls, for Records' "Changed in the latest pull" and the Updated
+   strip. It is the newest entry of the change log only when that entry is the pull the app shows (CX_UPDATES.updated); otherwise null, and no count is
+   claimed. files: each changed file still in Council's list, with its change as scripts/changes.py wrote it (new, st, sp, steps), one entry a file, so
+   their number is the number of records Records lists; gone: files no longer listed, which have no record to show (What's new lists them). The roll
+   calls and the meetings are not compared between pulls, so they are never in it. */
+function cxLatestPull() {
+  if (cxLatestPull.v !== undefined) return cxLatestPull.v;
+  const up = CX_UPDATES.log[0];
+  if (!up || up.at !== CX_UPDATES.updated) return (cxLatestPull.v = null);
+  const files = new Map(), gone = [];
+  for (const c of up.changes) {
+    if (c.gone || !CX_MATTER.has(c.f)) gone.push(c.f);
+    else files.set(c.f, c);
+  }
+  return (cxLatestPull.v = { at: up.at, from: up.from, files, gone });
+}
+function cxWhenET(at) {
+  return `${cxShortDate(cxDayET(Date.parse(at)))}, ${cxClockET(Date.parse(at))}`;
+}
 /* the record's status in one sentence, for questions whose proposal has not passed */
 function cxStatusSentence(m) {
   if (!m || m.status === `Passed`) return ``;

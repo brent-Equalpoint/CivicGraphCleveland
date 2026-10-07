@@ -1985,7 +1985,16 @@
   "Records": "Registros",
   "Latest": "Lo más reciente",
   "Rooms": "Salas",
-  "Opens Records.": "Abre Registros."
+  "Opens Records.": "Abre Registros.",
+  "Changed in the latest pull": "Cambiaron en la última actualización",
+  "Votes and meetings are not compared between pulls; choose a time to see them.": "Las votaciones y las reuniones no se comparan entre actualizaciones; elija un periodo para verlas.",
+  "See this week's changes in What's new": "Vea los cambios de esta semana en Novedades",
+  "No records changed": "Ningún registro cambió",
+  "Opens the records changed in the latest pull.": "Abre los registros que cambiaron en la última actualización.",
+  "New in Council's record.": "Nuevo en el registro del Concejo.",
+  "Sponsor added.": "Se añadió un patrocinador.",
+  "Nothing that changed in the latest pull matches this ward and kind. That is not the same as nothing happening.": "Nada de lo que cambió en la última actualización coincide con este distrito y este tipo. Eso no es lo mismo que si no hubiera pasado nada.",
+  "Nothing in Council's legislation record changed between the last two pulls. That is not the same as nothing happening.": "Nada cambió en el registro de legislación del Concejo entre las dos últimas actualizaciones. Eso no es lo mismo que si no hubiera pasado nada."
  },
  "masked": {
   "{n} lists": "{n} listas",
@@ -2402,7 +2411,17 @@
   "{n} item on the agenda.": "{n} punto en la agenda.",
   "Names my ward (Ward {n})": "Nombra mi distrito (Distrito {n})",
   "Ward {n}": "Distrito {n}",
-  "File {f}, from before this year's record": "Expediente {f}, de antes del registro de este año"
+  "File {f}, from before this year's record": "Expediente {f}, de antes del registro de este año",
+  "{n} records changed": "{n} registros cambiaron",
+  "{n} record changed": "{n} registro cambió",
+  "Changed in the latest pull, {d}, {t}": "Cambió en la última actualización, {d}, {t}",
+  "What changed in Council's legislation record between the pull of {d}, {t} and the pull of {d}, {t}": "Lo que cambió en el registro de legislación del Concejo entre la actualización del {d}, {t} y la del {d}, {t}",
+  "New in Council's record, introduced {d}.": "Nuevo en el registro del Concejo, presentado el {d}.",
+  "Status changed from “{*}” to “{*}”.": "El estado cambió de “{*}” a “{*}”.",
+  "Action added: {*}, “{*}”, {d}.": "Acción añadida: {*}, “{*}”, {d}.",
+  "{n} sponsors added.": "Se añadieron {n} patrocinadores.",
+  "{n} file left Council's list in this pull and has no record to show. What's new lists it.": "{n} expediente salió de la lista del Concejo en esta actualización y no tiene registro que mostrar. Novedades lo incluye.",
+  "{n} files left Council's list in this pull and have no record to show. What's new lists them.": "{n} expedientes salieron de la lista del Concejo en esta actualización y no tienen registro que mostrar. Novedades los incluye."
  },
  "keep": [
   "1234 E 116th St, Cleveland",
