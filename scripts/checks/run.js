@@ -2995,7 +2995,10 @@ const CHECKS = {
     await done(p);
     // ---- the phone, no hook: People > Federal > Compare members opens the map at Compare members; the Show panel reaches it too
     const ph = await open('/?panel=us#phone', { mobile: true, easy: false, settle: 1800 });
+    // the map and its record load when the row is tapped: on a busy machine that can take longer than 1.6 s (GitHub, Oct 6: the
+    // assertion failed, and the steps after it found Compare members open), so wait up to 4.5 s more before calling it missing
     await clickText(ph, 'Compare members by policy area', '.cxm-row'); await wait(1600);
+    for (let t = 0; t < 30 && !(await has(ph, '.usm-phone .ual-compare')); t++) await wait(150);
     expect(await has(ph, '.usm-phone .ual-compare'), 'People > Federal does not open Compare members');
     await alignPick(ph, ['Energy']); await alignPlace(ph, 'OH', '11');
     const cards = await alignRows(ph);
