@@ -290,11 +290,11 @@ function CX_Records({ home = null, onFile, onPerson, onNews, start = null, step 
 /* ---------- the phone: Records > Latest (?panel=records), the same banner and list that were the full page, now inside the tab ---------- */
 /* recAsk: how Latest was last asked for (cxm-core.jsx); the Updated strip asks for "Changed in the latest pull", and each ask starts the list afresh */
 function CxmRecords() {
-  const { openSheet, home, recAsk } = useCxm();
+  const { openSheet, openProfile, home, recAsk } = useCxm();
   return (
     <div className="rf-page cxm-rise">
       <CxmBanner kind="receipts" title="Records" />
-      <CX_Records key={recAsk.n} start={recAsk.pull ? `pull` : null} home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={(seat) => openSheet(`seat`, { seat })} onNews={() => openSheet(`news`)} />
+      <CX_Records key={recAsk.n} start={recAsk.pull ? `pull` : null} home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={openProfile} onNews={() => openSheet(`news`)} />
     </div>
   );
 }

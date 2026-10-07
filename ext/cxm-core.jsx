@@ -352,7 +352,8 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   // Records, at one of its folders (latest, meetings, rooms): the tab with that folder open, as the tab bar's Records button opens it; Latest starts
   // afresh, with "Changed in the latest pull" chosen when pull is set (the Updated strip)
   const openRecords = (f, pull = !1) => { setSheets([]); setOverlay(null); setStoryBack(null); setTab(`explore`); setRecFolder(f); if (f === `latest`) setRecAsk((a) => ({ pull: !!pull, n: a.n + 1 })); };
-  const openSeat = (seatId) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `profiles`, seat: seatId })); };
+  const openSeat = (seatId) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `profiles`, seat: seatId })); };   // the My leaders card
+  const openProfile = (seatId) => openSheet(`profile`, { seat: seatId });   // the Profile (the neutral page), over what is open, as a name's ?panel=profiles&seat= link says
   const openOffice = (office) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `const`, office, q: 0 })); };
   const like = (id) => setLiked((l) => {
     if (l.includes(id)) return l.filter((x) => x !== id);
@@ -374,7 +375,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const ctx = {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
-    people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
+    people, setPeople, openSeat, openProfile, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
     openPrivacy, closePrivacy, recFolder, setRecFolder, openRecords, recAsk,
   };
   const top = sheets[sheets.length - 1];

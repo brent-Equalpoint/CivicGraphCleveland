@@ -19,14 +19,14 @@ function cxmRecLatest(rows, today) {
   return (rows || []).filter((r) => r.date <= today && !(r.type === `meeting` && r.date >= today)).slice(0, 3);
 }
 function CxmRecLatest() {
-  const { openRecords, openSheet } = useCxm();
+  const { openRecords, openSheet, openProfile } = useCxm();
   const data = useCxRecs(!0);
   const today = cxTodayET();
   const rows = data ? cxmRecLatest(data.rows, today) : [];
   return (
     <section className="cxm-section rf-latest">
       <CxmBanner kind="news" title="Latest" />
-      {rows.length ? <ol className="rf-list">{rows.map((r) => cxRecCard(r, { today, onFile: (file) => openSheet(`leg`, { file }), onPerson: (seat) => openSheet(`seat`, { seat }) }))}</ol>
+      {rows.length ? <ol className="rf-list">{rows.map((r) => cxRecCard(r, { today, onFile: (file) => openSheet(`leg`, { file }), onPerson: openProfile }))}</ol>
         : <p className="cxm-mut" role="status">{CX_RECS.ldone ? `The latest records could not be loaded here. See all records to try again.` : `Loading the latest records.`}</p>}
       <button type="button" className="rf-show rf-all" onClick={() => openRecords(`latest`)}>See all records</button>
     </section>

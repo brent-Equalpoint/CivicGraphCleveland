@@ -38,9 +38,9 @@ function CxmFederal() {
     const role = isSen ? `United States senator` : cur.district ? `U.S. representative` : `U.S. representative or delegate`;
     const yours = !isSen && mine.rep && cur.id === mine.rep.id;
     return (
-      <CxmProfileCard key={cur.id} avatar={<CxmFedAvatar id={cur.id} name={cur.name} />} onStep={step} label={`${cur.name}, profile ${deck.indexOf(cur) + 1} of ${deck.length}`}
+      <CxmProfileCard key={cur.id} avatar={<CxmFedAvatar id={cur.id} name={cur.name} />} onStep={step} label={`${cur.name}, card ${deck.indexOf(cur) + 1} of ${deck.length}`}
         kicker={<>{isSen ? `U.S. Senate` : cur.district ? `U.S. House · District ${cur.district}` : `U.S. House`}{yours && <b className="cxm-yours"> · YOUR DISTRICT</b>}</>} name={cur.name} sub={<><span>{role}</span>{` · `}<span>{cxStateName(cur.state)}</span></>}
-        actions={<CxmProfileActions story={{ label: `Full Story`, onClick: () => openSheet(`usvotes`, { id: cur.id }) }} profile={cur.url ? { label: `Profile`, href: cur.url } : null} />}
+        actions={<CxmProfileActions story={{ label: `Their record`, onClick: () => openSheet(`usvotes`, { id: cur.id }) }} profile={cur.url ? { label: `Profile`, href: cur.url } : null} />}
         note="Receipts, not scores. A vote is on one question. Records from the current Congress.">
         <div className="cxm-tile cxm-tile-acc">
           <span className="cxm-kicker">Their term</span>

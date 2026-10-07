@@ -848,18 +848,31 @@ const CHECKS = {
     await f.close();
   },
   async 'people-tabs'() {
-    // People on the phone: Profiles | Constellation, and under Profiles a folder tab for Cleveland and one for Federal. Every profile
-    // has the same shape and the same three actions, and the old blurb under the council profile is gone.
+    // People on the phone: My leaders | Constellation | Graph, and under My leaders a folder tab for Cleveland and one for Federal. Every card
+    // has the same shape and the same three actions, and the old blurb under the council card is gone. The words follow the profile plan
+    // (docs/plan-mobile-restructure.md, decision 3): Profile is the neutral page, My leaders the personal cards, Their record (once "Full Story")
+    // the person's own record; "Profiles" and "Full Story" are not on People any more, and nothing calls a card a profile.
     const p = await open('/?panel=leaders#phone', { mobile: true, easy: false, settle: 1500 });
     expect(await has(p, '.cxm-folders[role="tablist"]'), 'People has no folder tabs');
     expect((await txt(p, '.cxm-folders button.on')) === 'Cleveland', 'the Cleveland folder is not the one open');
     expect(!(await has(p, '.cxm-summary')), 'the council profile still has the summary blurb');
     const acts = async (q) => ((await txt(q, '.cxm-prof-actions')) || '').replace(/\s+/g, ' ').trim();
-    expect(/^Full Story Profile Write [A-Z][a-z]+$/.test(await acts(p)), `the council profile actions are "${await acts(p)}"`);
+    expect(/^Their record Profile Write [A-Z][a-z]+$/.test(await acts(p)), `the council card's actions are "${await acts(p)}"`);
     expect(!/Read the/.test(await p.evaluate(() => document.querySelector('.cxm-profile').innerText)), 'a long "Read the..." button label is back');
     expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-folders button, .cxm-prof-actions > *')].every((b) => b.getBoundingClientRect().height >= 44)), 'a folder tab or profile action is under 44px tall');
-    // Graph is the third choice next to Profiles and Constellation, and it opens on the Sky
-    expect(((await txt(p, '.cxm-seg')) || '').replace(/\s+/g, ' ').trim() === 'Profiles Constellation Graph', 'People does not offer Profiles, Constellation, and Graph');
+    { const words = await p.evaluate(() => { const m = document.querySelector('.cxm-page'); const names = [...m.querySelectorAll('[aria-label]')].map((e) => e.getAttribute('aria-label')); return { text: m.innerText, names, role: [...m.querySelectorAll('[aria-roledescription]')].map((e) => e.getAttribute('aria-roledescription')) }; });
+      expect(!/\bProfiles\b|Full Story/.test(words.text), `People still shows "Profiles" or "Full Story": ${(words.text.match(/.{0,30}(\bProfiles\b|Full Story).{0,30}/) || [])[0]}`);
+      expect(!words.names.some((n) => /\bprofiles?\b/i.test(n) && !/^Open a council member's profile$/.test(n)) && !words.role.includes('profile'), `a card is still called a profile for a screen reader: ${words.names.filter((n) => /profile/i.test(n)).slice(0, 3)} ${words.role}`);
+      expect(/How to read these cards/.test(words.text) && words.names.includes("Open a council member's profile") && words.names.includes('Which leaders'), 'the My leaders labels are not the new ones'); }
+    // Their record opens the person's own record (what they led, their latest), and Profile the neutral page, each in a sheet
+    await clickText(p, 'Their record', '.cxm-prof-actions button'); await wait(800);
+    expect(await has(p, '.cxm-sheet .cxm-prof-head') && !(await has(p, '.cxm-sheet .sp')) && /What .+ led, in plain words/.test((await txt(p, '.cxm-sheet')) || ''), 'Their record did not open the member\'s own record');
+    await p.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
+    await clickText(p, 'Profile', '.cxm-prof-actions button'); await wait(800);
+    expect(await has(p, '.cxm-sheet .sp .sp-office'), 'Profile did not open the neutral profile');
+    await p.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
+    // Graph is the third choice next to My leaders and Constellation, and it opens on the Sky
+    expect(((await txt(p, '.cxm-seg')) || '').replace(/\s+/g, ' ').trim() === 'My leaders Constellation Graph', 'People does not offer My leaders, Constellation, and Graph');
     await clickText(p, 'Graph', '.cxm-seg button'); await wait(1500);
     expect((await has(p, '.usm-phone .usm-canvas')) && (await txt(p, '.usm-pills button.on')) === 'Sky', 'Graph does not open the map on the Sky');
     expect(/panel=us/.test(await p.evaluate(() => location.search)) && /view=graph/.test(await p.evaluate(() => location.search)), 'the Graph view is not in the link');
@@ -869,12 +882,12 @@ const CHECKS = {
     // keyboard: arrow keys move between folders
     await p.focus('.cxm-folders button.on'); await p.keyboard.press('ArrowRight'); await wait(500);
     expect((await txt(p, '.cxm-folders button.on')) === 'Federal' && /panel=us/.test(await p.evaluate(() => location.search)), 'the right arrow did not open the Federal folder');
-    // Constellation hides the folders, Profiles brings back the folder that was open
+    // Constellation hides the folders, My leaders brings back the folder that was open
     await clickText(p, 'Constellation', '.cxm-seg button'); await wait(400);
     expect(!(await has(p, '.cxm-folders')) && (await has(p, '.cxm-const')), 'Constellation still shows the folders');
     expect(await p.evaluate(() => { const m = document.querySelector('.cxm-cgraph-box'), q = document.querySelector('.cxm-qcard'); return !!m && !!q && !!(m.compareDocumentPosition(q) & Node.DOCUMENT_POSITION_FOLLOWING); }), 'the constellation is not above the question');
-    await clickText(p, 'Profiles', '.cxm-seg button'); await wait(400);
-    expect(await has(p, '.cxm-folders'), 'Profiles did not bring the folders back');
+    await clickText(p, 'My leaders', '.cxm-seg button'); await wait(400);
+    expect(await has(p, '.cxm-folders'), 'My leaders did not bring the folders back');
     await clickText(p, 'Federal', '.cxm-folders button'); await wait(1200);
     // Federal: two senators, then a district adds the representative; same card shape as Cleveland
     expect((await count(p, '.cxm-profile')) === 1 && (await count(p, '.cxm-strip button')) === 2, 'Federal does not open on the two Ohio senators');
@@ -882,27 +895,27 @@ const CHECKS = {
       expect(ok, 'the first Ohio senator (Husted, photo from the Congress directory) has no loaded portrait'); }
     expect(await p.evaluate(() => { const st = document.querySelector('.cxm-strip'), pr = document.querySelector('.cxm-profile'); return !!st && !!pr && !!(st.compareDocumentPosition(pr) & Node.DOCUMENT_POSITION_FOLLOWING); }), 'the people strip is not above the profile');
     expect(await p.evaluate(() => { const sp = document.querySelector('.cxm-prof-nav span'); return !!sp && sp.classList.contains('cxm-sr'); }), 'the "n of N" text is on screen again beside the arrows');
-    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next card"]').click()); await wait(300);
     { let ok = false; for (let t = 0; t < 20 && !ok; t++) { ok = await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth > 0; }); if (!ok) await wait(150); }
       expect(ok, 'the senator with a photo has no loaded portrait on the Federal profile'); }
-    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Previous profile"]').click()); await wait(300);
-    expect(/^Full Story Profile( \(opens in a new tab\))?$/.test(await acts(p)), `the senator actions are "${await acts(p)}"`);
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Previous card"]').click()); await wait(300);
+    expect(/^Their record Profile( \(opens in a new tab\))?$/.test(await acts(p)), `the senator actions are "${await acts(p)}"`);
     for (const need of ['.cxm-prof-head .cxm-fed-av', '.cxm-prof-name', '.cxm-tile-acc', '.cxm-prof-nav', '.cxm-fine']) expect(await has(p, need), `the Federal profile lacks ${need}`);
     await clickText(p, 'Your place in Washington', '.cxm-drop-head'); await wait(300);
     await p.select('.cxm-drop-body label:nth-of-type(2) select', '11'); await wait(600);
     expect((await count(p, '.cxm-strip button')) === 3, 'choosing District 11 did not add the representative');
-    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
-    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); await wait(300);
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next card"]').click()); await wait(300);
+    await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next card"]').click()); await wait(300);
     expect(/U\.S\. House/.test((await txt(p, '.cxm-profile .cxm-kicker')) || '') && /3 of 3/.test((await txt(p, '.cxm-prof-nav')) || ''), 'stepping twice did not reach the representative');
     expect(!/lakeside|district=|place=/i.test(await p.evaluate(() => location.href)), 'the place reached the link');
     // a recently appointed senator still without a photo shows initials, never a broken image (Oklahoma has one)
     await p.select('.cxm-drop-body label:nth-of-type(1) select', 'OK'); await wait(600);
     { let ini = false, broken = false;
-      for (let k = 0; k < 2; k++) { await wait(500); ini = ini || await has(p, '.cxm-prof-head .cxm-fed-ini'); broken = broken || await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth === 0; }); await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next profile"]').click()); }
+      for (let k = 0; k < 2; k++) { await wait(500); ini = ini || await has(p, '.cxm-prof-head .cxm-fed-ini'); broken = broken || await p.evaluate(() => { const i = document.querySelector('.cxm-prof-head .cxm-fed-av img'); return !!i && i.complete && i.naturalWidth === 0; }); await p.evaluate(() => document.querySelector('.cxm-prof-nav button[aria-label="Next card"]').click()); }
       expect(ini && !broken, 'an Oklahoma senator without a photo should show initials and no broken image'); }
     await p.select('.cxm-drop-body label:nth-of-type(1) select', 'OH'); await wait(600);
-    await clickText(p, 'Full Story', '.cxm-prof-actions button'); await wait(1200);
-    expect((await count(p, '.cxm-sheet .us-vote')) >= 1, 'Full Story did not open the member\'s recorded votes');
+    await clickText(p, 'Their record', '.cxm-prof-actions button'); await wait(1200);
+    expect((await count(p, '.cxm-sheet .us-vote')) >= 1, 'Their record did not open the member\'s recorded votes');
     expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'People scrolls sideways');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on People: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await done(p);
@@ -4157,7 +4170,7 @@ const CV_PAGES = [
 const TEXT_WIDE = { 'Records: Meetings': 0.15, Today: 0.15, 'Decision ledger': 0.3, 'Records: Latest': 0.15 };
 // The Records tab's three folders (Latest, Meetings, Rooms) each count their own folder (#rf-folder-panel), as the full pages they were counted themselves
 const TEXT_SCREENS = [
-  ['Today', '/#phone'], ['Records: Rooms', '/?panel=explore#phone'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
+  ['Today', '/#phone'], ['Records: Rooms', '/?panel=explore#phone'], ['My place', '/?panel=place#phone'], ['People: My leaders', '/?panel=leaders#phone'],
   ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
   ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['Records: Meetings', '/?panel=meetings#phone'],
   ['Decision ledger', '/?panel=ledger#phone'], ['How this is built', '/?panel=bench#phone'], ['Settings', '/?panel=settings#phone'],
@@ -4645,10 +4658,9 @@ CHECKS['votes-actions'] = async () => {
   const seat = 'ward-5', name = people.find((x) => x.name === 'Richard A. Starr') ? 'Richard A. Starr' : null;
   for (const lay of ['desktop', 'phone']) {
     const p = lay === 'desktop' ? await open(`/?panel=profiles&seat=${seat}#desktop`, { settle: 1400 }) : await open(`/?panel=leg&file=${samples[1][0]}#phone`, { mobile: true, easy: false, settle: 1400 });
-    if (lay === 'phone') {   // on the phone: a sponsor's name on a record opens their card on People, and Profile opens the profile in a sheet
+    if (lay === 'phone') {   // on the phone: a sponsor's name on a record opens their Profile in a sheet over the record, as its ?panel=profiles&seat= address says
       await p.evaluate(() => { const a = document.querySelector('.rc-actions .rc-who a'); a && a.click(); }); await wait(900);
-      const ok = await p.evaluate(() => { const b = [...document.querySelectorAll('button')].find((x) => /^Profile$/.test((x.innerText || '').trim())); if (b) b.click(); return !!b; }); await wait(900);
-      expect(ok, 'phone: a sponsor\'s name does not lead to a Profile button');
+      expect((await count(p, '.cxm-sheet .sp .sp-office')) === 1 && await has(p, '.cxm-sheet .cxm-sheet-back'), 'phone: a sponsor\'s name does not open their Profile over the record (with Back to it)');
     }
     const opened = await p.evaluate(() => { const b = document.querySelector('.sp .sp-actions button[aria-expanded]'); if (b) b.click(); return !!b; }); await wait(700);
     expect(opened && await has(p, '.rc-person'), `${lay}: the profile has no Votes & actions list to open`);

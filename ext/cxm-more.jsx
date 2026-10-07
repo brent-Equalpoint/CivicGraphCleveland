@@ -3,11 +3,11 @@
 
 /* Votes & actions on a legislation record: the shared record list (ext/cx-record.jsx), dated, oldest first, each row with its source */
 function CxmLegHistory({ m }) {
-  const { openSeat, openSheet } = useCxm();
+  const { openProfile, openSheet } = useCxm();
   return (
     <div className="cxm-hist">
       <h3 className="cxm-h3">Votes & actions</h3>
-      <CX_RecActions m={m} onPerson={openSeat} onFile={(f) => openSheet(`leg`, { file: f })} title={!1} />
+      <CX_RecActions m={m} onPerson={openProfile} onFile={(f) => openSheet(`leg`, { file: f })} title={!1} />
     </div>
   );
 }
@@ -25,7 +25,7 @@ function CxmLegShort({ m }) {
   );
 }
 function CxmLeg({ file }) {
-  const { like, liked, openSeat } = useCxm();
+  const { like, liked, openSeat, openProfile } = useCxm();
   const m = cxmMatter(file);
   if (!m) return <div className="cxm-pad"><p className="cxm-mut">{file} is not in the 2026 record.</p></div>;
   if (m.type === `Ceremonial Resolution`) return <CxmLegShort m={m} />;
@@ -68,7 +68,7 @@ function CxmLeg({ file }) {
       {q && CX_REASONS[q.id] && <CxmDrop title="Why supporters backed it" sub="Their case, from the official record"><CX_Why q={q} /></CxmDrop>}
       <CxmLegHistory m={m} />
       <h3 className="cxm-h3">Positions</h3>
-      <CX_RecPositions m={m} onPerson={openSeat} title={!1} />
+      <CX_RecPositions m={m} onPerson={openProfile} title={!1} />
       <CxmDrop title="Full official title"><p>{m.title}</p></CxmDrop>
       <h3 className="cxm-h3">Where to read it</h3>
       <div className="cxm-row-links cxm-col">

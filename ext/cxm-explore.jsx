@@ -498,7 +498,7 @@ function CxmRoom({ roomId }) {
 
 /* ---------- a record (node) ---------- */
 function CxmRecord({ roomId, nodeId }) {
-  const { openSheet, openSeat } = useCxm();
+  const { openSheet, openSeat, openProfile } = useCxm();
   const room = Uh.find((r) => r.id === roomId) || Uh.find((r) => r.nodes.some((n) => n.id === nodeId));
   const node = room?.nodes.find((n) => n.id === nodeId);
   const [tab, setTab] = u.useState(`overview`);
@@ -538,7 +538,7 @@ function CxmRecord({ roomId, nodeId }) {
       )}
       {tab === `positions` && (
         <div className="cxm-fade">
-          {m ? <CX_RecPositions m={m} onPerson={openSeat} head="h3" /> : <p className="cxm-mut">No sourced position statements are attached here yet. Party, sponsorship, and map location do not establish a person's beliefs.</p>}
+          {m ? <CX_RecPositions m={m} onPerson={openProfile} head="h3" /> : <p className="cxm-mut">No sourced position statements are attached here yet. Party, sponsorship, and map location do not establish a person's beliefs.</p>}
           {seatId && <button type="button" className="cxm-btn2" onClick={() => openSeat(seatId)}>See what they sponsored in 2026</button>}
         </div>
       )}
