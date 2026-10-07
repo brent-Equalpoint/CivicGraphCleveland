@@ -1,0 +1,7 @@
+{
+ "about": "Records a named publisher approved after checking them against their sources. Written by scripts/commit.py; read by the app.",
+ "as_of": null,
+ "count": 0,
+ "graph_version": 0,
+ "records": {}
+}
