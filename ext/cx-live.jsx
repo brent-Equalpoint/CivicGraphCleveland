@@ -223,18 +223,19 @@ function cxElectionPhase() {
   const d = cxDays(cxTodayET(), CX_ELECTION);
   return d > 0 ? `before` : d === 0 ? `today` : `after`;
 }
+const CX_DATE_BEGUN_UNTIL = { '2026-10-06': `2026-11-01` };   // a start date: once it has come it reads Has begun (not crossed out) until that day; a deadline that has gone stays crossed out
 function cxDatesNow() {
   const today = cxTodayET();
   let next = !1;
   return CX_DATES.map(([label, text, iso]) => {
-    const d = cxDays(today, iso);
-    let state = d < 0 ? `past` : d === 0 ? `today` : `later`;
+    const d = cxDays(today, iso), until = CX_DATE_BEGUN_UNTIL[iso];
+    let state = d < 0 ? (until && cxDays(today, until) >= 0 ? `begun` : `past`) : d === 0 ? `today` : `later`;
     if (state === `later` && !next) { state = `next`; next = !0; }
     if (state === `today`) next = !0;
     return { label, text, iso, state, days: d };
   });
 }
-const CX_DATE_TAG = { past: `Passed`, today: `Today`, next: `Next` };
+const CX_DATE_TAG = { past: `Passed`, begun: `Has begun`, today: `Today`, next: `Next` };
 const CX_RESULTS_URL = `https://boe.cuyahogacounty.gov/elections/election-results`;
 function CX_DateList() {
   const list = cxDatesNow();

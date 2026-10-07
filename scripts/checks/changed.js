@@ -47,7 +47,7 @@ const RULES = [
   [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'records-tab', 'city-hall', 'banners', ...SWEEP]],
   [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', 'records-tab', ...SWEEP]],
   [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'records-tab', 'settings-sheet', 'map-cards', 'screen-states', 'shell', 'text-overlap', 'design-look', ...SWEEP]],   // Explore (Records > Rooms) and its rail (ext/cxm.css runs everything)
-  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
+  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'place-dropdown', 'screen-states', 'shell', ...SWEEP]],
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', 'records-changed', ...SWEEP]],   // the Updated strip opens Records > Latest, with "Changed in the latest pull"

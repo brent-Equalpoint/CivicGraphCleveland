@@ -1,6 +1,7 @@
 {
  "_about": "Hand-written entries. exact and masked win over the draft translations; keep lists English text that must stay English (and wins over any translation). Fix a wording here, then run: node scripts/i18n/merge.js",
  "exact": {
+  "Has begun": "Ya comenzó",
   "ward": "distrito",
   "Choose your district to see your representative.": "Elija su distrito para ver a su representante.",
   "Senators": "Senadores",

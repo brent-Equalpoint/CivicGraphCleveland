@@ -36,7 +36,7 @@ function CxmPlaceSec({ id, open, setOpen, title, sum, children }) {
   );
 }
 function CxmPlace() {
-  const { home, placeHood, setPlaceHood, openSheet, openSeat, openRoom, go } = useCxm();
+  const { home, setHome, placeHood, openSheet, openSeat, openRoom, go } = useCxm();
   const hood = placeHood || home?.hood || `Downtown`;
   const D = u.useMemo(() => cxPlaceData(hood), [hood]);
   const [open, setOpen] = u.useState(`rep`);
@@ -59,7 +59,7 @@ function CxmPlace() {
       <CxmH1>{hood}</CxmH1>
       <p className="cxm-mut">Everything here comes from public records: the city's ward maps, Council's legislative database, and the ordinance text. Nothing scores anyone. Where the record is silent, it says so.</p>
       <label className="cxm-field"><span>Neighborhood</span>
-        <select value={hood} onChange={(e) => setPlaceHood(e.target.value)}>{D.hoods.map((h) => <option key={h} value={h}>{h}{home?.hood === h ? ` (home)` : ``}</option>)}</select>
+        <select value={hood} onChange={(e) => { const h = e.target.value, w = cxmHoodWard(h); setHome({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }); }}>{D.hoods.map((h) => <option key={h} value={h}>{h}{home?.hood === h ? ` (home)` : ``}</option>)}</select>
       </label>
       {!home && <button type="button" className="cxm-link" onClick={() => openSheet(`home`)}>Set this as my place</button>}
       <p className="cxm-fine">In 2025 Council redrew the map from 17 wards to 15. Blue marks the wards that cover {hood}; the outline is the neighborhood's official boundary.</p>

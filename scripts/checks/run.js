@@ -1036,6 +1036,22 @@ const CHECKS = {
     expect(!(await after.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].some((x) => /register/i.test(x.innerText)))), 'the Register card is still on the Ballot after Election Day');
     await done(after);
   },
+  async 'place-dropdown'() {
+    // The Neighborhood dropdown on My place sets your place (it does not only browse): the ward in the Today story row, "(home)" in the list, and the Ward 7 saved from before are replaced by the
+    // neighborhood chosen. Expected values come from the page's own geography file, not from its code.
+    const p = await open('/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE });
+    const pick = await p.evaluate(() => { const o = [...document.querySelectorAll('.cxm-field select option')].map((x) => x.value); return o.find((v) => /Collinwood/.test(v)) || o[1]; });
+    await p.select('.cxm-field select', pick); await wait(600);
+    const after = await p.evaluate(() => ({ val: document.querySelector('.cxm-field select').value, home: [...document.querySelectorAll('.cxm-field select option')].filter((o) => /\(home\)/.test(o.textContent)).map((o) => o.value), save: localStorage.getItem('cx-place') }));
+    expect(after.val === pick && after.home.length === 1 && after.home[0] === pick, `choosing ${pick} did not make it the home neighborhood: ${JSON.stringify(after)}`);
+    const saved = JSON.parse(after.save || 'null');
+    expect(saved && saved.hood === pick && /^ward-\d+$/.test(saved.place) && saved.place !== 'ward-7', `the saved place is not the chosen neighborhood's ward: ${after.save}`);
+    const wardNo = saved.place.replace('ward-', '');
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-tabs button')].find((x) => /Today|Hoy/.test(x.textContent)); b && b.click(); }); await wait(800);
+    const row = await p.$$eval('.cxm-story-btn', (els) => els.map((e) => (e.getAttribute('aria-label') || e.innerText || '')));
+    expect(row.some((t) => new RegExp('Ward ' + wardNo + '\\b').test(t)) && !row.some((t) => /Ward 7/.test(t)), `the story row did not follow the new place (ward ${wardNo}): ${JSON.stringify(row)}`);
+    await done(p);
+  },
   async 'remember-place'() {
     // Remembering a person's place: off until chosen, on this device only, only the ward or neighborhood and the federal state and district, never an address,
     // expired or odd entries thrown away, and nothing left in a link or a request. The saved entry is seeded before the page loads, so what the page does with it is what is tested.
@@ -1306,6 +1322,11 @@ const CHECKS = {
         const p = await open('/?panel=ballot#phone', { mobile: true, easy: false, mode, pre: at(iso), settle: 1500 });
         const tags = await p.$$eval('.cxm-dates em', (els) => els.map((e) => e.innerText.trim().toUpperCase()));
         expect(tags.includes(tag), `${iso.slice(0, 10)} ${mode}: expected a ${tag} tag on the dates, found ${JSON.stringify(tags)}`);
+        // Early voting begins is a start, not a deadline: from Oct 6 to Nov 1 it says "Has begun" and is not crossed out; a deadline that has gone stays crossed out.
+        const early = await p.$$eval('.cxm-dates > div', (els) => els.map((e) => ({ t: e.innerText, begun: e.classList.contains('cxm-date-begun'), past: e.classList.contains('cxm-date-past'), line: getComputedStyle(e.querySelector('b')).textDecorationLine })).filter((x) => /Early voting begins/.test(x.t))[0]);
+        if (iso.startsWith('2026-10-08')) expect(early && early.begun && early.line === 'none' && /HAS BEGUN/i.test(early.t), `${iso.slice(0, 10)} ${mode}: Early voting begins should say Has begun and not be crossed out, found ${JSON.stringify(early)}`);
+        if (iso.startsWith('2026-11-04')) expect(early && early.past && early.line === 'line-through', `${iso.slice(0, 10)} ${mode}: after voting ended, Early voting begins should read as past, found ${JSON.stringify(early)}`);
+        if (iso.startsWith('2026-10-08')) expect(await p.$$eval('.cxm-date-past b', (els) => els.length > 0 && els.every((b) => getComputedStyle(b).textDecorationLine === 'line-through')), `${iso.slice(0, 10)} ${mode}: a deadline that has gone should stay crossed out`);
         const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast' || x.id === 'link-in-text-block');
         expect(bad.length === 0, `${iso.slice(0, 10)} ${mode}: contrast or an unmarked link on the dates page: ${bad.slice(0, 3).map((x) => x.target).join('; ')}`);
         await done(p);
