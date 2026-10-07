@@ -5202,6 +5202,139 @@ CHECKS['records-changed'] = async () => {
   await done(p);
 };
 
+/* What five offices can do (ext/cx-offices-text.jsx; docs/source-notes-offices.md). The compiled app had words for Governor, Congress, judges, the
+   General Assembly, and County Council, and a generic line for every other office. Attorney General, Auditor of State, Secretary of State,
+   Treasurer of State, and County Executive now have their own words, a source link, and the notice that a person has not reviewed them (or
+   who did, and when). On the phone (the contest page, the candidate record, the review) and on the computer (the contest page, the record's
+   drawer, the "What could change" cards): each of the five shows its own words and link and the notice, never the generic line; Governor,
+   Congress, and the judges' words are exactly what they were, with no notice; our words have no party, ranking, score, advice, or dash. */
+const OFFICE_GENERIC = 'A detailed authority summary has not yet been reviewed for this office.';
+const OFFICE_NAMES = ['Attorney General', 'Auditor of State', 'Secretary of State', 'Treasurer of State', 'County Executive'];
+// the words these offices already had in the compiled app (never edited): they must read the same, with no notice under them
+const OFFICE_KEEP = {
+  'Governor and Lieutenant Governor': { can: 'The governor leads Ohio’s executive branch and can recommend legislation and sign or veto bills.', limits: 'A campaign plan still needs the required laws, funding and approvals. The governor cannot independently rewrite federal law or guarantee electricity prices.' },
+  'United States Senator': { can: 'Members of Congress introduce and vote on federal legislation. One member casts one vote; they do not decide alone.', limits: 'Federal law generally needs both chambers and presidential action, or a veto override. Campaign promises and past votes do not guarantee passage.' },
+  'Justice of the Supreme Court': { can: 'Judges hear cases within their court’s authority and apply the law to the facts and legal questions presented.', limits: 'A judge’s party does not establish how they will rule. Case outcomes depend on evidence, applicable law and court procedures. No case-result forecasts are provided.' },
+};
+const OFFICE_BAD_EN = /\b(democrat\w*|republican\w*|libertarian\w*|party|parties|partisan|best|better|worse|worst|rank\w*|scores?|should|ought|favorite|strongest|weakest|vote for|vote against)\b/i;
+const OFFICE_BAD_ES = /(demócrata|republican|libertari|partido|partidista|mejor|peor|puntaje|clasificaci|debería|favorit|votar por|votar en contra)/i;
+function officeWords() {   // the words as written in the source, between the OFFICES-TEXT markers
+  const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-offices-text.jsx'), 'utf8');
+  const blk = /\/\* OFFICES-TEXT-START[\s\S]*?OFFICES-TEXT-END \*\//.exec(src), obj = /const CX_OFFICES = (\{[\s\S]*?\n\});\n/.exec(blk ? blk[0] : '');
+  if (!obj) throw new Error('the OFFICES-TEXT block or CX_OFFICES is missing from ext/cx-offices-text.jsx');
+  const words = require('vm').runInNewContext('(' + obj[1] + ')');
+  let reviewed = null;   // a person's review counts only while its fingerprint is the text's
+  try {
+    const r = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'offices-text-reviewed.json'), 'utf8'));
+    if (r.fp === require('crypto').createHash('sha256').update(blk[0]).digest('hex').slice(0, 16)) reviewed = r;
+  } catch (e) { /* never reviewed */ }
+  return { words, reviewed };
+}
+CHECKS['office-text'] = async () => {
+  const ES = process.env.CHECK_LANG === 'es';
+  const { words, reviewed } = officeWords();
+  const sp = (s) => (ES ? (ES_WORDS[s] || s) : s);   // our words in the page's language
+  const nm = (s) => RC_SP(sp(s));
+  const keys = Object.keys(words);
+  expect(JSON.stringify(keys) === JSON.stringify(OFFICE_NAMES.map((n) => n.toLowerCase())), `ext/cx-offices-text.jsx holds words for ${keys.join(', ')}, not for exactly ${OFFICE_NAMES.join(', ')}`);
+  const NOTICE_EN = reviewed
+    ? `Our plain words for what this office can do were read against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
+    : 'Our plain words for what this office can do. A person has not reviewed them yet.';
+  const notice = nm(NOTICE_EN), noticeBase = nm('Our plain words for what this office can do');
+  if (ES && !reviewed) expect(!!ES_WORDS[NOTICE_EN], 'the notice has no Spanish');
+  for (const n of OFFICE_NAMES) {
+    const w = words[n.toLowerCase()] || {};
+    expect(w.can && w.limits && /^https:\/\/(codes\.ohio\.gov|cuyahogacounty\.gov)\//.test(w.url || ''), `${n}: the words need can, limits, and an official https link (codes.ohio.gov or cuyahogacounty.gov)`);
+    for (const t of [w.can, w.limits]) {
+      expect(!!t && !/[–—]/.test(t) && !OFFICE_BAD_EN.test(t), `${n}: a party, ranking, score, advice word, or dash in "${(t || '').slice(0, 60)}"`);
+      if (ES) expect(!!ES_WORDS[t] && !/[–—]/.test(ES_WORDS[t]) && !OFFICE_BAD_ES.test(ES_WORDS[t]), `${n}: no Spanish, or a party, ranking, score, advice word, or dash in it, for "${(t || '').slice(0, 60)}"`);
+    }
+  }
+  const pageOf = (office) => { const w = words[office.toLowerCase()]; return w ? { can: nm(w.can), limits: nm(w.limits), url: w.url } : OFFICE_KEEP[office] ? { can: nm(OFFICE_KEEP[office].can), limits: nm(OFFICE_KEEP[office].limits), url: null } : { can: '(no words written for this office)', limits: '(no words written for this office)', url: null }; };
+  // what a screen says about an office: its words in order (with the notice right after them for the five), the source link, never the generic line
+  const judge = (where, office, text, links, o = {}) => {
+    const t = RC_SP(text), e = pageOf(office), five = OFFICE_NAMES.includes(office), tag = `${where}, ${office}`;
+    expect(!t.includes(RC_SP(OFFICE_GENERIC)) && !t.includes(nm(OFFICE_GENERIC)), `${tag}: shows the generic line "${OFFICE_GENERIC.slice(0, 40)}..." instead of its own words`);
+    const i = t.indexOf(e.can);
+    expect(i >= 0, `${tag}: does not say "${e.can.slice(0, 70)}...": ${t.slice(0, 160)}`);
+    let at = i;
+    if (o.limits) { const j = t.indexOf(e.limits, i); expect(j > i, `${tag}: does not say its limits after what it can do`); at = Math.max(at, j); }
+    const k = t.indexOf(five ? notice : noticeBase);
+    if (five) expect(k > at && (!o.limits || k > at), `${tag}: the notice "${notice.slice(0, 60)}..." is missing or not after the words`);
+    else expect(k < 0, `${tag}: an office that kept its words shows the new notice`);
+    if (five && o.link) expect(links.some((l) => l.href === e.url && l.blank), `${tag}: no link to ${e.url} (${JSON.stringify(links.slice(0, 5))})`);
+    if (five && k >= 0) { const own = t.slice(i, k + notice.length); expect(!/[–—]/.test(own) && !(ES ? OFFICE_BAD_ES : OFFICE_BAD_EN).test(own), `${tag}: a party, ranking, score, advice word, or dash in our words: ${own.slice(0, 80)}`); }
+  };
+  const linksIn = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(`${sel} a[href]`)].map((a) => ({ href: a.getAttribute('href'), blank: a.target === '_blank' })), sel);
+  const textIn = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(sel)].pop()?.innerText || '', sel);
+  const clickIn = async (p, sel, o = {}) => { const h = await p.evaluateHandle((sel, o) => [...document.querySelectorAll(sel)].find((x) => (o.strong ? o.strong.includes((x.querySelector('strong') || {}).innerText) : o.re ? new RegExp(o.re).test(x.innerText) : true)) || null, sel, o); const el = h.asElement(); if (el) await el.click(); await wait(550); return !!el; };
+
+  // ---- the phone ----
+  const m = await open('/?panel=ballot#phone', { mobile: true, easy: false, settle: 1600 });
+  for (const office of [...OFFICE_NAMES, ...Object.keys(OFFICE_KEEP)]) {
+    const hit = await clickIn(m, '.cxm-row', { strong: [office, sp(office)] });
+    if (!hit) { expect(false, `phone: no row "${office}" on the Ballot tab`); continue; }
+    const c = RC_SP(await textIn(m, '.cxm-sheet'));
+    judge('phone contest page', office, c, await linksIn(m, '.cxm-sheet'), { limits: true, link: true });
+    if (!(await clickIn(m, '.cxm-cand-rec'))) { expect(false, `phone, ${office}: no Record button`); continue; }
+    judge('phone candidate record', office, await textIn(m, '.cxm-sheet'), await linksIn(m, '.cxm-sheet'), { limits: true, link: true });
+    expect(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `phone candidate record, ${office}: wider than the screen`);
+    if (office === 'County Executive') {   // look at it: phone record (axe on the screen that carries the new words)
+      const bad = await axeBad(m); expect(bad.length === 0, `axe on the phone candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`);
+    }
+    await clickIn(m, '.cxm-sheet-x');
+    expect(!(await has(m, '.cxm-sheet')), `phone, ${office}: the sheet did not close`);
+  }
+  // "What might your choices affect?" on the Ballot tab: a pick in an office, then its words on that pick's card
+  for (const office of ['Treasurer of State', 'United States Senator']) {
+    await clickIn(m, '.cxm-row', { strong: [office, sp(office)] });
+    await clickIn(m, '.cxm-cand'); await clickIn(m, '.cxm-sheet-x');
+  }
+  const cards = await m.evaluate(() => [...document.querySelectorAll('.cxm-tile')].filter((t) => t.querySelector('.cxm-kicker') && t.querySelector('.cxm-link')).map((t) => ({ kicker: t.querySelector('.cxm-kicker').innerText, text: t.innerText })));
+  for (const office of ['Treasurer of State', 'United States Senator']) {
+    const card = cards.find((c) => [office, sp(office)].includes(c.kicker)), five = OFFICE_NAMES.includes(office);
+    if (!card) { expect(false, `phone, ${office}: no card on the Ballot tab after a pick (${cards.map((c) => c.kicker)})`); continue; }
+    const r = RC_SP(card.text), e = pageOf(office);
+    expect(r.includes(e.can), `phone choices card, ${office}: does not say "${e.can.slice(0, 60)}..."`);
+    expect(five ? r.includes(notice) : !r.includes(noticeBase), `phone choices card, ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(!r.includes(nm(OFFICE_GENERIC)), `phone choices card, ${office}: shows the generic line`);
+  }
+  await done(m);
+
+  // ---- the computer ----
+  const d = await open('/?panel=ballot#desktop', { width: 1280, settle: 1600 });
+  const ids = await d.evaluate(() => Object.fromEntries([...document.querySelectorAll('.practice-jump option')].map((o) => [o.textContent.split(' · ')[0], o.value])));
+  for (const office of [...OFFICE_NAMES, ...Object.keys(OFFICE_KEEP)]) {
+    const id = ids[office] || ids[sp(office)];
+    if (!id) { expect(false, `desktop: no race "${office}" in the practice ballot's list (${Object.keys(ids).slice(0, 6)})`); continue; }
+    await d.select('.practice-jump select', id); await wait(500);
+    judge('desktop contest page', office, await textIn(d, '.practice-choice'), await linksIn(d, '.practice-choice'), {});
+    if (!(await clickIn(d, '.practice-candidate button'))) { expect(false, `desktop, ${office}: no Record & role button`); continue; }
+    await wait(300);
+    judge('desktop candidate record', office, await textIn(d, '.practice-drawer'), await linksIn(d, '.practice-drawer'), { limits: true, link: true });
+    if (office === 'County Executive') { const bad = await axeBad(d); expect(bad.length === 0, `axe on the desktop candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    await d.keyboard.press('Escape'); await wait(500);
+    expect(!(await has(d, '.practice-drawer')), `desktop, ${office}: the record did not close`);
+  }
+  // "What could change?": a pick in an office, then its words on its card
+  for (const office of ['County Executive', 'United States Senator']) {
+    await d.select('.practice-jump select', ids[office] || ids[sp(office)]); await wait(400);
+    await clickIn(d, '.practice-candidate input'); await wait(300);
+  }
+  await clickIn(d, '[role=tab]', { re: '^3[.]' });
+  await wait(500);
+  const oc = await d.evaluate(() => [...document.querySelectorAll('.practice-outcome-grid .practice-card')].map((c) => ({ label: (c.querySelector('.pilot-label') || {}).textContent || '', text: c.innerText })));
+  for (const office of ['County Executive', 'United States Senator']) {
+    const card = oc.find((c) => [office, sp(office)].some((n) => c.label.toLowerCase() === n.toLowerCase())), five = OFFICE_NAMES.includes(office);
+    if (!card) { expect(false, `desktop "What could change?", ${office}: no card after a pick (${oc.map((c) => c.label)})`); continue; }
+    const o = RC_SP(card.text), e = pageOf(office);
+    expect(o.includes(e.can), `desktop "What could change?", ${office}: does not say "${e.can.slice(0, 60)}..."`);
+    expect(five ? o.includes(notice) : !o.includes(noticeBase), `desktop "What could change?", ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(!o.includes(nm(OFFICE_GENERIC)), `desktop "What could change?", ${office}: shows the generic line`);
+  }
+  await done(d);
+};
+
 (async () => {
   if (argv('--list')) { console.log(Object.keys(CHECKS).join('\n')); return; }
   if (!fs.existsSync(path.join(SITE, 'index.html'))) { console.error(`No ${SITE}/index.html. Run python build.py first.`); process.exit(2); }

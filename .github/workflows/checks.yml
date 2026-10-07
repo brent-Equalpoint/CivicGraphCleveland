@@ -55,6 +55,8 @@ jobs:
           python scripts/test_votes.py
           python scripts/test_cityrecord.py
           python scripts/test_votes_actions.py
+          python scripts/test_offices.py
+          node scripts/test_offices.js
           python scripts/test_records.py
           node scripts/test_headline.js
           node scripts/test_districts.js

@@ -343,6 +343,34 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Not done, or needs a person.** Should `records-changed` (and `records-tab`) join `LIGHT` and `SPANISH` in `scripts/checks/lists.js`? It
       ran green in both here. Not tried on a real phone.
 
+52. **Oct 7: five offices get their own "What this office can do" words (branch `worktree-agent-a416514b05ce58305`; not released; item 51 is another agent's, numbering to be settled on merge).**
+    - **What a resident sees.** The compiled app's `qm()` had real words only for Governor, Congress and U.S. Senator, judges and justices, State Senator and
+      State Representative, and County Council; every other office showed one generic line ("A detailed authority summary has not yet been reviewed for this
+      office."). On the official list (48 contests, 97 candidates) exactly five fell through: Attorney General, Auditor of State, Secretary of State, Treasurer of
+      State, and County Executive (13 candidates). Each now has a "can" line, a "limits" line, and one official source link, on the phone (the contest page, the
+      candidate record, "What might your choices affect?") and on the computer (the contest page, the record's drawer, the "What could change?" cards). Under the
+      words, in the small-note style the app already has, the screen says "Our plain words for what this office can do. A person has not reviewed them yet." until a
+      person reviews them. Governor, Congress, judges, and every other office read exactly as before and show no notice. The Lieutenant Governor runs on the Governor's
+      joint ticket (one contest), so it uses the Governor's words, which only describe the governor; judges of the Court of Common Pleas and Appeals match "judge".
+    - **Where the code is.** The words are in `ext/cx-offices-text.jsx` between the OFFICES-TEXT markers (`CX_OFFICES`, keyed by contest name in lower case), with
+      `cxOfficeInfo(contest)`, `cxOfficeReview()`, and the `CxOfficeNote` component after them. `build.py` has one exact-match patch that makes `qm()` ask
+      `cxOfficeInfo()` first (every caller, phone and desktop, therefore agrees), three more that put the notice under the words in the desktop's three places, and
+      `offices_text_fp()` / `mark_offices_reviewed()`; the page gets `CX_OFFICES_REVIEW`, true only while a person's mark still matches the text. The phone's three
+      places are in `ext/cxm-ballot.jsx`. Sources, the exact sections cited, the day read (Oct 7, 2026), and the words relied on: `docs/source-notes-offices.md`.
+    - **Review.** Nobody has run `python build.py --mark-offices-reviewed "Name"`; `data/offices-text-reviewed.json` does not exist, so every place says a person has not
+      reviewed the words. Brent reads each line against its section in the source notes, then runs the command. Any later edit between the markers clears the mark.
+    - **Spanish.** Drafts for the ten lines and both notices are in `i18n/manual.json` (a Spanish-speaking person has not read them; add them to `i18n/review-notes.md`
+      when that list is next gone through). Official wording and the links stay as they are.
+    - **Checks and tests.** New browser check `office-text` in `scripts/checks/run.js` (dark, light, light Original, Spanish, all green; it fails with a planted fault, an
+      office falling back to the generic line, and passes on the real page); `scripts/test_offices.js` (the words, the lookup, the notice shown unreviewed and replaced when
+      reviewed, the wiring) and `scripts/test_offices.py` (the review stamp: fingerprint, dash, markers, the command, a stale mark), both added to `scripts/release.py`'s
+      unit list and to `.github/workflows/checks.yml`; `scripts/checks/changed.js` runs `office-text` for the ballot file, the new file, and the review mark.
+      Not added to `scripts/checks/lists.js` (left alone on purpose): should `office-text` join `SPANISH` or `LIGHT`? It ran green in both here.
+    - **Not done.** The judges', Governor's, and legislators' words were not touched or re-read (outside this task). The Lieutenant Governor has no words of its own.
+      County Council districts, U.S. House, and state legislature offices already had words. Not tried on a real phone.
+    - **Build.** Two clean builds gave the same hashes: the offline file `0601713b5b2e30c53db955805a0f5b42363b305ccd88337ca7393320f4d51611`, `site/index.html`
+      `b8824018a2d0f8fbf935368d7761a4043f0382b1ab39670072f8bd8029a498b4`.
+
 ---
 
 ## 3. What is in the app right now

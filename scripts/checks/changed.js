@@ -42,7 +42,8 @@ const RULES = [
   [(f) => f === 'ext/cx-us-index.jsx', ['us-index', 'us-tree', 'us-graph', 'us-profile', 'us-explain', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Index (Brent's Index kit); the Tree reads its pages
   [(f) => f === 'ext/cx-us-tree.jsx', ['us-tree', 'us-graph', 'us-index', 'us-profile', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Tree (Brent's Tree kit)
   [(f) => f === 'ext/cx-align.jsx' || f === 'ext/cx-align-text.jsx' || f === 'data/alignment-reviewed.json', ['alignment', 'us-graph', 'us-profile', 'us-map-sheet', 'security-policy', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // how you line up
-  [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'screen-states', ...SWEEP]],
+  [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'office-text', 'screen-states', ...SWEEP]],
+  [(f) => f === 'ext/cx-offices-text.jsx' || f === 'data/offices-text-reviewed.json', ['office-text', 'districts', 'screen-states', 'perf-budget', 'color-vision', 'text-overlap', ...SWEEP]],   // what five offices can do, on the candidate record and the contest page
   [(f) => f === 'ext/cx-levies.jsx', ['levies', 'story-fit', 'titles-never-cut', ...SWEEP]],
   [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'records-tab', 'city-hall', 'banners', ...SWEEP]],
   [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', 'records-tab', ...SWEEP]],
@@ -109,6 +110,7 @@ const CSS_AREAS = [
 const FAST_RULES = [
   // a person's review mark (python build.py --mark-...-reviewed) changes what a page says about its review: that page's checks
   [(f) => f === 'data/office-reviewed.json', ['profiles', 'people-tabs']],
+  [(f) => f === 'data/offices-text-reviewed.json', ['office-text']],
   [(f) => f === 'data/levies-reviewed.json', ['levies', 'story-fit']],
   [(f) => f === 'data/us-text-reviewed.json', ['us-explain', 'us-profile', 'us-map-sheet']],
   [(f) => f === 'data/reasons-reviewed.json', ['profiles', 'council-votes']],
