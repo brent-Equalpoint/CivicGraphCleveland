@@ -2830,6 +2830,10 @@ const CHECKS = {
       const small = await p.evaluate((scope) => [...document.querySelectorAll(scope)].flatMap((r) => [...r.querySelectorAll('button, a[href], select, input, [role=button], summary')]).filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
       expect(small.length === 0, `phone explore at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
+    // Records (ext/cx-records.jsx): every control, with a legislation card's and a roll call's Details open
+    { const p = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }); await p.evaluate(AXE_AFTER.recordsOpen); await wait(300);
+      const small = await p.evaluate(() => [...document.querySelectorAll('.rf-page :is(button, a[href], select, input, [role=button], summary)')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`));
+      expect(small.length === 0, `phone records: controls under 44px: ${small.slice(0, 5)}`); await done(p); }
     // the desktop strip above the graph (rooms and My pages): every control in it is a full target too, at a small and a wide computer screen
     for (const w of [1100, 1440]) {
       const p = await open('/?panel=ballot#desktop', { width: w });
@@ -3507,6 +3511,9 @@ const AXE_PAGES = [
   ['phone record', '/?panel=leg&file=1044-2026#phone', { mobile: true, easy: false, settle: 1500 }], ['phone record ceremonial', '/?panel=leg&file=37-2026#phone', { mobile: true, easy: false }],
   ['desktop profile votes and actions', '/?panel=profiles&seat=ward-5#desktop', { settle: 1400, after: 'personList' }], ['desktop ward record', '/?panel=context#desktop', { pre: VA_WARD7_PRE }],
   ['phone ward record', '/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE, after: 'wardOpen' }], ['phone ward record none', '/?panel=place#phone', { mobile: true, easy: false, after: 'wardOpen' }],
+  // Records (ext/cx-records.jsx): the list, in Original, with a legislation card's Details and a vote card's Details open, and with the saved ward chosen
+  ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }], ['phone records original', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, theme: 'original' }],
+  ['phone records open', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, after: 'recordsOpen' }], ['phone records ward', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, pre: VA_WARD7_PRE, after: 'recordsWard' }],
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
@@ -3600,6 +3607,18 @@ const AXE_AFTER = {
     document.querySelectorAll('.usm-prof .ual details').forEach((d) => { d.open = true; }); await w(300);
   },
   pagesMenu: () => { const b = document.querySelector('.cx-pages-btn'); if (b) b.click(); },
+  recordsOpen: async () => {   // Records: a legislation card's Details and a roll call's Details, open
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const leg = document.querySelector('[data-f="type"] button[data-v="legislation"]'); if (leg) leg.click(); await w(300);
+    const c = document.querySelector('.rf-list > .rf-card:not(.rf-short) .rf-more'); if (c) c.click(); await w(1200);
+    const v = document.querySelector('[data-f="type"] button[data-v="all"]'); if (v) v.click(); await w(300);
+    const vc = document.querySelector('.rf-list > .rf-card[data-type="vote"] .rf-more'); if (vc) vc.click(); await w(400);
+  },
+  recordsWard: async () => {   // Records with the ward saved on the device chosen, over all time
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const s = document.querySelector('.rf-ward select'); if (s) { Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, 'mine'); s.dispatchEvent(new Event('change', { bubbles: true })); }
+    const a = document.querySelector('[data-f="days"] button[data-v="0"]'); if (a) a.click(); await w(400);
+  },
   personList: () => { const b = document.querySelector('.sp .sp-actions button[aria-expanded]'); if (b) b.click(); },
   wardOpen: () => { const h = document.querySelector('.cxm-drops .cxm-drop-head'); if (h) h.click(); },
   jumpOpen: () => { const b = document.querySelector('.cx-jump-btn'); if (b) b.click(); },
@@ -3651,7 +3670,8 @@ const LOOK_PAGES = [
   ['desktop strip main tab', '/?panel=ballot#desktop', {}, null, ['.cx-folder-main[aria-selected="true"]', '.cx-folder:not(.cx-folder-main)[aria-selected="false"]']],
   // the privacy policy (ext/cx-privacy.jsx): the profile page's type with the draft line, the short version, and the list of what is saved
   ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
-  ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
+  ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],  // Records (ext/cx-records.jsx): a chosen and a plain filter, the ward choice, the count, and a card's parts
+  ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }, null, ['.rf-pills button.on', '.rf-pills button:not(.on)', '.rf-ward select', '.rf-count', '.rf-card', '.rf-type', '.rf-title', '.rf-what', '.rf-src', '.rf-more', '.rf-show']],
 ];
 async function lookOf(p, selectors) {
   return p.evaluate((sels, props) => {
@@ -3741,19 +3761,23 @@ const CV_PAGES = [
   ['phone us profile areas', '/?panel=us&who=jon-husted#phone', { mobile: true, easy: false, settle: 2600, pre: ALIGN_PREVIEW, after: 'alignProfile' }],
   // votes, actions, and positions: a record page and the ward view
   ['desktop record', '/?panel=leg&file=1044-2026#desktop', { settle: 1500 }], ['phone record', '/?panel=leg&file=1044-2026#phone', { mobile: true, easy: false, settle: 1500 }], ['phone ward record', '/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE, after: 'wardOpen' }],
+  // Records: kinds and ward ties are words, never a color
+  ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }], ['phone records open', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, after: 'recordsOpen' }],
 ];
 /* Words on each phone screen, counted as a person sees them (nothing folded is opened). A screen may not grow past its recorded count plus a small allowance, so
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
      TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget
    Screens that show a record's own words (What's new) are left out. See docs/plan-plain-text.md. */
 // At City Hall was 0.35 while it was a sheet of 722 words; as a page it holds about 400 (docs/plan-city-hall-page.md), so it gets the same room as Today
-const TEXT_WIDE = { 'At City Hall': 0.15, Today: 0.15, 'Decision ledger': 0.3 };
+const TEXT_WIDE = { 'At City Hall': 0.15, Today: 0.15, 'Decision ledger': 0.3, Records: 0.15 };
 const TEXT_SCREENS = [
   ['Today', '/#phone'], ['Explore', '/#phone', 'Explore'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
   ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
   ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['At City Hall', '/?panel=meetings#phone'],
   ['Decision ledger', '/?panel=ledger#phone'], ['How this is built', '/?panel=bench#phone'], ['Settings', '/?panel=settings#phone'],
   ['United States: a profile', '/?panel=us&who=bernie-moreno#phone'],
+  // Records: the header, the filters, the count, and the first 20 cards (docs/plan-records-feed.md); built from the nightly records, so it varies
+  ['Records', '/?panel=records#phone'],
   // the privacy policy says everything once, in full, so the other screens can stay short (docs/plan-privacy-policy.md); recorded on purpose
   ['Privacy policy', '/?panel=privacy#phone'],
 ];
@@ -4029,7 +4053,7 @@ CHECKS['tab-blue'] = async () => {
   const BLUE = 'rgb(47, 102, 243)', WHITE = 'rgb(255, 255, 255)';
   const probe = () => {
     const out = [];
-    const sels = ['.cx-folder[aria-selected="true"]', '.cx-strip-btn.on', '.cxm-folders button.on', '.usm-pills button.on'];
+    const sels = ['.cx-folder[aria-selected="true"]', '.cx-strip-btn.on', '.cxm-folders button.on', '.usm-pills button.on', '.rf-pills button.on'];
     for (const s of sels) for (const e of document.querySelectorAll(s)) {
       const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4) continue;
       const c = getComputedStyle(e);
@@ -4040,7 +4064,7 @@ CHECKS['tab-blue'] = async () => {
     if (thumb && getComputedStyle(thumb).opacity !== '0') out.push({ s: '.cx-thumb', bg: getComputedStyle(thumb).backgroundColor, color: '', shadow: 'none', name: 'thumb' });
     return out;
   };
-  const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }]];
+  const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }], ['/?panel=records#phone', { mobile: true, easy: false }]];
   for (const [url, o] of pages) {
     const p = await open(url, o); await wait(600);
     if (o.after === 'people') { await clickText(p, 'People'); await wait(700); }
@@ -4315,6 +4339,141 @@ CHECKS['votes-actions'] = async () => {
     expect(bad.length === 0, `light ${theme}: contrast on the record page: ${bad.slice(0, 3).map((x) => x.target.slice(0, 60))}`);
     await done(p);
   }
+};
+
+/* Records (ext/cx-records.jsx, scripts/records_feed.py; docs/plan-records-feed.md, phase 2, and Latest on Today, docs/plan-mobile-restructure.md, step 1).
+   The phone page opens from ?panel=records as a full page with a back arrow; the number of cards each choice of time, kind, and ward leaves equals the
+   rows of site/records/records-2026.json (read here, never from the app's code), and so do the counts on the kinds; newest and oldest first are the
+   file's order and its reverse; 20 cards at a time, and Show more moves the focus to the first new card; every card has its kind, its date, a source
+   link, and the day it was pulled; Details opens in place; no score or ranking word and no person's name in our own words, in English and Spanish; the
+   ward chosen on the page, and the one saved on the device, never reach the address, storage, or a request; the page is the screen's width; the list
+   loads only when Records opens; it is a phone page; the chosen filter is solid blue with white text. Runs under CHECK_MODE, CHECK_THEME, CHECK_LANG. */
+const RF_SCORE = /\b(scores?|scored|scoring|ranks?|ranked|ranking|best|top|strong(er|est)?|trending|hot)\b/i;
+const RF_SCORE_ES = /\b(puntaje|puntuaci[oó]n|clasificaci[oó]n|ranking|mejor(es)?|principal(es)?|fuertes?|tendencias?|caliente|populares?)\b/i;
+const RF_NAME = /\b(Mr|Mrs|Ms|Dr)\.\s/;
+/* our own words on the page: what the record itself says (its titles, the addresses in chips, and the opened record) is taken out; text nodes are joined
+   with spaces, so two neighbouring words never glue together */
+const RF_OWN = () => {
+  const root = document.querySelector('.rf-page') || document.querySelector('.rf-latest');
+  if (!root) return '';
+  const c = root.cloneNode(true);
+  c.querySelectorAll('[data-rec], .rf-chip, .rf-details, .rf-src a, option').forEach((x) => x.remove());
+  const w = document.createTreeWalker(c, NodeFilter.SHOW_TEXT), out = [];
+  while (w.nextNode()) out.push(w.currentNode.nodeValue);
+  return out.join(' ');
+};
+CHECKS['records-feed'] = async () => {
+  const feed = JSON.parse(fs.readFileSync(path.join(SITE, 'records', 'records-2026.json'), 'utf8'));
+  const rows = feed.rows, today = etToday();
+  const people = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'people-2026.json'), 'utf8')).people.map((x) => x.name);
+  const days = (a, b) => Math.round((Date.parse(`${b}T12:00:00Z`) - Date.parse(`${a}T12:00:00Z`)) / 86400000);
+  const want = (f) => { const out = rows.filter((r) => (!f.days || days(r.date, today) < f.days) && (!f.type || f.type === 'all' || r.type === f.type) && (!f.ward || r.wards.some((w) => w[0] === f.ward))); return f.sort === 'old' ? out.slice().reverse() : out; };
+  const ES = process.env.CHECK_LANG === 'es';
+  expect(rows.length === feed.counts.all && rows.length > 1900, `the records file has ${rows.length} rows, its count says ${feed.counts.all}`);
+  const read = (p) => p.evaluate(() => ({
+    count: Number(((document.querySelector('.rf-count span') || {}).innerText || '').replace(/\D/g, '')),
+    cards: [...document.querySelectorAll('.rf-list > .rf-card')].map((c) => ({ id: c.dataset.id, date: c.dataset.date, type: c.dataset.type,
+      kind: !!c.querySelector('.rf-type') && (c.querySelector('.rf-type').innerText || '').trim().length > 2,
+      src: [...c.querySelectorAll('.rf-src a')].map((a) => a.href), pulled: /pulled [A-Z][a-z]{2,} \d{1,2}\.|obtenido el \d{1,2} [a-z]{3,}/.test((c.querySelector('.rf-src') || {}).innerText || ''),
+      wards: [...c.querySelectorAll('.rf-chip')].map((x) => Number(x.dataset.ward)) })),
+    kinds: Object.fromEntries([...document.querySelectorAll('[data-f="type"] button')].map((b) => [b.dataset.v, (b.querySelector('.rf-n') || {}).innerText || null])),
+    pressed: [...document.querySelectorAll('.rf-pills button[aria-pressed="true"]')].map((b) => { const s = getComputedStyle(b); return { v: b.dataset.v, bg: s.backgroundColor, color: s.color, shadow: s.boxShadow }; }),
+  }));
+  const pick = (p, f, v) => p.evaluate((f, v) => { const b = document.querySelector(`[data-f="${f}"] button[data-v="${v}"]`); if (b) b.click(); return !!b; }, f, String(v));
+  const ward = (p, v) => p.evaluate((v) => { const s = document.querySelector('.rf-ward select'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })); }, String(v));
+  // 1. ?panel=records opens the page over Today, with its back arrow; the list is asked for once
+  const p = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800 });
+  expect(await has(p, '.cxm-full.rf-page') && await has(p, '.rf-page .cxm-full-back'), '?panel=records did not open Records as a full page with a back arrow');
+  expect(/panel=records/.test(await p.evaluate(() => location.search)), 'Records does not keep its ?panel=records address');
+  expect(p.asked.filter((u) => u === '/records/records-2026.json').length === 1, `the records list was asked for ${p.asked.filter((u) => u === '/records/records-2026.json').length} times`);
+  // 2. the counts each choice leaves equal the file's rows; the counts on the kinds too; never a count on All
+  let r = await read(p);
+  const def = want({ days: 30, type: 'all', ward: 0, sort: 'new' });
+  expect(r.count === def.length, `Last 30 days, every kind, any ward: the page says ${r.count}, the file has ${def.length}`);
+  expect(r.kinds.all === null, `the All choice shows a number: ${r.kinds.all}`);
+  for (const t of ['legislation', 'meeting', 'vote']) expect(Number(String(r.kinds[t]).replace(/\D/g, '')) === def.filter((x) => x.type === t).length, `the ${t} choice says ${r.kinds[t]}, the file has ${def.filter((x) => x.type === t).length}`);
+  expect(r.cards.length === Math.min(20, def.length), `${r.cards.length} cards at first, not 20`);
+  expect(JSON.stringify(r.cards.map((c) => c.id)) === JSON.stringify(def.slice(0, 20).map((x) => x.id)), 'the first cards are not the newest rows of the file, in its order');
+  expect(r.cards.every((c) => c.kind && /^\d{4}-\d{2}-\d{2}$/.test(c.date) && c.src.length === 1 && /^https:\/\//.test(c.src[0]) && c.pulled), `a card has no kind, date, source link, or pulled date: ${JSON.stringify(r.cards.find((c) => !(c.kind && c.src.length === 1 && c.pulled)))}`);
+  expect(r.pressed.length === 3 && r.pressed.every((x) => x.bg === 'rgb(47, 102, 243)' && x.color === 'rgb(255, 255, 255)' && x.shadow === 'none'), `a chosen filter is not solid blue with white text and no line: ${JSON.stringify(r.pressed)}`);
+  for (const [d, t] of [[7, 'all'], [0, 'all'], [0, 'legislation'], [30, 'meeting'], [0, 'vote'], [7, 'vote']]) {
+    await pick(p, 'days', d); await pick(p, 'type', t); await wait(250);
+    r = await read(p);
+    const w = want({ days: d, type: t, sort: 'new' });
+    expect(r.count === w.length, `${d ? `last ${d} days` : 'all time'}, ${t}: the page says ${r.count}, the file has ${w.length}`);
+    expect(r.cards.every((c) => t === 'all' || c.type === t), `${t}: a card of another kind is listed`);
+  }
+  // 3. a ward: the cards it leaves equal the rows tied to it, and each shows the tie; the explanation of a tie is on the page
+  await pick(p, 'days', 0); await pick(p, 'type', 'all'); await wait(200);
+  const wardN = [6, 7, 3, 1].find((w) => want({ ward: w }).length > 0) || 6;
+  await ward(p, wardN); await wait(300);
+  r = await read(p);
+  expect(r.count === want({ ward: wardN }).length, `Ward ${wardN}, all time: the page says ${r.count}, the file has ${want({ ward: wardN }).length}`);
+  expect(r.cards.length > 0 && r.cards.every((c) => c.wards.includes(wardN)), `Ward ${wardN}: a card does not show its tie to the ward`);
+  // 4. order: newest first is the file's order, oldest first its reverse
+  await ward(p, ''); await pick(p, 'sort', 'old'); await wait(300);
+  r = await read(p);
+  const old = want({ sort: 'old' });
+  expect(JSON.stringify(r.cards.map((c) => c.id)) === JSON.stringify(old.slice(0, 20).map((x) => x.id)) && r.cards.every((c, i) => i === 0 || c.date >= r.cards[i - 1].date), 'Oldest first is not the file turned around');
+  await pick(p, 'sort', 'new'); await wait(250);
+  r = await read(p);
+  expect(r.cards.every((c, i) => i === 0 || c.date <= r.cards[i - 1].date), 'Newest first is not newest first');
+  // 5. 20 at a time, and Show more moves the focus to the first new card
+  await p.evaluate(() => document.querySelector('.rf-show').click()); await wait(400);
+  r = await read(p);
+  expect(r.cards.length === Math.min(40, r.count), `Show more did not add 20 cards (${r.cards.length})`);
+  expect(await p.evaluate(() => { const c = document.querySelectorAll('.rf-list > .rf-card')[20]; return !!c && c.contains(document.activeElement); }), 'Show more did not move the focus to the first new card');
+  // 6. Details opens in place: the shared record inside the same card, and the list keeps its cards
+  const before = r.cards.length;
+  await pick(p, 'type', 'legislation'); await wait(250);
+  const opened = await p.evaluate(async () => { const c = [...document.querySelectorAll('.rf-list > .rf-card:not(.rf-short)')][0]; c.querySelector('.rf-more').click(); await new Promise((x) => setTimeout(x, 1200)); return { inCard: !!c.querySelector('.rf-details .rc-actions'), expanded: c.querySelector('.rf-more').getAttribute('aria-expanded') }; });
+  expect(opened.inCard && opened.expanded === 'true', 'Details did not open the record in place');
+  expect((await read(p)).cards.length >= Math.min(20, before), 'opening Details changed the list');
+  // 7. our own words: no score or ranking word, no person's name (English, and Spanish below)
+  const own = await p.evaluate(RF_OWN);
+  expect(!RF_SCORE.test(own) && !(ES && RF_SCORE_ES.test(own)), `a score or ranking word in our own words: ${(own.match(RF_SCORE) || own.match(RF_SCORE_ES) || [])[0]}`);
+  const named = people.filter((n) => own.includes(n));
+  expect(!named.length && !RF_NAME.test(own), `a person is named in our own words: ${named.slice(0, 3)} ${(own.match(RF_NAME) || [])[0] || ''}`);
+  // 8. the page is the screen's width, and every control is a full target
+  expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth && Math.round(document.querySelector('.rf-page').getBoundingClientRect().width) <= innerWidth), 'Records is wider than the screen');
+  const small = await p.evaluate(() => [...document.querySelectorAll('.rf-page :is(button, a[href], select, summary)')].filter((el) => { const b = el.getBoundingClientRect(); if (!b.width || !b.height) return false; if (el.tagName === 'A' && getComputedStyle(el).display === 'inline') return false; return b.height < 44 || b.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().height)}px`));
+  expect(small.length === 0, `Records: controls under 44px: ${small.slice(0, 4)}`);
+  // 9. the back arrow returns to Today with no address
+  await p.evaluate(() => document.querySelector('.rf-page .cxm-full-back').click()); await wait(500);
+  expect(!(await has(p, '.rf-page')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the back arrow did not return to Today');
+  await done(p);
+  // 10. a ward saved on the device is offered as "Names my ward", and neither it nor a ward chosen on the page reaches the address, storage, a cookie, or a request
+  { const q = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800, pre: VA_WARD7 });
+    const opts = await q.evaluate(() => [...document.querySelectorAll('.rf-ward option')].map((o) => o.value));
+    expect(opts.includes('mine'), 'with a ward saved on the device, "Names my ward" is not offered');
+    const snap = () => q.evaluate(() => JSON.stringify({ href: location.href, local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie }));
+    const s0 = await snap(), asked0 = q.asked.length;
+    await ward(q, 'mine'); await wait(300);
+    const rm = await read(q);
+    expect(rm.count === want({ days: 30, ward: 7 }).length, `Names my ward (Ward 7), last 30 days: the page says ${rm.count}, the file has ${want({ days: 30, ward: 7 }).length}`);
+    await ward(q, '12'); await wait(300); await pick(q, 'days', 0); await wait(200);
+    const s1 = await snap();
+    expect(s1 === s0, `choosing a ward changed the address, storage, or a cookie: ${s1.slice(0, 200)}`);
+    expect(!/ward/i.test(JSON.parse(s1).href), 'the address names a ward');
+    expect(q.asked.slice(asked0).length === 0, `choosing a ward asked the site for something: ${q.asked.slice(asked0)}`);
+    await done(q); }
+  // 11. an empty choice says so in words, with one thing to do next
+  { const q = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800 });
+    const emptyWard = [...Array(15).keys()].map((i) => i + 1).find((w) => want({ days: 7, ward: w }).length === 0);
+    if (emptyWard) {
+      await pick(q, 'days', 7); await ward(q, emptyWard); await wait(300);
+      expect(await has(q, '.rf .cxm-empty') && (await count(q, '.rf .cxm-empty button')) === 1, `an empty choice (Ward ${emptyWard}, last 7 days) does not say so with one next step`);
+    }
+    await done(q); }
+  // 12. Spanish: the page reads in Spanish, with no score or ranking word; the official words stay English
+  { const q = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 2000, pre: () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } });
+    const t = (await txt(q, '.rf')) || '';
+    expect(/Fuente:/.test(t) && /registros/.test(t) && /Últimos 30 días/.test(t), `Spanish: Records does not read in Spanish: ${t.slice(0, 120)}`);
+    const ownEs = await q.evaluate(RF_OWN);
+    expect(!RF_SCORE_ES.test(ownEs) && !RF_SCORE.test(ownEs), `Spanish: a score or ranking word: ${(ownEs.match(RF_SCORE_ES) || ownEs.match(RF_SCORE) || [])[0]}`);
+    await done(q); }
+  // 13. a phone page: the desktop has no Records page yet
+  { const q = await open('/?panel=records#desktop', { settle: 1400 }); expect(!(await has(q, '.rf')), 'a Records page appeared on the desktop'); await done(q); }
 };
 
 (async () => {
