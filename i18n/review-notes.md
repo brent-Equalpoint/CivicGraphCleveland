@@ -104,3 +104,11 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 4. **A president's count** reads "234 jueces nombrados" and, for one, "1 nombramiento de juez o jueza", to avoid guessing a judge's gender.
 5. **Moving around:** "Elija un grupo y luego un nombre.", "Elija un nombre para seguir.", "Volver al inicio", "Dónde está" (the crumbs, read by a screen reader), "Ahora se muestra" (spoken after each move), and "y 525 más · página 1 de 39" for a long list on a computer.
 6. **The details card:** "Por qué está vinculado", "Abrir el perfil del comité", "Sitio web oficial".
+
+## Records and Latest on Today (Oct 6, 2026)
+36 new entries in `i18n/manual.json` for `ext/cx-records.jsx` and Today's Latest (`ext/cxm-today.jsx`): 30 exact, 6 patterns. Titles, the record's own status words (such as "To be Passed/Adopted"), addresses, and body names that come from the record stay as the record writes them.
+1. **The filters:** "Cuándo" (Últimos 7 días, Últimos 30 días, Todas las fechas), "Tipo" (Todos, Legislación, Reuniones, Votos), "Distrito" (Cualquier distrito, "Nombra mi distrito (Distrito 7)", Distrito 1 to 15), and "Orden" (Más recientes primero, Más antiguos primero). Check that "Todas las fechas" reads as "all time" here.
+2. **A meeting's line:** "Se reunió.", "Se reúne hoy.", "Programada." (a reunión), "41 puntos en la agenda." and "1 punto en la agenda."; "No hay legislación en la agenda."
+3. **The count line** is two pieces, the number and "registros" (or "registro"), so it reads "387 registros".
+4. **Rules that carry meaning:** "Patrocinar una propuesta no es votar. La falta de un registro no es un no." and the sentence on what ties a record to a ward, which says sponsorship by the ward's member is not counted.
+5. **States:** "No se pudieron cargar los registros", "Ningún registro coincide con estas opciones", "Ver todos los registros", "Ocultar detalles", and the Easy mode button "Ver los registros más recientes de la ciudad".
