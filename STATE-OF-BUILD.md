@@ -405,6 +405,20 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       table, the status fold, and the Spanish. Not tried on a real phone (an .ics download on iOS Safari and Android Chrome, VoiceOver and TalkBack
       on the cards and the week buttons).
 
+52. **Oct 7: the Records filters are one tidy row each, early voting reads "Has begun", and the My place neighborhood list sets your place (CSS and small changes; the chips shipped by the fast lane at 2a3e62d).**
+    - **Records filter chips** (`ext/cxm.css`, `.rf-` rules only; Brent chose the smaller version of the design review). When is three equal pills with "Changed in
+      the latest pull" as a full-width pill under them; Kind is one row with the count under each word; Order is two equal pills; the four group labels are hidden
+      (each group keeps its `aria-label`, and the Ward label stays for screen readers). The first record moved up from y=867 (English) or 967 (Spanish) to 718 on
+      a 390 by 844 phone. A keyboard-focused pill stays a pill (the global focus rule had turned it into an 8 px rectangle). `design-look` changed in 8 lines, all
+      padding and line height of `.rf-pills button`, recorded on purpose. The fuller version (Order as one pill by the count, the lead sentence moved, a count on the
+      Changed pill) was not built: each is a separate decision.
+    - **Early voting.** On the Ballot's dates, "Early voting begins" (Oct 6) is a start, not a deadline: from the day it begins to Nov 1 it says "Has begun" (Spanish
+      "Ya comenzó") and is not crossed out; the Registration deadline stays crossed out and "Passed". After Nov 1 it reads as past. `CX_DATE_BEGUN_UNTIL` in
+      `ext/cx-live.jsx` (the date list itself is unchanged, because `build.py` checks its text against the desktop guide). `date-states` now checks both.
+    - **My place.** The Neighborhood dropdown now sets your place (before, it only browsed, so the Today story row kept the old ward): it calls `setHome` as the
+      home sheet does, so the story row, "(home)", and everything that follows the place move together, and it is remembered only if the person turned that on.
+      New check `place-dropdown`.
+
 ---
 
 ## 3. What is in the app right now
