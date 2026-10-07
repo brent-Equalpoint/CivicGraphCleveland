@@ -120,3 +120,7 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 3. **The count line** is two pieces, the number and "registros" (or "registro"), so it reads "387 registros".
 4. **Rules that carry meaning:** "Patrocinar una propuesta no es votar. La falta de un registro no es un no." and the sentence on what ties a record to a ward, which says sponsorship by the ward's member is not counted.
 5. **States:** "No se pudieron cargar los registros", "Ningún registro coincide con estas opciones", "Ver todos los registros", "Ocultar detalles", and the Easy mode button "Ver los registros más recientes de la ciudad".
+## The Records tab on the phone (Oct 7, 2026)
+4 entries in `i18n/manual.json`, pinned by hand: the tab "Registros" (it replaces "Explorar"), its folder tabs "Lo más reciente", "Reuniones", and "Salas", and the Updated strip's screen-reader hint "Abre Registros." (it opened Novedades before).
+1. **"Lo más reciente"** is also the title of the Latest box on Today. At 320 px it wraps to two lines in its folder tab ("Lo más" over "reciente"); a shorter word that still means "the newest records" (for example "Lo último" or "Recientes") would fit on one line, if it reads well.
+2. **"Salas"** names the 17 rooms and is now the heading of that folder too.

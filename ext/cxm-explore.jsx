@@ -1,5 +1,5 @@
-/* v5.14 phone app: Explore. All rooms from the desktop atlas (Uh), ordered by distance from the
-   resident's front door. Scrolling down zooms out. Each room keeps its desktop content: question,
+/* v5.14 phone app: Explore, now the Rooms folder of the Records tab (ext/cx-records.jsx, CxmRecTab), unchanged inside. All rooms from the desktop
+   atlas (Uh), ordered by distance from the resident's front door. Scrolling down zooms out. Each room keeps its desktop content: question,
    answer, guided view (Start, Meaning, Power, Proof), records with their four tabs, connections. */
 
 // the levels, in sentence case (the desktop strip reads the same list in cx-nav.jsx)
@@ -110,7 +110,7 @@ function CxmExplore() {
   return room ? <CxmRoom roomId={room} /> : <CxmRooms />;
 }
 function CxmRooms() {
-  const { mainRef, setRoom, openSheet, setOverlay } = useCxm();
+  const { mainRef, setRoom, openSheet, setRecFolder } = useCxm();
   const rail = useCxmRail((r) => `${r.focus}|${r.level}`);
   const levels = u.useMemo(() => cxmLevelRooms(), []);
   const pageRef = u.useRef(null);
@@ -145,11 +145,11 @@ function CxmRooms() {
   }, []);
   return (
     <div className="cxm-page cxm-rise cxm-rooms" ref={pageRef}>
-      <CxmH1>Explore</CxmH1>
+      <CxmH1>Rooms</CxmH1>
       <p className="cxm-mut">Scroll down to zoom out, from your block all the way to Washington. {Uh.length} rooms, each answering one question.</p>
       <button type="button" className="cxm-searchbar" onClick={() => openSheet(`search`)}><CXI.Search size={18} /> Search records, people, laws, terms</button>
       <div className="cxm-doors" role="group" aria-label="Start with a topic">
-        <button type="button" className="cxm-door" onClick={() => setOverlay({ type: `hall` })}><CXI.Landmark size={18} /><strong>At City Hall</strong><small>Council meetings, agendas, and what was decided.</small></button>
+        <button type="button" className="cxm-door" onClick={() => setRecFolder(`meetings`)}><CXI.Landmark size={18} /><strong>At City Hall</strong><small>Council meetings, agendas, and what was decided.</small></button>
         {CX_DOORWAYS.map(([, icon, title, sub, kind, target]) => {
           const Icon = CXI[icon];
           return <button key={title} type="button" className="cxm-door" onClick={() => (kind === `room` ? setRoom(target) : openSheet(target))}><Icon size={18} /><strong>{title}</strong><small>{sub}</small></button>;

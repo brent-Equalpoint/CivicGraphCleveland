@@ -175,14 +175,15 @@ function useCxmPrio() {
 /* v5.16: when a link points at something that does not exist, say so once instead of silently showing Today */
 const CXM_NOTICE = { v: null };
 function cxmFromUrl() {
-  const out = { tab: `today`, room: null, sheet: null, mode: null, page: null };
+  const out = { tab: `today`, room: null, sheet: null, mode: null, page: null, folder: null };
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
-  // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet; records opens Records the same way
+  // [tab, sheet, people view, full page, Records folder]: the Records tab (id `explore` until every check passes) holds Latest (records), Meetings (meetings,
+  // At City Hall), and Rooms (explore, and every ?room= link); privacy is the one full page over the tabs
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
-    ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
-    privacy: [`today`, null, null, `privacy`], records: [`today`, null, null, `records`] };
+    ledger: [`today`, `ledger`], meetings: [`explore`, null, null, null, `meetings`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
+    privacy: [`today`, null, null, `privacy`], records: [`explore`, null, null, null, `latest`], explore: [`explore`, null, null, null, `rooms`] };
   // a record link (?panel=leg&file=906-2026) opens that file's record over Today; the address names the file, never the viewer
   if (panel === `leg`) {
     const f = q.get(`file`);
@@ -191,18 +192,18 @@ function cxmFromUrl() {
     return out;
   }
   // a profile link (?panel=us&who=bernie-moreno) opens the map, where the profile page lives
-  if (panel && P[panel]) { const [tab, sheet, mode, page] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null }; }
+  if (panel && P[panel]) { const [tab, sheet, mode, page, folder] = P[panel]; return { ...out, tab, sheet: sheet ? { type: sheet } : null, mode: panel === `us` && (q.get(`view`) === `graph` || q.get(`who`)) ? `graph` : (mode || null), page: page || null, folder: folder || null }; }
   if (r && r.id !== `overview`) {
-    out.tab = `explore`; out.room = r.id;
+    out.tab = `explore`; out.folder = `rooms`; out.room = r.id;
     if (node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) out.sheet = { type: `record`, room: r.id, node };
   } else if (r && node && node !== r.nodes[0]?.id && r.nodes.some((n) => n.id === node)) {
-    out.tab = `explore`; out.sheet = { type: `record`, room: r.id, node };
+    out.tab = `explore`; out.folder = `rooms`; out.sheet = { type: `record`, room: r.id, node };
   }
   if ((panel || q.get(`room`) || node) && !r) CXM_NOTICE.v = `We could not find that page, so here is the start.`;
   else if (r && node && !r.nodes.some((n) => n.id === node)) CXM_NOTICE.v = `We could not find that record, so here is the room.`;
   return out;
 }
-function cxmToUrl(tab, room, top, peopleMode, page) {
+function cxmToUrl(tab, room, top, peopleMode, page, folder) {
   let url;
   try { url = new URL(globalThis.location.href); } catch { return; }
   const who = url.searchParams.get(`who`);   // the profile open on the map (a person's link name, never the viewer's): the map keeps it
@@ -210,9 +211,9 @@ function cxmToUrl(tab, room, top, peopleMode, page) {
   const p = url.searchParams;
   if (top && top.type === `record`) { p.set(`room`, top.room); p.set(`node`, top.node); }
   else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
-  else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
   else if (page === `privacy`) p.set(`panel`, `privacy`);
-  else if (page === `records`) p.set(`panel`, `records`);   // Records, and a record opened from it, keep the page's address (never a filter or the ward)
+  else if (tab === `explore` && folder === `meetings`) p.set(`panel`, `meetings`);   // Records > Meetings (At City Hall), and a record opened from it, keep its address (never the ward or anything typed)
+  else if (tab === `explore` && folder === `latest`) p.set(`panel`, `records`);   // Records > Latest, and a record opened from it, keep its address (never a filter or the ward)
   else if (top && top.type === `leg` && /^\d{1,5}-\d{4}$/.test(top.file || ``)) { p.set(`panel`, `leg`); p.set(`file`, top.file); }   // a record names its file, never the viewer
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
@@ -312,6 +313,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const setEasy = (v) => { setEasyState(v); cxmPut(`cx-easy`, v ? `on` : `off`); };
   const [theme, setThemeState] = u.useState(() => document.documentElement.getAttribute(`data-cx-theme`) || `bento`);
   const [room, setRoom] = u.useState(start.room);
+  const [recFolder, setRecFolder] = u.useState(start.folder || `latest`);   // the Records tab's folder: Latest the first time, then the last one chosen, for this visit only (memory, never saved)
   const [placeHood, setPlaceHood] = u.useState(CX_PLACE.hood || null);
   const [people, setPeople] = u.useState({ mode: start.mode || `profiles`, seat: null, office: `council`, q: 0 });
   const [seen, setSeen] = u.useState({});
@@ -335,9 +337,11 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const openPrivacy = () => { setOverlay({ type: `privacy`, sheets }); setSheets([]); setStoryBack(null); };
   const closePrivacy = () => { const back = overlay && overlay.type === `privacy` ? overlay.sheets : null; setOverlay(null); if (back && back.length) setSheets(back); };
   const openRoom = (roomId, nodeId) => {
-    setSheets([]); setOverlay(null); setTab(`explore`); setRoom(roomId);
+    setSheets([]); setOverlay(null); setTab(`explore`); setRecFolder(`rooms`); setRoom(roomId);
     if (nodeId) setTimeout(() => openSheet(`record`, { room: roomId, node: nodeId }), 30);
   };
+  // Records, at one of its folders (latest, meetings, rooms): the tab with that folder open, as the tab bar's Records button opens it
+  const openRecords = (f) => { setSheets([]); setOverlay(null); setStoryBack(null); setTab(`explore`); setRecFolder(f); };
   const openSeat = (seatId) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `profiles`, seat: seatId })); };
   const openOffice = (office) => { setSheets([]); setOverlay(null); setTab(`people`); setPeople((p) => ({ ...p, mode: `const`, office, q: 0 })); };
   const like = (id) => setLiked((l) => {
@@ -346,25 +350,27 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
     return [...l, id];
   });
   const answer = (qid, v) => practice.update((s) => ({ ...s, answers: { ...s.answers, [qid]: v } }));
-  u.useEffect(() => { if (mainRef.current) mainRef.current.scrollTop = 0; }, [tab, room]);
+  u.useEffect(() => { if (mainRef.current) mainRef.current.scrollTop = 0; }, [tab, room, recFolder]);
   const topSheet = sheets[sheets.length - 1];
   const page = overlay ? overlay.type : null;
-  u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page); }, [tab, room, topSheet, people.mode, page]);
+  u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page, recFolder); }, [tab, room, topSheet, people.mode, page, recFolder]);
   u.useEffect(() => {
-    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay((overlay.type === `hall` || overlay.type === `records`) && overlay.back ? overlay.back : null); } };
+    // Escape closes the top sheet, then a page over the tabs; with neither, it goes back to the story a "go deeper" step came from
+    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay(null); else if (storyBack) backToStory(); } };
     globalThis.addEventListener(`keydown`, onKey);
     return () => globalThis.removeEventListener(`keydown`, onKey);
-  }, [sheets.length, overlay]);
+  }, [sheets.length, overlay, storyBack]);
 
   const ctx = {
     practice, prio, tab, go, home, setHome, sheets, openSheet, closeSheet, backSheet, overlay, setOverlay, toast, setToast,
     liked, like, guide, setGuide, large, setLarge, theme, setTheme, room, setRoom, openRoom, placeHood, setPlaceHood,
     people, setPeople, openSeat, openOffice, answer, seen, setSeen, mainRef, easy, setEasy, deskEasy, leaveEasy: onLeaveEasy, storyBack, setStoryBack,
-    openPrivacy, closePrivacy,
+    openPrivacy, closePrivacy, recFolder, setRecFolder, openRecords,
   };
   const top = sheets[sheets.length - 1];
+  // the five tabs; the second is Records (docs/plan-mobile-restructure.md, Option A), still `explore` inside the code
   const TABS = [
-    [`today`, `Today`, CXI.Sparkles], [`explore`, `Explore`, CXI.Layers], [`place`, `My place`, CXI.Pin], [`people`, `People`, CXI.Users], [`ballot`, `Ballot`, CXI.Vote],
+    [`today`, `Today`, CXI.Sparkles], [`explore`, `Records`, CXI.Layers], [`place`, `My place`, CXI.Pin], [`people`, `People`, CXI.Users], [`ballot`, `Ballot`, CXI.Vote],
   ];
   return (
     <CXM.Provider value={ctx}>
@@ -381,10 +387,11 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             </div>
           </header>
           <CxmFresh />
+          {tab === `explore` && <CxmRecBar />}
           <main className="cxm-main" id="cxm-main" tabIndex={-1} ref={mainRef}>
-            <CxBoundary phone label={TABS.find((t) => t[0] === tab)?.[1]} resetKey={`${tab}|${room}`} onHome={() => { setRoom(null); go(`today`); }}>
+            <CxBoundary phone label={TABS.find((t) => t[0] === tab)?.[1]} resetKey={`${tab}|${room}|${recFolder}`} onHome={() => { setRoom(null); go(`today`); }}>
               {tab === `today` && <CxmToday />}
-              {tab === `explore` && <CxmExplore />}
+              {tab === `explore` && <CxmRecTab />}
               {tab === `place` && <CxmPlace />}
               {tab === `people` && <CxmPeople />}
               {tab === `ballot` && <CxmBallot />}
@@ -398,7 +405,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
               </button>
             ))}
           </nav>
-          {tab === `explore` && !room && <CxmRail />}
+          {tab === `explore` && recFolder === `rooms` && !room && <CxmRail />}
           {tab === `people` && people.mode === `graph` && <CxBoundary phone label="The United States graph" resetKey="usmap" onHome={() => setPeople((p) => ({ ...p, mode: `us` }))}><CX_UsMap phone onExit={() => setPeople((p) => ({ ...p, mode: `us` }))} /></CxBoundary>}
           <CxBoundary phone label="This screen" resetKey={overlay ? `${overlay.type}|${overlay.i ?? ``}|${overlay.f ?? ``}` : `none`} onHome={() => setOverlay(null)}>
             {overlay && overlay.type === `story` && <CxmStory />}
@@ -406,8 +413,6 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `keypad` && <CxmKeypad />}
             {overlay && overlay.type === `districts` && <CxmDistricts />}
             {overlay && overlay.type === `crush` && <CxmCrush />}
-            {overlay && overlay.type === `hall` && <CxmHall />}
-            {overlay && overlay.type === `records` && <CxmRecords />}
             {overlay && overlay.type === `privacy` && <CxmPrivacyPage />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}

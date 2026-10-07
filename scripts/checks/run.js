@@ -142,6 +142,8 @@ function cityHallLook(A) {
   return { fundWards: (f) => (pl.funds[f] || {}).wards || [], addrWards: (f) => Object.values(pl.addresses).filter((r) => (r.files || []).includes(f)).map((r) => r.ward2026), match: (t) => A.cxMatch(t) };
 }
 const etToday = () => new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' });   // the app's own day (cxTodayET), Cleveland time
+// the phone's Records tab (the second tab, Explore's slot) and which of its folders is open: latest, meetings, rooms, or null when Records is not open
+const recFolderOf = (p) => p.evaluate(() => { const t = document.querySelectorAll('.cxm-tabs button')[1], f = document.querySelector('.cxm-recbar [role=tab][aria-selected="true"]'); return t && t.classList.contains('on') && f ? f.id.replace('rf-folder-', '') : null; });
 const nextEnabled = (p) => p.evaluate(() => { const n = document.querySelector('.cxe-nav .cxe-btn:not(.alt)'); return !!n && !n.disabled; });
 async function walkEasy(p) { let n = 0; while (await nextEnabled(p) && n++ < 12) await clickText(p, 'Next'); return n; }
 
@@ -273,9 +275,11 @@ async function exbGo(p, y, rest = 460) {
   await wait(rest);
   return p.evaluate(EXB_STATE);
 }
+// Explore is the Rooms folder of the Records tab (ext/cx-records.jsx, CxmRecTab): the tab, then the folder, the way a person gets there
 async function exbOpen(o = {}) {
   const p = await open('/#phone', { mobile: true, easy: false, ...o });
-  await clickText(p, 'Explore', '.cxm-tabs button'); await wait(700);
+  await clickText(p, 'Records', '.cxm-tabs button'); await wait(500);
+  await clickText(p, 'Rooms', '.cxm-recbar [role=tab]'); await wait(700);
   await p.evaluate(EXB_GEOM);
   return p;
 }
@@ -1282,8 +1286,9 @@ const CHECKS = {
     await done(q);
   },
   async 'city-hall'() {
-    // At City Hall (docs/plan-city-hall-page.md): the Clerk's meeting record as a full page with a back arrow over the tabs (not a sheet, not a sixth tab),
-    // opened from the Today card, the story, an Explore door, and ?panel=meetings. The lead is the next Council meeting (when, where, how to watch, two
+    // At City Hall (docs/plan-city-hall-page.md): the Clerk's meeting record, now the Meetings folder of the Records tab (docs/plan-mobile-restructure.md,
+    // Option A, step 2; not a sheet, not a page over the tabs, not a sixth tab), opened from the Today card, the story (with Back to the story), the Rooms
+    // door, and ?panel=meetings. The lead is the next Council meeting (when, where, how to watch, two
     // sentences at most); the week is five day tabs with no sideways scrolling anywhere; the next agenda is grouped by kind with ceremonial resolutions last;
     // For you appears only from a ward or priorities set on the device and is never a score; Just decided counts what the record says; Look it up sends
     // nothing; the year is one fold of month folds; the footer says the record holds no testimony. Expected values come from the page's own functions run on
@@ -1298,39 +1303,49 @@ const CHECKS = {
     if (EN) expect(lead ? /meets/.test(card) && /legislation|agenda/.test(card) && !/Biggest/.test(card) : /No meetings/.test(card), `the Today card does not say who meets when and how many items, or says more: ${card}`);
     if (EN) expect((await p.$$eval('.cxm-story-btn small', (els) => els.map((e) => e.innerText).filter((t) => t !== 'Register')))[0] === 'City Hall', 'the City Hall story is not first in the row (after the Register story, which leads in the week of the deadline)');
     await p.evaluate(() => document.querySelector('.mt-card').click()); await wait(700);
-    expect(await has(p, '.cxm-full.mt-page') && !(await has(p, '.cxm-sheet')), 'the Today card did not open At City Hall as a full page (it must not be a sheet)');
-    expect(/panel=meetings/.test(await p.evaluate(() => location.search)), 'the page does not keep its ?panel=meetings address');
-    await p.evaluate(() => document.querySelector('.cxm-full-back').click()); await wait(500);
-    expect(!(await has(p, '.cxm-full')) && (await has(p, '.mt-card')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the back arrow did not return to Today');
-    // 2. the story's last step opens the page, and its back arrow (and Escape) return to the same step
-    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall|Ayuntamiento/.test(x.getAttribute('aria-label') || x.innerText)); if (b) b.click(); }); await wait(600);
-    for (let i = 0; i < 8 && !(await has(p, '.cxm-story .cxm-btn-light')); i++) { await p.mouse.click(300, 420); await wait(350); }
-    expect(await has(p, '.cxm-story .cxm-btn-light'), 'the City Hall story has no button to open the page');
-    const frame = await txt(p, '.cxm-story-big');
-    await p.evaluate(() => document.querySelector('.cxm-story .cxm-btn-light').click()); await wait(800);
-    expect(await has(p, '.cxm-full.mt-page'), 'the story did not open the page');
-    if (EN) expect((await txt(p, '.cxm-full-back')) === 'Back to the story', `the back arrow from the story does not say where it goes: ${await txt(p, '.cxm-full-back')}`);
+    expect((await recFolderOf(p)) === 'meetings' && (await has(p, '.mt-page .mt')) && !(await has(p, '.cxm-sheet')) && !(await has(p, '.cxm-full')), 'the Today card did not open Records > Meetings (it must not be a sheet or a page over the tabs)');
+    expect(/panel=meetings/.test(await p.evaluate(() => location.search)), 'Records > Meetings does not keep its ?panel=meetings address');
+    await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(500);
+    expect(!(await has(p, '.mt-page')) && (await has(p, '.mt-card')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the Today tab did not return to Today');
+    // 2. the story's last step opens Records > Meetings; "Back to the story" and Escape each return to the same step
+    const toMeetings = async () => {
+      await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall|Ayuntamiento/.test(x.getAttribute('aria-label') || x.innerText)); if (b) b.click(); }); await wait(600);
+      for (let i = 0; i < 8 && !(await has(p, '.cxm-story .cxm-btn-light')); i++) { await p.mouse.click(300, 420); await wait(350); }
+      expect(await has(p, '.cxm-story .cxm-btn-light'), 'the City Hall story has no button to open Meetings');
+      const at = await txt(p, '.cxm-story-big');
+      await p.evaluate(() => document.querySelector('.cxm-story .cxm-btn-light').click()); await wait(800);
+      expect((await recFolderOf(p)) === 'meetings' && !(await has(p, '.cxm-story')), 'the story did not open Records > Meetings');
+      if (EN) expect(/^Back to the story$/.test(((await txt(p, '.cxm-storyback')) || '').trim()), `no "Back to the story" over Records > Meetings: ${await txt(p, '.cxm-storyback')}`);
+      return at;
+    };
+    let frame = await toMeetings();
     await p.keyboard.press('Escape'); await wait(500);
-    expect(await has(p, '.cxm-story') && (await txt(p, '.cxm-story-big')) === frame, 'Escape on the page did not return to the same step of the story');
+    expect(await has(p, '.cxm-story') && (await txt(p, '.cxm-story-big')) === frame, 'Escape in Records > Meetings did not return to the same step of the story');
     await p.evaluate(() => document.querySelector('.cxm-story [aria-label="Close story"], .cxm-story-head button').click()); await wait(400);
-    // 3. the Explore door
-    await p.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')][1].click()); await wait(700);
+    await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(500);
+    frame = await toMeetings();
+    await p.evaluate(() => document.querySelector('.cxm-storyback').click()); await wait(500);
+    expect(await has(p, '.cxm-story') && (await txt(p, '.cxm-story-big')) === frame, '"Back to the story" did not return to the same step of the story');
+    await p.evaluate(() => document.querySelector('.cxm-story [aria-label="Close story"], .cxm-story-head button').click()); await wait(400);
+    // 3. the Rooms door (Explore's At City Hall door) opens the Meetings folder beside it
+    await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[1].click()); await wait(500);
+    await p.evaluate(() => document.getElementById('rf-folder-rooms').click()); await wait(700);
     await p.evaluate(() => { const d = [...document.querySelectorAll('.cxm-door')].find((b) => /City Hall|Ayuntamiento/.test(b.innerText)); if (d) d.click(); }); await wait(700);
-    expect(await has(p, '.cxm-full.mt-page'), 'Explore has no door to At City Hall');
+    expect((await recFolderOf(p)) === 'meetings' && (await has(p, '.mt-page .mt')), 'Records > Rooms has no door to At City Hall (Records > Meetings)');
     await done(p);
 
-    // 4. the page itself, from ?panel=meetings, with no ward and no priorities
+    // 4. the folder itself, from ?panel=meetings, with no ward and no priorities, the tab bar in view
     const q = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200 });
-    expect(await has(q, '.cxm-full.mt-page') && !(await has(q, '.cxm-sheet')) && (await q.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')].every((b) => { const r = b.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return !b.contains(e); }))), '?panel=meetings did not open the page over the tabs');
-    // exactly the screen's width, nothing outside its scroller, and nothing anywhere on it that scrolls sideways
+    expect((await recFolderOf(q)) === 'meetings' && (await has(q, '.mt-page .mt')) && !(await has(q, '.cxm-sheet')) && (await q.evaluate(() => [...document.querySelectorAll('.cxm-tabs button')].every((b) => { const r = b.getBoundingClientRect(), e = document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2); return b.contains(e); }))), '?panel=meetings did not open Records > Meetings with the tab bar in view');
+    // exactly the screen's width, nothing outside the list's scroller, and nothing anywhere on it that scrolls sideways
     const geo = await q.evaluate(() => {
-      const f = document.querySelector('.cxm-full'), b = document.querySelector('.cxm-full-body');
-      const wide = [...f.querySelectorAll('*')].filter((e) => /(auto|scroll)/.test(getComputedStyle(e).overflowX) && e.scrollWidth > e.clientWidth + 1).map((e) => e.className);
-      return { w: f.getBoundingClientRect().width, iw: innerWidth, fsw: f.scrollWidth, fcw: f.clientWidth, fsh: f.scrollHeight, fch: f.clientHeight, bsw: b.scrollWidth, bcw: b.clientWidth, doc: document.documentElement.scrollWidth, wide };
+      const f = document.querySelector('.cxm'), m = document.querySelector('.cxm-main'), b = document.querySelector('.mt-page');
+      const wide = [...m.querySelectorAll('*')].filter((e) => /(auto|scroll)/.test(getComputedStyle(e).overflowX) && e.scrollWidth > e.clientWidth + 1).map((e) => e.className);
+      return { w: f.getBoundingClientRect().width, iw: innerWidth, pw: b.getBoundingClientRect().width, fsw: f.scrollWidth, fcw: f.clientWidth, fsh: f.scrollHeight, fch: f.clientHeight, msw: m.scrollWidth, mcw: m.clientWidth, doc: document.documentElement.scrollWidth, wide };
     });
-    expect(Math.abs(geo.w - geo.iw) < 1 && geo.doc <= geo.iw, `the page is not exactly the screen's width: ${JSON.stringify(geo)}`);
-    expect(geo.fsw <= geo.fcw + 1 && geo.fsh <= geo.fch + 1 && geo.bsw <= geo.bcw + 1, `something on the page sits outside its scroller, so a phone can slide the page (it once did): ${JSON.stringify(geo)}`);
-    expect(geo.wide.length === 0, `part of the page scrolls sideways: ${geo.wide.slice(0, 3)}`);
+    expect(Math.abs(geo.w - geo.iw) < 1 && geo.doc <= geo.iw && geo.pw <= geo.mcw, `Records > Meetings is not exactly the screen's width: ${JSON.stringify(geo)}`);
+    expect(geo.fsw <= geo.fcw + 1 && geo.fsh <= geo.fch + 1 && geo.msw <= geo.mcw + 1, `something sits outside the list's scroller, so a phone can slide the screen (it once did): ${JSON.stringify(geo)}`);
+    expect(geo.wide.length === 0, `part of Records > Meetings scrolls sideways: ${geo.wide.slice(0, 3)}`);
     expect(!(await has(q, '.mt-strip')), 'the sideways strip of meetings is back');
     // the lead: who meets when, where, how to watch (from the Clerk's notice), two sentences at most, the agenda and the meeting page
     if (lead) {
@@ -1381,10 +1396,10 @@ const CHECKS = {
     // the footer: two lines, where the record comes from and when, and that it holds no testimony
     if (EN) expect(/Pulled/.test((await txt(q, '.mt-foot')) || '') && /not include testimony or public comment/.test((await txt(q, '.mt-foot')) || '') && (await count(q, '.mt-foot p')) === 2, 'the footer is not two lines saying where the record comes from, when, and that it holds no testimony');
     // no dashes, no scores, and every control a finger can hit
-    const words = (await txt(q, '.cxm-full')) || '';
+    const words = (await txt(q, '.mt-page')) || '';
     expect(!/[–—]/.test(words), 'a dash on the City Hall page');
     expect(!/%|\bpercent|\bscore|\branked\b/i.test(words), 'the City Hall page shows a percentage, score, or ranking');
-    const small = await q.evaluate(() => [...document.querySelectorAll('.cxm-full button, .cxm-full a[href], .cxm-full input, .cxm-full summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
+    const small = await q.evaluate(() => [...document.querySelectorAll('.mt-page button, .mt-page a[href], .mt-page input, .mt-page summary, .cxm-recbar [role=tab]')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
     expect(small.length === 0, `controls under 44px on the City Hall page: ${small.slice(0, 5)}`);
     // Look it up: a file number and an address are found on the device; nothing typed goes into a request, the link, or storage
     const sent = []; q.on('request', (r) => sent.push(r.url()));
@@ -1401,7 +1416,7 @@ const CHECKS = {
     await q.evaluate(() => document.querySelector('.mt-find .mt-row').click()); await wait(800);
     expect(await has(q, '.cxm-sheet .mt-heard') && /panel=meetings/.test(await q.evaluate(() => location.search)), 'a record opened from the page does not list its meetings, or the page lost its address');
     await q.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
-    expect(await has(q, '.cxm-full.mt-page') && !(await has(q, '.cxm-sheet')), 'closing a record did not return to the page');
+    expect((await recFolderOf(q)) === 'meetings' && (await has(q, '.mt-page .mt')) && !(await has(q, '.cxm-sheet')), 'closing a record did not return to Records > Meetings');
     { const bad = await axeBad(q); expect(bad.length === 0, `axe on At City Hall: ${bad.length} violation(s): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
     await done(q);
 
@@ -1432,14 +1447,15 @@ const CHECKS = {
 
     // 6. Spanish and light mode: the page's own words change, and the light page passes contrast in both styles
     const es = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2400, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} })()` });
-    const esText = (await txt(es, '.cxm-full')) || '';
-    for (const w of ['Volver', 'Esta semana', 'Lun', 'Vie', 'Para usted', 'Recién decidido', 'Búsquelo', 'Antes en el año', 'No incluye testimonios']) expect(esText.includes(w) || (w === 'Esta semana' && /semana/.test(esText)), `the page in Spanish is missing "${w}"`);
+    const esText = (await txt(es, '.mt-page')) || '', esTabs = ((await txt(es, '.cxm-recbar')) || '').replace(/\s+/g, ' ').trim();
+    for (const w of ['Esta semana', 'Lun', 'Vie', 'Para usted', 'Recién decidido', 'Búsquelo', 'Antes en el año', 'No incluye testimonios']) expect(esText.includes(w) || (w === 'Esta semana' && /semana/.test(esText)), `the page in Spanish is missing "${w}"`);
     for (const w of ['This week', 'For you', 'Look it up', 'Just decided', 'What is on it', 'Set your place']) expect(!esText.includes(w), `the page in Spanish still says "${w}"`);
-    expect(await es.evaluate(() => document.querySelector('.cxm-full').scrollWidth <= innerWidth), 'the page in Spanish is wider than the screen');
+    expect(esTabs === 'Lo más reciente Reuniones Salas', `the Records folder tabs in Spanish are "${esTabs}"`);
+    expect(await es.evaluate(() => document.querySelector('.mt-page').scrollWidth <= innerWidth && document.documentElement.scrollWidth <= innerWidth), 'the page in Spanish is wider than the screen');
     await done(es);
     for (const theme of [undefined, 'original']) {
       const l = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200, mode: 'light', theme });
-      const bg = await l.evaluate(() => getComputedStyle(document.querySelector('.cxm-full')).backgroundColor);
+      const bg = await l.evaluate(() => getComputedStyle(document.querySelector('.cxm')).backgroundColor);
       expect((bg.match(/\d+/g) || []).slice(0, 3).every((v) => Number(v) > 200), `the page is not light in light mode (${theme || 'bento'}): ${bg}`);
       const bad = await axeBad(l);
       expect(bad.length === 0, `axe on At City Hall in light (${theme || 'bento'}): ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; '));
@@ -1458,7 +1474,7 @@ const CHECKS = {
     expect(/borrador/i.test((await txt(m, '.cx-notice')) || ''), 'the Spanish draft notice is missing');
     await m.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(500);
     const tabs = await m.evaluate(() => [...document.querySelectorAll('.cxm-tabs span')].map((e) => e.innerText).join('|'));
-    expect(tabs === 'Hoy|Explorar|Mi lugar|Personas|Boleta', `the tabs are not in Spanish: ${tabs}`);
+    expect(tabs === 'Hoy|Registros|Mi lugar|Personas|Boleta', `the tabs are not in Spanish: ${tabs}`);
     expect(await m.evaluate(() => localStorage.getItem('cx-lang')) === 'es', 'the language choice was not remembered');
     // back to English: every word comes back
     await clickText(m, 'Ajustes'); await wait(300);
@@ -1486,11 +1502,12 @@ const CHECKS = {
     expect((await count(p, '.cxm-sheet .cxm-tile')) >= 5, 'My priorities lists too few priorities');
     await done(p);
     const e = await open('/#phone', { mobile: true, easy: false });
-    await clickText(e, 'Explore'); await wait(500);
-    expect(await has(e, '.cxm-section[aria-label="Check yourself"]'), 'Explore does not offer the Resident check');
-    expect((await count(e, '.cxm-door')) > 0 && await e.evaluate(() => [...document.querySelectorAll('.cxm-door')].some((d) => /ledger/i.test(d.innerText))), 'Explore lost its Decision ledger doorway');
+    await clickText(e, 'Records', '.cxm-tabs button'); await wait(400);
+    await clickText(e, 'Rooms', '.cxm-recbar [role=tab]'); await wait(500);
+    expect(await has(e, '.cxm-section[aria-label="Check yourself"]'), 'Records > Rooms does not offer the Resident check');
+    expect((await count(e, '.cxm-door')) > 0 && await e.evaluate(() => [...document.querySelectorAll('.cxm-door')].some((d) => /ledger/i.test(d.innerText))), 'Records > Rooms lost its Decision ledger doorway');
     await clickText(e, 'Resident check'); await wait(400);
-    expect(/three questions|Resident check/i.test((await txt(e, '.cxm-sheet')) || ''), 'the Resident check did not open from Explore');
+    expect(/three questions|Resident check/i.test((await txt(e, '.cxm-sheet')) || ''), 'the Resident check did not open from Records > Rooms');
     await done(e);
     const u = await open('/?panel=priorities#phone', { mobile: true, easy: false });
     expect(/Pick up to five/.test((await txt(u, '.cxm-sheet')) || ''), '?panel=priorities does not open My priorities');
@@ -1561,6 +1578,9 @@ const CHECKS = {
   },
   async 'shell'() {
     const p = await open('/#phone', { mobile: true, easy: false });
+    // the phone's five tabs (docs/plan-mobile-restructure.md, Option A: Records took Explore's slot)
+    const tabs = await p.evaluate(() => [...document.querySelectorAll('.cxm-tabs button span')].map((e) => e.innerText.trim()).join('|'));
+    expect(tabs === (process.env.CHECK_LANG === 'es' ? 'Hoy|Registros|Mi lugar|Personas|Boleta' : 'Today|Records|My place|People|Ballot'), `the phone's tabs are ${tabs}`);
     expect(await p.evaluate(() => document.querySelector('link[rel=icon]')?.getAttribute('href') === '/favicon.svg'), 'no tab icon link');
     expect((await p.evaluate(() => fetch('/favicon.svg').then((r) => r.status + ' ' + r.headers.get('content-type')))) === '200 image/svg+xml', 'favicon.svg is not served');
     expect(await has(p, '#cx-offline'), 'offline notice is missing from the hosted page');
@@ -3125,12 +3145,14 @@ const CHECKS = {
       const small = await p.evaluate(() => [...document.querySelectorAll('button, a[href], select, input, [role=button], summary')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`));
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
-    // Explore: everything on the screen at a phone's width, and the list and the rail's ticks at 320 (where the shared header's buttons are 40 px
-    // wide on every tab; that is not Explore's, and is listed in STATE-OF-BUILD as still to fix)
-    for (const [w, h, scope] of [[390, 844, 'body'], [320, 640, '.cxm-main, .cxm-rail']]) {
-      const p = await open('/#phone', { mobile: true, easy: false, width: w, height: h }); await clickText(p, 'Explore', '.cxm-tabs button'); await wait(700);
-      const small = await p.evaluate((scope) => [...document.querySelectorAll(scope)].flatMap((r) => [...r.querySelectorAll('button, a[href], select, input, [role=button], summary')]).filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
-      expect(small.length === 0, `phone explore at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+    // Records > Rooms (Explore as it was): everything on the screen at a phone's width, and the folder tabs, the list, and the rail's ticks at 320 (where
+    // the shared header's buttons are 40 px wide on every tab; that is not Records', and is listed in STATE-OF-BUILD as still to fix). Then Latest and
+    // Meetings at 320, the folder tabs with them.
+    for (const [w, h, scope, folder] of [[390, 844, 'body', 'Rooms'], [320, 640, '.cxm-recbar, .cxm-main, .cxm-rail', 'Rooms'], [320, 640, '.cxm-recbar, .cxm-main', 'Latest'], [320, 640, '.cxm-recbar, .cxm-main', 'Meetings']]) {
+      const p = await open('/#phone', { mobile: true, easy: false, width: w, height: h, settle: 1400 }); await clickText(p, 'Records', '.cxm-tabs button'); await wait(500);
+      await clickText(p, folder, '.cxm-recbar [role=tab]'); await wait(900);
+      const small = await p.evaluate((scope) => [...document.querySelectorAll(scope)].flatMap((r) => [...r.querySelectorAll('button, a[href], select, input, [role=button], [role=tab], summary')]).filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`), scope);
+      expect(small.length === 0, `phone records ${folder.toLowerCase()} at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
     // Records (ext/cx-records.jsx): every control, with a legislation card's and a roll call's Details open
     { const p = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }); await p.evaluate(AXE_AFTER.recordsOpen); await wait(300);
@@ -3149,7 +3171,8 @@ const CHECKS = {
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
   },
-  /* The guide's bubble and the rail on Explore (ext/cxm-explore.jsx, ext/cxm.css). At every rest the bubble, the lit tick, and the highlighted
+  /* The guide's bubble and the rail on Explore, now Records > Rooms (ext/cxm-explore.jsx, ext/cxm.css); the rail starts at the list's top, under the
+     Records folder tabs. At every rest the bubble, the lit tick, and the highlighted
      heading name the level of the highlighted card (the card on the reading line); the bubble sits on no card question, no heading, and not the
      end of the list, inside the list and above the tab bar, with no sideways scroll; its words read at 4.5:1 or better on the real pixels behind
      them and on its fill over the page's own text; it speaks at rest, once a level, going down, so a fling shows at most one and scrolling back up
@@ -3169,8 +3192,9 @@ const CHECKS = {
       expect(ticks.every((t) => t.w >= 44 && t.h >= 44), `${at}: a tick on the rail is under 44 px: ${ticks.map((t) => `${Math.round(t.w)}x${Math.round(t.h)}`).join(', ')}`);
       expect(ticks.slice(1).every((t, i) => t.y - ticks[i].y >= 44), `${at}: two ticks on the rail are closer than 44 px, so their targets overlap`);
       if (es) expect(ticks.every((t) => t.label && !/\b(Jump|your|the)\b/.test(t.label)), `${at}: a tick's name is still in English in Spanish: ${ticks.map((t) => t.label).join(' | ')}`);
-      const railTop = await p.evaluate(() => ({ rail: document.querySelector('.cxm-rail').getBoundingClientRect().top, main: document.querySelector('.cxm-main').getBoundingClientRect().top }));
+      const railTop = await p.evaluate(() => ({ rail: document.querySelector('.cxm-rail').getBoundingClientRect().top, main: document.querySelector('.cxm-main').getBoundingClientRect().top, bar: document.querySelector('.cxm-recbar').getBoundingClientRect().bottom }));
       expect(railTop.rail >= railTop.main, `${at}: the rail starts above the list (${Math.round(railTop.rail)} < ${Math.round(railTop.main)}), over the Updated strip`);
+      expect(railTop.rail >= railTop.bar && railTop.main >= railTop.bar - 0.5 && railTop.rail - railTop.main <= 12, `${at}: the rail does not start at the list's top under the Records folder tabs (rail ${Math.round(railTop.rail)}, list ${Math.round(railTop.main)}, folder tabs end ${Math.round(railTop.bar)})`);
       // a slow read down the whole list, resting every 120 px
       const states = [];
       const max = await p.evaluate(() => { const m = document.querySelector('.cxm-main'); return m.scrollHeight - m.clientHeight; });
@@ -3785,8 +3809,10 @@ const AXE_PAGES = [
   ['phone today', '/#phone', { mobile: true, easy: false }], ['phone settings', '/?panel=settings#phone', { mobile: true, easy: false }], ['phone my priorities', '/?panel=priorities#phone', { mobile: true, easy: false }], ['phone settings original', '/?panel=settings#phone', { mobile: true, easy: false, theme: 'original' }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
-  // Explore (ext/cxm-explore.jsx): the list with the rail and the guide; the guide's bubble has its own geometry check (explore-bubble)
-  ['phone explore', '/#phone', { mobile: true, easy: false, after: 'explore' }], ['phone explore small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'explore' }],
+  // Records > Rooms (Explore, ext/cxm-explore.jsx): the list with the rail and the guide, reached by the Records tab and its Rooms folder; the guide's
+  // bubble has its own geometry check (explore-bubble). Latest and Meetings with the folder tabs at 320 (they are also below at 390)
+  ['phone records rooms', '/#phone', { mobile: true, easy: false, after: 'explore' }], ['phone records rooms small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'explore' }],
+  ['phone records small', '/?panel=records#phone', { mobile: true, easy: false, width: 320, height: 640, settle: 1500 }], ['phone city hall small', '/?panel=meetings#phone', { mobile: true, easy: false, width: 320, height: 640 }],
   // the United States profile page (a senator, with the votes loaded; a committee), and Settings over the map
   ['desktop us profile', '/?panel=us&who=bernie-moreno#desktop', { settle: 2600 }], ['phone us profile', '/?panel=us&who=bernie-moreno#phone', { mobile: true, easy: false, settle: 2600 }],
   ['desktop us committee profile', '/?panel=us&who=senate-committee-on-finance#desktop', { settle: 2600 }], ['phone us court profile', '/?panel=us&who=supreme-court-of-the-united-states#phone', { mobile: true, easy: false, settle: 2600 }],
@@ -3816,13 +3842,17 @@ const AXE_PAGES = [
   ['phone record', '/?panel=leg&file=1044-2026#phone', { mobile: true, easy: false, settle: 1500 }], ['phone record ceremonial', '/?panel=leg&file=37-2026#phone', { mobile: true, easy: false }],
   ['desktop profile votes and actions', '/?panel=profiles&seat=ward-5#desktop', { settle: 1400, after: 'personList' }], ['desktop ward record', '/?panel=context#desktop', { pre: VA_WARD7_PRE }],
   ['phone ward record', '/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE, after: 'wardOpen' }], ['phone ward record none', '/?panel=place#phone', { mobile: true, easy: false, after: 'wardOpen' }],
-  // Records (ext/cx-records.jsx): the list, in Original, with a legislation card's Details and a vote card's Details open, and with the saved ward chosen
+  // Records > Latest (ext/cx-records.jsx): the list, in Original, with a legislation card's Details and a vote card's Details open, and with the saved ward chosen
   ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }], ['phone records original', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, theme: 'original' }],
   ['phone records open', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, after: 'recordsOpen' }], ['phone records ward', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500, pre: VA_WARD7_PRE, after: 'recordsWard' }],
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
-  explore: async () => { const b = document.querySelectorAll('.cxm-tabs button')[1]; if (b) b.click(); await new Promise((r) => setTimeout(r, 700)); },
+  explore: async () => {   // Records, then its Rooms folder (Explore as it was)
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelectorAll('.cxm-tabs button')[1]; if (b) b.click(); await w(400);
+    const f = document.getElementById('rf-folder-rooms'); if (f) f.click(); await w(700);
+  },
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
   hallOpen: async () => {   // At City Hall with everything opened: the day's meetings, the whole next agenda, the year's folds, and a search
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
@@ -3981,7 +4011,10 @@ const LOOK_PAGES = [
   ['phone story figure', '/#phone', { mobile: true, easy: false }, 'figure', ['.cxm-story-fig', '.cxm-story-big']],
   ['phone number pad', '/#phone', { mobile: true, easy: false }, 'pad', ['.cxm-keys button', '.cxm-story .cxm-btn', '.cxm-story-fig']],
   ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.lv-tile', '.lv-tile-fig', '.lv-tile-per', '.lv-field input', '.lv-h2']],
-  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-full', '.cxm-full-bar', '.cxm-full-back', '.mt-lead', '.mt-head', '.mt-watch', '.mt-days [aria-selected="true"]', '.mt-days [aria-selected="false"]', '.mt-daypanel', '.mt-group-h', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.cxm-kicker']],
+  // At City Hall is Records > Meetings: the Records folder tabs (People's folder tabs) take the place of the full page's bar and back arrow
+  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-recbar', '.cxm-recbar [aria-selected="true"]', '.cxm-recbar [aria-selected="false"]', '.mt-lead', '.mt-head', '.mt-watch', '.mt-days [aria-selected="true"]', '.mt-days [aria-selected="false"]', '.mt-daypanel', '.mt-group-h', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.cxm-kicker']],
+  // Records > Rooms (Explore as it was): the heading, the doors, a level heading, a room card plain and highlighted, the rail
+  ['phone records rooms', '/?panel=explore#phone', { mobile: true, easy: false }, null, ['.cxm-rooms > .cxm-h1', '.cxm-rooms > .cxm-mut', '.cxm-searchbar', '.cxm-door', '.cxm-level-h', '.cxm-level-h .cxm-kicker', '.cxm-roomtile:not(.focus)', '.cxm-roomtile.focus', '.cxm-roomtile-q', '.cxm-roomtile-p', '.cxm-rail-track', '.cxm-tick:not(.on) i', '.cxm-tick.on i', '.cxm-end']],
   ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
   ['desktop profile', '/?panel=profiles&seat=ward-13#desktop', {}, null, ['.sp h1', '.sp h2', '.sp-chip', '.sp-office']],
   ['desktop levies', '/?panel=levies#desktop', {}, null, ['.lv h1', '.lv-tile', '.lv-tile-fig', '.lv-h2']],
@@ -4091,16 +4124,17 @@ const CV_PAGES = [
    the app cannot slowly fill up with explanation again. When a screen gets shorter on purpose, lower the record:
      TEXT_BUDGET_UPDATE=1 node scripts/checks/run.js --only text-budget
    Screens that show a record's own words (What's new) are left out. See docs/plan-plain-text.md. */
-// At City Hall was 0.35 while it was a sheet of 722 words; as a page it holds about 400 (docs/plan-city-hall-page.md), so it gets the same room as Today
-const TEXT_WIDE = { 'At City Hall': 0.15, Today: 0.15, 'Decision ledger': 0.3, Records: 0.15 };
+// At City Hall (now Records: Meetings) was 0.35 while it was a sheet of 722 words; as a page it holds about 400 (docs/plan-city-hall-page.md), so it gets the same room as Today
+const TEXT_WIDE = { 'Records: Meetings': 0.15, Today: 0.15, 'Decision ledger': 0.3, 'Records: Latest': 0.15 };
+// The Records tab's three folders (Latest, Meetings, Rooms) each count their own folder (#rf-folder-panel), as the full pages they were counted themselves
 const TEXT_SCREENS = [
-  ['Today', '/#phone'], ['Explore', '/#phone', 'Explore'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
+  ['Today', '/#phone'], ['Records: Rooms', '/?panel=explore#phone'], ['My place', '/?panel=place#phone'], ['People: Profiles', '/?panel=leaders#phone'],
   ['People: Federal', '/?panel=us#phone'], ['People: Constellation', '/?panel=constellation#phone'], ['Priorities', '/?panel=priorities#phone'],
-  ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['At City Hall', '/?panel=meetings#phone'],
+  ['Ballot', '/?panel=ballot#phone'], ['Levies and taxes', '/?panel=levies#phone'], ['Records: Meetings', '/?panel=meetings#phone'],
   ['Decision ledger', '/?panel=ledger#phone'], ['How this is built', '/?panel=bench#phone'], ['Settings', '/?panel=settings#phone'],
   ['United States: a profile', '/?panel=us&who=bernie-moreno#phone'],
-  // Records: the header, the filters, the count, and the first 20 cards (docs/plan-records-feed.md); built from the nightly records, so it varies
-  ['Records', '/?panel=records#phone'],
+  // Records: Latest: the header, the filters, the count, and the first 20 cards (docs/plan-records-feed.md); built from the nightly records, so it varies
+  ['Records: Latest', '/?panel=records#phone'],
   // the privacy policy says everything once, in full, so the other screens can stay short (docs/plan-privacy-policy.md); recorded on purpose
   ['Privacy policy', '/?panel=privacy#phone'],
 ];
@@ -4111,7 +4145,7 @@ CHECKS['text-budget'] = async () => {
   for (const [name, url, tab] of TEXT_SCREENS) {
     const p = await open(url, { mobile: true, easy: false, settle: 1500 });
     if (tab) { await p.evaluate((t) => { const b = [...document.querySelectorAll('.cxm-tabs button, nav button, [role=tab]')].find((x) => (x.innerText || '').trim().startsWith(t)); if (b) b.click(); }, tab); await wait(900); }
-    now[name] = await p.evaluate(() => { const root = document.querySelector('.usm-prof') || document.querySelector('.cxm-sheet') || document.querySelector('.cxm-full') || document.querySelector('.cxm-main') || document.body; return (root.innerText || '').trim().split(/\s+/).filter(Boolean).length; });   // a full page (At City Hall) counts itself, not Today under it
+    now[name] = await p.evaluate(() => { const root = document.querySelector('.usm-prof') || document.querySelector('.cxm-sheet') || document.querySelector('.cxm-full') || document.querySelector('#rf-folder-panel') || document.querySelector('.cxm-main') || document.body; return (root.innerText || '').trim().split(/\s+/).filter(Boolean).length; });   // a full page (the privacy policy) counts itself, not Today under it; a Records folder counts itself
     await done(p);
   }
   if (process.env.TEXT_BUDGET_UPDATE) { fs.writeFileSync(file, JSON.stringify(now, null, 1) + String.fromCharCode(10)); console.log(`    wrote scripts/checks/text-budget.json (${Object.keys(now).length} screens)`); return; }
@@ -4387,7 +4421,9 @@ CHECKS['tab-blue'] = async () => {
     if (thumb && getComputedStyle(thumb).opacity !== '0') out.push({ s: '.cx-thumb', bg: getComputedStyle(thumb).backgroundColor, color: '', shadow: 'none', name: 'thumb' });
     return out;
   };
-  const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }], ['/?panel=records#phone', { mobile: true, easy: false }]];
+  // the phone's Records tab: its folder tabs on each folder (Latest with the filters, Meetings with the day tabs, Rooms)
+  const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }],
+    ['/?panel=records#phone', { mobile: true, easy: false }], ['/?panel=meetings#phone', { mobile: true, easy: false }], ['/?panel=explore#phone', { mobile: true, easy: false }]];
   for (const [url, o] of pages) {
     const p = await open(url, o); await wait(600);
     if (o.after === 'people') { await clickText(p, 'People'); await wait(700); }
@@ -4474,15 +4510,17 @@ CHECKS['no-bleed'] = async () => {
     await clickText(s, 'Dictionary'); await wait(500);
     await scan('the dictionary');
     await s.evaluate(() => { const x = document.querySelector('.cxm-sheet-x'); x && x.click(); }); await wait(300);
-    await clickText(s, 'Explore'); await wait(500);
+    await clickText(s, 'Records', '.cxm-tabs button'); await wait(400);
+    await clickText(s, 'Rooms', '.cxm-recbar [role=tab]'); await wait(500);
     await clickText(s, 'Resident check'); await wait(500);
     await scan('the Resident check');
     await done(s);
   }
-  // the Explore tab at every scroll position, because the focused room tile changes as you scroll
+  // Records > Rooms (Explore) at every scroll position, because the focused room tile changes as you scroll
   if (process.env.AXE_PAGE && process.env.AXE_PAGE !== 'explore') return;
   const e = await open('/#phone', { mobile: true, easy: false });
-  await clickText(e, 'Explore'); await wait(600);
+  await clickText(e, 'Records', '.cxm-tabs button'); await wait(400);
+  await clickText(e, 'Rooms', '.cxm-recbar [role=tab]'); await wait(600);
   const stops = await e.evaluate(() => { const m = document.querySelector('.cxm-main'); return m ? Math.ceil(m.scrollHeight / 160) : 0; });
   let worst = [];
   for (let i = 0; i <= stops; i++) {
@@ -4490,7 +4528,7 @@ CHECKS['no-bleed'] = async () => {
     const bad = await bleedBad(e);
     if (bad.length) worst = worst.concat(bad.map((b) => ({ ...b, at: i })));
   }
-  expect(worst.length === 0, `text spills out of a room tile while scrolling Explore: ` + worst.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}" at step ${b.at}`).join('; '));
+  expect(worst.length === 0, `text spills out of a room tile while scrolling Records > Rooms: ` + worst.slice(0, 3).map((b) => `.${b.cls} +${b.over}px "${b.text}" at step ${b.at}`).join('; '));
   await done(e);
 };
 
@@ -4665,7 +4703,7 @@ CHECKS['votes-actions'] = async () => {
 };
 
 /* Records (ext/cx-records.jsx, scripts/records_feed.py; docs/plan-records-feed.md, phase 2, and Latest on Today, docs/plan-mobile-restructure.md, step 1).
-   The phone page opens from ?panel=records as a full page with a back arrow; the number of cards each choice of time, kind, and ward leaves equals the
+   On the phone it is Records > Latest, the first folder of the Records tab (?panel=records; docs/plan-mobile-restructure.md, step 2); the number of cards each choice of time, kind, and ward leaves equals the
    rows of site/records/records-2026.json (read here, never from the app's code), and so do the counts on the kinds; newest and oldest first are the
    file's order and its reverse; 20 cards at a time, and Show more moves the focus to the first new card; every card has its kind, its date, a source
    link, and the day it was pulled; Details opens in place; no score or ranking word and no person's name in our own words, in English and Spanish; the
@@ -4704,9 +4742,9 @@ CHECKS['records-feed'] = async () => {
   }));
   const pick = (p, f, v) => p.evaluate((f, v) => { const b = document.querySelector(`[data-f="${f}"] button[data-v="${v}"]`); if (b) b.click(); return !!b; }, f, String(v));
   const ward = (p, v) => p.evaluate((v) => { const s = document.querySelector('.rf-ward select'); Object.getOwnPropertyDescriptor(HTMLSelectElement.prototype, 'value').set.call(s, v); s.dispatchEvent(new Event('change', { bubbles: true })); }, String(v));
-  // 1. ?panel=records opens the page over Today, with its back arrow; the list is asked for once
+  // 1. ?panel=records opens the Records tab on Latest (not a page over the tabs); the list is asked for once
   const p = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800 });
-  expect(await has(p, '.cxm-full.rf-page') && await has(p, '.rf-page .cxm-full-back'), '?panel=records did not open Records as a full page with a back arrow');
+  expect((await recFolderOf(p)) === 'latest' && (await has(p, '.rf-page .rf')) && !(await has(p, '.cxm-full')), '?panel=records did not open Records > Latest');
   expect(/panel=records/.test(await p.evaluate(() => location.search)), 'Records does not keep its ?panel=records address');
   expect(p.asked.filter((u) => u === '/records/records-2026.json').length === 1, `the records list was asked for ${p.asked.filter((u) => u === '/records/records-2026.json').length} times`);
   // 2. the counts each choice leaves equal the file's rows; the counts on the kinds too; never a count on All
@@ -4761,9 +4799,9 @@ CHECKS['records-feed'] = async () => {
   expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth && Math.round(document.querySelector('.rf-page').getBoundingClientRect().width) <= innerWidth), 'Records is wider than the screen');
   const small = await p.evaluate(() => [...document.querySelectorAll('.rf-page :is(button, a[href], select, summary)')].filter((el) => { const b = el.getBoundingClientRect(); if (!b.width || !b.height) return false; if (el.tagName === 'A' && getComputedStyle(el).display === 'inline') return false; return b.height < 44 || b.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className} ${Math.round(el.getBoundingClientRect().height)}px`));
   expect(small.length === 0, `Records: controls under 44px: ${small.slice(0, 4)}`);
-  // 9. the back arrow returns to Today with no address
-  await p.evaluate(() => document.querySelector('.rf-page .cxm-full-back').click()); await wait(500);
-  expect(!(await has(p, '.rf-page')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the back arrow did not return to Today');
+  // 9. the Today tab returns to Today with no address
+  await p.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(500);
+  expect(!(await has(p, '.rf-page')) && !/panel=/.test(await p.evaluate(() => location.search)), 'the Today tab did not return to Today');
   await done(p);
   // 10. a ward saved on the device is offered as "Names my ward", and neither it nor a ward chosen on the page reaches the address, storage, a cookie, or a request
   { const q = await open('/?panel=records#phone', { mobile: true, easy: false, settle: 1800, pre: VA_WARD7 });
@@ -4797,8 +4835,8 @@ CHECKS['records-feed'] = async () => {
     await done(q); }
   // 14. Today: Latest is exactly three cards, the file's newest rows dated by today (a meeting once its day has passed), in its order, under the
   // next-meeting card; Today reads only the
-  // front of the list; "See all records" opens Records and its back arrow returns; What's new and City Hall receipts are gone from Today, and What's
-  // new still opens from the Updated strip and from ?panel=news
+  // front of the list; "See all records" and the Updated strip open Records > Latest with the default choices, and the Today tab returns; What's new and
+  // City Hall receipts are gone from Today, and What's new still opens from ?panel=news
   { const t = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
     for (let i = 0; i < 20 && (await count(t, '.rf-latest .rf-card')) < 3; i++) await wait(150);
     const ids = await t.evaluate(() => [...document.querySelectorAll('.rf-latest .rf-card')].map((c) => c.dataset.id));
@@ -4812,16 +4850,167 @@ CHECKS['records-feed'] = async () => {
     expect(await t.evaluate(() => document.documentElement.scrollWidth === innerWidth), 'Today is wider than the screen');
     expect(await t.evaluate(() => [...document.querySelectorAll('.rf-latest :is(button, a[href])')].every((el) => { const b = el.getBoundingClientRect(); return (el.tagName === 'A' && getComputedStyle(el).display === 'inline') || (b.height >= 44 && b.width >= 44); })), 'a control in Latest is under 44px');
     await t.evaluate(() => document.querySelector('.rf-latest .rf-all').click()); await wait(1500);
-    expect(await has(t, '.cxm-full.rf-page') && /panel=records/.test(await t.evaluate(() => location.search)), '"See all records" did not open Records');
+    expect((await recFolderOf(t)) === 'latest' && (await has(t, '.rf-page .rf')) && /panel=records/.test(await t.evaluate(() => location.search)), '"See all records" did not open Records > Latest');
     expect((await read(t)).count === want({ days: 30 }).length, '"See all records" opened Records with other choices than the defaults');
-    await t.evaluate(() => document.querySelector('.rf-page .cxm-full-back').click()); await wait(500);
-    expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the back arrow from Records did not return to Today');
-    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(700);
-    expect(/panel=news/.test(await t.evaluate(() => location.search)) && await has(t, '.cxm-sheet'), 'the Updated strip no longer opens What\'s new');
+    await t.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(700);
+    expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the Today tab did not return to Today from Records');
+    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(1200);
+    expect((await recFolderOf(t)) === 'latest' && /panel=records/.test(await t.evaluate(() => location.search)) && !(await has(t, '.cxm-sheet')), 'the Updated strip did not open Records > Latest');
+    expect((await read(t)).count === want({ days: 30 }).length, 'the Updated strip opened Records with other choices than the defaults');
+    expect(/Opens Records\.|Abre Registros\./.test((await txt(t, '.cxm-fresh-hint')) || ''), `the Updated strip does not tell a screen reader where it goes: ${await txt(t, '.cxm-fresh-hint')}`);
     await done(t); }
   { const q = await open('/?panel=news#phone', { mobile: true, easy: false }); expect(await has(q, '.cxm-sheet') && /What's new|Novedades/.test((await txt(q, '.cxm-sheet .cxm-h2')) || ''), '?panel=news no longer opens What\'s new'); await done(q); }
   // 13. a phone page: the desktop has no Records page yet
   { const q = await open('/?panel=records#desktop', { settle: 1400 }); expect(!(await has(q, '.rf')), 'a Records page appeared on the desktop'); await done(q); }
+};
+
+/* The phone's Records tab (docs/plan-mobile-restructure.md, Option A, step 2): Records takes Explore's slot. Five tabs, Today, Records, My place, People,
+   Ballot; Records opens on Latest; its folder tabs (People's CxmFolders) are Latest, Meetings, Rooms, the chosen one solid blue with white text and no
+   accent line; each folder holds what it moved in unchanged (Latest: the filters and the cards; Meetings: Next up and the day tabs; Rooms: the rail, the
+   17 rooms, and the guide); every old link and door lands in the right folder; the folder is remembered for the visit and nothing is saved; the folder
+   tabs stay put while the list scrolls, and on Rooms the rail starts at the list's top under them and the guide's bubble keeps its rules (the
+   explore-bubble machinery); exactly the screen's width; 44 px targets; axe. Runs under CHECK_MODE, CHECK_THEME, and CHECK_LANG. */
+const RT_TABS = { en: ['Today', 'Records', 'My place', 'People', 'Ballot'], es: ['Hoy', 'Registros', 'Mi lugar', 'Personas', 'Boleta'] };
+const RT_FOLDERS = { en: ['Latest', 'Meetings', 'Rooms'], es: ['Lo más reciente', 'Reuniones', 'Salas'] };
+const RT_READ = () => {
+  const bar = document.querySelector('.cxm-recbar'), list = bar && bar.querySelector('[role=tablist]'), panel = document.getElementById('rf-folder-panel');
+  const tabs = list ? [...list.querySelectorAll('[role=tab]')] : [], on = tabs.find((t) => t.getAttribute('aria-selected') === 'true');
+  const cs = on ? getComputedStyle(on) : null, sides = ['Top', 'Right', 'Bottom', 'Left'];
+  return {
+    tabs: [...document.querySelectorAll('.cxm-tabs button span')].map((e) => e.innerText.trim()),
+    folders: tabs.map((t) => t.innerText.replace(/\s+/g, ' ').trim()), on: on ? on.id.replace('rf-folder-', '') : null, label: list ? list.getAttribute('aria-label') : null,
+    controls: tabs.every((t) => t.getAttribute('aria-controls') === 'rf-folder-panel'), panel: !!panel && panel.getAttribute('role') === 'tabpanel' && !!on && panel.getAttribute('aria-labelledby') === on.id,
+    look: cs ? { bg: cs.backgroundColor, color: cs.color, shadow: cs.boxShadow, weight: cs.fontWeight, lines: sides.filter((s) => parseFloat(cs[`border${s}Width`]) > 0 && cs[`border${s}Color`] !== cs.backgroundColor && !/rgba\(0, 0, 0, 0\)/.test(cs[`border${s}Color`])) } : null,
+    inMain: !!bar && !!bar.closest('.cxm-main'),
+    wide: Math.max(document.documentElement.scrollWidth - innerWidth, (document.querySelector('.cxm-main') || { scrollWidth: 0, clientWidth: 0 }).scrollWidth - (document.querySelector('.cxm-main') || { clientWidth: 0 }).clientWidth),
+    app: Math.round(document.querySelector('.cxm').getBoundingClientRect().width), iw: innerWidth,
+    small: [...document.querySelectorAll('.cxm-recbar [role=tab], #rf-folder-panel :is(button, a[href], select, input, summary), .cxm-rail :is(button)')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const c = getComputedStyle(el); if (c.visibility === 'hidden' || (el.tagName === 'A' && c.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`),
+    latest: { pills: document.querySelectorAll('#rf-folder-panel .rf-pills button').length, cards: document.querySelectorAll('#rf-folder-panel .rf-list > .rf-card').length },
+    meetings: { lead: !!document.querySelector('#rf-folder-panel .mt-lead'), days: document.querySelectorAll('#rf-folder-panel .mt-days [role=tab]').length },
+    rooms: { rail: !!document.querySelector('.cxm-rail'), ticks: document.querySelectorAll('.cxm-rail .cxm-tick').length, tiles: document.querySelectorAll('#rf-folder-panel .cxm-roomtile').length, guide: (document.querySelector('.cxm-rail-guide [role=img]') || { getAttribute: () => '' }).getAttribute('aria-label') },
+  };
+};
+CHECKS['records-tab'] = async () => {
+  const L = process.env.CHECK_LANG === 'es' ? 'es' : 'en';
+  // a folder tab's look, chosen and not, to hold Records' folder tabs to People's (the same component, CxmFolders, so the same look)
+  const FOLDER_LOOK = (sel) => ['true', 'false'].map((on) => { const b = document.querySelector(`${sel} [role=tab][aria-selected="${on}"]`); if (!b) return null; const c = getComputedStyle(b); return ['backgroundColor', 'color', 'fontSize', 'fontWeight', 'fontFamily', 'borderTopLeftRadius', 'borderTopRightRadius', 'minHeight', 'paddingLeft', 'paddingRight', 'boxShadow', 'borderBottomWidth'].map((k) => `${k} ${c[k]}`).join('; '); });
+  const tap = (p, i) => p.evaluate((i) => document.querySelectorAll('.cxm-tabs button')[i].click(), i);
+  const folder = (p, id) => p.evaluate((id) => document.getElementById(`rf-folder-${id}`).click(), id);
+  const store = (p) => p.evaluate(() => JSON.stringify({ local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie }));
+  // 1. five tabs; the Records tab opens on Latest; the folder tabs, their names, their roles, and the chosen look (solid blue, white text, no line)
+  const p = await open('/#phone', { mobile: true, easy: false, settle: 1500 });
+  const s0 = await store(p);
+  let r = await p.evaluate(RT_READ);
+  expect(JSON.stringify(r.tabs) === JSON.stringify(RT_TABS[L]), `the phone's tabs are ${r.tabs.join(', ')}, not ${RT_TABS[L].join(', ')}`);
+  expect(!r.folders.length, 'the Records folder tabs show on Today');
+  await tap(p, 1); await wait(1500);
+  r = await p.evaluate(RT_READ);
+  expect(r.on === 'latest' && /panel=records/.test(await p.evaluate(() => location.search)), `the Records tab did not open on Latest (${r.on}, ${await p.evaluate(() => location.search)})`);
+  expect(JSON.stringify(r.folders) === JSON.stringify(RT_FOLDERS[L]), `the Records folder tabs are ${r.folders.join(', ')}, not ${RT_FOLDERS[L].join(', ')}`);
+  expect(r.label && r.controls && r.panel, `the folder tabs are not a named tablist that controls a labelled panel: ${JSON.stringify({ label: r.label, controls: r.controls, panel: r.panel })}`);
+  expect(r.look && r.look.bg === 'rgb(47, 102, 243)' && r.look.color === 'rgb(255, 255, 255)' && r.look.shadow === 'none' && !r.look.lines.length && Number(r.look.weight) >= 600, `the chosen folder is not solid blue with white text and no accent line: ${JSON.stringify(r.look)}`);
+  expect(!r.inMain, 'the folder tabs are inside the list, so they scroll away and the rail on Rooms cannot start under them');
+  const recLook = await p.evaluate(FOLDER_LOOK, '.cxm-recbar .cxm-folders');
+  // 2. each folder holds what it moved in: Latest the filters and cards, Meetings Next up and five day tabs, Rooms the rail, the rooms, and the guide
+  for (let i = 0; i < 20 && (await p.evaluate(() => document.querySelectorAll('#rf-folder-panel .rf-card').length)) === 0; i++) await wait(150);
+  r = await p.evaluate(RT_READ);
+  expect(r.latest.pills >= 9 && r.latest.cards >= 1, `Latest does not show the filters and the cards: ${JSON.stringify(r.latest)}`);
+  expect(r.wide <= 0 && r.app === r.iw, `Latest is not exactly the screen's width (${r.app} of ${r.iw}, ${r.wide} px sideways)`);
+  expect(!r.small.length, `Latest: controls under 44px: ${r.small.slice(0, 4)}`);
+  { const bad = await axeBad(p); expect(bad.length === 0, `axe on Records > Latest: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+  await folder(p, 'meetings'); await wait(1200);
+  r = await p.evaluate(RT_READ);
+  expect(r.on === 'meetings' && r.panel && /panel=meetings/.test(await p.evaluate(() => location.search)), `the Meetings folder did not open, or lost its ?panel=meetings address (${r.on})`);
+  expect(r.meetings.lead && r.meetings.days === 5 && r.latest.cards === 0, `Meetings does not show Next up and five day tabs (and only them): ${JSON.stringify(r.meetings)}`);
+  expect(r.wide <= 0 && !r.small.length, `Meetings: ${r.wide} px sideways, controls under 44px: ${r.small.slice(0, 4)}`);
+  { const bad = await axeBad(p); expect(bad.length === 0, `axe on Records > Meetings: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+  await folder(p, 'rooms'); await wait(1200);
+  r = await p.evaluate(RT_READ);
+  const rooms = Number(((await txt(p, '.cxm-rooms > .cxm-mut')) || '').match(/\b(\d+)\b/)?.[1]);   // "17 rooms, each answering one question", the page's own count of Uh
+  expect(r.on === 'rooms' && r.rooms.rail && r.rooms.ticks === 6 && r.rooms.tiles === rooms && rooms === 17 && /\w/.test(r.rooms.guide), `Rooms does not show the rail with its six levels, the ${rooms} rooms, and the guide: ${JSON.stringify(r.rooms)}`);
+  expect(r.wide <= 0 && !r.small.length, `Rooms: ${r.wide} px sideways, controls under 44px: ${r.small.slice(0, 4)}`);
+  { const bad = await axeBad(p); expect(bad.length === 0, `axe on Records > Rooms: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+  // the folder tabs stay put while the list scrolls; a tick on the rail jumps to its level (the levels are reached this way; no link names one)
+  const bar0 = await p.evaluate(() => document.querySelector('.cxm-recbar').getBoundingClientRect().top);
+  await p.evaluate(() => document.querySelectorAll('.cxm-tick')[3].click()); await wait(1200);
+  const jumped = await p.evaluate(() => ({ st: document.querySelector('.cxm-main').scrollTop, tick: Number((document.querySelector('.cxm-tick.on') || { getAttribute: () => -1 }).getAttribute('data-tick')), bar: document.querySelector('.cxm-recbar').getBoundingClientRect().top }));
+  expect(jumped.st > 200 && jumped.tick === 3 && Math.abs(jumped.bar - bar0) < 1, `a tick on the rail did not jump to its level under folder tabs that stay put: ${JSON.stringify(jumped)}`);
+  // 3. the folder is remembered for the visit: Today and back, and every other tab and back; nothing is saved, and the address names no folder but its page
+  await tap(p, 0); await wait(500); await tap(p, 1); await wait(900);
+  expect((await recFolderOf(p)) === 'rooms', 'the Records tab forgot its folder after Today');
+  await folder(p, 'meetings'); await wait(700);
+  for (const i of [2, 3, 4]) {
+    await tap(p, i); await wait(600);
+    if (i === 3) { const peopleLook = await p.evaluate(FOLDER_LOOK, '.cxm-page .cxm-folders'); expect(JSON.stringify(peopleLook) === JSON.stringify(recLook), `the Records folder tabs do not look like People's: ${JSON.stringify(recLook)} / ${JSON.stringify(peopleLook)}`); }
+    await tap(p, 1); await wait(700); expect((await recFolderOf(p)) === 'meetings', `the Records tab forgot its folder after the ${RT_TABS.en[i]} tab`);
+  }
+  expect((await store(p)) === s0, `choosing a folder saved something in the browser: ${(await store(p)).slice(0, 160)}`);
+  await tap(p, 0); await wait(400);
+  await p.reload({ waitUntil: 'networkidle2' }); await wait(1300);
+  await tap(p, 1); await wait(900);
+  expect((await recFolderOf(p)) === 'latest', 'a new visit did not open Records on Latest (the folder must be kept in memory only)');
+  await done(p);
+  // 4. every link and door lands in the right folder: the old ?panel= addresses, a room, a room's record, the Today cards, the Updated strip, the Rooms door, Search
+  const LINKS = [['/?panel=records#phone', 'latest', /panel=records/], ['/?panel=meetings#phone', 'meetings', /panel=meetings/], ['/?panel=explore#phone', 'rooms', /^$/],
+    ['/?room=voting#phone', 'rooms', /room=voting/], ['/?room=council&node=ward-7#phone', 'rooms', /room=council&node=ward-7/]];
+  for (const [url, want, addr] of LINKS) {
+    const q = await open(url, { mobile: true, easy: false, settle: 1500 });
+    const at = await recFolderOf(q), search = await q.evaluate(() => location.search);
+    expect(at === want && addr.test(search.replace(/^\?/, '')), `${url} opened ${at || 'no Records folder'} at ${search}, not ${want}`);
+    if (/room=/.test(url)) expect(await has(q, '.cxm-main .cxm-back') && !(await has(q, '.cxm-rail')), `${url} did not open its room inside Rooms`);
+    if (/node=/.test(url)) expect(await has(q, '.cxm-sheet'), `${url} did not open the room's record`);
+    await done(q);
+  }
+  for (const [url, want] of [['/?panel=news#phone', /What's new|Novedades/], ['/?panel=ledger#phone', /.+/]]) {
+    const q = await open(url, { mobile: true, easy: false, settle: 1300 });
+    expect((await recFolderOf(q)) === null && (await has(q, '.cxm-sheet')) && want.test((await txt(q, '.cxm-sheet .cxm-h2')) || ''), `${url} no longer opens its sheet over Today`);
+    await done(q);
+  }
+  const t = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
+  const steps = [
+    ['the next-meeting card on Today', 'meetings', () => t.evaluate(() => document.querySelector('.mt-card').click())],
+    ['"See all records" on Today', 'latest', async () => { for (let i = 0; i < 20 && !(await has(t, '.rf-all')); i++) await wait(150); await t.evaluate(() => document.querySelector('.rf-all').click()); }],
+    ['the Updated strip', 'latest', () => t.evaluate(() => document.querySelector('.cxm-fresh').click())],
+  ];
+  for (const [what, want, act] of steps) {
+    await tap(t, 0); await wait(500); await act(); await wait(1100);
+    expect((await recFolderOf(t)) === want, `${what} opened ${(await recFolderOf(t)) || 'no Records folder'}, not ${want}`);
+  }
+  await folder(t, 'rooms'); await wait(800);
+  await t.evaluate(() => [...document.querySelectorAll('.cxm-door')][0].click()); await wait(800);
+  expect((await recFolderOf(t)) === 'meetings', 'the At City Hall door in Rooms did not open the Meetings folder');
+  await tap(t, 0); await wait(400);
+  await t.evaluate(() => document.querySelector('[aria-label="Search"], [aria-label="Buscar"]').click()); await wait(400);
+  await t.type('.cxm-sheet input[type=search]', 'voting'); await wait(500);
+  await t.evaluate(() => { const r = [...document.querySelectorAll('.cxm-sheet .cxm-row')].find((x) => /voting|votaci/i.test(x.innerText)); if (r) r.click(); }); await wait(900);
+  expect((await recFolderOf(t)) === 'rooms' && (await has(t, '.cxm-main .cxm-back')), 'a room found by Search did not open inside Records > Rooms');
+  await done(t);
+  // 5. the City Hall story's button opens Meetings with "Back to the story", which returns to the same step
+  { const q = await open('/#phone', { mobile: true, easy: false, settle: 2200 });
+    await q.evaluate(() => { const b = [...document.querySelectorAll('.cxm-story-btn')].find((x) => /City Hall|Ayuntamiento/.test(x.getAttribute('aria-label') || '')); if (b) b.click(); }); await wait(600);
+    for (let i = 0; i < 8 && !(await has(q, '.cxm-story .cxm-btn-light')); i++) { await q.mouse.click(300, 420); await wait(350); }
+    const step = await txt(q, '.cxm-story-big');
+    await q.evaluate(() => { const b = document.querySelector('.cxm-story .cxm-btn-light'); if (b) b.click(); }); await wait(900);
+    expect((await recFolderOf(q)) === 'meetings' && (await has(q, '.cxm-storyback')), 'the City Hall story did not open Records > Meetings with a way back to the story');
+    await q.evaluate(() => document.querySelector('.cxm-storyback').click()); await wait(500);
+    expect((await txt(q, '.cxm-story-big')) === step, '"Back to the story" did not return to the same step');
+    await done(q); }
+  // 6. Rooms with the guide Cuy: the rail starts at the list's top, under the folder tabs; at a rest the bubble names the level and covers no card
+  // question, no heading, and not the end of the list, inside the list (explore-bubble checks every rest, both sizes, and the rest of its rules)
+  { const q = await exbOpen({ pre: () => { try { localStorage.setItem('cx-guide', 'cuy'); } catch (e) {} } });
+    const g = await q.evaluate(() => ({ rail: document.querySelector('.cxm-rail').getBoundingClientRect().top, main: document.querySelector('.cxm-main').getBoundingClientRect().top, bar: document.querySelector('.cxm-recbar').getBoundingClientRect().bottom, cuy: (document.querySelector('.cxm-rail-guide [role=img]') || { getAttribute: () => '' }).getAttribute('aria-label') }));
+    expect(g.main >= g.bar - 0.5 && g.rail >= g.main && g.rail - g.main <= 12, `the rail does not start at the list's top under the folder tabs: ${JSON.stringify(g)}`);
+    expect(/^Cuy/.test(g.cuy), `the guide on the rail is not Cuy: ${g.cuy}`);
+    let s = null;
+    for (let y = 120; y < 2400 && !(s && s.bubble); y += 120) s = await exbGo(q, y);
+    expect(!!(s && s.bubble), 'Cuy never spoke on the way down Records > Rooms');
+    if (s && s.bubble) {
+      expect(s.bubble.level === s.focus && /Cuy/.test(s.bubble.text), `the bubble names level ${s.bubble.level} with "${s.bubble.text.slice(0, 40)}", the highlighted card is in level ${s.focus}`);
+      expect(!s.bubble.titles.length && !s.bubble.heads.length && !s.bubble.end && s.bubble.inside, `the bubble covers ${JSON.stringify({ titles: s.bubble.titles, heads: s.bubble.heads, end: s.bubble.end, inside: s.bubble.inside })}`);
+      const top = await q.evaluate(() => { const b = document.querySelector('.cxm-rail-bubble'); return b ? b.getBoundingClientRect().top : null; });
+      expect(top === null || top >= g.bar, `the bubble sits over the folder tabs (${top} < ${g.bar})`);
+    }
+    await done(q); }
 };
 
 (async () => {

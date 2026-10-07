@@ -1,6 +1,6 @@
 /* Records (docs/plan-records-feed.md, phase 2; docs/plan-mobile-restructure.md, Option A): every dated record in Council's 2026 public record in one
    list, newest first, with one card for every kind (legislation, a meeting, a roll call) and three filters (when, what kind, which ward) and one sort.
-   On the phone it is a full page with a back arrow, like At City Hall (?panel=records, and "See all records" under Today's Latest).
+   On the phone it is the Latest folder of the Records tab (?panel=records, "See all records" under Today's Latest, and the Updated strip).
    Data: site/records/records-2026.json, written by build.py from scripts/records_feed.py (a pure function of data/), fetched the first time Records
    opens; Today's Latest reads the front of the same list, site/records/latest-2026.json, after Today has drawn. The single offline file carries both
    as blocks that are read only then.
@@ -249,21 +249,31 @@ function CX_Records({ home = null, onFile, onPerson, step = 20 }) {
   );
 }
 
-/* ---------- the phone page: full screen over the tabs, with a back arrow (?panel=records) ---------- */
+/* ---------- the phone: Records > Latest (?panel=records), the same banner and list that were the full page, now inside the tab ---------- */
 function CxmRecords() {
-  const { overlay, setOverlay, openSheet, home } = useCxm();
-  const backRef = u.useRef(null);
-  u.useEffect(() => { if (backRef.current) backRef.current.focus({ preventScroll: !0 }); }, []);
+  const { openSheet, home } = useCxm();
   return (
-    <div className="cxm-full rf-page" role="dialog" aria-modal="true" aria-label="Records">
-      <div className="cxm-full-bar">
-        <button type="button" ref={backRef} className="cxm-full-back" onClick={() => setOverlay((overlay && overlay.back) || null)}><CXI.Back size={18} /><span>Back</span></button>
-        <div className="cxm-top-actions"><CX_LangButton cls="cxm-lang" short /></div>
-      </div>
-      <div className="cxm-full-body">
-        <CxmBanner kind="receipts" title="Records" />
-        <CX_Records home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={(seat) => openSheet(`seat`, { seat })} />
-      </div>
+    <div className="rf-page cxm-rise">
+      <CxmBanner kind="receipts" title="Records" />
+      <CX_Records home={(home && home.ward) || null} onFile={(file) => openSheet(`leg`, { file })} onPerson={(seat) => openSheet(`seat`, { seat })} />
+    </div>
+  );
+}
+
+/* ---------- the phone's Records tab (docs/plan-mobile-restructure.md, Option A, step 2): Explore's slot, with three folders ----------
+   Latest (the list above), Meetings (At City Hall as it was, ext/cx-meetings.jsx), and Rooms (Explore as it was: the rail, the six levels, the 17 rooms,
+   and the guide, ext/cxm-explore.jsx). The folder tabs are People's (CxmFolders) and sit above the list, outside its scroll, so the list, and the rail on
+   Rooms, start under them. The tab remembers its folder for the visit, in memory only. Its id stays `explore` in the code until every check passes. */
+const CXM_REC_FOLDERS = [[`latest`, `Latest`], [`meetings`, `Meetings`], [`rooms`, `Rooms`]];
+function CxmRecBar() {
+  const { recFolder, setRecFolder } = useCxm();
+  return <nav className="cxm-recbar" aria-label="Records"><CxmFolders idp="rf-folder" label="Records" items={CXM_REC_FOLDERS} value={recFolder} onChange={setRecFolder} /></nav>;   // a landmark, as the tab bar is: outside the list, it would be outside every landmark
+}
+function CxmRecTab() {
+  const { recFolder } = useCxm();
+  return (
+    <div id="rf-folder-panel" role="tabpanel" aria-labelledby={`rf-folder-${recFolder}`} className="cxm-recpanel">
+      {recFolder === `meetings` ? <CxmHall /> : recFolder === `rooms` ? <CxmExplore /> : <CxmRecords />}
     </div>
   );
 }

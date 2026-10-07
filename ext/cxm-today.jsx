@@ -3,8 +3,8 @@
 
 
 /* ---------- Latest: the three newest records, the front of Records (ext/cx-records.jsx) ----------
-   It replaced What's new and City Hall receipts on Today (docs/plan-mobile-restructure.md, Option A, step 1). What's new still opens from the Updated
-   strip under the header (?panel=news). The cards are read from the front of the records list (site/records/latest-2026.json, a few KB) a moment
+   It replaced What's new and City Hall receipts on Today (docs/plan-mobile-restructure.md, Option A, step 1). "See all records" and the Updated strip
+   open Records > Latest (step 2); What's new still opens from ?panel=news, the Council story, and a leader's latest changes. The cards are read from the front of the records list (site/records/latest-2026.json, a few KB) a moment
    after Today has drawn; the whole list waits until Records opens. A meeting is "latest" once its day has passed: the next meeting, and one meeting
    today, have their own card above. */
 function cxmWhen(m) {
@@ -19,7 +19,7 @@ function cxmRecLatest(rows, today) {
   return (rows || []).filter((r) => r.date <= today && !(r.type === `meeting` && r.date >= today)).slice(0, 3);
 }
 function CxmRecLatest() {
-  const { setOverlay, openSheet } = useCxm();
+  const { openRecords, openSheet } = useCxm();
   const data = useCxRecs(!0);
   const today = cxTodayET();
   const rows = data ? cxmRecLatest(data.rows, today) : [];
@@ -28,7 +28,7 @@ function CxmRecLatest() {
       <CxmBanner kind="news" title="Latest" />
       {rows.length ? <ol className="rf-list">{rows.map((r) => cxRecCard(r, { today, onFile: (file) => openSheet(`leg`, { file }), onPerson: (seat) => openSheet(`seat`, { seat }) }))}</ol>
         : <p className="cxm-mut" role="status">{CX_RECS.ldone ? `The latest records could not be loaded here. See all records to try again.` : `Loading the latest records.`}</p>}
-      <button type="button" className="rf-show rf-all" onClick={() => setOverlay({ type: `records` })}>See all records</button>
+      <button type="button" className="rf-show rf-all" onClick={() => openRecords(`latest`)}>See all records</button>
     </section>
   );
 }
@@ -144,13 +144,16 @@ function CxmToday() {
 
 /* ---------- story viewer ---------- */
 function CxmStory() {
-  const { overlay, setOverlay, practice, answer, like, liked, seen, setSeen, go, openSheet, setStoryBack } = useCxm();
+  const { overlay, setOverlay, practice, answer, like, liked, seen, setSeen, go, openSheet, setStoryBack, openRecords } = useCxm();
   const { list, i, f } = overlay;
   const s = list[i];
   const [asText, setAsText] = u.useState(!1);
+  // At City Hall is Records > Meetings: the tab opens, and "Back to the story" (or Escape) returns to this step
+  const toHall = () => { const back = { ...overlay }; openRecords(`meetings`); setStoryBack(back); };
   const deeper = (d) => {
     const back = { ...overlay };
-    if (d.kind === `page`) { setOverlay({ type: d.page, back }); return; }   // a full page (At City Hall): its own back arrow returns to this step
+    if (d.kind === `page` && d.page === `hall`) { toHall(); return; }
+    if (d.kind === `page`) { setOverlay({ type: d.page, back }); return; }
     setOverlay(null);
     if (d.kind === `profile`) openSheet(`profile`, { seat: d.seat });
     else if (d.kind === `sheet`) openSheet(d.sheet);
@@ -232,7 +235,7 @@ function CxmStory() {
         </div>
       )}
       {fr.type === `cta` && (
-        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else if (fr.go === `hall`) { setOverlay({ type: `hall`, back: { ...overlay } }); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
+        <button type="button" className="cxm-btn cxm-btn-light" onClick={() => { if (fr.go === `keypad`) setOverlay({ type: `keypad`, mode: `home`, kp: `150000` }); else if (fr.go === `levystories`) { const n = list.findIndex((x) => x.id === `levy-10`); setOverlay(n >= 0 ? { ...overlay, i: n, f: 0 } : null); } else if (fr.go === `levies`) { setOverlay(null); openSheet(`levies`); } else if (fr.go === `hall`) { toHall(); } else { setOverlay(null); go(fr.go); } }}>{fr.cta}</button>
       )}
       {!asText && (!fr.type || fr.type === `more`) && s.deeper && f >= s.frames.length - 1 && <button type="button" className="cxm-btn cxm-btn-light" onClick={() => deeper(s.deeper)}>{s.deeper.label}</button>}
       {!asText && !fr.type && <span className="cxm-story-hint">{f >= s.frames.length - 1 ? `That is the last step` : `Tap the right side to keep going`}</span>}

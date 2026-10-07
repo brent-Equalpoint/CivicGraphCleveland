@@ -5,18 +5,19 @@
 function cxmNewsAv(r) {
   return r.kind === `passed` ? `done` : r.kind === `stopped` ? `read` : r.kind === `new` ? `new` : `talk`;
 }
+/* the Updated strip: when the records were pulled, and one tap to Records > Latest (What's new opens from ?panel=news) */
 function CxmFresh() {
-  const { openSheet } = useCxm();
+  const { openRecords } = useCxm();
   const f = cxFresh();
   const n = u.useMemo(() => cxNewsRows(7).rows.filter((r) => r.kind !== `routine` && r.kind !== `gone`).length, []);
   const said = f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`;
   const more = f.stale ? `Newer records may exist` : n ? `${cxmPl(n, `change`, `changes`)} this week` : `What's new`;
   return (
-    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)}>
+    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openRecords(`latest`)}>
       <i aria-hidden="true" />
       <span>{said}</span>{` `}
       <b>{more} <CXI.Arrow size={12} /></b>
-      <span className="cxm-fresh-hint"> Opens What's new.</span>
+      <span className="cxm-fresh-hint"> Opens Records.</span>
     </button>
   );
 }

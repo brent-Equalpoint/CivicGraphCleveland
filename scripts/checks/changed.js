@@ -37,25 +37,24 @@ const RULES = [
   [(f) => f === 'scripts/checks/changed.js' || f === 'scripts/test_release_plan.js', []],
   [(f) => f.startsWith('site/') || f.startsWith('dist/') || f.startsWith('build/'), []],   // outputs, not inputs
   [(f) => ['ext/cx.css', 'ext/cxm.css', 'ext/cx-bento.css', 'ext/cx-light.css', 'ext/cxm-core.jsx', 'ext/cx-ui.jsx', 'ext/cx-data.jsx', 'ext/cx-i18n.jsx', 'build.py', 'bento.py', 'light.py', 'design/tokens.json', 'design/legacy.json', 'scripts/checks/run.js', 'scripts/checks/pool.js', 'scripts/checks/lists.js', 'package.json', 'package-lock.json'].includes(f), ALL],
-  [(f) => f === 'ext/cxm-people.jsx' || f === 'ext/cxm-federal.jsx', ['people-tabs', 'profiles', 'us-graph', 'us-map', 'alignment', 'screen-states', ...SWEEP]],
+  [(f) => f === 'ext/cxm-people.jsx' || f === 'ext/cxm-federal.jsx', ['people-tabs', 'records-tab', 'profiles', 'us-graph', 'us-map', 'alignment', 'screen-states', ...SWEEP]],   // CxmFolders is also the Records tab's folder tabs
   [(f) => f === 'ext/cx-us.jsx' || f === 'ext/cx-us-map.jsx' || f === 'ext/cx-us-model.jsx' || f === 'ext/cx-us-text.jsx' || f === 'ext/cx-d3.js', ['us-graph', 'us-index', 'us-tree', 'us-map', 'us-map-touch', 'us-map-sheet', 'us-map-narrow', 'us-profile', 'us-explain', 'alignment', 'people-tabs', 'perf-budget', ...SWEEP]],
   [(f) => f === 'ext/cx-us-index.jsx', ['us-index', 'us-tree', 'us-graph', 'us-profile', 'us-explain', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Index (Brent's Index kit); the Tree reads its pages
   [(f) => f === 'ext/cx-us-tree.jsx', ['us-tree', 'us-graph', 'us-index', 'us-profile', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Tree (Brent's Tree kit)
   [(f) => f === 'ext/cx-align.jsx' || f === 'ext/cx-align-text.jsx' || f === 'data/alignment-reviewed.json', ['alignment', 'us-graph', 'us-profile', 'us-map-sheet', 'security-policy', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // how you line up
   [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'screen-states', ...SWEEP]],
   [(f) => f === 'ext/cx-levies.jsx', ['levies', 'story-fit', 'titles-never-cut', ...SWEEP]],
-  [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'banners', ...SWEEP]],
-  [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', ...SWEEP]],
-  [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'map-cards', 'screen-states', 'shell', 'text-overlap', ...SWEEP]],   // Explore and its rail (ext/cxm.css runs everything)
+  [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'records-tab', 'city-hall', 'banners', ...SWEEP]],
+  [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', 'records-tab', ...SWEEP]],
+  [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'records-tab', 'settings-sheet', 'map-cards', 'screen-states', 'shell', 'text-overlap', 'design-look', ...SWEEP]],   // Explore (Records > Rooms) and its rail (ext/cxm.css runs everything)
   [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
-  [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', ...SWEEP]],
+  [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', ...SWEEP]],   // the Updated strip opens Records > Latest
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', 'records-feed', ...SWEEP]],   // votes, actions, and positions
-  [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records and Today's Latest
-  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
+  [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
   [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'votes-actions', 'us-graph', 'screen-states', 'update-wins', 'perf-budget']],
@@ -95,8 +94,9 @@ const CSS_AREAS = [
   [/\.(usm|us-|usx|ual)/, ['us-graph', 'us-map', 'us-map-touch', 'us-map-sheet', 'us-map-narrow', 'us-profile', 'us-map-chrome', 'us-explain', 'alignment']],
   [/\.rc(-|\b)/, ['votes-actions', 'council-votes', 'profiles']],
   [/\.lv(-|\b)/, ['levies']],
-  [/\.mt-/, ['city-hall']],
-  [/\.rf(-|\b)/, ['records-feed', 'tab-blue']],
+  [/\.mt-/, ['city-hall', 'records-tab']],
+  [/\.rf(-|\b)/, ['records-feed', 'records-tab', 'tab-blue']],
+  [/\.cxm-(recbar|recpanel|folder|rooms|roomtile|level|rail|tick)/, ['records-tab', 'explore-bubble', 'people-tabs', 'tab-blue']],   // the Records tab's folder tabs (People's) and Rooms
   [/\.cxe(-|\b)/, ['easy-phone', 'easy-desktop']],
   [/stor(y|ies)/, ['stories-desktop', 'stories-phone', 'stories-deeper']],
   [/\.(sp(-|\b)|cxm-prof)/, ['profiles', 'people-tabs']],

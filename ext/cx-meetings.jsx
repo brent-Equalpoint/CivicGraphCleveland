@@ -1,5 +1,6 @@
 /* v5.22 At City Hall: the Clerk's meeting record (data/meetings-2026.json, scripts/fetch_meetings.py) as a front page instead of a calendar grid.
-   v5.30 (docs/plan-city-hall-page.md): on the phone it is a full page with a back arrow, not a sheet. In order: the next Council meeting as the lead (when,
+   v5.30 (docs/plan-city-hall-page.md): on the phone it was a full page with a back arrow; it is now the Meetings folder of the Records tab
+   (docs/plan-mobile-restructure.md, Option A, step 2), with the same parts, words, and look. In order: the next Council meeting as the lead (when,
    where, how to watch), the week as day tabs, what is on the next agenda grouped by kind, For you (items that name your ward or match your priorities,
    worked out on the device), what was just decided, a search of the record, and the rest of the year folded away. Every item opens the legislation
    record we already have. No horizontal scrolling anywhere on the page.
@@ -475,23 +476,14 @@ function CX_Meetings({ onOpen, ward = null, chosen = [], onPlace, onPrio }) {
     </div>
   );
 }
-/* The phone page: full screen over the tabs, with a back arrow (to the story, when it was opened from one) and the language switch. Each item opens
-   its legislation record in a sheet on top. ?panel=meetings opens it. */
+/* The phone: Records > Meetings (?panel=meetings, the Today card, the City Hall story, and the Rooms door). Each item opens its legislation record in a
+   sheet on top. A story that opened it leaves "Back to the story" above the tabs (CxmApp's storyBack). */
 function CxmHall() {
-  const { overlay, setOverlay, openSheet, home, prio } = useCxm();
-  const backRef = u.useRef(null);
-  u.useEffect(() => { if (backRef.current) backRef.current.focus({ preventScroll: !0 }); }, []);
-  const toStory = !!(overlay && overlay.back && overlay.back.type === `story`);
+  const { openSheet, home, prio } = useCxm();
   return (
-    <div className="cxm-full mt-page" role="dialog" aria-modal="true" aria-label="At City Hall">
-      <div className="cxm-full-bar">
-        <button type="button" ref={backRef} className="cxm-full-back" onClick={() => setOverlay((overlay && overlay.back) || null)}><CXI.Back size={18} /><span>{toStory ? `Back to the story` : `Back`}</span></button>
-        <div className="cxm-top-actions"><CX_LangButton cls="cxm-lang" short /></div>
-      </div>
-      <div className="cxm-full-body">
-        <CxmBanner kind="hall" kicker="Council and committee meetings" title="At City Hall" />
-        <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPrio={() => openSheet(`priorities`)} />
-      </div>
+    <div className="mt-page cxm-rise">
+      <CxmBanner kind="hall" kicker="Council and committee meetings" title="At City Hall" />
+      <CX_Meetings onOpen={(file) => openSheet(`leg`, { file })} ward={(home && home.ward) || null} chosen={prio.chosen} onPlace={() => openSheet(`home`)} onPrio={() => openSheet(`priorities`)} />
     </div>
   );
 }
@@ -513,15 +505,15 @@ function CxmHeardAt({ file }) {
     </div>
   );
 }
-/* the card on Today: the next meeting only (who meets when, and how many items), one tap to the page */
+/* the card on Today: the next meeting only (who meets when, and how many items), one tap to Records > Meetings */
 function CxmHallCard() {
-  const data = useCxMtg(), { setOverlay } = useCxm();
+  const data = useCxMtg(), { openRecords } = useCxm();
   if (!data) return null;
   const today = cxTodayET(), m = cxMtgSplit(data, today).lead;
   return (
     <section className="cxm-section mt-hall">
       <CxmBanner kind="hall" kicker="Next up" title="At City Hall" />
-      <button type="button" className="cxm-card mt-card" onClick={() => setOverlay({ type: `hall` })}>
+      <button type="button" className="cxm-card mt-card" onClick={() => openRecords(`meetings`)}>
         {m ? (
           <>
             <strong><CxMtgHead m={m} today={today} /></strong>

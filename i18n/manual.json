@@ -1981,7 +1981,11 @@
   "See all records": "Ver todos los registros",
   "Loading the latest records.": "Cargando los registros más recientes.",
   "The latest records could not be loaded here. See all records to try again.": "Los registros más recientes no se pudieron cargar aquí. Vea todos los registros para intentarlo de nuevo.",
-  "See the latest city records": "Ver los registros más recientes de la ciudad"
+  "See the latest city records": "Ver los registros más recientes de la ciudad",
+  "Records": "Registros",
+  "Latest": "Lo más reciente",
+  "Rooms": "Salas",
+  "Opens Records.": "Abre Registros."
  },
  "masked": {
   "{n} lists": "{n} listas",
