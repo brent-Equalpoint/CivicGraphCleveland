@@ -160,6 +160,7 @@ function CxmContest({ id }) {
       {c.term && <small className="cxm-mut">{c.term}</small>}
       <p><strong>What this office can do.</strong> {info.can}</p>
       <p className="cxm-mut"><strong>Limits.</strong> {info.limits}</p>
+      <CxOfficeNote contest={c} />
       <CxmSrc href={info.url}>Official authority source</CxmSrc>
       {!onBallot && <p className="cxm-status-line">This race is not in the districts you set, so a choice here won't be kept. Set your districts on the Ballot tab.</p>}
       <h3 className="cxm-h3">Candidates <span>{cands.length}</span></h3>
@@ -325,6 +326,7 @@ function CxmOutcomes({ items }) {
             {cand ? (
               <>
                 <p className="cxm-mut">{qm(it.contest).can}</p>
+                <CxOfficeNote contest={it.contest} />
                 <p className="cxm-mut">{Gm.some((x) => x.candidate === cand.id) ? `Sourced examples are available. Open the record to see plans, history, dependencies and tradeoffs.` : `No reviewed candidate-specific policy record is loaded. No future position is inferred.`}</p>
                 <button type="button" className="cxm-link" onClick={() => openSheet(`cand`, { id: cand.id })}>Explore record & possibilities</button>
               </>
@@ -360,6 +362,7 @@ function CxmCand({ id }) {
         <span className="cxm-kicker">What this office can do</span>
         <p>{info.can}</p>
         <p className="cxm-mut">{info.limits}</p>
+        <CxOfficeNote contest={c} />
         <CxmSrc href={info.url}>Authority reference</CxmSrc>
       </div>
       <h3 className="cxm-h3">Evidence, then possibilities</h3>

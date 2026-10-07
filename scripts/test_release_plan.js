@@ -59,6 +59,7 @@ t("a person's review mark runs that page's checks", () => {
   ok(plan(['data/levies-reviewed.json']).checks.includes('levies'), 'levies review mark without levies');
   ok(plan(['data/votes-text-reviewed.json']).checks.includes('votes-actions'), 'votes text review mark without votes-actions');
   ok(plan(['data/alignment-reviewed.json']).checks.includes('alignment'), 'alignment review mark without alignment');
+  ok(plan(['data/offices-text-reviewed.json']).checks.includes('office-text'), 'offices text review mark without office-text');
 });
 
 t('words in a screen (no color, no style): its checks and the sweeps, dark only', () => {

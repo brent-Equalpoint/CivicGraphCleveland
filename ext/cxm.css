@@ -517,6 +517,37 @@ html[data-cx-theme="original"] .cxm-pmap { background: #1a1613; }
 .mt-card em { font-style: normal; color: var(--soft); display: inline-flex; align-items: center; gap: 4px; }
 .mt-heard-row { margin: 4px 0; font-size: 15px; }
 .mt-heard-row a { display: inline-flex; align-items: center; min-height: 44px; }
+/* The agenda calendar in Records > Meetings (ext/cx-meetings.jsx, docs/plan-agenda-calendar.md): a week of day cards, the status in words, a tint only for a meeting that is live now */
+.ag-bar { display: flex; flex-direction: column; gap: 8px; }
+.ag-week { display: flex; align-items: center; justify-content: space-between; gap: 4px 12px; flex-wrap: wrap; min-height: 44px; }
+.ag-week strong { font-size: 17px; font-weight: 700; }
+.ag-back { min-height: 44px; display: inline-flex; align-items: center; }
+.ag-nav { display: flex; gap: 8px; }
+.ag-nav .cxm-btn2 { flex: 1 1 0; min-width: 0; gap: 6px; padding: 6px 10px; line-height: 1.2; }
+.ag-nav .cxm-btn2[aria-disabled="true"] { opacity: .45; }
+.ag-made:empty { display: none; }
+.ag-dayset { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+.ag-day { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 2px 12px; margin: 0; font-size: 17px; font-weight: 700; }
+.ag-tag { font-size: 14px; font-weight: 500; color: var(--mut); }
+.ag-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.ag-card { display: grid; grid-template-columns: 74px minmax(0, 1fr); gap: 12px; padding: 14px; border-radius: 18px; background: var(--tile); }
+.ag-card[data-k="live"] { background: var(--navy); }
+.ag-card[data-k="ended"] .ag-title, .ag-card[data-k="unrecorded"] .ag-title { color: var(--mut); }
+.ag-time { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.25; }
+.ag-main { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.ag-kind { margin: 0; font-size: 14px; color: var(--mut); overflow-wrap: anywhere; }
+.ag-st { font-weight: 600; color: var(--ink); }
+.ag-title { margin: 0; font-size: 16px; font-weight: 600; line-height: 1.3; overflow-wrap: anywhere; }
+.ag-place { margin: 0; font-size: 14px; color: var(--mut); overflow-wrap: anywhere; }
+.ag-place:empty { display: none; }
+.ag-main .mt-links { margin: 0; }
+.ag-card > .cxm-drop { grid-column: 1 / -1; background: var(--tile2); }
+.ag-people { display: flex; flex-direction: column; gap: 2px; margin: 0; padding: 0; list-style: none; }
+.ag-person { display: flex; align-items: center; gap: 10px; width: 100%; min-height: 48px; padding: 4px 0; text-align: left; }
+.ag-person > span:not(.cxm-fed-av) { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+.ag-person strong, .ag-person small { overflow-wrap: anywhere; }
+.ag-person small { color: var(--mut); font-size: 14px; }
+.ag-face.cxm-fed-av { width: 32px; height: 32px; font-size: 13px; border-width: 0; }
 /* Records and Latest: one card for every kind of record and the filters above them (ext/cx-records.jsx) */
 .rf { display: flex; flex-direction: column; gap: 12px; margin-top: 14px; }
 .rf-lead { margin: 0; font-size: 16px; line-height: 1.45; color: var(--ink); }

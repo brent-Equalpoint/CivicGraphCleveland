@@ -42,18 +42,20 @@ const RULES = [
   [(f) => f === 'ext/cx-us-index.jsx', ['us-index', 'us-tree', 'us-graph', 'us-profile', 'us-explain', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Index (Brent's Index kit); the Tree reads its pages
   [(f) => f === 'ext/cx-us-tree.jsx', ['us-tree', 'us-graph', 'us-index', 'us-profile', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // the Tree (Brent's Tree kit)
   [(f) => f === 'ext/cx-align.jsx' || f === 'ext/cx-align-text.jsx' || f === 'data/alignment-reviewed.json', ['alignment', 'us-graph', 'us-profile', 'us-map-sheet', 'security-policy', 'color-vision', 'text-overlap', 'perf-budget', ...SWEEP]],   // how you line up
-  [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'screen-states', ...SWEEP]],
+  [(f) => f === 'ext/cxm-ballot.jsx' || f === 'ext/cx-districts.jsx', ['districts', 'levies', 'office-text', 'screen-states', ...SWEEP]],
+  [(f) => f === 'ext/cx-offices-text.jsx' || f === 'data/offices-text-reviewed.json', ['office-text', 'districts', 'screen-states', 'perf-budget', 'color-vision', 'text-overlap', ...SWEEP]],   // what five offices can do, on the candidate record and the contest page
   [(f) => f === 'ext/cx-levies.jsx', ['levies', 'story-fit', 'titles-never-cut', ...SWEEP]],
   [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'records-tab', 'city-hall', 'banners', ...SWEEP]],
   [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', 'records-tab', ...SWEEP]],
   [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'records-tab', 'settings-sheet', 'map-cards', 'screen-states', 'shell', 'text-overlap', 'design-look', ...SWEEP]],   // Explore (Records > Rooms) and its rail (ext/cxm.css runs everything)
-  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
+  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'place-dropdown', 'screen-states', 'shell', ...SWEEP]],
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', ...SWEEP]],   // the Updated strip opens What's new
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', 'records-feed', ...SWEEP]],   // votes, actions, and positions
+  [(f) => f === 'ext/cx-meetings.jsx', ['agenda-calendar', 'city-hall', 'records-tab', 'records-feed', 'design-look', 'color-vision', 'text-overlap', 'perf-budget', 'screen-states', ...SWEEP]],   // At City Hall (Records > Meetings) and its agenda calendar
   [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
@@ -95,6 +97,7 @@ const CSS_AREAS = [
   [/\.rc(-|\b)/, ['votes-actions', 'council-votes', 'profiles']],
   [/\.lv(-|\b)/, ['levies']],
   [/\.mt-/, ['city-hall', 'records-tab']],
+  [/\.ag(-|)/, ['agenda-calendar', 'city-hall', 'records-tab']],   // the agenda calendar in Records > Meetings
   [/\.rf(-|\b)/, ['records-feed', 'records-tab', 'tab-blue']],
   [/\.cxm-(recbar|recpanel|folder|rooms|roomtile|level|rail|tick)/, ['records-tab', 'explore-bubble', 'people-tabs', 'tab-blue']],   // the Records tab's folder tabs (People's) and Rooms
   [/\.cxe(-|\b)/, ['easy-phone', 'easy-desktop']],
@@ -109,6 +112,7 @@ const CSS_AREAS = [
 const FAST_RULES = [
   // a person's review mark (python build.py --mark-...-reviewed) changes what a page says about its review: that page's checks
   [(f) => f === 'data/office-reviewed.json', ['profiles', 'people-tabs']],
+  [(f) => f === 'data/offices-text-reviewed.json', ['office-text']],
   [(f) => f === 'data/levies-reviewed.json', ['levies', 'story-fit']],
   [(f) => f === 'data/us-text-reviewed.json', ['us-explain', 'us-profile', 'us-map-sheet']],
   [(f) => f === 'data/reasons-reviewed.json', ['profiles', 'council-votes']],

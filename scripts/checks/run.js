@@ -1036,6 +1036,22 @@ const CHECKS = {
     expect(!(await after.evaluate(() => [...document.querySelectorAll('.cxm-keycard')].some((x) => /register/i.test(x.innerText)))), 'the Register card is still on the Ballot after Election Day');
     await done(after);
   },
+  async 'place-dropdown'() {
+    // The Neighborhood dropdown on My place sets your place (it does not only browse): the ward in the Today story row, "(home)" in the list, and the Ward 7 saved from before are replaced by the
+    // neighborhood chosen. Expected values come from the page's own geography file, not from its code.
+    const p = await open('/?panel=place#phone', { mobile: true, easy: false, pre: VA_WARD7_PRE });
+    const pick = await p.evaluate(() => { const o = [...document.querySelectorAll('.cxm-field select option')].map((x) => x.value); return o.find((v) => /Collinwood/.test(v)) || o[1]; });
+    await p.select('.cxm-field select', pick); await wait(600);
+    const after = await p.evaluate(() => ({ val: document.querySelector('.cxm-field select').value, home: [...document.querySelectorAll('.cxm-field select option')].filter((o) => /\(home\)/.test(o.textContent)).map((o) => o.value), save: localStorage.getItem('cx-place') }));
+    expect(after.val === pick && after.home.length === 1 && after.home[0] === pick, `choosing ${pick} did not make it the home neighborhood: ${JSON.stringify(after)}`);
+    const saved = JSON.parse(after.save || 'null');
+    expect(saved && saved.hood === pick && /^ward-\d+$/.test(saved.place) && saved.place !== 'ward-7', `the saved place is not the chosen neighborhood's ward: ${after.save}`);
+    const wardNo = saved.place.replace('ward-', '');
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-tabs button')].find((x) => /Today|Hoy/.test(x.textContent)); b && b.click(); }); await wait(800);
+    const row = await p.$$eval('.cxm-story-btn', (els) => els.map((e) => (e.getAttribute('aria-label') || e.innerText || '')));
+    expect(row.some((t) => new RegExp('Ward ' + wardNo + '\\b').test(t)) && !row.some((t) => /Ward 7/.test(t)), `the story row did not follow the new place (ward ${wardNo}): ${JSON.stringify(row)}`);
+    await done(p);
+  },
   async 'remember-place'() {
     // Remembering a person's place: off until chosen, on this device only, only the ward or neighborhood and the federal state and district, never an address,
     // expired or odd entries thrown away, and nothing left in a link or a request. The saved entry is seeded before the page loads, so what the page does with it is what is tested.
@@ -1306,6 +1322,11 @@ const CHECKS = {
         const p = await open('/?panel=ballot#phone', { mobile: true, easy: false, mode, pre: at(iso), settle: 1500 });
         const tags = await p.$$eval('.cxm-dates em', (els) => els.map((e) => e.innerText.trim().toUpperCase()));
         expect(tags.includes(tag), `${iso.slice(0, 10)} ${mode}: expected a ${tag} tag on the dates, found ${JSON.stringify(tags)}`);
+        // Early voting begins is a start, not a deadline: from Oct 6 to Nov 1 it says "Has begun" and is not crossed out; a deadline that has gone stays crossed out.
+        const early = await p.$$eval('.cxm-dates > div', (els) => els.map((e) => ({ t: e.innerText, begun: e.classList.contains('cxm-date-begun'), past: e.classList.contains('cxm-date-past'), line: getComputedStyle(e.querySelector('b')).textDecorationLine })).filter((x) => /Early voting begins/.test(x.t))[0]);
+        if (iso.startsWith('2026-10-08')) expect(early && early.begun && early.line === 'none' && /HAS BEGUN/i.test(early.t), `${iso.slice(0, 10)} ${mode}: Early voting begins should say Has begun and not be crossed out, found ${JSON.stringify(early)}`);
+        if (iso.startsWith('2026-11-04')) expect(early && early.past && early.line === 'line-through', `${iso.slice(0, 10)} ${mode}: after voting ended, Early voting begins should read as past, found ${JSON.stringify(early)}`);
+        if (iso.startsWith('2026-10-08')) expect(await p.$$eval('.cxm-date-past b', (els) => els.length > 0 && els.every((b) => getComputedStyle(b).textDecorationLine === 'line-through')), `${iso.slice(0, 10)} ${mode}: a deadline that has gone should stay crossed out`);
         const bad = (await axeBad(p)).filter((x) => x.id === 'color-contrast' || x.id === 'link-in-text-block');
         expect(bad.length === 0, `${iso.slice(0, 10)} ${mode}: contrast or an unmarked link on the dates page: ${bad.slice(0, 3).map((x) => x.target).join('; ')}`);
         await done(p);
@@ -3843,6 +3864,11 @@ const AXE_ALLOW = [
   { rule: 'label-content-name-mismatch', target: /^\.seen$|\.cxm-story-btn/, why: 'a story ring already seen: axe names it by its class; same decorative initials as above' },
 ];
 const VA_WARD7_PRE = `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-7', hood: '', state: '', district: '' })); } catch (e) {} })()`;
+/* A fake clock for the agenda calendar (docs/plan-agenda-calendar.md): the page's Date runs from the given moment, window.__setClock(iso) moves it, the
+   page's own timers are listed in window.__ticks, and the calendar file a person asks for is kept in window.__ics (its Blob) and window.__dl (its name)
+   instead of being saved to this computer. Nothing in the page is changed; only what it reads and what it hands to the browser is watched. */
+const AG_AT = (iso) => `(() => { const R = Date; let o = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + o); } static now() { return R.now() + o; } }; window.__setClock = (s) => { o = R.parse(s) - R.now(); }; window.__ticks = []; const si = window.setInterval; window.setInterval = (f, ms, ...a) => { window.__ticks.push([f, ms]); return si(f, ms, ...a); }; window.__dl = []; window.__ics = []; const co = URL.createObjectURL.bind(URL); URL.createObjectURL = (b) => { window.__ics.push(b); return co(b); }; const ck = HTMLAnchorElement.prototype.click; HTMLAnchorElement.prototype.click = function () { if (this.download && /^blob:/.test(this.href)) { window.__dl.push(this.download); return; } return ck.call(this); }; })()`;
+const AG_WEEK_OF = '2026-10-05T10:15:05-04:00';   // a Monday with meetings on it in the record: the calendar's week for the pages that only need to see it
 const AXE_PAGES = [
   ['desktop home', '/#desktop', {}], ['desktop united states', '/?panel=us#desktop', {}], ['phone united states map', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800 }], ['desktop home original', '/#desktop', { theme: 'original' }], ['desktop stories', '/?panel=stories#desktop', {}], ['desktop profiles', '/?panel=profiles#desktop', {}],
   ['desktop profiles original', '/?panel=profiles#desktop', { theme: 'original' }], ['desktop profile with votes', '/?panel=profiles&seat=ward-13#desktop', {}], ['desktop profile with votes original', '/?panel=profiles&seat=ward-13#desktop', { theme: 'original' }], ['desktop map room', '/?room=voting#desktop', {}], ['desktop news', '/?panel=news#desktop', {}], ['desktop ledger', '/?panel=ledger#desktop', {}],
@@ -3870,7 +3896,7 @@ const AXE_PAGES = [
   ['desktop us committee sheet', '/?panel=us#desktop', { settle: 1800, after: 'usCommittee' }], ['desktop us role note', '/?panel=us&who=house-committee-on-ways-and-means#desktop', { settle: 2600, after: 'usRole' }],
   ['phone us committee subcommittees', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usSubs' }], ['phone us committee story', '/?panel=us&who=house-committee-on-ways-and-means#phone', { mobile: true, easy: false, settle: 2600, after: 'usStory' }],
   // the levies guide with every "Read more" and the official wording open, so the text inside is checked too
-  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone issue story', '/#phone', { mobile: true, easy: false, after: 'issueStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
+  ['desktop levies', '/?panel=levies#desktop', { after: 'openAll' }], ['desktop levies original', '/?panel=levies#desktop', { theme: 'original', after: 'openAll' }], ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false, after: 'openAll' }], ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }], ['phone city hall open', '/?panel=meetings#phone', { mobile: true, easy: false, after: 'hallOpen' }], ['phone city hall ward', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-6', hood: '', state: '', district: '' })); localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { housing: 'most', safety: 'important' }, stances: {} })); } catch (e) {} })()` }], ['phone city hall calendar', '/?panel=meetings#phone', { mobile: true, easy: false, pre: AG_AT(AG_WEEK_OF), after: 'calendarOpen' }], ['phone city hall calendar small', '/?panel=meetings#phone', { mobile: true, easy: false, width: 320, height: 640, pre: AG_AT(AG_WEEK_OF), after: 'calendarOpen' }], ['phone levy story', '/#phone', { mobile: true, easy: false, after: 'levyStory' }], ['phone issue story', '/#phone', { mobile: true, easy: false, after: 'issueStory' }], ['phone districts ask', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtAsk' }], ['phone districts', '/?panel=ballot#phone', { mobile: true, easy: false, after: 'districtResult' }], ['desktop districts', '/?panel=districts#desktop', { after: 'districtResult' }],
   // how you line up (ext/cx-align.jsx): Compare members with two areas and a place; step 2 through the test hook, answered, with every fold open; a
   // senator's sheet and a profile with the counts open
   ['desktop us compare', '/?panel=us#desktop', { settle: 1800, after: 'alignCompare' }], ['phone us compare', '/?panel=us&view=graph#phone', { mobile: true, easy: false, settle: 1800, after: 'alignCompare' }],
@@ -3896,6 +3922,10 @@ const AXE_AFTER = {
     const f = document.getElementById('rf-folder-rooms'); if (f) f.click(); await w(700);
   },
   openAll: () => { document.querySelectorAll('.lv details').forEach((d) => { d.open = true; }); },
+  calendarOpen: async () => {   // the agenda calendar with City Council's members open
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const d = document.querySelector('.ag-card > .cxm-drop .cxm-drop-head'); if (d) { d.click(); await w(300); }
+  },
   hallOpen: async () => {   // At City Hall with everything opened: the day's meetings, the whole next agenda, the year's folds, and a search
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     document.querySelectorAll('.mt-daypanel details').forEach((d) => { d.open = true; });
@@ -4068,6 +4098,8 @@ const LOOK_PAGES = [
   ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
   ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],  // Records (ext/cx-records.jsx): a chosen and a plain filter, the ward choice, the count, and a card's parts
   ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }, null, ['.rf-pills button.on', '.rf-pills button:not(.on)', '.rf-ward select', '.rf-count', '.rf-card', '.rf-type', '.rf-title', '.rf-what', '.rf-src', '.rf-more', '.rf-show']],
+  // the agenda calendar in Records > Meetings, on a fixed clock so a week of cards is always there: a plain card and a live one, the week bar, a day's heading
+  ['phone city hall calendar', '/?panel=meetings#phone', { mobile: true, easy: false, pre: AG_AT(AG_WEEK_OF) }, null, ['.ag > .cxm-h3', '.ag-week strong', '.ag-nav .cxm-btn2', '.ag-day', '.ag-tag', '.ag-card[data-k="live"]', '.ag-card:not([data-k="live"])', '.ag-time', '.ag-kind', '.ag-st', '.ag-title', '.ag-place', '.ag-add', '.ag-card > .cxm-drop', '.ag-made']],
 ];
 async function lookOf(p, selectors) {
   return p.evaluate((sels, props) => {
@@ -5085,6 +5117,406 @@ CHECKS['records-tab'] = async () => {
     await done(q);
   }
 };
+
+/* The agenda calendar in Records > Meetings (ext/cx-meetings.jsx, docs/plan-agenda-calendar.md): a part added under For you, nothing above it changed.
+   Expected values come from site/meetings/meetings-2026.json and data/people-2026.json through this file's own small functions, never from the page's
+   code, and the clock is fixed (AG_AT), so every status is known. The status of every card in the week, worked out here from the clock in Eastern time:
+   Upcoming before the start time (the first of those shown also says Up next), Live now from the start for the 120 minutes the page assumes (the record
+   has no end time; the fold says so), then Ended where the record has minutes or an action on an item, else No outcome recorded yet. It is read for a
+   meeting that has evidence and one that does not, a minute before the start, at the start, a minute before the window closes, and when it closes, by a
+   fresh page, by the page's own timer, and by its return to view; a change of the clock changes only the status words (the same button keeps focus, the
+   list keeps its place, and no other text moves). Week navigation: the week of today, Previous and Next to the record's first and last weeks and one
+   empty week past the last, the way back, an empty week saying so in words. The .ics: made on the device (a Blob, no request, nothing saved or put in a
+   link), CRLF lines of 75 bytes or fewer, a time zone block whose daylight saving rules give the same offset as Eastern time on every day of 2026
+   (Nov. 2 included), the meeting's own date and time, the official name, the room, the links, no end time, and nothing for Google. City Council's roster
+   is the record's Council Members in the record's order, each opening a Profile, with no party and no count of anything; a committee has none, and the
+   fold says why. The existing parts of At City Hall stay in place and in order. 44 px targets, the screen's width at 390 and 320, axe, no dash, no score
+   word. Runs under CHECK_MODE, CHECK_THEME, and CHECK_LANG. */
+const AG_WINDOW = 120;
+const AG_KIND = { 'City Council': 'Council', 'Committee of the Whole': 'Whole Council', 'City Council Caucus Meeting': 'Caucus', 'Council Committee Chairs': 'Committee chairs', 'City Council Event': 'Council event',
+  'Finance, Diversity, Equity and Inclusion Committee': 'Finance', 'Safety Committee': 'Safety', 'Development, Planning and Sustainability Committee': 'Development', 'Zoning-Development, Planning and Sustainability Committee': 'Zoning',
+  'Health, Human Services and the Arts Committee': 'Health', 'Transportation and Mobility Committee': 'Transportation', 'Municipal Services and Properties Committee': 'Municipal Services', 'Utilities Committee': 'Utilities',
+  'Workforce, Education, Training and Youth Development Committee': 'Workforce', "Mayor's Appointments Committee": 'Appointments', 'Operations Committee': 'Operations' };
+const AG_WORDS = { upcoming: 'Upcoming', live: 'Live now', ended: 'Ended', unrecorded: 'No outcome recorded yet' };
+const agMin = (t) => { const x = /^(\d{1,2}):(\d{2}) (AM|PM)$/.exec(String(t || '').trim()); return x ? ((+x[1] % 12) + (x[3] === 'PM' ? 12 : 0)) * 60 + +x[2] : null; };
+const agPlus = (iso, n) => new Date(Date.parse(`${iso}T12:00:00Z`) + n * 86400000).toISOString().slice(0, 10);
+const agMonday = (iso) => agPlus(iso, -((new Date(`${iso}T12:00:00Z`).getUTCDay() + 6) % 7));
+const agWeeks = (from, to) => Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 604800000);
+const agMd = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
+const agSp = (s) => String(s || '').replace(/[\s ]+/g, ' ').trim();
+const agET = (ms) => { const s = new Date(ms).toLocaleString('sv-SE', { timeZone: 'America/New_York' }); return [s.slice(0, 10), +s.slice(11, 13) * 60 + +s.slice(14, 16)]; };   // the day and the minute of the day, Eastern
+const agIso = (day, min) => {   // the instant 5 seconds into that Eastern minute, with its offset
+  const hh = String(Math.floor(min / 60)).padStart(2, '0'), mm = String(min % 60).padStart(2, '0');
+  return ['-04:00', '-05:00'].map((o) => `${day}T${hh}:${mm}:05${o}`).find((t) => new Date(t).toLocaleString('sv-SE', { timeZone: 'America/New_York' }) === `${day} ${hh}:${mm}:05`);
+};
+const agEvidence = (m) => !!m.minutes || m.items.some((i) => i[1]);
+function agStatus(m, day, min) {
+  if (m.date > day) return 'upcoming';
+  const s = agMin(m.time);
+  if (m.date === day) { if (s === null || min < s) return 'upcoming'; if (min < s + AG_WINDOW) return 'live'; }
+  return agEvidence(m) ? 'ended' : 'unrecorded';
+}
+function agWeek(data, mon, day, min) {   // every meeting of the week, Monday to Sunday, in the order they happen, with its status and which is Up next
+  const end = agPlus(mon, 6);
+  const list = data.meetings.filter((m) => m.date >= mon && m.date <= end).sort((a, b) => (a.date === b.date ? (agMin(a.time) ?? 0) - (agMin(b.time) ?? 0) || a.id - b.id : a.date < b.date ? -1 : 1)).map((m) => ({ m, k: agStatus(m, day, min) }));
+  const next = list.find((x) => x.k === 'upcoming');
+  const days = []; list.forEach((x) => { let d = days[days.length - 1]; if (!d || d.iso !== x.m.date) { d = { iso: x.m.date, list: [] }; days.push(d); } d.list.push(x); });
+  return { mon, list, days, next: next ? next.m.id : null, past: end < day };
+}
+const AG_READ = () => {
+  const sec = document.querySelector('.ag'); if (!sec) return null;
+  const q = (s, r = sec) => [...r.querySelectorAll(s)], t = (e) => ((e && e.innerText) || '').replace(/[\s ]+/g, ' ').trim();
+  const nav = q('.ag-nav button');
+  return {
+    heading: t(sec.querySelector('#ag-h')), week: t(sec.querySelector('.ag-week strong')), back: !!sec.querySelector('.ag-back'), prevOff: !!nav[0] && nav[0].getAttribute('aria-disabled') === 'true', nextOff: !!nav[1] && nav[1].getAttribute('aria-disabled') === 'true',
+    navText: nav.map(t), none: t(sec.querySelector('.ag-none')), made: t(sec.querySelector('.ag-made')), fold: t(sec.querySelector(':scope > .cxm-drop .cxm-drop-head')), foldText: t(sec.querySelector(':scope > .cxm-drop')),
+    days: q('.ag-dayset').map((d) => ({ iso: d.dataset.day, tag: t(d.querySelector('.ag-tag')), ids: q('.ag-card', d).map((c) => Number(c.dataset.id)) })),
+    cards: q('.ag-card').map((c) => ({ id: Number(c.dataset.id), k: c.dataset.k, next: c.dataset.next === '1', st: t(c.querySelector('.ag-st')), kindLine: t(c.querySelector('.ag-kind')), kind: t(c.querySelector('.ag-kind > span:first-child')), time: t(c.querySelector('.ag-time')), title: t(c.querySelector('.ag-title')), place: t(c.querySelector('.ag-place')), add: t(c.querySelector('.ag-add')), roster: !!c.querySelector(':scope > .cxm-drop') })),
+    own: q('.ag-day, .ag-tag, .ag-kind, .ag-add, .ag-week, .ag-nav, .ag-none, .ag-made, #ag-h, :scope > .cxm-drop').map(t).join(' | '),
+  };
+};
+// what a change of the clock must not move: every other part of the page, and the calendar's own titles, rooms, times, buttons, and week
+const AG_STILL = () => {
+  const t = (e) => ((e && e.innerText) || '').replace(/[\s ]+/g, ' ').trim(), mt = document.querySelector('.mt');
+  return JSON.stringify({ rest: [...mt.children].filter((c) => !c.classList.contains('ag')).map(t), cal: [...document.querySelectorAll('.ag-title, .ag-place, .ag-time, .ag-add, .ag-week')].map(t) });
+};
+const AG_SMALL = () => [...document.querySelectorAll('.ag :is(button, a[href], summary, select, input)')].filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${String(el.className).split(' ')[0]} ${Math.round(el.getBoundingClientRect().width)}x${Math.round(el.getBoundingClientRect().height)}`);
+const agUnesc = (s) => s.replace(/\\([nN,;\\])/g, (_, c) => (/n/i.test(c) ? '\n' : c));
+function agIcsProblems(text, m, data, tr) {   // what a calendar program needs from this file, and what it must not hold
+  const bad = [], need = (c, why) => { if (!c) bad.push(why); };
+  need(text.startsWith('BEGIN:VCALENDAR\r\n') && text.endsWith('END:VCALENDAR\r\n'), 'the file does not start with BEGIN:VCALENDAR and end with END:VCALENDAR, each on its own CRLF line');
+  need(!/(^|[^\r])\n/.test(text), 'a line ends with a bare line feed, not CRLF');
+  need(text.split('\r\n').every((l) => Buffer.byteLength(l) <= 75), `a line is over 75 bytes: ${text.split('\r\n').find((l) => Buffer.byteLength(l) > 75)}`);
+  const lines = text.replace(/\r\n /g, '').split('\r\n').filter(Boolean);
+  const prop = (n) => { const l = lines.find((x) => x.startsWith(`${n}:`) || x.startsWith(`${n};`)); return l ? l.slice(l.indexOf(':') + 1) : null; };
+  need(prop('VERSION') === '2.0' && /^-\/\/.+\/\/EN$/.test(prop('PRODID') || ''), 'no VERSION:2.0 or PRODID');
+  need(lines.filter((x) => x === 'BEGIN:VEVENT').length === 1 && lines.filter((x) => x === 'END:VEVENT').length === 1, 'the file does not hold exactly one event');
+  need(prop('UID') === `meeting-${m.id}@cleveland-civic-graph`, `the UID is ${prop('UID')}, not made from the Legistar event ${m.id}`);
+  const at = agMin(m.time), want = `DTSTART;TZID=America/New_York:${m.date.replace(/-/g, '')}T${String(Math.floor(at / 60)).padStart(2, '0')}${String(at % 60).padStart(2, '0')}00`;
+  need(lines.includes(want), `no ${want} (it has ${lines.find((x) => x.startsWith('DTSTART;')) || 'none'}): the meeting's own date and time, in Eastern time`);
+  need(!lines.some((x) => /^(DTEND|DURATION|DUE)\b/.test(x)) && !lines.some((x) => x.startsWith('BEGIN:VALARM')), 'the file has an end time, a length, or an alarm: the Clerk gives none');
+  need(agUnesc(prop('SUMMARY') || '') === m.body, `SUMMARY is "${prop('SUMMARY')}", not the official name "${m.body}"`);
+  const loc = agUnesc(prop('LOCATION') || '');
+  need(loc.startsWith(m.place) && (/Lakeside|Virtual/i.test(m.place) || /Cleveland City Hall, 601 Lakeside Avenue$/.test(loc)), `LOCATION is "${loc}" for the room "${m.place}"`);
+  need(prop('URL') === m.page, `URL is ${prop('URL')}, not the meeting page`);
+  const desc = agUnesc(prop('DESCRIPTION') || '');
+  need(desc.includes(m.agenda) && desc.includes(tr('The Clerk does not publish an end time. The agenda can change; check the meeting page.')), `DESCRIPTION lacks the agenda link or the end-time sentence in the page's language: ${desc.slice(0, 160)}`);
+  need(prop('DTSTAMP') === new Date(data.retrieved_at).toISOString().replace(/[-:]/g, '').replace(/\.\d+/, ''), `DTSTAMP is ${prop('DTSTAMP')}: it should be the time the record was pulled, so the same meeting makes the same file`);
+  need(!/google|webcal/i.test(text), 'the file or its links name Google');
+  // the time zone block: the same offset as Eastern time on every day of 2026 at 10 a.m. (Nov. 2, the Monday after daylight saving ends, included)
+  need(prop('TZID') === 'America/New_York', 'no VTIMEZONE for America/New_York');
+  const rule = (kind) => {
+    const i = lines.indexOf(`BEGIN:${kind}`), blk = i < 0 ? [] : lines.slice(i + 1, lines.indexOf(`END:${kind}`));
+    const r = /BYMONTH=(\d+);BYDAY=(\d)SU/.exec(blk.find((x) => x.startsWith('RRULE:')) || ''), to = blk.find((x) => x.startsWith('TZOFFSETTO:'));
+    return r && to ? { month: +r[1], nth: +r[2], to: to.slice(11) } : null;
+  };
+  const dl = rule('DAYLIGHT'), st = rule('STANDARD');
+  need(dl && st && dl.to === '-0400' && st.to === '-0500', 'the time zone block does not give daylight saving as -0400 and standard time as -0500');
+  if (dl && st) {
+    const nthSunday = (y, mo, n) => { const first = new Date(Date.UTC(y, mo - 1, 1)).getUTCDay(); return Date.UTC(y, mo - 1, 1 + ((7 - first) % 7) + 7 * (n - 1)); };
+    const wrong = [];
+    for (let d = Date.UTC(2026, 0, 1); d < Date.UTC(2027, 0, 1); d += 86400000) {
+      const day = new Date(d).toISOString().slice(0, 10), dst = d >= nthSunday(2026, dl.month, dl.nth) && d < nthSunday(2026, st.month, st.nth);   // both changes are at 2 a.m., well before 10 a.m.
+      if (dst !== (agIso(day, 600).slice(-6) === '-04:00')) wrong.push(day);
+    }
+    need(!wrong.length, `the time zone block gives the wrong offset on ${wrong.length} days of 2026 (${wrong.slice(0, 4)}), such as the day Eastern time changes`);
+  }
+  return bad;
+}
+CHECKS['agenda-calendar'] = async () => {
+  const ES = process.env.CHECK_LANG === 'es';
+  const A = cityHallApi(), data = A.data, people = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'people-2026.json'), 'utf8')).people.filter((x) => x.title === 'Council Member');
+  const es = ES ? require('../../i18n/es.json').exact : {}, tr = (s) => (ES && es[s]) || s;
+  const wd = (m) => { const g = new Date(`${m.date}T12:00:00Z`).getUTCDay(); return g >= 1 && g <= 5; };
+  const byWhen = (a, b) => (a.date === b.date ? agMin(a.time) - agMin(b.time) : a.date < b.date ? -1 : 1);
+  const ms = data.meetings.filter((m) => wd(m) && agMin(m.time) !== null && agMin(m.time) + AG_WINDOW + 1 < 1439).sort(byWhen);
+  const ev = [...ms].reverse().find((m) => agEvidence(m) && m.body !== 'City Council'), no = [...ms].reverse().find((m) => !agEvidence(m) && m.body !== 'City Council'), cc = [...ms].reverse().find((m) => m.body === 'City Council' && m.items.length);
+  expect(!!ev && !!no && !!cc, `the record has a committee meeting with evidence (${!!ev}), one without (${!!no}), and a City Council meeting (${!!cc}) to read the calendar at`);
+  if (!ev || !no || !cc) return;
+  const ask = (p) => p.evaluate(() => JSON.stringify({ href: location.href, local: { ...localStorage }, session: { ...sessionStorage }, cookie: document.cookie }));
+  // what the page must show for one instant, compared card by card against the record and the clock
+  const compare = async (p, iso, label, mon) => {
+    const [day, min] = agET(Date.parse(iso)), model = agWeek(data, mon || agMonday(day), day, min), r = await p.evaluate(AG_READ);
+    if (!r) { expect(false, `${label}: the page has no calendar`); return r; }
+    expect(JSON.stringify(r.cards.map((c) => c.id)) === JSON.stringify(model.list.map((x) => x.m.id)), `${label}: the cards are ${r.cards.map((c) => c.id)}, the record's week of ${model.mon} has ${model.list.map((x) => x.m.id)}`);
+    expect(JSON.stringify(r.days.map((d) => [d.iso, d.ids.length])) === JSON.stringify(model.days.map((d) => [d.iso, d.list.length])), `${label}: the day sets are ${JSON.stringify(r.days.map((d) => [d.iso, d.ids.length]))}, the record has ${JSON.stringify(model.days.map((d) => [d.iso, d.list.length]))}`);
+    model.list.forEach((x, i) => {
+      const c = r.cards[i]; if (!c || c.id !== x.m.id) return;
+      expect(c.k === x.k && c.st === tr(AG_WORDS[x.k]), `${label}: ${x.m.body} at ${x.m.time} on ${x.m.date} shows "${c.st}" (${c.k}), the clock says ${x.k} (${agET(Date.parse(iso)).join(' ')})`);
+      expect(c.next === (model.next === x.m.id) && /Up next|La siguiente/.test(c.kindLine) === c.next, `${label}: ${x.m.body} ${x.m.date} ${x.m.time}: Up next is ${c.next ? 'shown' : 'not shown'}, the first upcoming meeting is ${model.next}`);
+      if (AG_KIND[x.m.body]) expect(c.kind === tr(AG_KIND[x.m.body]), `${label}: ${x.m.body} says "${c.kind}", not "${tr(AG_KIND[x.m.body])}"`);
+      expect(c.time.startsWith(x.m.time.split(' ')[0]), `${label}: the time column says "${c.time}" for ${x.m.time}`);
+      if (!ES) {
+        expect(c.title === agSp(x.m.body), `${label}: the title says "${c.title}", not the official name "${x.m.body}"`);
+        expect(c.time === x.m.time.replace('AM', 'a.m.').replace('PM', 'p.m.'), `${label}: the time column says "${c.time}" for ${x.m.time}`);
+        expect(c.place === agSp([x.m.place, x.m.items.length ? `${x.m.items.length} item${x.m.items.length === 1 ? '' : 's'}` : ''].filter(Boolean).join(' · ')), `${label}: the room line says "${c.place}"`);
+      }
+      expect(c.add === tr('Add to my calendar'), `${label}: the button says "${c.add}"`);
+      expect(c.roster === (x.m.body === 'City Council'), `${label}: ${x.m.body} ${c.roster ? 'has' : 'has no'} a roster fold, and only City Council should`);
+    });
+    r.days.forEach((d) => {
+      const n = d.ids.length, rel = Math.round((Date.parse(`${d.iso}T12:00:00Z`) - Date.parse(`${day}T12:00:00Z`)) / 86400000), w = rel === 0 ? 'Today' : rel === 1 ? 'Tomorrow' : rel === -1 ? 'Yesterday' : '';
+      expect(ES ? new RegExp(`\\b${n} reuni`).test(d.tag) : d.tag.endsWith(`${n} meeting${n === 1 ? '' : 's'}`), `${label}: the day heading ${d.iso} says "${d.tag}" for ${n}`);
+      expect(w ? d.tag.startsWith(tr(w)) : !/ · /.test(d.tag), `${label}: the day heading ${d.iso} says "${d.tag}" (${w || 'no Today, Tomorrow, or Yesterday'})`);
+    });
+    expect(ES ? /^Semana del /.test(r.week) : r.week === `Week of ${agMd(model.mon)}`, `${label}: the week reads "${r.week}", the record's week starts ${model.mon}`);
+    return r;
+  };
+  // the existing parts of At City Hall, still there and in their order, with the calendar after For you and before Just decided
+  const parts = async (p, day, label) => {
+    const want = [['.mt-lead', true], ['#mt-week-h', true], ['.mt-on', !!A.cxMtgSplit(data, day).lead], ['#mt-you-h', true], ['#ag-h', true], ['#mt-done-h', !!A.cxMtgDecided(data, day)], ['#mt-find-h', true], ['.mt-earlier', true], ['.mt-foot', true]];
+    for (const [s, yes] of want) expect((await has(p, s)) === yes, `${label}: ${s} is ${yes ? 'missing from' : 'on'} At City Hall`);
+    const order = await p.evaluate((sels) => { const es = sels.map((s) => document.querySelector(s)).filter(Boolean); return es.length > 5 && es.every((e, i) => i === 0 || (es[i - 1].compareDocumentPosition(e) & Node.DOCUMENT_POSITION_FOLLOWING) > 0); }, want.filter((w) => w[1]).map((w) => w[0]));
+    expect(order, `${label}: the parts of At City Hall are not in their order (Next up, the week's days, What is on it, For you, the calendar, Just decided, Look it up, Earlier this year, the footer)`);
+    expect((await count(p, '.mt-days [role=tab]')) === 5, `${label}: the week's five day tabs are not there`);
+  };
+  // 1. a meeting with evidence and one without, read a minute before the start, at the start, a minute before the window closes, and when it closes
+  for (const [M, what] of [[ev, 'with an action or minutes on record'], [no, 'with neither']]) {
+    const s = agMin(M.time), steps = [[s - 1, 'a minute before it starts'], [s, 'when it starts'], [s + AG_WINDOW - 1, 'a minute before the window closes'], [s + AG_WINDOW, 'when the window closes']];
+    const label = (w) => `${M.body} ${M.date} ${M.time} (${what}), ${w}`;
+    const p = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 1800, pre: AG_AT(agIso(M.date, steps[0][0])) });
+    expect((await recFolderOf(p)) === 'meetings', `${label('open')}: ?panel=meetings did not open Records > Meetings`);
+    expect(await p.evaluate(() => window.__ticks.some((t) => t[1] === 60000)), `${label('open')}: the calendar sets no timer for every minute`);
+    await compare(p, agIso(M.date, steps[0][0]), label(steps[0][1]));
+    await parts(p, M.date, label('open'));
+    // focus and place stay put through every change of the clock: a button in the card, and the list scrolled to it
+    await p.evaluate((id) => { const b = document.querySelector(`.ag-card[data-id="${id}"] .ag-add`); b.scrollIntoView({ block: 'center' }); b.focus(); b.__keep = 1; }, M.id);
+    await wait(300);
+    const still0 = await p.evaluate(AG_STILL), top0 = await p.evaluate(() => document.querySelector('.cxm-main').scrollTop);
+    for (const [i, [min, w]] of steps.slice(1).entries()) {
+      const iso = agIso(M.date, min);
+      await p.evaluate((iso, byTimer) => { window.__setClock(iso); if (byTimer) window.__ticks.filter((t) => t[1] === 60000).forEach((t) => t[0]()); else document.dispatchEvent(new Event('visibilitychange')); }, iso, i % 2 === 0);   // the timer, then the return to view, then the timer
+      await wait(250);
+      await compare(p, iso, label(w));
+      expect(await p.evaluate(() => !!document.activeElement && document.activeElement.__keep === 1 && document.activeElement.classList.contains('ag-add')), `${label(w)}: the clock changed and focus left the button it was on`);
+      expect((await p.evaluate(() => document.querySelector('.cxm-main').scrollTop)) === top0, `${label(w)}: the clock changed and the list moved`);
+      expect((await p.evaluate(AG_STILL)) === still0, `${label(w)}: the clock changed more than the status words`);
+    }
+    // the next morning: yesterday's meetings are over and the day's heading says Yesterday
+    const nxt = agPlus(M.date, 1), nd = new Date(`${nxt}T12:00:00Z`).getUTCDay();
+    if (nd >= 1 && nd <= 5) { const iso = agIso(nxt, 8 * 60); await p.evaluate((iso) => { window.__setClock(iso); document.dispatchEvent(new Event('visibilitychange')); }, iso); await wait(250); await compare(p, iso, label('the next morning')); }
+    await done(p);
+  }
+  // 2. week navigation, from a fresh page: Previous, Next, the way back, the record's limits, and the empty weeks (the one past the last, and one in the middle of the year if there is one)
+  { const iso = agIso(ev.date, agMin(ev.time) - 1), p = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 1800, pre: AG_AT(iso) });
+    const dates = data.meetings.map((m) => m.date).sort(), thisMon = agMonday(ev.date), first = agMonday(dates[0]), last = agMonday(dates[dates.length - 1]);
+    const minMon = first < thisMon ? first : thisMon, maxMon = agPlus(last, 7) > thisMon ? agPlus(last, 7) : thisMon;
+    const btn = (w) => p.evaluate((w) => document.querySelectorAll('.ag-nav button')[w].click(), w), s0 = await ask(p), asked0 = p.asked.length;
+    const wk = (r, mon) => (ES ? /^Semana del /.test(r.week) : r.week === `Week of ${agMd(mon)}`);
+    let r = await compare(p, iso, 'this week');
+    expect(!r.back, 'the way back to this week shows on this week');
+    expect(r.navText[0].includes(tr('Previous week')) && r.navText[1].includes(tr('Next week')), `the week buttons say ${r.navText}`);
+    await p.evaluate(() => document.querySelectorAll('.ag-nav button')[0].focus());
+    await btn(0); await wait(200); r = await compare(p, iso, 'the week before', agPlus(thisMon, -7));
+    expect(r.back && (await txt(p, '.ag-back')).trim() === tr('Back to this week'), 'a week away from this one has no way back to this week');
+    expect(await p.evaluate(() => document.activeElement === document.querySelectorAll('.ag-nav button')[0]), 'Previous week took focus away from itself');
+    await btn(1); await btn(1); await wait(200); r = await compare(p, iso, 'the week after', agPlus(thisMon, 7));
+    await p.evaluate(() => document.querySelector('.ag-back').click()); await wait(200);
+    r = await compare(p, iso, 'back to this week'); expect(!r.back, 'the way back is still there after going back to this week');
+    // to the record's first week and no further
+    const clicks = await p.evaluate(async () => { const b = document.querySelectorAll('.ag-nav button')[0]; let n = 0; while (b.getAttribute('aria-disabled') !== 'true' && n < 80) { b.click(); n++; await new Promise((r) => setTimeout(r, 0)); } b.click(); return n; });
+    await wait(200); r = await compare(p, iso, 'the first week', minMon);
+    expect(clicks === agWeeks(minMon, thisMon) && r.prevOff && wk(r, minMon), `Previous week did not stop at the record's first week ${minMon}: ${clicks} clicks, "${r.week}", disabled ${r.prevOff}`);
+    const empty = []; for (let m = minMon; m < thisMon; m = agPlus(m, 7)) if (!data.meetings.some((x) => x.date >= m && x.date <= agPlus(m, 6))) empty.push(m);
+    if (empty.length) {
+      await p.evaluate(async (n) => { const b = document.querySelectorAll('.ag-nav button')[1]; for (let i = 0; i < n; i++) { b.click(); await new Promise((r) => setTimeout(r, 0)); } }, agWeeks(minMon, empty[0])); await wait(200);
+      r = await compare(p, iso, `the empty week ${empty[0]}`, empty[0]);
+      expect(r.none === tr("No meetings were on the Clerk's calendar for the week shown.") && r.cards.length === 0, `an empty past week says "${r.none}"`);
+    }
+    // to the last week and one empty week past it, said as not posted yet
+    await p.evaluate(() => { const b = document.querySelector('.ag-back'); if (b) b.click(); }); await wait(150);
+    const far = await p.evaluate(async () => { const b = document.querySelectorAll('.ag-nav button')[1]; let n = 0; while (b.getAttribute('aria-disabled') !== 'true' && n < 80) { b.click(); n++; await new Promise((r) => setTimeout(r, 0)); } b.click(); return n; });
+    await wait(200); r = await compare(p, iso, 'the last week', maxMon);
+    expect(far === agWeeks(thisMon, maxMon) && r.nextOff && wk(r, maxMon), `Next week did not stop one empty week past the record's last (${maxMon}): ${far} clicks, "${r.week}", disabled ${r.nextOff}`);
+    if (!data.meetings.some((x) => x.date >= maxMon && x.date <= agPlus(maxMon, 6))) expect(r.none === tr('The Clerk has not posted meetings for the week shown yet. Meetings are usually posted a few days ahead.') && r.cards.length === 0, `a week with nothing posted yet says "${r.none}"`);
+    expect((await ask(p)) === s0 && p.asked.length === asked0, `moving between weeks changed the address, storage, or a cookie, or asked the site for something: ${p.asked.slice(asked0)}`);
+    await done(p); }
+  // 3. the .ics, for a committee meeting and for City Council: made here (no request, nothing kept or put in a link), and all a calendar program needs from it
+  for (const M of [ev, cc]) {
+    const iso = agIso(M.date, agMin(M.time) - 30), p = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 1800, pre: AG_AT(iso) });
+    const s0 = await ask(p), asked0 = p.asked.length;
+    await p.evaluate((id) => document.querySelector(`.ag-card[data-id="${id}"] .ag-add`).click(), M.id); await wait(400);
+    const got = await p.evaluate(async () => ({ n: window.__ics.length, name: window.__dl[0] || null, type: window.__ics[0] ? window.__ics[0].type : '', text: window.__ics[0] ? await window.__ics[0].text() : '', made: ((document.querySelector('.ag-made') || {}).innerText || '').trim() }));
+    expect(got.n === 1 && !!got.name, `Add to my calendar for ${M.body} ${M.date} made ${got.n} files`);
+    expect(/\.ics$/.test(got.name || '') && /^text\/calendar/.test(got.type), `the file is named ${got.name} and typed ${got.type}`);
+    const bad = agIcsProblems(got.text, M, data, tr);
+    expect(!bad.length, `the .ics for ${M.body} ${M.date}: ${bad.slice(0, 3).join('; ')}`);
+    expect(got.made === tr('Calendar file made on this device.'), `after Add to my calendar the page says "${got.made}"`);
+    expect((await ask(p)) === s0 && p.asked.length === asked0, `making the calendar file changed the address, storage, or a cookie, or asked the site for something: ${p.asked.slice(asked0)}`);
+    expect(!(await has(p, '.ag [href^="blob:"]')), 'the page keeps a link to the calendar file');
+    await done(p);
+  }
+  // 4. who sits on it: City Council's roster is the record's Council Members in the record's order, each opening a Profile, no party and no count of anything
+  { const iso = agIso(cc.date, agMin(cc.time) - 30), p = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 1800, pre: AG_AT(iso) });
+    expect((await count(p, '.ag-person')) === 0, 'the roster is in the page before it is opened');
+    await p.evaluate((id) => document.querySelector(`.ag-card[data-id="${id}"] > .cxm-drop .cxm-drop-head`).click(), cc.id); await wait(500);
+    const rows = await p.evaluate((id) => [...document.querySelectorAll(`.ag-card[data-id="${id}"] .ag-person`)].map((e) => ({ name: e.querySelector('strong').innerText, small: e.querySelector('small').innerText.replace(/\s+/g, ' '), btn: e.tagName === 'BUTTON', h: Math.round(e.getBoundingClientRect().height) })), cc.id);
+    expect(JSON.stringify(rows.map((x) => x.name)) === JSON.stringify(people.map((x) => x.name)), `the roster is ${rows.map((x) => x.name).join(', ')}, the record's Council Members are ${people.map((x) => x.name).join(', ')}`);
+    expect(rows.every((x) => x.small.startsWith(tr('Council Member')) && !/\b(Democrat|Republican|Independent|party)\b|\([DRI]\)/i.test(x.small)), `a roster row names a party, or not the record's word: ${rows.slice(0, 2).map((x) => x.small)}`);
+    expect(!/\b\d+ (votes?|bills?|ordinances?|sponsor)/i.test(rows.map((x) => x.small).join(' ')) && rows.every((x) => x.h >= 44), 'a roster row shows a count or is under 44px');
+    expect(new RegExp(`\\b${people.length}\\b`).test((await txt(p, '.ag-card > .cxm-drop .cxm-drop-head small')) || ''), 'the roster fold does not say how many members');
+    expect(rows.every((x) => x.btn), 'a Council Member in the roster has no Profile to open');
+    await p.evaluate((id) => document.querySelector(`.ag-card[data-id="${id}"] .ag-person`).click(), cc.id); await wait(900);
+    expect((await has(p, '.cxm-sheet')) && ((await txt(p, '.cxm-sheet')) || '').includes(people[0].name.split(' ').pop()), `the first roster row did not open ${people[0].name}'s Profile`);
+    await done(p); }
+  // 5. targets, width, axe, and our own words, at 390 and at 320, with the roster open; the parts of the page in place; nothing in the address
+  for (const [w, h] of [[390, 844], [320, 640]]) {
+    const iso = agIso(cc.date, agMin(cc.time) - 30), p = await open('/?panel=meetings#phone', { mobile: true, easy: false, width: w, height: h, settle: 1800, pre: AG_AT(iso) });
+    await p.evaluate(AXE_AFTER.calendarOpen); await wait(400);
+    if (w === 390) await parts(p, cc.date, 'at 390');
+    const g = await p.evaluate(() => ({ doc: document.documentElement.scrollWidth, iw: innerWidth, app: Math.round(document.querySelector('.cxm').getBoundingClientRect().width), sec: Math.round(document.querySelector('.ag').getBoundingClientRect().right), main: document.querySelector('.cxm-main').scrollWidth - document.querySelector('.cxm-main').clientWidth }));
+    expect(g.doc === g.iw && g.app === g.iw && g.main <= 0 && g.sec <= g.iw, `at ${w}: the calendar makes the screen wider (${JSON.stringify(g)})`);
+    const small = await p.evaluate(AG_SMALL); expect(!small.length, `at ${w}: controls in the calendar under 44px: ${small.slice(0, 4)}`);
+    const r = await p.evaluate(AG_READ);
+    expect(!/[–—]/.test(r.own) && !RF_SCORE.test(r.own) && !(ES && RF_SCORE_ES.test(r.own)) && !/%/.test(r.own), `at ${w}: our words in the calendar have a dash, a percent, or a score word: ${(r.own.match(RF_SCORE) || r.own.match(/.{15}[–—%].{15}/) || [''])[0]}`);
+    expect(r.heading === tr('Calendar') && r.fold === tr('How the status works') && !r.made, `at ${w}: the heading is "${r.heading}", the fold "${r.fold}", the status line "${r.made}"`);
+    expect(!ES || !/\b(Upcoming|Live now|Previous week|Add to my calendar|Week of|Back to this week)\b/.test(r.own), `at ${w}: the calendar still has English in Spanish: ${(r.own.match(/\b(Upcoming|Live now|Previous week|Add to my calendar|Week of)\b/) || [''])[0]}`);
+    { const bad = await axeBad(p); expect(bad.length === 0, `at ${w}: axe on the calendar: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')}`); }
+    // the fold under the calendar says how the status works and that committee seats are not in the record
+    await p.evaluate(() => document.querySelector('.ag > .cxm-drop .cxm-drop-head').click()); await wait(300);
+    const fold = (await p.evaluate(AG_READ)).foldText;
+    expect(ES ? /Terminó|En vivo ahora/.test(fold) : /Live now means the meeting's scheduled time is now/.test(fold) && /no end time/.test(fold) && /Committee seats are not in the Clerk's record/.test(fold) && /not a sign the meeting did not happen/.test(fold), `the fold under the calendar does not say how the status works: ${fold.slice(0, 120)}`);
+    expect(!/[–—]/.test(fold), 'a dash in the fold under the calendar');
+    expect(!(await p.evaluate(() => /ag-|week|calendar/i.test(location.search + location.hash))), 'the calendar put something in the address');
+    await done(p);
+  }
+};
+
+/* What five offices can do (ext/cx-offices-text.jsx; docs/source-notes-offices.md). The compiled app had words for Governor, Congress, judges, the
+   General Assembly, and County Council, and a generic line for every other office. Attorney General, Auditor of State, Secretary of State,
+   Treasurer of State, and County Executive now have their own words, a source link, and the notice that a person has not reviewed them (or
+   who did, and when). On the phone (the contest page, the candidate record, the review) and on the computer (the contest page, the record's
+   drawer, the "What could change" cards): each of the five shows its own words and link and the notice, never the generic line; Governor,
+   Congress, and the judges' words are exactly what they were, with no notice; our words have no party, ranking, score, advice, or dash. */
+const OFFICE_GENERIC = 'A detailed authority summary has not yet been reviewed for this office.';
+const OFFICE_NAMES = ['Attorney General', 'Auditor of State', 'Secretary of State', 'Treasurer of State', 'County Executive'];
+// the words these offices already had in the compiled app (never edited): they must read the same, with no notice under them
+const OFFICE_KEEP = {
+  'Governor and Lieutenant Governor': { can: 'The governor leads Ohio’s executive branch and can recommend legislation and sign or veto bills.', limits: 'A campaign plan still needs the required laws, funding and approvals. The governor cannot independently rewrite federal law or guarantee electricity prices.' },
+  'United States Senator': { can: 'Members of Congress introduce and vote on federal legislation. One member casts one vote; they do not decide alone.', limits: 'Federal law generally needs both chambers and presidential action, or a veto override. Campaign promises and past votes do not guarantee passage.' },
+  'Justice of the Supreme Court': { can: 'Judges hear cases within their court’s authority and apply the law to the facts and legal questions presented.', limits: 'A judge’s party does not establish how they will rule. Case outcomes depend on evidence, applicable law and court procedures. No case-result forecasts are provided.' },
+};
+const OFFICE_BAD_EN = /\b(democrat\w*|republican\w*|libertarian\w*|party|parties|partisan|best|better|worse|worst|rank\w*|scores?|should|ought|favorite|strongest|weakest|vote for|vote against)\b/i;
+const OFFICE_BAD_ES = /(demócrata|republican|libertari|partido|partidista|mejor|peor|puntaje|clasificaci|debería|favorit|votar por|votar en contra)/i;
+function officeWords() {   // the words as written in the source, between the OFFICES-TEXT markers
+  const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-offices-text.jsx'), 'utf8');
+  const blk = /\/\* OFFICES-TEXT-START[\s\S]*?OFFICES-TEXT-END \*\//.exec(src), obj = /const CX_OFFICES = (\{[\s\S]*?\n\});\n/.exec(blk ? blk[0] : '');
+  if (!obj) throw new Error('the OFFICES-TEXT block or CX_OFFICES is missing from ext/cx-offices-text.jsx');
+  const words = require('vm').runInNewContext('(' + obj[1] + ')');
+  let reviewed = null;   // a person's review counts only while its fingerprint is the text's
+  try {
+    const r = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'offices-text-reviewed.json'), 'utf8'));
+    if (r.fp === require('crypto').createHash('sha256').update(blk[0]).digest('hex').slice(0, 16)) reviewed = r;
+  } catch (e) { /* never reviewed */ }
+  return { words, reviewed };
+}
+CHECKS['office-text'] = async () => {
+  const ES = process.env.CHECK_LANG === 'es';
+  const { words, reviewed } = officeWords();
+  const sp = (s) => (ES ? (ES_WORDS[s] || s) : s);   // our words in the page's language
+  const nm = (s) => RC_SP(sp(s));
+  const keys = Object.keys(words);
+  expect(JSON.stringify(keys) === JSON.stringify(OFFICE_NAMES.map((n) => n.toLowerCase())), `ext/cx-offices-text.jsx holds words for ${keys.join(', ')}, not for exactly ${OFFICE_NAMES.join(', ')}`);
+  const NOTICE_EN = reviewed
+    ? `Our plain words for what this office can do were read against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
+    : 'Our plain words for what this office can do. A person has not reviewed them yet.';
+  const notice = nm(NOTICE_EN), noticeBase = nm('Our plain words for what this office can do');
+  if (ES && !reviewed) expect(!!ES_WORDS[NOTICE_EN], 'the notice has no Spanish');
+  for (const n of OFFICE_NAMES) {
+    const w = words[n.toLowerCase()] || {};
+    expect(w.can && w.limits && /^https:\/\/(codes\.ohio\.gov|cuyahogacounty\.gov)\//.test(w.url || ''), `${n}: the words need can, limits, and an official https link (codes.ohio.gov or cuyahogacounty.gov)`);
+    for (const t of [w.can, w.limits]) {
+      expect(!!t && !/[–—]/.test(t) && !OFFICE_BAD_EN.test(t), `${n}: a party, ranking, score, advice word, or dash in "${(t || '').slice(0, 60)}"`);
+      if (ES) expect(!!ES_WORDS[t] && !/[–—]/.test(ES_WORDS[t]) && !OFFICE_BAD_ES.test(ES_WORDS[t]), `${n}: no Spanish, or a party, ranking, score, advice word, or dash in it, for "${(t || '').slice(0, 60)}"`);
+    }
+  }
+  const pageOf = (office) => { const w = words[office.toLowerCase()]; return w ? { can: nm(w.can), limits: nm(w.limits), url: w.url } : OFFICE_KEEP[office] ? { can: nm(OFFICE_KEEP[office].can), limits: nm(OFFICE_KEEP[office].limits), url: null } : { can: '(no words written for this office)', limits: '(no words written for this office)', url: null }; };
+  // what a screen says about an office: its words in order (with the notice right after them for the five), the source link, never the generic line
+  const judge = (where, office, text, links, o = {}) => {
+    const t = RC_SP(text), e = pageOf(office), five = OFFICE_NAMES.includes(office), tag = `${where}, ${office}`;
+    expect(!t.includes(RC_SP(OFFICE_GENERIC)) && !t.includes(nm(OFFICE_GENERIC)), `${tag}: shows the generic line "${OFFICE_GENERIC.slice(0, 40)}..." instead of its own words`);
+    const i = t.indexOf(e.can);
+    expect(i >= 0, `${tag}: does not say "${e.can.slice(0, 70)}...": ${t.slice(0, 160)}`);
+    let at = i;
+    if (o.limits) { const j = t.indexOf(e.limits, i); expect(j > i, `${tag}: does not say its limits after what it can do`); at = Math.max(at, j); }
+    const k = t.indexOf(five ? notice : noticeBase);
+    if (five) expect(k > at && (!o.limits || k > at), `${tag}: the notice "${notice.slice(0, 60)}..." is missing or not after the words`);
+    else expect(k < 0, `${tag}: an office that kept its words shows the new notice`);
+    if (five && o.link) expect(links.some((l) => l.href === e.url && l.blank), `${tag}: no link to ${e.url} (${JSON.stringify(links.slice(0, 5))})`);
+    if (five && k >= 0) { const own = t.slice(i, k + notice.length); expect(!/[–—]/.test(own) && !(ES ? OFFICE_BAD_ES : OFFICE_BAD_EN).test(own), `${tag}: a party, ranking, score, advice word, or dash in our words: ${own.slice(0, 80)}`); }
+  };
+  const linksIn = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(`${sel} a[href]`)].map((a) => ({ href: a.getAttribute('href'), blank: a.target === '_blank' })), sel);
+  const textIn = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(sel)].pop()?.innerText || '', sel);
+  const clickIn = async (p, sel, o = {}) => { const h = await p.evaluateHandle((sel, o) => [...document.querySelectorAll(sel)].find((x) => (o.strong ? o.strong.includes((x.querySelector('strong') || {}).innerText) : o.re ? new RegExp(o.re).test(x.innerText) : true)) || null, sel, o); const el = h.asElement(); if (el) await el.click(); await wait(550); return !!el; };
+
+  // ---- the phone ----
+  const m = await open('/?panel=ballot#phone', { mobile: true, easy: false, settle: 1600 });
+  for (const office of [...OFFICE_NAMES, ...Object.keys(OFFICE_KEEP)]) {
+    const hit = await clickIn(m, '.cxm-row', { strong: [office, sp(office)] });
+    if (!hit) { expect(false, `phone: no row "${office}" on the Ballot tab`); continue; }
+    const c = RC_SP(await textIn(m, '.cxm-sheet'));
+    judge('phone contest page', office, c, await linksIn(m, '.cxm-sheet'), { limits: true, link: true });
+    if (!(await clickIn(m, '.cxm-cand-rec'))) { expect(false, `phone, ${office}: no Record button`); continue; }
+    judge('phone candidate record', office, await textIn(m, '.cxm-sheet'), await linksIn(m, '.cxm-sheet'), { limits: true, link: true });
+    expect(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `phone candidate record, ${office}: wider than the screen`);
+    if (office === 'County Executive') {   // look at it: phone record (axe on the screen that carries the new words)
+      const bad = await axeBad(m); expect(bad.length === 0, `axe on the phone candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`);
+    }
+    await clickIn(m, '.cxm-sheet-x');
+    expect(!(await has(m, '.cxm-sheet')), `phone, ${office}: the sheet did not close`);
+  }
+  // "What might your choices affect?" on the Ballot tab: a pick in an office, then its words on that pick's card
+  for (const office of ['Treasurer of State', 'United States Senator']) {
+    await clickIn(m, '.cxm-row', { strong: [office, sp(office)] });
+    await clickIn(m, '.cxm-cand'); await clickIn(m, '.cxm-sheet-x');
+  }
+  const cards = await m.evaluate(() => [...document.querySelectorAll('.cxm-tile')].filter((t) => t.querySelector('.cxm-kicker') && t.querySelector('.cxm-link')).map((t) => ({ kicker: t.querySelector('.cxm-kicker').innerText, text: t.innerText })));
+  for (const office of ['Treasurer of State', 'United States Senator']) {
+    const card = cards.find((c) => [office, sp(office)].includes(c.kicker)), five = OFFICE_NAMES.includes(office);
+    if (!card) { expect(false, `phone, ${office}: no card on the Ballot tab after a pick (${cards.map((c) => c.kicker)})`); continue; }
+    const r = RC_SP(card.text), e = pageOf(office);
+    expect(r.includes(e.can), `phone choices card, ${office}: does not say "${e.can.slice(0, 60)}..."`);
+    expect(five ? r.includes(notice) : !r.includes(noticeBase), `phone choices card, ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(!r.includes(nm(OFFICE_GENERIC)), `phone choices card, ${office}: shows the generic line`);
+  }
+  await done(m);
+
+  // ---- the computer ----
+  const d = await open('/?panel=ballot#desktop', { width: 1280, settle: 1600 });
+  const ids = await d.evaluate(() => Object.fromEntries([...document.querySelectorAll('.practice-jump option')].map((o) => [o.textContent.split(' · ')[0], o.value])));
+  for (const office of [...OFFICE_NAMES, ...Object.keys(OFFICE_KEEP)]) {
+    const id = ids[office] || ids[sp(office)];
+    if (!id) { expect(false, `desktop: no race "${office}" in the practice ballot's list (${Object.keys(ids).slice(0, 6)})`); continue; }
+    await d.select('.practice-jump select', id); await wait(500);
+    judge('desktop contest page', office, await textIn(d, '.practice-choice'), await linksIn(d, '.practice-choice'), {});
+    if (!(await clickIn(d, '.practice-candidate button'))) { expect(false, `desktop, ${office}: no Record & role button`); continue; }
+    await wait(300);
+    judge('desktop candidate record', office, await textIn(d, '.practice-drawer'), await linksIn(d, '.practice-drawer'), { limits: true, link: true });
+    if (office === 'County Executive') { const bad = await axeBad(d); expect(bad.length === 0, `axe on the desktop candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    await d.keyboard.press('Escape'); await wait(500);
+    expect(!(await has(d, '.practice-drawer')), `desktop, ${office}: the record did not close`);
+  }
+  // "What could change?": a pick in an office, then its words on its card
+  for (const office of ['County Executive', 'United States Senator']) {
+    await d.select('.practice-jump select', ids[office] || ids[sp(office)]); await wait(400);
+    await clickIn(d, '.practice-candidate input'); await wait(300);
+  }
+  await clickIn(d, '[role=tab]', { re: '^3[.]' });
+  await wait(500);
+  const oc = await d.evaluate(() => [...document.querySelectorAll('.practice-outcome-grid .practice-card')].map((c) => ({ label: (c.querySelector('.pilot-label') || {}).textContent || '', text: c.innerText })));
+  for (const office of ['County Executive', 'United States Senator']) {
+    const card = oc.find((c) => [office, sp(office)].some((n) => c.label.toLowerCase() === n.toLowerCase())), five = OFFICE_NAMES.includes(office);
+    if (!card) { expect(false, `desktop "What could change?", ${office}: no card after a pick (${oc.map((c) => c.label)})`); continue; }
+    const o = RC_SP(card.text), e = pageOf(office);
+    expect(o.includes(e.can), `desktop "What could change?", ${office}: does not say "${e.can.slice(0, 60)}..."`);
+    expect(five ? o.includes(notice) : !o.includes(noticeBase), `desktop "What could change?", ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(!o.includes(nm(OFFICE_GENERIC)), `desktop "What could change?", ${office}: shows the generic line`);
+  }
+  await done(d);
+};
+
+/* collapse every kind of space to one, so a wrapped or padded line compares equal to its words (the office-text checks use it) */
+const RC_SP = (s) => String(s || '').replace(/[  ]/g, ' ').replace(/\s+/g, ' ').trim();
 
 (async () => {
   if (argv('--list')) { console.log(Object.keys(CHECKS).join('\n')); return; }

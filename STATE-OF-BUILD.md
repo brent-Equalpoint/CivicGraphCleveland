@@ -13,8 +13,8 @@ This file freezes the build at a known-good state. Anyone picking this up later,
 
 ```
 Cleveland-Civic-Graph-v5/Cleveland-Civic-Graph-v5.html
-SHA-256  5a82879e6a5b7d5331545ce62e74da158ba257ef0774b2f95b3b837d21e96fbc
-Size     6,312,015 bytes
+SHA-256  a1f6279898bf01844ce9ba66ac60bf03d9952c15a80bb2f6cdb482af7ed35c23
+Size     6,326,580 bytes
 Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 ```
 
@@ -342,6 +342,109 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       `votes-actions`, `text-budget` ("People: My leaders", still 213). Spanish drafts for the new words are in `i18n/manual.json`.
     - **Not done, or needs a person.** Should `records-changed` (and `records-tab`) join `LIGHT` and `SPANISH` in `scripts/checks/lists.js`? It
       ran green in both here. Not tried on a real phone.
+
+51. **Oct 7: the live agenda calendar, a new part of Records > Meetings on the phone (phase 1, and the phone half of phases 3 and 4, of `docs/plan-agenda-calendar.md`; on a branch, not released).**
+    Brent's rule for this step: do not change what is already beautifully done, only add.
+    - **What moved: nothing.** Next up, the week's day tabs, What is on it, For you, Just decided, Look it up, Earlier this year, and the footer are
+      the same components with the same words and CSS, in the same order; the calendar is inserted between For you and Just decided (one line in
+      `CX_Meetings`). `design-look` against the old record: every recorded part of every existing screen is unchanged (0 changed, 0 removed).
+    - **What was added** (`ext/cx-meetings.jsx` from the "agenda calendar" comment to `CX_Meetings`; `.ag-` in `ext/cxm.css`; no token, color, size,
+      radius, or weight was added). A heading "Calendar", a week bar (Week of Oct 5, Previous week, Next week, and Back to this week only when away
+      from this week; Previous stops at the year's first meeting week, Next one empty week past the last; an empty week says in words whether it is
+      past or not posted yet), and under it one section per day that has a meeting ("Tuesday, Oct 6" with "Today · 1 meeting") holding one card per
+      meeting: the Clerk's start time, a kind word (Council, Finance, Safety, and the rest, from a fixed table), the status, the official name, the
+      room and the item count, Agenda, Minutes (once posted) and Meeting page, and Add to my calendar. A fold, "How the status works", says what
+      the words mean. Status words come from the device's clock in Eastern time and change every minute while the page shows and when it comes back
+      into view, touching only the status words (the same button keeps focus, the list keeps its place). Upcoming; Up next on the first upcoming
+      meeting shown; Live now from the start for `CX_AG_WINDOW` (120) minutes; Ended after that only where the record has minutes or an action on an
+      item; otherwise "No outcome recorded yet" (a missing record is not a no). City Council's card has a "Who sits on it" fold: the record's 15
+      Council Members (`data/people-2026.json`, in its order, the official portrait, "Council Member" and the ward), each opening that member's
+      Profile; no party, no count. Committees have no roster because Legistar lists no committee seats; the fold says so. Add to my calendar makes
+      an `.ics` on the device (a `Blob` handed to the browser as a download, no request, nothing saved, nothing in a link): Eastern time with its
+      daylight saving rules, UID `meeting-<Legistar event>`, the official name, the room (with "Cleveland City Hall, 601 Lakeside Avenue" where the
+      room does not name an address), the meeting page, the agenda link and the end-time sentence in the page's language, no end time and no alarm,
+      nothing for Google; the stamp is the time the record was pulled, so one meeting always makes the same file.
+    - **Two choices that are Brent's, taken here and easy to change.** (1) Live now uses an assumed two hour window, option b of decision 1 of the
+      plan, and says so in the fold; the recommended option (Live now only where a length is on record) shows it nowhere today. (2) The calendar is
+      under For you, not at the top, so the page people use does not move; the plan's wireframe puts it first. The plan's kind shapes and colors
+      were not added (they need a new meaning group in the tokens), and Records > Meetings grew from 401 to 608 words for a week of 7 meetings,
+      recorded on purpose in `scripts/checks/text-budget.json` (only that line changed).
+    - **Spanish (draft).** 29 entries in `i18n/manual.json` (the words above, the kind table, the fold, the .ics sentence); the crawl still lists the
+      same 87 pieces of app text in English and none from the calendar; the .ics description is in Spanish when the page is.
+    - **Checks.** New `agenda-calendar` (in `run.js`, mapped in `scripts/checks/changed.js`; `lists.js` is unchanged): a fake clock (`AG_AT`) and
+      expected values worked out from `site/meetings/meetings-2026.json` and `data/people-2026.json` by the check's own functions. It reads every card of
+      the week for a committee meeting with evidence and one without, a minute before the start, at the start, a minute before the window closes, and
+      when it closes, by a fresh page, by the page's own minute timer, and by the return to view, and the next morning; the clock changes only status
+      words (focus, scroll, and every other word the same); week navigation (Previous, Next, back, the first week and one empty week past the
+      last, an empty week in the middle of the year if there is one, nothing in the address, storage, or a request); the .ics for a committee and for
+      City Council (CRLF, lines of 75 bytes or fewer, one event, UID, the meeting's own date and time in Eastern time, no end time or alarm, the
+      official name, room, links, nothing for Google, and a time zone block whose rules give the same offset as Eastern time on every day of 2026,
+      Nov. 2 included); the roster is the record's Council Members in the record's order, each opening its Profile, no party, no count, and none on
+      a committee; the existing parts present and in order; 44 px targets, the screen's width, axe, no dash, and no score word at 390 and 320 px.
+      It failed on two planted faults (the window set to 90 minutes, and an end time written into the .ics; the first caught as wrong statuses at
+      the boundaries, the second as an end time) and passes on the real page, in dark, `CHECK_MODE=light`, `CHECK_MODE=light CHECK_THEME=original`, and
+      `CHECK_LANG=es`. `axe`, `no-bleed`, and `text-overlap` have two new pages ("phone city hall calendar" at 390 and at 320, on a fixed clock, with
+      the roster open) and `design-look` a new screen, "phone city hall calendar", recorded on purpose (four entries added in the four looks; the 15
+      parts are the heading, the week bar, a day heading and its tag, a plain and a live card, its time, kind, status, title, room, button, and the
+      roster fold). Should `agenda-calendar` join `LIGHT` and `SPANISH` in `scripts/checks/lists.js`? Yes, recommended: it ran green in both.
+    - **Results.** One pool, 4 at a time: 44 of 44 check runs pass (dark: `axe`, `no-bleed`, `text-overlap`, `text-budget`, `design-look`,
+      `city-hall`, `records-tab`, `agenda-calendar`, `screen-states`, `shell`, `targets`, `perf-budget`, `color-vision`, `print`, `records-feed`,
+      `tab-blue`; light Bento and light Original: `axe`, `no-bleed`, `text-overlap`, `color-vision`, `targets`, `print`, `text-budget`,
+      `screen-states`, `records-tab`, `city-hall`, `agenda-calendar`; Spanish: `axe`, `targets`, `no-bleed`, `records-tab`, `agenda-calendar`,
+      `city-hall`). `perf-budget` passes without a new record (page code 581.1 KB gzip, from 576.3 KB). `node scripts/design/audit.js`,
+      `scripts/test_i18n.py` (13), and `scripts/test_release_plan.js` (19) pass. The other unit tests and `refresh.py --check` were not run here
+      (the gate does). Screenshots at 390 by 844 and 320 by 640, dark, light, light Original, English and Spanish, were looked at.
+    - **Build.** Two clean builds, identical hashes (from `dist/build-log.txt`): single file `fbe2c4614e3962f74a26cd1ee9b00de133d5f1eded73d2fc56d2e86af65dae53`
+      (6,325,639 bytes), `site/index.html` `9f583b77eaac0803345cdda8ef00f9c9c2ef6f8c591f3b0440a1a1e39c3edc56` (3,044,192 bytes), `site/i18n/es.json`
+      `7547f9bebff075a05e860e60e067d77ac1ac0c168d48c32ad8e729855632ce8a`, `site/sw.js` `352f314c3f872d46632a5b795b806c5b08c509ca1793894698e07a06ca892c31`.
+    - **Not done, or needs a person.** Phase 2 (the City Record parser: committee rosters, Council's call to order and adjournment, so a Council
+      meeting's real length) is not started; until it is, Live now is an assumption and committees show no roster. Not built: the desktop page,
+      "On the agenda" on a profile, the kind shapes and colors, For you as a filter on the calendar, the kind filter and Still to come, search as part
+      of the calendar, auto scroll to the live meeting, the day tabs as part of the calendar, "Add this week", "Check for a newer record", and the
+      subscription feed. The calendar adds 207 words to the folder; folding each card's links and button would cut about 60. Brent reads the kind
+      table, the status fold, and the Spanish. Not tried on a real phone (an .ics download on iOS Safari and Android Chrome, VoiceOver and TalkBack
+      on the cards and the week buttons).
+
+52. **Oct 7: the Records filters are one tidy row each, early voting reads "Has begun", and the My place neighborhood list sets your place (CSS and small changes; the chips shipped by the fast lane at 2a3e62d).**
+    - **Records filter chips** (`ext/cxm.css`, `.rf-` rules only; Brent chose the smaller version of the design review). When is three equal pills with "Changed in
+      the latest pull" as a full-width pill under them; Kind is one row with the count under each word; Order is two equal pills; the four group labels are hidden
+      (each group keeps its `aria-label`, and the Ward label stays for screen readers). The first record moved up from y=867 (English) or 967 (Spanish) to 718 on
+      a 390 by 844 phone. A keyboard-focused pill stays a pill (the global focus rule had turned it into an 8 px rectangle). `design-look` changed in 8 lines, all
+      padding and line height of `.rf-pills button`, recorded on purpose. The fuller version (Order as one pill by the count, the lead sentence moved, a count on the
+      Changed pill) was not built: each is a separate decision.
+    - **Early voting.** On the Ballot's dates, "Early voting begins" (Oct 6) is a start, not a deadline: from the day it begins to Nov 1 it says "Has begun" (Spanish
+      "Ya comenzó") and is not crossed out; the Registration deadline stays crossed out and "Passed". After Nov 1 it reads as past. `CX_DATE_BEGUN_UNTIL` in
+      `ext/cx-live.jsx` (the date list itself is unchanged, because `build.py` checks its text against the desktop guide). `date-states` now checks both.
+    - **My place.** The Neighborhood dropdown now sets your place (before, it only browsed, so the Today story row kept the old ward): it calls `setHome` as the
+      home sheet does, so the story row, "(home)", and everything that follows the place move together, and it is remembered only if the person turned that on.
+      New check `place-dropdown`.
+53. **Oct 7: five offices get their own "What this office can do" words (branch `worktree-agent-a416514b05ce58305`; not released; item 51 is another agent's, numbering to be settled on merge).**
+    - **What a resident sees.** The compiled app's `qm()` had real words only for Governor, Congress and U.S. Senator, judges and justices, State Senator and
+      State Representative, and County Council; every other office showed one generic line ("A detailed authority summary has not yet been reviewed for this
+      office."). On the official list (48 contests, 97 candidates) exactly five fell through: Attorney General, Auditor of State, Secretary of State, Treasurer of
+      State, and County Executive (13 candidates). Each now has a "can" line, a "limits" line, and one official source link, on the phone (the contest page, the
+      candidate record, "What might your choices affect?") and on the computer (the contest page, the record's drawer, the "What could change?" cards). Under the
+      words, in the small-note style the app already has, the screen says "Our plain words for what this office can do. A person has not reviewed them yet." until a
+      person reviews them. Governor, Congress, judges, and every other office read exactly as before and show no notice. The Lieutenant Governor runs on the Governor's
+      joint ticket (one contest), so it uses the Governor's words, which only describe the governor; judges of the Court of Common Pleas and Appeals match "judge".
+    - **Where the code is.** The words are in `ext/cx-offices-text.jsx` between the OFFICES-TEXT markers (`CX_OFFICES`, keyed by contest name in lower case), with
+      `cxOfficeInfo(contest)`, `cxOfficeReview()`, and the `CxOfficeNote` component after them. `build.py` has one exact-match patch that makes `qm()` ask
+      `cxOfficeInfo()` first (every caller, phone and desktop, therefore agrees), three more that put the notice under the words in the desktop's three places, and
+      `offices_text_fp()` / `mark_offices_reviewed()`; the page gets `CX_OFFICES_REVIEW`, true only while a person's mark still matches the text. The phone's three
+      places are in `ext/cxm-ballot.jsx`. Sources, the exact sections cited, the day read (Oct 7, 2026), and the words relied on: `docs/source-notes-offices.md`.
+    - **Review.** Nobody has run `python build.py --mark-offices-reviewed "Name"`; `data/offices-text-reviewed.json` does not exist, so every place says a person has not
+      reviewed the words. Brent reads each line against its section in the source notes, then runs the command. Any later edit between the markers clears the mark.
+    - **Spanish.** Drafts for the ten lines and both notices are in `i18n/manual.json` (a Spanish-speaking person has not read them; add them to `i18n/review-notes.md`
+      when that list is next gone through). Official wording and the links stay as they are.
+    - **Checks and tests.** New browser check `office-text` in `scripts/checks/run.js` (dark, light, light Original, Spanish, all green; it fails with a planted fault, an
+      office falling back to the generic line, and passes on the real page); `scripts/test_offices.js` (the words, the lookup, the notice shown unreviewed and replaced when
+      reviewed, the wiring) and `scripts/test_offices.py` (the review stamp: fingerprint, dash, markers, the command, a stale mark), both added to `scripts/release.py`'s
+      unit list and to `.github/workflows/checks.yml`; `scripts/checks/changed.js` runs `office-text` for the ballot file, the new file, and the review mark.
+      Not added to `scripts/checks/lists.js` (left alone on purpose): should `office-text` join `SPANISH` or `LIGHT`? It ran green in both here.
+    - **Not done.** The judges', Governor's, and legislators' words were not touched or re-read (outside this task). The Lieutenant Governor has no words of its own.
+      County Council districts, U.S. House, and state legislature offices already had words. Not tried on a real phone.
+    - **Build.** Two clean builds gave the same hashes: the offline file `0601713b5b2e30c53db955805a0f5b42363b305ccd88337ca7393320f4d51611`, `site/index.html`
+      `b8824018a2d0f8fbf935368d7761a4043f0382b1ab39670072f8bd8029a498b4`.
 
 ---
 
