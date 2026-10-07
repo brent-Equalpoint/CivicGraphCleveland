@@ -5,22 +5,18 @@
 function cxmNewsAv(r) {
   return r.kind === `passed` ? `done` : r.kind === `stopped` ? `read` : r.kind === `new` ? `new` : `talk`;
 }
-/* the Updated strip: when the records were pulled, how many records that pull changed, and one tap to Records > Latest with "Changed in the latest
-   pull" chosen, so the number and the list are the same records (cxLatestPull). With no compared pull it claims no number and opens What's new, which
-   also opens from ?panel=news and from Latest. */
+/* the Updated strip: when the records were pulled, and one tap to What's new (it also opens from ?panel=news). It claims no count of changes. */
 function CxmFresh() {
-  const { openRecords, openSheet } = useCxm();
+  const { openSheet } = useCxm();
   const f = cxFresh();
-  const pull = cxLatestPull();
-  const n = pull ? pull.files.size : 0;
   const said = f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`;
-  const more = f.stale ? `Newer records may exist` : !pull ? `What's new` : n ? cxmPl(n, `record changed`, `records changed`) : `No records changed`;
+  const more = f.stale ? `Newer records may exist` : `What's new`;
   return (
-    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => (pull ? openRecords(`latest`, !0) : openSheet(`news`))}>
+    <button type="button" className={`cxm-fresh ${f.stale ? `stale` : ``}`} onClick={() => openSheet(`news`)}>
       <i aria-hidden="true" />
       <span>{said}</span>{` `}
       <b>{more} <CXI.Arrow size={12} /></b>
-      <span className="cxm-fresh-hint">{pull ? ` Opens the records changed in the latest pull.` : ` Opens What's new.`}</span>
+      <span className="cxm-fresh-hint">{` Opens What's new.`}</span>
     </button>
   );
 }

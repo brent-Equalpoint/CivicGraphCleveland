@@ -50,14 +50,14 @@ const RULES = [
   [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'screen-states', 'shell', ...SWEEP]],
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
   [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
-  [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', 'records-changed', ...SWEEP]],   // the Updated strip opens Records > Latest, with "Changed in the latest pull"
+  [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', ...SWEEP]],   // the Updated strip opens What's new
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', 'records-feed', ...SWEEP]],   // votes, actions, and positions
-  [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'records-changed','explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
+  [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest  [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
   [(f) => f === 'data/us-explainers-2026.json', ['us-explain', 'perf-budget']],   // what each committee does: the official words
-  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'votes-actions', 'us-graph', 'screen-states', 'update-wins', 'perf-budget', 'records-changed']],
+  [(f) => f.startsWith('data/') || f.startsWith('bench/'), ['bench-records', 'council-votes', 'votes-actions', 'us-graph', 'screen-states', 'update-wins', 'perf-budget']],
   [(f) => f.startsWith('design/'), ['design-look', 'color-vision']],
   [(f) => f.startsWith('scripts/checks/') || f.startsWith('scripts/design/'), ALL],
   [(f) => f.startsWith('scripts/') || f.startsWith('.github/') || f === 'vercel.json', []],   // unit tests and workflows, not the browser
@@ -95,7 +95,7 @@ const CSS_AREAS = [
   [/\.rc(-|\b)/, ['votes-actions', 'council-votes', 'profiles']],
   [/\.lv(-|\b)/, ['levies']],
   [/\.mt-/, ['city-hall', 'records-tab']],
-  [/\.rf(-|\b)/, ['records-feed', 'records-tab', 'records-changed', 'tab-blue']],
+  [/\.rf(-|\b)/, ['records-feed', 'records-tab', 'tab-blue']],
   [/\.cxm-(recbar|recpanel|folder|rooms|roomtile|level|rail|tick)/, ['records-tab', 'explore-bubble', 'people-tabs', 'tab-blue']],   // the Records tab's folder tabs (People's) and Rooms
   [/\.cxe(-|\b)/, ['easy-phone', 'easy-desktop']],
   [/stor(y|ies)/, ['stories-desktop', 'stories-phone', 'stories-deeper']],
