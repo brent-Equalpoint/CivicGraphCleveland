@@ -54,6 +54,20 @@ function chromePath() {
   if (!p) throw new Error('Chrome not found. Set CHROME_PATH.');
   return p;
 }
+/* A computer with a mouse, on every machine. Headless Chrome asks the system which pointers it has: on Windows it finds the mouse, so a
+   computer-sized page matches (hover: hover) and (pointer: fine); on GitHub's Linux runners there is no display and no input device, so the
+   same page matches (hover: none) and (pointer: none), and the map's hover card (cx-us-map.jsx) and every hover style never appear. These
+   are Blink's own settings (hover 2 = hover, pointer 4 = fine; Emulation.setEmulatedMedia cannot change these two features). A phone page
+   (open with mobile) still turns them to (hover: none) and (pointer: coarse) through puppeteer's touch emulation. */
+const DESK_MOUSE = '--blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4';
+async function mouseCheck(b) {   // stop at once, with the reason, if the setting above ever stops working: the desktop checks would test a computer with no mouse
+  const pg = await b.newPage();
+  try {
+    await pg.setViewport({ width: 1280, height: 900 }); await pg.goto('about:blank');   // the first blank page is made before the setting applies; a page loaded after it has it
+    const q = await pg.evaluate(() => ({ desk: matchMedia('(hover: hover) and (pointer: fine)').matches, hover: matchMedia('(hover: hover)').matches, fine: matchMedia('(pointer: fine)').matches }));
+    if (!q.desk) { console.error(`This Chrome does not report a mouse on a computer-sized page (hover: hover ${q.hover}, pointer: fine ${q.fine}), so the desktop checks cannot run as a computer with a mouse. See DESK_MOUSE in scripts/checks/run.js.`); process.exit(2); }
+  } finally { await pg.close(); }
+}
 
 let B, BASE, fails;
 async function open(url, o = {}) {
@@ -4822,7 +4836,8 @@ CHECKS['records-feed'] = async () => {
   }
   SWEEP.runs = TOGETHER[0].filter((c) => names.includes(c));
   const { server, base } = await serve(); BASE = base;
-  B = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: process.env.CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : [] });
+  B = await puppeteer.launch({ executablePath: chromePath(), headless: 'new', args: [...(process.env.CI ? ['--no-sandbox', '--disable-setuid-sandbox'] : []), DESK_MOUSE] });
+  await mouseCheck(B);
   let failed = 0, ran = 0;
   for (const name of names) {
     const fn = CHECKS[name];
