@@ -91,7 +91,7 @@ const PRIVATE_LINE = /\b(localStorage|sessionStorage|indexedDB|cookieStore|cache
 const STYLE_LINE = /\bstyle\s*=\s*\{|\bstyle\s*:|#[0-9a-fA-F]{3,8}\b|\brgba?\(|\bhsla?\(|\bvar\(--/;
 const STYLE_FILES = (f) => /^ext\/[^/]+\.css$/.test(f) || f === 'bento.py' || f === 'light.py';
 // the layout and look checks a stylesheet change runs, on every screen they visit
-const STYLE_CHECKS = ['axe', 'no-bleed', 'text-overlap', 'targets', 'titles-never-cut', 'story-fit', 'story-layout', 'text-budget', 'color-vision', 'design-look', 'print', 'screen-states', 'mode-switch', 'nav-desktop', 'sheet-pull'];
+const STYLE_CHECKS = ['axe', 'no-bleed', 'text-overlap', 'targets', 'titles-never-cut', 'story-fit', 'story-layout', 'text-budget', 'color-vision', 'design-look', 'print', 'screen-states', 'mode-switch', 'nav-desktop', 'sheet-pull', 'records-tab', 'agenda-calendar', 'office-text'];
 // and the checks of the part whose selectors changed: [test on the selector, checks]
 const CSS_AREAS = [
   [/\.(usm|us-|usx|ual)/, ['us-graph', 'us-map', 'us-map-touch', 'us-map-sheet', 'us-map-narrow', 'us-profile', 'us-map-chrome', 'us-explain', 'alignment']],

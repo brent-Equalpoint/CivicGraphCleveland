@@ -21,7 +21,7 @@ const inOrder = (names) => known.filter((k) => names.includes(k));
 t('the lists name real checks, and the never-skipped set is the agreed one', () => {
   for (const [n, l] of Object.entries({ LIGHT, ALWAYS, SPANISH, SERIAL, STYLE_CHECKS })) l.forEach((c) => ok(known.includes(c), `${n} names ${c}, which is not a check`));
   eq(ALWAYS, ['security-policy', 'privacy-policy', 'remember-place', 'districts', 'shell', 'offline-shell', 'update-wins'], 'ALWAYS');
-  eq(LIGHT, ['axe', 'no-bleed', 'text-overlap', 'story-fit', 'color-vision', 'targets', 'titles-never-cut', 'print'], 'LIGHT (the light passes release.py ran before the fast lane)');
+  eq(LIGHT, ['axe', 'no-bleed', 'text-overlap', 'story-fit', 'color-vision', 'targets', 'titles-never-cut', 'print', 'records-tab', 'agenda-calendar', 'office-text'], 'LIGHT (the light passes release.py ran before the fast lane, plus the Records tab, the agenda calendar, and the office text, added Oct 7)');
 });
 
 t('a stylesheet tweak: the layout and look checks, both light passes, no Spanish', () => {

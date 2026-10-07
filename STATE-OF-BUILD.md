@@ -524,6 +524,12 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       (`ext/cxm-people.jsx`); the map's own note and the question card below it say the same thing. Checks `people-tabs`, `screen-states`, `text-budget`, and
       `design-look` pass without a new record. Shipped by the fast lane.
 
+58. **Oct 7: the Records tab, the agenda calendar, and the office text join the light and Spanish passes.**
+    - Brent: "go with the picks". `records-tab`, `agenda-calendar`, and `office-text` are now in `LIGHT` and `SPANISH` in `scripts/checks/lists.js`, so every release runs
+      them in light Bento, light Original, and Spanish as well as dark; they ran green in all of those by hand before. They are also in `STYLE_CHECKS`
+      (`scripts/checks/changed.js`), so a stylesheet-only change in the fast lane runs them too. `scripts/test_release_plan.js` pins both lists (19 of 19).
+      Cost: a few minutes more at each full release. Shipped with the full gate (it changes the gate files).
+
 ---
 
 ## 3. What is in the app right now
