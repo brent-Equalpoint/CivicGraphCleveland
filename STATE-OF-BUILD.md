@@ -502,7 +502,13 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Checks and tests.** `office-text` now also checks contest-1 on both layouts: the Governor's words unchanged, the Governor's link before the Lieutenant Governor's,
       the Lieutenant Governor line and its link, then the notice once, no party, ranking, score, advice, prediction word, or dash (English and Spanish), plus axe on the phone
       and desktop records. Planting a fault (the line not drawn) failed it in all six places; restored. `scripts/test_offices.js` (145 checks) and `scripts/test_offices.py` extended.
+      Run green on the merged build (main at the squared chips): `office-text` in dark, light, light Original, Spanish, and Spanish light Original; `design-look` (no
+      diff, so the Governor page is not a recorded screen), `text-budget` (no update needed), `axe`, `no-bleed`, `text-overlap`, `targets`, `screen-states`, `shell`,
+      `perf-budget`, the design audit, `test_i18n.py`, and `crawl.js` (exit 0; 90 distinct English pieces, none of them the new line, its label, or its link).
+      A first Spanish run showed "Lieutenant Governor." and its link in English because `{t.name}.` is two text nodes; they are built as one string now.
     - **Not done.** Not tried on a real phone. The Lieutenant Governor's term (four years, Article III Section 2) is not in the line because the linked page does not state it.
+    - **Build.** Two clean builds gave the same hashes: the offline file `99f8904eeb88134fb0fc301f9c54fb111de7c83e55c710688009f65ad1edd06c`, `site/index.html`
+      `0446f4973e24a681a3daed82ce8461756212d164d2cc63923b768dbdf083a23b`.
 
 ---
 
