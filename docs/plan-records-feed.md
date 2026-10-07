@@ -72,7 +72,7 @@ No dollar figure leads a card. Where a record has an amount from its own text, i
 - **Ward:** 1 to 15, one meaning everywhere: the record names the ward, its text ties money to the ward, or its address is in the ward, with the reason shown. "Sponsored by the ward's member" is a separate, labeled filter ("Member: Ward 7"), so the two are never mixed again. What's new and the ward view change to the same words.
 - **Topic (our addition):** Council's record has no policy areas. A topic here is a word match from the priority rules My priorities already uses, and the card shows the word that matched ("Housing: rent"). Labeled as a word match, never a category (decision 3).
 - **My ward, on this device:** one switch that uses the ward set on the device. It is never written into the address, storage, or a request.
-- **Changed in the latest pull:** from `data/changes-2026.json`, what changed between the last two pulls of the record. "What changed since you last looked" would need the app to remember what you saw, so it is left out.
+- **Changed in the latest pull:** from `data/changes-2026.json`, what changed between the last two pulls of the record. It was built (Oct 7) and then removed the same day at Brent's request; What's new keeps that job. "What changed since you last looked" would need the app to remember what you saw, so it is left out.
 - **Sort:** Newest first, Oldest first. Never by amount, count, or "importance".
 - **Counts:** "2,001 records · 612 shown", and per type. A count of what is listed, never a score.
 - **Paging:** 20 cards then "Show 20 more" on a phone (focus moves to the first new card); pages of 50 with page numbers on a computer.

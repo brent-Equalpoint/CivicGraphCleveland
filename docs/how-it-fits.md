@@ -236,6 +236,6 @@ the commit is red and the issue "Checks failed on main" names the failing checks
   as it already did for `?panel=records` and `?panel=meetings`.
 - **A check run "on the old build" may run on the new one.** `run.js --site <dir>` only takes effect with `--jobs 1`, because `pool.js` does not
   pass it to its child jobs; side by side, every job reads `site/`. To prove a new assertion fails on the old build, run it with `--jobs 1`.
-- **The strip's number comes from the change log.** "N records changed" is the latest pull's legislation changes in `data/changes-2026.json`
-  and must equal the "Changed in the latest pull" list; if the newest entry is not the pull the app shows, the strip shows no number.
+- **The strip claims no number.** The phone's Updated strip says when the records were pulled and "What's new", and opens What's new (it once counted
+  the latest pull's changes and opened a "Changed in the latest pull" list; both were removed). What's new reads the change log in `data/changes-2026.json`.
 - **The United States map is settled at build time.** `scripts/us_map.js` runs the same physics and seed as the page and writes `site/us/map-2026.json`; the page uses it only when it was made from the same record (`cxUsmIds`). Change the physics in `ext/cx-us-map.jsx`, rebuild, and `scripts/test_us_map.js` checks the file matches a fresh run. d3 comes only from `ext/cx-d3.js`, bundled by `build.py` from the pinned packages; never load it from a CDN (the Content-Security-Policy would block it).
