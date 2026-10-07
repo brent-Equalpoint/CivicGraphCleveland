@@ -4937,13 +4937,16 @@ CHECKS['records-feed'] = async () => {
     expect((await read(t)).count === want({ days: 30 }).length, '"See all records" opened Records with other choices than the defaults');
     await t.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(700);
     expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the Today tab did not return to Today from Records');
-    // the Updated strip is a plain link to What's new: it says so, opens the sheet, and does not leave Today for Latest; it says no count of changes
-    { const strip = await t.evaluate(() => ({ b: ((document.querySelector('.cxm-fresh b') || {}).innerText || '').replace(/\s+/g, ' ').trim(), hint: ((document.querySelector('.cxm-fresh-hint') || {}).textContent || '').trim() }));
-      expect(/^(What's new|Novedades|Newer records may exist|Puede haber registros más recientes)/.test(strip.b) && !/\d/.test(strip.b), `the Updated strip says "${strip.b}", not What's new and no count`);
-      expect(/^Opens What's new\.$|^Abre Novedades\.$/.test(strip.hint), `the Updated strip does not tell a screen reader it opens What's new: ${strip.hint}`); }
-    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(1200);
-    expect((await has(t, '.cxm-sheet')) && /What's new|Novedades/.test((await txt(t, '.cxm-sheet .cxm-h2')) || '') && !(await has(t, '.rf-page')) && !/panel=records/.test(await t.evaluate(() => location.search)), 'the Updated strip did not open What\'s new (it opened Records, or nothing)');
-    expect(/panel=news/.test(await t.evaluate(() => location.search)), 'What\'s new, opened from the Updated strip, lost its ?panel=news address');
+    // the Updated strip shows only when the data is old (3 or more days): with fresh data there is no strip; with old data it warns and opens What's new, never Latest
+    expect(!(await has(t, '.cxm-fresh')), 'the Updated strip shows although the data is fresh');
+    { const at = (iso) => `(() => { const R = Date, off = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
+      const o = await open('/#phone', { mobile: true, easy: false, pre: at(new Date(Date.now() + 6 * 864e5).toISOString()), settle: 1800 });
+      const strip = await o.evaluate(() => ({ b: ((document.querySelector('.cxm-fresh b') || {}).innerText || '').replace(/\s+/g, ' ').trim(), hint: ((document.querySelector('.cxm-fresh-hint') || {}).textContent || '').trim() }));
+      expect(/^(Newer records may exist|Puede haber registros más recientes)/.test(strip.b), `with old data the strip says "${strip.b}", not that newer records may exist`);
+      expect(/^Opens What's new\.$|^Abre Novedades\.$/.test(strip.hint), `the stale strip does not tell a screen reader it opens What's new: ${strip.hint}`);
+      await o.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(1200);
+      expect((await has(o, '.cxm-sheet')) && /What's new|Novedades/.test((await txt(o, '.cxm-sheet .cxm-h2')) || '') && !(await has(o, '.rf-page')) && /panel=news/.test(await o.evaluate(() => location.search)), 'the stale strip did not open What\'s new with ?panel=news');
+      await done(o); }
     await done(t); }
   { const q = await open('/?panel=news#phone', { mobile: true, easy: false }); expect(await has(q, '.cxm-sheet') && /What's new|Novedades/.test((await txt(q, '.cxm-sheet .cxm-h2')) || ''), '?panel=news no longer opens What\'s new'); await done(q); }
   // 13. a phone page: the desktop has no Records page yet
@@ -5061,11 +5064,8 @@ CHECKS['records-tab'] = async () => {
     await tap(t, 0); await wait(500); await act(); await wait(1100);
     expect((await recFolderOf(t)) === want, `${what} opened ${(await recFolderOf(t)) || 'no Records folder'}, not ${want}`);
   }
-  // the Updated strip is a plain link to What's new: from Records it opens the What's new sheet over the folder, and the folder does not change
-  { const was = await recFolderOf(t);
-    await t.evaluate(() => document.querySelector('.cxm-fresh').click()); await wait(900);
-    expect((await has(t, '.cxm-sheet')) && /What's new|Novedades/.test((await txt(t, '.cxm-sheet .cxm-h2')) || '') && (await recFolderOf(t)) === was, `the Updated strip did not open What's new over Records (${await recFolderOf(t)}, was ${was})`);
-    await t.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(500); }
+  // with fresh data there is no Updated strip over Records (it shows only for old data; the records-feed check covers that)
+  expect(!(await has(t, '.cxm-fresh')), 'the Updated strip shows over Records although the data is fresh');
   await folder(t, 'rooms'); await wait(800);
   await t.evaluate(() => [...document.querySelectorAll('.cxm-door')][0].click()); await wait(800);
   expect((await recFolderOf(t)) === 'meetings', 'the At City Hall door in Rooms did not open the Meetings folder');

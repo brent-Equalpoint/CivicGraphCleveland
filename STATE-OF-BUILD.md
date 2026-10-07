@@ -510,6 +510,15 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
     - **Build.** Two clean builds gave the same hashes: the offline file `99f8904eeb88134fb0fc301f9c54fb111de7c83e55c710688009f65ad1edd06c`, `site/index.html`
       `0446f4973e24a681a3daed82ce8461756212d164d2cc63923b768dbdf083a23b`.
 
+56. **Oct 7: the Updated strip under the phone header shows only when the records are old.**
+    - Brent: "Remove the updated notification." With fresh records (under 3 days) there is no strip at all; when the records are 3 or more days old it shows
+      "Updated {day} · {ago}" with "Newer records may exist" in amber and opens What's new (`?panel=news`), so a stalled nightly refresh is never silent.
+      The footer still says when Council's records were pulled. What's new now has no everyday door on the phone: it opens from the stale strip, Easy mode's
+      button, and `?panel=news`. The desktop's own freshness chip is unchanged. Code: `CxmFresh` returns nothing unless `cxFresh().stale` (`ext/cxm-live.jsx`).
+      Checks: `records-feed` asserts no strip with fresh data and, on a clock six days ahead, the warning and its tap to What's new; `records-tab` asserts no
+      strip over Records. `design-look` re-recorded on purpose: the only diff is the four recorded `.cxm-fresh` entries on "phone today" (dark and light,
+      Bento and Original) dropped.
+
 ---
 
 ## 3. What is in the app right now

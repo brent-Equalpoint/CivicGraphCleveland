@@ -5,10 +5,12 @@
 function cxmNewsAv(r) {
   return r.kind === `passed` ? `done` : r.kind === `stopped` ? `read` : r.kind === `new` ? `new` : `talk`;
 }
-/* the Updated strip: when the records were pulled, and one tap to What's new (it also opens from ?panel=news). It claims no count of changes. */
+/* the Updated strip: shown only when the records are 3 or more days old, as a warning ("Newer records may exist") with one tap to What's new (it also opens from ?panel=news).
+   With fresh records there is no strip; the footer still says when the records were pulled. It claims no count of changes. */
 function CxmFresh() {
   const { openSheet } = useCxm();
   const f = cxFresh();
+  if (!f.stale) return null;
   const said = f.stale ? `Updated ${cxShortDate(f.day)} · ${f.ago}` : `Updated ${f.ago === `today` ? `today` : f.ago}, ${cxClockET(Date.parse(f.at))}`;
   const more = f.stale ? `Newer records may exist` : `What's new`;
   return (
