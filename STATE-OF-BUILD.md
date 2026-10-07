@@ -23,7 +23,7 @@ Data     Council record pulled Oct 1, 2026, 7:45 AM ET (1,353 items in 2026)
 - The only outside request is the optional webfonts. Without them, the page uses the system font. The hosted site (below) serves the fonts itself.
 - Two clean builds produced the identical hash. If a rebuilt file does not match this hash, something in the inputs, data, or tools changed. A nightly data refresh changes the hash every night; that is expected.
 
-**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `de6962ee812c964a6a2db66f5a66507d5158f5688f3967f3a045682b62ca6fd7`, 3,029,503 bytes, as of item 49 on the committed data, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
+**The hosted site** is the same app split for the web: `build-source/site/` (`index.html` SHA-256 `e2646b8f4692d968c7e43591caaad90247c3bdd6268788622acc6827060ef3bf`, 3,032,930 bytes, as of item 50 on the committed data, plus `404.html` SHA-256 `579c339e4cde6bf55a02f2cb2f731381af2feda9f58ffe327a510d23af927301`, plus 16 portraits, 2 record PDFs, and 9 font files). Vercel serves `site/` (see `vercel.json`); the nightly GitHub Action refreshes `data/` and `site/`. On a simulated mid-range phone (4x slower CPU, Fast 3G, compressed) the loading line shows in 0.3 s and the app is usable in 4.6 s (v5.14: blank screen, 6.7 s).
 
 **To confirm the saved state** (Windows PowerShell, in the `Cleveland-Civic-Graph-v5` folder):
 
@@ -316,6 +316,32 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       Today, as Explore did; the desktop does not know `?panel=explore` (it shows its "could not find that page" notice, as it already did for
       `?panel=records` and `?panel=meetings`). Not tried on a real phone or with a screen reader (the folder row is a navigation landmark named
       Records holding a tab list named Records).
+
+50. **Oct 7: the Updated strip counts the latest pull, and the phone learns Profile links and one-tap Profiles (step 3 of Option A; released with the gate).**
+    - **"Changed in the latest pull."** The strip said "78 changes this week" (What's new's count of 5 pulls over 7 days). It now says "12 records
+      changed", the records the latest pull (Oct 5, 3:24 p.m.) changed, and opens Records > Latest with a new chip, "Changed in the latest pull", on
+      (solid blue, white text, no line, at the end of the When row). Strip and list both read 12, one row per file, and the check `records-changed`
+      works the number out from `data/` and the built records file, not from the app's code. Each row says when the pull was and what changed in the
+      record's own words (new with its introduced date, old and new status, sponsors added as a count, each action added with committee and date).
+      A note names both pull times, says votes and meetings are not compared between pulls, and links to What's new (`?panel=news` still works).
+      Where it cannot be one to one: the change log compares legislation only, so there is no "new vote recorded"; files dropped from Council's list
+      have no record and are counted in the note (the latest pull has none); if the newest change-log entry is not the pull the app shows, the strip
+      shows no number and opens What's new. The visible text is "N records changed" (the longer wording does not fit at 320 px or in Spanish); the
+      screen-reader hint says "Opens the records changed in the latest pull." Code: `cxLatestPull`, `cxWhenET` in `ext/cx-live.jsx`;
+      `ext/cx-records.jsx`; `ext/cxm-live.jsx`; `recAsk` and `openRecords(folder, pull)` in `ext/cxm-core.jsx`.
+    - **Phone fixes.** The phone reads `?panel=profiles&seat=ward-N|mayor` and opens that Profile over People; the profile plan's
+      `?panel=profile&seat=` is renamed to `profiles` before either layout reads it (`ext/cx-seat.jsx`), so it works on the desktop too; an open
+      Profile writes that address. One tap on a face in the Cleveland strip opens that member's Profile. Tapping Records while on Records closes an
+      open room and any record sheet over it (coming from another tab still keeps the room). My place was not touched.
+    - **People labels.** "Profiles" is "My leaders" (the personal cards) and "Full Story" is "Their record", on Cleveland and Federal cards;
+      "Which leaders", "How to read these cards", and the screen-reader words say card (Previous card, Next card, Card N of M). A sponsor or voter
+      name in Records cards, Today's Latest, the record sheet and a room record opens the Profile in a sheet, as the desktop does. Left on purpose:
+      My place's "Profile" button and ward record names still open the My leaders card; the desktop My leaders page keeps its "Profiles" view button
+      and "Read the full story" (`cx-leaders.jsx`).
+    - **Checks.** New `records-changed` (dark, light, light Original, Spanish). Updated: `records-feed` (the strip), `people-tabs`, `records-tab`,
+      `votes-actions`, `text-budget` ("People: My leaders", still 213). Spanish drafts for the new words are in `i18n/manual.json`.
+    - **Not done, or needs a person.** Should `records-changed` (and `records-tab`) join `LIGHT` and `SPANISH` in `scripts/checks/lists.js`? It
+      ran green in both here. Not tried on a real phone.
 
 ---
 
