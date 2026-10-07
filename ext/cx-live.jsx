@@ -170,6 +170,34 @@ function cxStatusSentence(m) {
   return `Council's record lists it as ${m.status}. It has not passed.`;
 }
 
+/* ---------- the ward matcher: one meaning of "ward" on every screen ----------
+   A record is tied to a ward when its title names the ward, when its own ordinance text ties ward money to the ward, or when an address in its title
+   lies in the ward; the first of the three that holds is the reason shown. Sponsorship by the ward's member is a different thing and is never mixed in.
+   Shared by At City Hall's For you (ext/cx-meetings.jsx), the ward view (ext/cx-record.jsx), and Records (ext/cx-records.jsx); scripts/records_feed.py
+   does the same in Python, and scripts/test_records.py runs this part of the file on the record to prove the two agree. Worked out on the device:
+   a ward chosen there never leaves it. */
+/* the Cleveland wards a title names: "Ward 7", "(Ward 3)", "Wards 1, 2 and 14" */
+function cxWardsIn(title) {
+  const out = new Set();
+  for (const g of String(title || ``).matchAll(/\bWards?\s+(\d{1,2}(?!\d)(?:\s*(?:,\s*and|,|and|&)\s*\d{1,2}(?!\d))*)/gi)) for (const n of g[1].match(/\d+/g)) { const w = Number(n); if (w >= 1 && w <= 15) out.add(w); }
+  return out;
+}
+/* what the matcher reads besides the title: the ward money's own text and the geocoded title addresses (data/place-2026.json), and the priority keyword rules */
+const CX_WARD_LOOK = {
+  fundWards: (f) => ((CX_PL.funds || {})[f] || {}).wards || [],
+  addrWards: (f) => Object.values(CX_PL.addresses || {}).filter((r) => (r.files || []).includes(f)).map((r) => r.ward2026),
+  addrIn: (f, w) => (Object.entries(CX_PL.addresses || {}).find(([, r]) => r.ward2026 === w && (r.files || []).includes(f)) || [])[0] || null,
+  match: (t) => cxMatch(t),
+};
+/* why a record is tied to one ward, or null: [`names`], [`money`], or [`address`, the address as the title writes it] */
+function cxWardTie(file, title, ward, look = CX_WARD_LOOK) {
+  if (cxWardsIn(title).has(ward)) return [`names`];
+  if (look.fundWards(file).includes(ward)) return [`money`];
+  if (look.addrWards(file).includes(ward)) return [`address`, look.addrIn ? look.addrIn(file, ward) : null];
+  return null;
+}
+/* ---------- end of the ward matcher ---------- */
+
 /* ---------- election calendar that knows what day it is ---------- */
 const CX_ELECTION = `2026-11-03`;
 function cxElectionPhase() {

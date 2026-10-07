@@ -1,10 +1,10 @@
 {
  "about": "Recorded by PERF_BUDGET_UPDATE=1 node scripts/checks/run.js --only perf-budget. Bytes are gzip -9 of the files in site/. See docs/performance.md.",
- "pageCodeGzip": 587010,
+ "pageCodeGzip": 590017,
  "pageDataGzip": 146687,
- "todayFirstLoadGzip": 852975,
+ "todayFirstLoadGzip": 858126,
  "mapFilesGzip": 113662,
  "mapFirstDrawOps": 10203,
- "mapFirstDrawMs": 273,
- "recorded": "2026-10-06"
+ "mapFirstDrawMs": 276,
+ "recorded": "2026-10-07"
 }

@@ -179,10 +179,10 @@ function cxmFromUrl() {
   let q;
   try { q = new URLSearchParams(globalThis.location?.search || ``); } catch { return out; }
   const panel = q.get(`panel`), r = Uh.find((x) => x.id === q.get(`room`)), node = q.get(`node`);
-  // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet
+  // [tab, sheet, people view, full page]: meetings opens At City Hall, a full page over Today, not a sheet; records opens Records the same way
   const P = { ballot: [`ballot`], learn: [`ballot`], constellation: [`people`, null, `const`], leaders: [`people`, null, `profiles`], place: [`place`], context: [`place`],
     ledger: [`today`, `ledger`], meetings: [`today`, null, null, `hall`], bench: [`today`, `bench`], news: [`today`, `news`], priorities: [`people`, `priorities`, `profiles`], settings: [`today`, `you`], profiles: [`people`, null, `profiles`], us: [`people`, null, `us`], levies: [`ballot`, `levies`],
-    privacy: [`today`, null, null, `privacy`] };
+    privacy: [`today`, null, null, `privacy`], records: [`today`, null, null, `records`] };
   // a record link (?panel=leg&file=906-2026) opens that file's record over Today; the address names the file, never the viewer
   if (panel === `leg`) {
     const f = q.get(`file`);
@@ -212,6 +212,7 @@ function cxmToUrl(tab, room, top, peopleMode, page) {
   else if (top && [`ledger`, `bench`, `news`, `priorities`, `levies`].includes(top.type)) p.set(`panel`, top.type);
   else if (page === `hall`) p.set(`panel`, `meetings`);   // At City Hall, and a record opened from it, keep the page's address (never the ward or anything typed)
   else if (page === `privacy`) p.set(`panel`, `privacy`);
+  else if (page === `records`) p.set(`panel`, `records`);   // Records, and a record opened from it, keep the page's address (never a filter or the ward)
   else if (top && top.type === `leg` && /^\d{1,5}-\d{4}$/.test(top.file || ``)) { p.set(`panel`, `leg`); p.set(`file`, top.file); }   // a record names its file, never the viewer
   else if (tab === `explore` && room) p.set(`room`, room);
   else if (tab === `place`) p.set(`panel`, `place`);
@@ -350,7 +351,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
   const page = overlay ? overlay.type : null;
   u.useEffect(() => { cxmToUrl(tab, room, topSheet, people.mode, page); }, [tab, room, topSheet, people.mode, page]);
   u.useEffect(() => {
-    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay(overlay.type === `hall` && overlay.back ? overlay.back : null); } };
+    const onKey = (e) => { if (e.key === `Escape`) { if (sheets.length) backSheet(); else if (overlay && overlay.type === `privacy`) closePrivacy(); else if (overlay) setOverlay((overlay.type === `hall` || overlay.type === `records`) && overlay.back ? overlay.back : null); } };
     globalThis.addEventListener(`keydown`, onKey);
     return () => globalThis.removeEventListener(`keydown`, onKey);
   }, [sheets.length, overlay]);
@@ -406,6 +407,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
             {overlay && overlay.type === `districts` && <CxmDistricts />}
             {overlay && overlay.type === `crush` && <CxmCrush />}
             {overlay && overlay.type === `hall` && <CxmHall />}
+            {overlay && overlay.type === `records` && <CxmRecords />}
             {overlay && overlay.type === `privacy` && <CxmPrivacyPage />}
           </CxBoundary>
           {top && <CxmSheet sheet={top} depth={sheets.length} />}

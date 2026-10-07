@@ -1,6 +1,6 @@
 # Plan: restructure the phone app
 
-Status: proposed, nothing built, written 2026-10-06 for Brent and the team. It decides where the new pieces live on a phone: the Records feed (`docs/plan-records-feed.md`), the live agenda (`docs/plan-agenda-calendar.md`), and permits, property, and development (`docs/plan-permits-property-business.md`). Line numbers below are from `main` at e20f3f3.
+Status: written 2026-10-06 for Brent and the team. Brent chose Option A ("I like option a for the redesign"). Step 1 is built: Today's What's new box and City Hall receipts are replaced by Latest (`CxmRecLatest` in `ext/cxm-today.jsx`): the three newest records dated by today, as the same cards Records uses, and "See all records", which opens Records (`?panel=records`, a full page like At City Hall). The next-meeting card stays above it, and nothing else on Today moved. What's new is not folded into Records yet: Records has no "Changed in the latest pull" choice in this slice, so What's new stays where it was, opened from the Updated strip under the header and by `?panel=news`. The Easy mode button that pointed at the receipts now opens Records. Steps 2 and later (Records takes Explore's slot) are not built; the tab is still Explore. It decides where the new pieces live on a phone: the Records feed (`docs/plan-records-feed.md`), the live agenda (`docs/plan-agenda-calendar.md`), and permits, property, and development (`docs/plan-permits-property-business.md`). Line numbers below are from `main` at e20f3f3.
 
 ## Brent's ask
 

@@ -380,7 +380,7 @@ self.addEventListener("fetch", (e) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return;
   if (req.mode === "navigate") { e.respondWith(networkFirst(req, "/")); return; }
-  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/meetings/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/") || url.pathname.startsWith("/council/")) { e.respondWith(networkFirst(req, req)); return; }
+  if (url.pathname.startsWith("/bench/") || url.pathname.startsWith("/us/") || url.pathname.startsWith("/meetings/") || url.pathname.startsWith("/i18n/") || url.pathname.startsWith("/districts/") || url.pathname.startsWith("/council/") || (url.pathname.startsWith("/records/") && url.pathname.endsWith(".json"))) { e.respondWith(networkFirst(req, req)); return; }
   if (/^\\/(fonts|portraits|records)\\//.test(url.pathname)) {
     e.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((r) => { if (r.ok) { const copy = r.clone(); caches.open(V).then((c) => c.put(req, copy)); } return r; })));
   }
@@ -672,7 +672,7 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-records.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
@@ -1275,10 +1275,21 @@ def main():
     rec = council_record.build_from_data()
     rec_min = json.dumps(rec, ensure_ascii=False, separators=(",", ":"))
     log(f"council record: {len(rec['files'])} files with dated actions, {len(rec['meetings'])} meetings, {len(rec['issues'])} City Record issues ({len(rec_min)} bytes)")
+    # Records (scripts/records_feed.py, a pure function of data/): every dated record in one list, newest first. The hosted site serves the whole list
+    # (fetched only when Records opens) and its front rows as a small file (Today's Latest, fetched after Today has drawn); the single file carries
+    # both in blocks that are read only then.
+    import records_feed
+    feed = records_feed.build_from_data()
+    feed_min = json.dumps(feed, ensure_ascii=False, separators=(",", ":"))
+    feed_latest_min = json.dumps(records_feed.latest(feed), ensure_ascii=False, separators=(",", ":"))
+    log(f"records feed: {feed['counts']['all']} rows ({feed['counts']['legislation']} legislation, {feed['counts']['meeting']} meetings, {feed['counts']['vote']} roll calls), "
+        f"{sum(1 for x in feed['rows'] if x['wards'])} with a ward tie ({len(feed_min)} bytes; Latest {len(feed_latest_min)} bytes)")
 
     def page(inline_assets, fonts):
         dist_tag = ('<script type="application/octet-stream" id="cx-districts-gz">' + dist_gz + '</script>\n') if inline_assets else ""
         dist_tag += ('<script type="application/json" id="cx-council-rec">' + rec_min.replace("<", "\\u003c") + '</script>\n') if inline_assets else ""
+        dist_tag += ('<script type="application/json" id="cx-records">' + feed_min.replace("<", "\\u003c") + '</script>\n'
+                     '<script type="application/json" id="cx-records-latest">' + feed_latest_min.replace("<", "\\u003c") + '</script>\n') if inline_assets else ""
         i18n_tag = ('<script type="application/json" id="cx-i18n-es">' + i18n_min.replace("</", "<\\/") + '</script>\n') if inline_assets else ""
         icon = ('<link rel="icon" href="data:image/svg+xml,' + urllib.parse.quote(FAVICON_SVG) + '">\n') if inline_assets else ('<link rel="icon" type="image/svg+xml" href="/favicon.svg">\n<link rel="manifest" href="/manifest.webmanifest">\n'
                                                                                                                                                   '<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-title" content="Civic Graph">\n<meta name="theme-color" content="#0c0c0e">\n')
@@ -1395,6 +1406,10 @@ html,body{{margin:0;background:#141210;color:#f4eee8}}
     os.makedirs(os.path.join(SITE, "council"), exist_ok=True)
     write(os.path.join(SITE, "council", "record-2026.json"), rec_min + "\n")
     log(f"SITE   {sha((rec_min + chr(10)).encode())}  site/council/record-2026.json  (dated actions on each city record, fetched when a record or a list first needs them)")
+    write(os.path.join(SITE, "records", "records-2026.json"), feed_min + "\n")
+    log(f"SITE   {sha((feed_min + chr(10)).encode())}  site/records/records-2026.json  (Records: {feed['counts']['all']} dated records, newest first, fetched when Records opens)")
+    write(os.path.join(SITE, "records", "latest-2026.json"), feed_latest_min + "\n")
+    log(f"SITE   {sha((feed_latest_min + chr(10)).encode())}  site/records/latest-2026.json  (the newest rows of the same list, for Today's Latest)")
     os.makedirs(os.path.join(SITE, "i18n"), exist_ok=True)
     write(os.path.join(SITE, "i18n", "es.json"), i18n_min + "\n")
     os.makedirs(os.path.join(SITE, "districts"), exist_ok=True)
