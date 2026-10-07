@@ -48,14 +48,15 @@ const RULES = [
   [(f) => f === 'ext/cx-story.jsx' || f === 'ext/cxm-today.jsx' || f === 'ext/cx-headline.jsx', ['stories-desktop', 'stories-phone', 'stories-deeper', 'story-layout', 'story-fit', 'today-order', 'titles-never-cut', 'records-feed', 'records-tab', 'city-hall', 'banners', ...SWEEP]],
   [(f) => f === 'ext/cxm-easy.jsx', ['easy-phone', 'easy-desktop', 'records-tab', ...SWEEP]],
   [(f) => f === 'ext/cxm-explore.jsx', ['explore-bubble', 'records-tab', 'settings-sheet', 'map-cards', 'screen-states', 'shell', 'text-overlap', 'design-look', ...SWEEP]],   // Explore (Records > Rooms) and its rail (ext/cxm.css runs everything)
-  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'place-dropdown', 'screen-states', 'shell', ...SWEEP]],
+  [(f) => f === 'ext/cxm-place.jsx' || f === 'ext/cx-place.jsx', ['map-cards', 'place-dropdown', 'place-flow', 'remember-place', 'screen-states', 'shell', ...SWEEP]],
+  [(f) => f === 'ext/cx-aliases-text.jsx' || f === 'data/aliases-text-reviewed.json', ['place-flow', 'remember-place', 'privacy-policy', 'screen-states', 'text-overlap', ...SWEEP]],   // the well known names in the place picker
   [(f) => ['ext/cx-leaders.jsx', 'ext/cx-seat.jsx', 'ext/cx-votes.jsx', 'ext/cx-reasons.jsx'].includes(f), ['profiles', 'council-votes', 'people-tabs', ...SWEEP]],
-  [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'mode-switch', 'sheet-pull', ...SWEEP]],
+  [(f) => f === 'ext/cxm-more.jsx', ['settings-sheet', 'place-flow', 'mode-switch', 'sheet-pull', ...SWEEP]],
   [(f) => f === 'ext/cxm-live.jsx' || f === 'ext/cx-live.jsx', ['update-wins', 'shell', 'offline-shell', 'screen-states', 'print', 'records-feed', 'records-tab', ...SWEEP]],   // the Updated strip opens What's new
   [(f) => f === 'ext/cx-nav.jsx', ['nav-desktop', 'stories-deeper', 'easy-desktop', 'us-graph', 'screen-states', 'design-look', 'privacy-policy', ...SWEEP]],
   [(f) => f === 'ext/cx-privacy.jsx' || f === 'vercel.json', ['privacy-policy', 'nav-desktop', 'settings-sheet', 'screen-states', 'design-look', 'text-overlap', ...SWEEP]],
   [(f) => f === 'ext/cx-record.jsx' || f === 'ext/cx-votes-text.jsx' || f === 'data/votes-text-reviewed.json' || f === 'scripts/council_record.py', ['votes-actions', 'council-votes', 'profiles', 'city-hall', 'titles-never-cut', 'nav-desktop', 'privacy-policy', 'perf-budget', 'color-vision', 'text-overlap', 'records-feed', ...SWEEP]],   // votes, actions, and positions
-  [(f) => f === 'ext/cx-meetings.jsx', ['agenda-calendar', 'city-hall', 'records-tab', 'records-feed', 'design-look', 'color-vision', 'text-overlap', 'perf-budget', 'screen-states', ...SWEEP]],   // At City Hall (Records > Meetings) and its agenda calendar
+  [(f) => f === 'ext/cx-meetings.jsx', ['agenda-calendar', 'city-hall', 'place-flow', 'records-tab', 'records-feed', 'design-look', 'color-vision', 'text-overlap', 'perf-budget', 'screen-states', ...SWEEP]],   // At City Hall (Records > Meetings) and its agenda calendar
   [(f) => f === 'ext/cx-records.jsx' || f === 'scripts/records_feed.py', ['records-feed', 'records-tab', 'explore-bubble', 'today-order', 'banners', 'votes-actions', 'city-hall', 'tab-blue', 'perf-budget', 'color-vision', 'design-look', 'text-overlap', ...SWEEP]],   // Records, its tab and folders (Latest, Meetings, Rooms), and Today's Latest
   [(f) => f.startsWith('ext/'), ALL],   // a new or unknown source file: be safe
   [(f) => f.startsWith('i18n/'), ['spanish-switch']],
@@ -114,6 +115,7 @@ const FAST_RULES = [
   // a person's review mark (python build.py --mark-...-reviewed) changes what a page says about its review: that page's checks
   [(f) => f === 'data/office-reviewed.json', ['profiles', 'people-tabs']],
   [(f) => f === 'data/offices-text-reviewed.json', ['office-text']],
+  [(f) => f === 'data/aliases-text-reviewed.json', ['place-flow']],
   [(f) => f === 'data/levies-reviewed.json', ['levies', 'story-fit']],
   [(f) => f === 'data/us-text-reviewed.json', ['us-explain', 'us-profile', 'us-map-sheet']],
   [(f) => f === 'data/reasons-reviewed.json', ['profiles', 'council-votes']],

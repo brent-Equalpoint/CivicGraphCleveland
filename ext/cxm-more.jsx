@@ -210,17 +210,20 @@ function CxmPriorities() {
       <section className="cxm-section">
         <CxmKicker>Pick up to five</CxmKicker>
         <p className="cxm-mut">Start with what matters. Then look at a real decision. A priority tells the atlas what you want to examine. Your position on a specific policy is a separate choice. Everything is optional. "Still deciding" means you want to learn more.</p>
-        <div className="cxm-progress" aria-live="polite"><span>{prio.chosen.length} of 5 priorities selected</span><span aria-hidden="true">{[1, 2, 3, 4, 5].map((k) => <i key={k} className={k <= prio.chosen.length ? `on` : ``} />)}</span></div>
+        <div className="cxm-prio-bar" aria-live="polite">
+          {prio.chosen.length >= 5 && <p className="cxm-prio-limit">{CXM_PRIO_LIMIT}</p>}
+          <div className="cxm-progress"><span>{prio.chosen.length} of 5 priorities selected</span><span aria-hidden="true">{[1, 2, 3, 4, 5].map((k) => <i key={k} className={k <= prio.chosen.length ? `on` : ``} />)}</span></div>
+        </div>
         {wm.map((w) => (
           <div key={w.id} className="cxm-tile">
             <strong>{w.label}</strong>
             <small className="cxm-mut">{w.description}</small>
             <small className="cxm-qline">{w.example}</small>
-            <div className="cxm-chips">{Tm.map((t) => <button key={t.id || `skip`} type="button" className={prio.v[w.id] === t.id ? `on` : ``} aria-pressed={prio.v[w.id] === t.id} onClick={() => prio.setLevel(w.id, t.id)}>{t.label}</button>)}</div>
+            <div className="cxm-chips">{Tm.map((t) => <button key={t.id || `skip`} type="button" className={t.id && prio.v[w.id] === t.id ? `on` : ``} aria-pressed={!!t.id && prio.v[w.id] === t.id} onClick={() => prio.setLevel(w.id, t.id)}>{t.label}</button>)}</div>
             <button type="button" className="cxm-link" onClick={() => openSheet(`guides`, { id: w.id })}>What this means in Cleveland</button>
           </div>
         ))}
-        {prio.msg && <p className="cxm-fine" role="status">{prio.msg}</p>}
+        {prio.msg && <p className={prio.msg === CXM_PRIO_LIMIT ? `cxm-sr` : `cxm-fine`} role="status">{prio.msg}</p>}
       </section>
       <section className="cxm-section">
         <CxmKicker>Then look at a real decision</CxmKicker>

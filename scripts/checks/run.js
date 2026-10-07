@@ -557,6 +557,10 @@ const CHECKS = {
     expect(await m.evaluate(() => { const h = document.querySelector('.mt-hall'), l = document.querySelector('.rf-latest'); return !h || !l || (h.compareDocumentPosition(l) & Node.DOCUMENT_POSITION_FOLLOWING) > 0; }), 'Latest is not under the next-meeting card');
     await clickText(m, 'Set your neighborhood'); await wait(400);
     expect(await has(m, '.cxm-sheet'), 'the place row does not open the neighborhood picker');
+    expect(await m.evaluate(() => { const s = document.querySelector('.cxm-sheet'), i = s.querySelector('input[type=search]'), r = s.querySelector('.cxm-remember'); return !!i && !!r && !!(i.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_FOLLOWING); }), 'the search is not above the Remember switch in the picker');
+    await m.evaluate(() => { const c = [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].find((b) => /^Hough/.test(b.innerText)); if (c) c.click(); }); await wait(500);
+    expect(!(await has(m, '.cxm-sheet')) && !(await has(m, '.cxm-setplace')) && (await has(m, '.cxm-pnote-live[role=status] .cxm-pnote')), 'choosing a neighborhood did not close the sheet, take away the place row, and show the notice');
+    expect(await m.evaluate(() => { const n = document.querySelector('.cxm-pnote').getBoundingClientRect(), t = document.querySelector('.cxm-tabs').getBoundingClientRect(), c = document.querySelector('.cxm-count').getBoundingClientRect(); return n.bottom <= t.top && n.top > c.top; }), 'the notice is not above the tab bar and over the page');
     await done(m);
   },
   async 'sheet-pull'() {
@@ -1064,8 +1068,27 @@ const CHECKS = {
     const wardNo = saved.place.replace('ward-', '');
     await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-tabs button')].find((x) => /Today|Hoy/.test(x.textContent)); b && b.click(); }); await wait(800);
     const row = await p.$$eval('.cxm-story-btn', (els) => els.map((e) => (e.getAttribute('aria-label') || e.innerText || '')));
-    expect(row.some((t) => new RegExp('Ward ' + wardNo + '\\b').test(t)) && !row.some((t) => /Ward 7/.test(t)), `the story row did not follow the new place (ward ${wardNo}): ${JSON.stringify(row)}`);
+    expect(row.some((t) => new RegExp('Ward ' + wardNo + '\\b').test(t)) && !row.some((t) => /Ward 7\b/.test(t)), `the story row did not follow the new place (ward ${wardNo}): ${JSON.stringify(row)}`);
     await done(p);
+    // With no place set the list says so ("Your neighborhood", a first option "Pick your neighborhood"), Downtown is shown as an example and not as the person's own,
+    // and every neighborhood in the list does what the picker does: a split one opens its ward step, any other sets the place and shows the notice. Expected from data/geo-2026.json.
+    const HOODS = PF_STATE(), ES = process.env.CHECK_LANG === 'es';
+    const q = await open('/?panel=place#phone', { mobile: true, easy: false });
+    const first = await q.evaluate(() => ({ label: document.querySelector('.cxm-field > span').innerText, opts: [...document.querySelectorAll('.cxm-field select option')].map((o) => o.textContent), val: document.querySelector('.cxm-field select').value }));
+    expect(first.label === (ES ? 'Su vecindario' : 'Your neighborhood') && first.opts[0] === (ES ? 'Elija su vecindario' : 'Pick your neighborhood') && first.val === '' && first.opts.length === Object.keys(HOODS).length + 1, `with no place the list says ${JSON.stringify([first.label, first.opts[0], first.val, first.opts.length])}`);
+    expect(await q.evaluate(() => [...document.querySelectorAll('.cxm-status-line')].some((e) => /Downtown (is an example|es un ejemplo)/.test(e.innerText))), 'with no place, My place does not say Downtown is an example');
+    for (const [h, info] of Object.entries(HOODS)) {
+      await q.select('.cxm-field select', h); await wait(350);
+      if (info.split) {
+        expect(await has(q, '.cxm-sheet .cxm-hp-wards') && !(await has(q, '.cxm-pnote')), `${h}: the list did not open its ward step (and set nothing)`);
+        await q.keyboard.press('Escape'); await wait(250);
+      } else {
+        const t = await q.evaluate(() => { const e = document.querySelector('.cxm-pnote'); return e ? e.innerText.replace(/\s+/g, ' ') : ''; });
+        expect(t.indexOf(`${h}, `) >= 0 && new RegExp(`(Ward|Distrito) ${info.largest}\\.`).test(t) && !(await has(q, '.cxm-sheet')), `${h}: the list set no place with the notice (${t})`);
+        expect((await q.evaluate(() => document.querySelector('.cxm-field select').value)) === h && (await txt(q, '.cxm-h1')).startsWith(h), `${h}: My place did not move to it`);
+      }
+    }
+    await done(q);
   },
   async 'remember-place'() {
     // Remembering a person's place: off until chosen, on this device only, only the ward or neighborhood and the federal state and district, never an address,
@@ -1108,6 +1131,12 @@ const CHECKS = {
     const s5 = JSON.parse((await stored(e)) || 'null');
     expect(!!s5 && s5.place === 'ward-6', `picking a ward did not save it while remembering was on: ${JSON.stringify(s5)}`);
     expect(!/ward|place|lakeside|district/i.test(await e.evaluate(() => location.href)), 'the place reached the link');
+    // the notice with Remember on says Saved on this device and has only Undo; Undo puts the saved place back (here: none, as seeded); no key is kept for the notice
+    expect(await e.evaluate(() => { const n = document.querySelector('.cxm-pnote'); return !!n && /Saved on this device|Guardado en este dispositivo/.test(n.innerText) && [...n.querySelectorAll('button')].length === 1; }), 'with Remember on the notice does not say Saved on this device with only Undo');
+    await e.evaluate(() => document.querySelector('.cxm-pnote button').click()); await wait(300);
+    const s5u = JSON.parse((await stored(e)) || 'null');
+    expect(!!s5u && s5u.place === '' && s5u.hood === '', `Undo did not put the saved place back: ${JSON.stringify(s5u)}`);
+    expect(await e.evaluate(() => !Object.keys(localStorage).concat(Object.keys(sessionStorage)).some((k) => /undo|prev|notice|aliases|typed/i.test(k)) && !/undo|prev/i.test(JSON.stringify(localStorage))), 'the notice or Undo kept something in the browser');
     await done(e);
     // 6. a browser that blocks storage: the person is told, and the app still works
     const f = await open('/?panel=settings#phone', { mobile: true, easy: false, pre: `(() => { const s = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (k === 'cx-place') throw new Error('blocked'); return s.call(this, k, v); }; })()` });
@@ -1458,8 +1487,15 @@ const CHECKS = {
       if (A.cxMtgByKind(lead)[0].g !== 'ceremonial') expect(!firstTitles.some((t) => /^(Condolence|Congratulations|Recognition)/.test(t)), `a ceremonial resolution leads the agenda: ${firstTitles}`);
       if (lead.items.length > 5) { await q.evaluate(() => document.querySelector('.mt-on .cxm-link').click()); await wait(300); expect((await count(q, '.mt-on .mt-item')) === lead.items.length, '"Show all" does not show every item on the agenda'); }
     }
-    // For you, with nothing set: it says what to set, and shows nothing else
-    expect((await count(q, '.mt-you button')) === 2 && (await count(q, '.mt-you .mt-item')) === 0, 'For you with no ward or priorities does not say what to set');
+    // Your ward this week, with nothing set: one line and one control (not a tile with two buttons) that opens the same place picker, and no items
+    expect((await count(q, '.mt-you button')) === 1 && (await count(q, '.mt-you .mt-you-field')) === 1 && (await count(q, '.mt-you .mt-item')) === 0 && !(await has(q, '.mt-you .cxm-tile')), 'Your ward this week with no ward or priorities is not one line and one control');
+    if (EN) {
+      expect((await txt(q, '.mt-you h3')) === 'Your ward this week' && !/For you/.test((await txt(q, '.mt-you')) || '') && /Pick your neighborhood to see what on this week's agendas names your ward\./.test((await txt(q, '.mt-you')) || ''), `Your ward this week with nothing set says: ${await txt(q, '.mt-you')}`);
+      expect(!/Choose priorities/.test((await txt(q, '.mt-you')) || ''), 'Your ward this week still offers Choose priorities');
+    }
+    await q.evaluate(() => document.querySelector('.mt-you .mt-you-field').click()); await wait(500);
+    expect((await has(q, '.cxm-sheet .cxm-hp')) && (await has(q, '.cxm-sheet input[type=search]')), 'the Meetings field does not open the same place picker');
+    await q.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
     // Just decided: the counts add up to the meeting's agenda, and none reads as a score
     if (dec) {
       const chips = await q.$$eval('.mt-done .mt-chip b', (els) => els.map((e) => Number(e.innerText)));
@@ -1508,6 +1544,11 @@ const CHECKS = {
     const reqs = []; r.on('request', (x) => reqs.push(x.url()));
     const rows = await r.$$eval('.mt-you .mt-item small', (els) => els.map((e) => e.innerText));
     expect(rows.length === Math.min(5, mine.length), `For you with Ward ${ward} shows ${rows.length} items, the record has ${mine.length}`);
+    expect((await count(r, '.mt-you .mt-you-place .cxm-link')) === 1 && !(await has(r, '.mt-you .mt-you-field')), 'with a ward set, Your ward this week has no "Your place: ... Change" line, or still shows the field');
+    if (EN) expect(new RegExp(`^Your place: Ward ${ward}\\.\\s*Change$`).test(((await txt(r, '.mt-you .mt-you-place')) || '').replace(/\s+/g, ' ').trim()), `the place line says: ${await txt(r, '.mt-you .mt-you-place')}`);
+    await r.evaluate(() => document.querySelector('.mt-you .mt-you-place .cxm-link').click()); await wait(500);
+    expect(await has(r, '.cxm-sheet .cxm-hp'), 'Change does not reopen the place picker');
+    await r.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
     if (EN) expect(rows.every((t) => new RegExp(`Ward ${ward}\\b`).test(t)), `a For you item does not say how it names Ward ${ward}: ${rows}`);
     if (!mine.length && EN) expect(new RegExp(`names Ward\\s${ward}`).test((await txt(r, '.mt-you')) || ''), 'For you with nothing that names the ward does not say so');
     expect(rows.map((t) => t.split(' ')[0]).join() === mine.slice(0, 5).map((x) => x.f).join(), 'For you is not in the Clerk\'s order');
@@ -1520,14 +1561,15 @@ const CHECKS = {
     const s = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2200, pre: `(() => { try { localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { ${prio}: 'most' }, stances: {} })); } catch (e) {} })()` });
     const prows = await s.$$eval('.mt-you .mt-item small', (els) => els.map((e) => e.innerText));
     expect(prows.length === Math.min(5, pmine.length), `For you with the priority ${prio} shows ${prows.length} items, the keyword rules find ${pmine.length}`);
+    expect((await has(s, '.mt-you .mt-you-field')) && !(await has(s, '.mt-you .mt-you-place')), 'a priorities-only person does not see the neighborhood line and field above their matches');
     expect(prows.every((t, k) => t.includes(pmine[k].why.find((w) => w[0] === 'prio')[2])), `a For you item does not show the word from its title that matched: ${prows}`);
     await done(s);
 
     // 6. Spanish and light mode: the page's own words change, and the light page passes contrast in both styles
     const es = await open('/?panel=meetings#phone', { mobile: true, easy: false, settle: 2400, pre: `(() => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} })()` });
     const esText = (await txt(es, '.mt-page')) || '', esTabs = ((await txt(es, '.cxm-recbar')) || '').replace(/\s+/g, ' ').trim();
-    for (const w of ['Esta semana', 'Lun', 'Vie', 'Para usted', 'Recién decidido', 'Búsquelo', 'Antes en el año', 'No incluye testimonios']) expect(esText.includes(w) || (w === 'Esta semana' && /semana/.test(esText)), `the page in Spanish is missing "${w}"`);
-    for (const w of ['This week', 'For you', 'Look it up', 'Just decided', 'What is on it', 'Set your place']) expect(!esText.includes(w), `the page in Spanish still says "${w}"`);
+    for (const w of ['Esta semana', 'Lun', 'Vie', 'Su distrito esta semana', 'Recién decidido', 'Búsquelo', 'Antes en el año', 'No incluye testimonios']) expect(esText.includes(w) || (w === 'Esta semana' && /semana/.test(esText)), `the page in Spanish is missing "${w}"`);
+    for (const w of ['This week', 'For you', 'Your ward this week', 'Look it up', 'Just decided', 'What is on it', 'Set your place']) expect(!esText.includes(w), `the page in Spanish still says "${w}"`);
     expect(esTabs === 'Lo más reciente Reuniones Salas', `the Records folder tabs in Spanish are "${esTabs}"`);
     expect(await es.evaluate(() => document.querySelector('.mt-page').scrollWidth <= innerWidth && document.documentElement.scrollWidth <= innerWidth), 'the page in Spanish is wider than the screen');
     await done(es);
@@ -3248,6 +3290,15 @@ const CHECKS = {
       const small = await alignSmall(p);
       expect(small.length === 0, `${name}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
     }
+    // the place flow: the picker with a name typed, the ward step, the notice, My place and Meetings with no place, and My priorities at its limit, at 390 and at 320
+    // (at 320 the shared header's buttons are 40 px wide on every tab, so only the sheet, the notice, and the page's own part are measured)
+    for (const [w, h] of [[390, 844], [320, 640]]) {
+      for (const [url, after, scope] of [['/#phone', 'placePicker', '.cxm-sheet'], ['/#phone', 'placeStep', '.cxm-sheet'], ['/#phone', 'placeNote', '.cxm-pnote-live, .cxm-main'], ['/?panel=place#phone', null, '.cxm-field, .cxm-hp-example'], ['/?panel=meetings#phone', null, '.mt-you'], ['/?panel=priorities#phone', null, '.cxm-prio-bar']]) {
+        const p = await open(url, { mobile: true, easy: false, width: w, height: h, settle: 1400 }); if (after) { await p.evaluate(AXE_AFTER[after]); await wait(300); }
+        const small = await p.evaluate((scope) => [...document.querySelectorAll(scope)].flatMap((r) => [...r.querySelectorAll('button, a[href], select, input, [role=button], summary')]).filter((el) => { const r = el.getBoundingClientRect(); if (!r.width || !r.height) return false; const cs = getComputedStyle(el); if (cs.visibility === 'hidden' || (el.tagName === 'A' && cs.display === 'inline')) return false; return r.height < 44 || r.width < 44; }).map((el) => `${el.tagName.toLowerCase()}.${el.className}`), scope);
+        expect(small.length === 0, `the place flow (${after || url}) at ${w}: controls under 44px: ${small.slice(0, 5)}`); await done(p);
+      }
+    }
   },
   /* The guide's bubble and the rail on Explore, now Records > Rooms (ext/cxm-explore.jsx, ext/cxm.css); the rail starts at the list's top, under the
      Records folder tabs. At every rest the bubble, the lit tick, and the highlighted
@@ -3892,6 +3943,10 @@ const AXE_PAGES = [
   ['phone today', '/#phone', { mobile: true, easy: false }], ['phone settings', '/?panel=settings#phone', { mobile: true, easy: false }], ['phone my priorities', '/?panel=priorities#phone', { mobile: true, easy: false }], ['phone settings original', '/?panel=settings#phone', { mobile: true, easy: false, theme: 'original' }], ['phone today original', '/#phone', { mobile: true, easy: false, theme: 'original' }], ['phone easy', '/#phone', { mobile: true, easy: true }],
   ['phone room', '/?room=voting#phone', { mobile: true }], ['phone ledger', '/?panel=ledger#phone', { mobile: true }], ['phone ballot', '/?panel=ballot#phone', { mobile: true }], ['phone place', '/?panel=place#phone', { mobile: true }],
   ['phone news', '/?panel=news#phone', { mobile: true }],
+  // the place flow (docs/plan-states.md, Stage 4): the picker with an alias found, the ward step of a split neighborhood, the notice with Undo (and at 320), and My priorities at its limit
+  ['phone place picker', '/#phone', { mobile: true, easy: false, after: 'placePicker' }], ['phone place step', '/#phone', { mobile: true, easy: false, after: 'placeStep' }], ['phone place notice', '/#phone', { mobile: true, easy: false, after: 'placeNote' }],
+  ['phone place picker small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'placePicker' }], ['phone place step small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'placeStep' }], ['phone place notice small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'placeNote' }],
+  ['phone priorities limit', '/?panel=priorities#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { cost: 'most', housing: 'important', safety: 'deciding', education: 'most', freedom: 'important' }, stances: {} })); } catch (e) {} })()` }],
   // Records > Rooms (Explore, ext/cxm-explore.jsx): the list with the rail and the guide, reached by the Records tab and its Rooms folder; the guide's
   // bubble has its own geometry check (explore-bubble). Latest and Meetings with the folder tabs at 320 (they are also below at 390)
   ['phone records rooms', '/#phone', { mobile: true, easy: false, after: 'explore' }], ['phone records rooms small', '/#phone', { mobile: true, easy: false, width: 320, height: 640, after: 'explore' }],
@@ -3931,6 +3986,23 @@ const AXE_PAGES = [
   ['desktop my pages menu', '/?room=council#desktop', { after: 'pagesMenu' }], ['desktop jump box', '/?room=council#desktop', { after: 'jumpOpen' }], ['desktop jump box original', '/?panel=news#desktop', { theme: 'original', after: 'jumpOpen' }], ['desktop my pages menu original', '/?panel=news#desktop', { theme: 'original', after: 'pagesMenu' }],
 ];
 const AXE_AFTER = {
+  placePicker: async () => {   // the place picker with a well known name typed: its alias line and the notice that the names are not reviewed
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.cxm-setplace'); if (b) b.click(); await w(500);
+    const i = document.querySelector('.cxm-sheet input[type=search]'); if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Little Italy'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
+  },
+  placeStep: async () => {   // Downtown's ward step
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.cxm-setplace'); if (b) b.click(); await w(500);
+    const i = document.querySelector('.cxm-sheet input[type=search]'); if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Downtown'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
+    const c = document.querySelector('.cxm-sheet .cxm-hp .cxm-chips button'); if (c) c.click(); await w(400);
+  },
+  placeNote: async () => {   // the notice after Hough is chosen, with Keep on this device and Undo
+    const w = (ms) => new Promise((r) => setTimeout(r, ms));
+    const b = document.querySelector('.cxm-setplace'); if (b) b.click(); await w(500);
+    const i = document.querySelector('.cxm-sheet input[type=search]'); if (i) { Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, 'Hough'); i.dispatchEvent(new Event('input', { bubbles: true })); await w(300); }
+    const c = document.querySelector('.cxm-sheet .cxm-hp .cxm-chips button'); if (c) c.click(); await w(500);
+  },
   explore: async () => {   // Records, then its Rooms folder (Explore as it was)
     const w = (ms) => new Promise((r) => setTimeout(r, ms));
     const b = document.querySelectorAll('.cxm-tabs button')[1]; if (b) b.click(); await w(400);
@@ -4113,6 +4185,12 @@ const LOOK_PAGES = [
   ['phone privacy', '/?panel=privacy#phone', { mobile: true, easy: false }, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],
   ['desktop privacy', '/?panel=privacy#desktop', {}, null, ['.pv-draft', '.pv h1', '.pv-date', '.pv-short', '.pv-short h2', '.pv-short p', '.pv > section:not(.pv-short) > h2', '.pv-items li', '.pv-items code', '.pv-when', '.pv-go']],  // Records (ext/cx-records.jsx): a chosen and a plain filter, the ward choice, the count, and a card's parts
   ['phone records', '/?panel=records#phone', { mobile: true, easy: false, settle: 1500 }, null, ['.rf-pills button.on', '.rf-pills button:not(.on)', '.rf-ward select', '.rf-count', '.rf-card', '.rf-type', '.rf-title', '.rf-what', '.rf-src', '.rf-more', '.rf-show']],
+  // the place flow on the phone (docs/plan-states.md, Stage 4): My place with no place (Downtown as an example), Meetings' Your ward this week with no place and with one, and My priorities at its
+  // limit. The picker, the ward step, and the notice need a tap, so tab-blue and place-flow hold their look (solid blue, white text, 44 px).
+  ['phone my place no place', '/?panel=place#phone', { mobile: true, easy: false }, null, ['.cxm-field > span', '.cxm-field select', '.cxm-status-line', '.cxm-hp-example .cxm-btn2', '.cxm-h1']],
+  ['phone city hall your ward', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.mt-you h3', '.mt-you .cxm-fine', '.mt-you-field']],
+  ['phone city hall your ward set', '/?panel=meetings#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cx-place', JSON.stringify({ v: 1, saved: new Date().toLocaleDateString('en-CA', { timeZone: 'America/New_York' }), place: 'ward-8', hood: 'Hough', state: '', district: '' })); } catch (e) {} })()` }, null, ['.mt-you h3', '.mt-you-place', '.mt-you-place .cxm-link']],
+  ['phone my priorities limit', '/?panel=priorities#phone', { mobile: true, easy: false, pre: `(() => { try { localStorage.setItem('cleveland-civic-values-v2', JSON.stringify({ version: 2, values: { cost: 'most', housing: 'important', safety: 'deciding', education: 'most', freedom: 'important' }, stances: {} })); } catch (e) {} })()` }, null, ['.cxm-prio-bar', '.cxm-prio-limit', '.cxm-progress', '.cxm-sheet .cxm-tile .cxm-chips button:not(.on)', '.cxm-sheet .cxm-tile .cxm-chips button.on']],
   // the agenda calendar in Records > Meetings, on a fixed clock so a week of cards is always there: a plain card and a live one, the week bar, a day's heading
   ['phone city hall calendar', '/?panel=meetings#phone', { mobile: true, easy: false, pre: AG_AT(AG_WEEK_OF) }, null, ['.ag > .cxm-h3', '.ag-week strong', '.ag-nav .cxm-btn2', '.ag-day', '.ag-tag', '.ag-card[data-k="live"]', '.ag-card:not([data-k="live"])', '.ag-time', '.ag-kind', '.ag-st', '.ag-title', '.ag-place', '.ag-add', '.ag-card > .cxm-drop', '.ag-made']],
 ];
@@ -4506,16 +4584,32 @@ CHECKS['tab-blue'] = async () => {
       out.push({ s, bg: c.backgroundColor, color: c.color, shadow: c.boxShadow, name: (e.innerText || '').trim().slice(0, 20) });
     }
     for (const e of document.querySelectorAll('.cxm-tabs button.on')) { const c = getComputedStyle(e); const m = c.color.match(/\d+/g).map(Number); out.push({ s: '.cxm-tabs', bg: 'rgb(47, 102, 243)', color: 'rgb(255, 255, 255)', shadow: c.boxShadow, blueText: m[2] > m[0] + 60, name: (e.innerText || '').trim().slice(0, 20) }); }
+    for (const e of document.querySelectorAll('.cxm-hp .cxm-chips button[aria-pressed="true"], .cxm-hp-ward[aria-checked="true"]')) {   // the place picker's chosen chip and the ward step's chosen row: solid blue, white text, no line
+      const r = e.getBoundingClientRect(); if (r.width < 4 || r.height < 4) continue;
+      const c = getComputedStyle(e); out.push({ s: e.classList.contains('cxm-hp-ward') ? '.cxm-hp-ward' : '.cxm-hp .cxm-chips', bg: c.backgroundColor, color: c.color, shadow: c.boxShadow, name: (e.innerText || '').trim().slice(0, 20) });
+    }
     const thumb = document.querySelector('.cx-thumb');
     if (thumb && getComputedStyle(thumb).opacity !== '0') out.push({ s: '.cx-thumb', bg: getComputedStyle(thumb).backgroundColor, color: '', shadow: 'none', name: 'thumb' });
     return out;
   };
   // the phone's Records tab: its folder tabs on each folder (Latest with the filters, Meetings with the day tabs, Rooms)
   const pages = [['/?room=housing#desktop', {}], ['/?panel=ballot#desktop', {}], ['/?panel=us#desktop', {}], ['/#phone', { mobile: true, easy: false, after: 'people' }], ['/?panel=us#phone', { mobile: true, easy: false }],
-    ['/?panel=records#phone', { mobile: true, easy: false }], ['/?panel=meetings#phone', { mobile: true, easy: false }], ['/?panel=explore#phone', { mobile: true, easy: false }]];
+    ['/?panel=records#phone', { mobile: true, easy: false }], ['/?panel=meetings#phone', { mobile: true, easy: false }], ['/?panel=explore#phone', { mobile: true, easy: false }],
+    ['/#phone', { mobile: true, easy: false, after: 'placeChosen' }], ['/#phone', { mobile: true, easy: false, after: 'placeStepChosen' }]];
   for (const [url, o] of pages) {
     const p = await open(url, o); await wait(600);
     if (o.after === 'people') { await clickText(p, 'People'); await wait(700); }
+    if (o.after === 'placeChosen' || o.after === 'placeStepChosen') {   // the picker reopened from Meetings' Change with a place set: its chip, or the ward step's row, is the chosen one
+      const step = o.after === 'placeStepChosen';
+      const typeIn = (v) => p.evaluate(async (v) => { const w = (ms) => new Promise((r) => setTimeout(r, ms)); const i = document.querySelector('.cxm-sheet input[type=search]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, v); i.dispatchEvent(new Event('input', { bubbles: true })); await w(250); document.querySelector('.cxm-sheet .cxm-hp .cxm-chips button').click(); await w(450); }, v);
+      await p.click('.cxm-setplace'); await wait(450);
+      await typeIn(step ? 'Downtown' : 'Hough');
+      if (step) { await p.evaluate(() => document.querySelectorAll('.cxm-hp-ward')[1].click()); await wait(450); }
+      await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(2)').click()); await wait(500);
+      await p.evaluate(() => document.getElementById('rf-folder-meetings').click()); await wait(900);
+      await p.click('.mt-you-place .cxm-link'); await wait(450);
+      if (step) await typeIn('Downtown');
+    }
     const rows = await p.evaluate(probe);
     expect(rows.length > 0, `no selected tab found on ${url}`);
     for (const r of rows) {
@@ -5133,7 +5227,367 @@ CHECKS['records-tab'] = async () => {
   }
 };
 
-/* The agenda calendar in Records > Meetings (ext/cx-meetings.jsx, docs/plan-agenda-calendar.md): a part added under For you, nothing above it changed.
+/* The place flow on the phone (ext/cxm-core.jsx: CxmHomePicker, CxmPlaceNote, pickPlace; ext/cxm-place.jsx; ext/cx-meetings.jsx, Your ward this week;
+   ext/cx-aliases-text.jsx; ext/cxm-more.jsx, My priorities). What a resident sees after choosing a place, anywhere:
+   - a notice over the page, above the tab bar, role "status": "Your place is {hood}, Ward {n}. Kept for this visit only." with Keep on this device and Undo
+     (Remember off), or "... Saved on this device." with Undo (Remember on); Undo puts back the place and the Remember setting together, and says "Back to ..." or
+     "Your place is cleared."; a key's choice moves focus to the notice text and turns its timer off; a touch or mouse gives focus back to what opened the picker and the
+     notice leaves after about 6 seconds (not while the pointer is on it); no motion with reduced motion; nothing new is stored and nothing reaches a link or a request
+   - a neighborhood no ward holds 70% of (11 of 34, from data/geo-2026.json) opens one step in the same sheet: its wards largest first, each share of the neighborhood's
+     land area as a whole percent adding to 100, the largest marked only by the words "largest part", "I am not sure" sets the largest; the chosen row is solid blue with white text
+   - typing a well known name (ext/cx-aliases-text.jsx) finds its neighborhood and says "{name} is part of {neighborhood}." with the notice that a person has not reviewed the
+     names; a name found by its letters has no such line; no match says what was looked for and offers the wards
+   - Meetings: "Your ward this week" is one line and one control that open the same picker, then "Your place: ... Change"; one place for the whole app
+   - My place with no place set shows Downtown as an example, never as the person's own; My priorities shows the limit message with the counter at the top, in view,
+     and never shows Skip as chosen on a card nothing was chosen on
+   Expected values (which wards, which shares, which aliases) come from data/geo-2026.json and the alias file's own text, worked out here with this file's own code. */
+const PF_KEY = 'cx-place';
+const PF_STATE = () => {
+  const g = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'geo-2026.json'), 'utf8')), by = {};
+  for (const [w, rows] of Object.entries(g.overlap.wards2026)) for (const r of rows) if (r.share_of_hood > 0) (by[r.hood] = by[r.hood] || []).push({ ward: Number(w), raw: r.share_of_hood });
+  const hoods = Object.keys(by).sort(), out = {};
+  for (const h of hoods) {
+    const rows = by[h].sort((a, b) => b.raw - a.raw || a.ward - b.ward), sum = rows.reduce((s, r) => s + r.raw, 0);
+    const split = rows.length > 1 && rows[0].raw < 0.7;
+    // whole percents that add to 100: the largest remainder, worked out again here from the file
+    const exact = rows.map((r) => (r.raw / sum) * 100), base = exact.map(Math.floor);
+    let left = 100 - base.reduce((s, x) => s + x, 0);
+    exact.map((x, i) => [x - base[i], i]).sort((a, b) => b[0] - a[0] || a[1] - b[1]).forEach(([, i]) => { if (left > 0) { base[i]++; left--; } });
+    out[h] = { wards: rows.map((r, i) => ({ ward: r.ward, share: base[i] })), largest: rows[0].ward, split };
+  }
+  return out;
+};
+const PF_ALIASES = () => {
+  const src = fs.readFileSync(path.join(ROOT, 'ext', 'cx-aliases-text.jsx'), 'utf8'), blk = /\/\* ALIASES-TEXT-START[\s\S]*?ALIASES-TEXT-END \*\//.exec(src);
+  const m = /const CX_ALIASES = (\[[\s\S]*?\n\]);/.exec(blk ? blk[0] : '');
+  if (!m) throw new Error('the ALIASES-TEXT block or CX_ALIASES is missing from ext/cx-aliases-text.jsx');
+  return JSON.parse(m[1]);
+};
+CHECKS['place-flow'] = async () => {
+  const ES = process.env.CHECK_LANG === 'es', T = (en, es) => (ES ? es : en);
+  const HOODS = PF_STATE(), ALIASES = PF_ALIASES();
+  const names = Object.keys(HOODS), splits = names.filter((h) => HOODS[h].split);
+  const seedPlace = (o) => `(() => { try { if (!sessionStorage.getItem('pf-seeded')) { localStorage.setItem('${PF_KEY}', ${JSON.stringify(JSON.stringify({ v: 1, saved: etToday(), place: '', hood: '', state: '', district: '', ...o }))}); sessionStorage.setItem('pf-seeded', '1'); } } catch (e) {} })()`;
+  const stored = (p) => p.evaluate((k) => localStorage.getItem(k), PF_KEY);
+  const keys = (p) => p.evaluate(() => [...Object.keys(localStorage), ...Object.keys(sessionStorage).map((k) => 's:' + k)].sort());
+  const search = async (p, v) => { await p.evaluate((v) => { const i = document.querySelector('.cxm-sheet input[type=search]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, v); i.dispatchEvent(new Event('input', { bubbles: true })); }, v); await wait(200); };
+  const noteText = (p) => p.evaluate(() => { const e = document.querySelector('.cxm-pnote'); return e ? e.innerText.replace(/\s+/g, ' ').trim() : null; });
+  // with a place set, Today has no set-place row: the picker opens from Meetings' Change, as a resident changes a place
+  const viaMeetings = async (p) => { await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(2)').click()); await wait(500); await p.evaluate(() => document.getElementById('rf-folder-meetings').click()); await wait(900); await p.click('.mt-you-place .cxm-link'); await wait(450); expect(await has(p, '.cxm-sheet .cxm-hp input[type=search]'), 'Change did not open the place picker'); };
+  const picker = async (p, opener = '.cxm-setplace') => { await p.click(opener); await wait(450); expect(await has(p, '.cxm-sheet .cxm-hp input[type=search]'), 'the place picker did not open'); };
+  const chip = (p, name, sel = '.cxm-sheet .cxm-hp .cxm-chips button') => p.evaluateHandle((n, sel) => [...document.querySelectorAll(sel)].find((b) => b.firstChild && b.firstChild.nodeValue === n) || null, name, sel);
+  const clickChip = async (p, name) => { const h = (await chip(p, name)).asElement(); if (!h) throw new Error(`no chip "${name}"`); await h.click(); await wait(500); };
+  const ring = (p) => p.$$eval('.cxm-story-btn', (els) => els.map((e) => e.getAttribute('aria-label') || e.innerText));
+  const small = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(sel)].filter((e) => { const r = e.getBoundingClientRect(); return r.width && r.height && (r.height < 43.5 || r.width < 43.5); }).map((e) => (e.innerText || e.className).slice(0, 30)), sel);
+  const wardOf = (h) => HOODS[h].largest;
+  const NOTE_OFF = (h, w) => T(`Your place is ${h}, Ward ${w}. Kept for this visit only.`, `Su lugar es ${h}, Distrito ${w}. Solo para esta visita.`);
+  const NOTE_ON = (h, w) => T(`Your place is ${h}, Ward ${w}. Saved on this device.`, `Su lugar es ${h}, Distrito ${w}. Guardado en este dispositivo.`);
+  const KEEP = T('Keep on this device', 'Guardar en este dispositivo'), UNDO = T('Undo', 'Deshacer');
+  const HOUGH = 'Hough', OHIO = 'Ohio City';
+  expect(names.length === 34 && splits.length === 11, `data/geo-2026.json has ${names.length} neighborhoods and ${splits.length} split ones (a ward under 70%), not 34 and 11`);
+  expect(HOODS[HOUGH] && !HOODS[HOUGH].split && HOODS[OHIO] && !HOODS[OHIO].split && splits.includes('Downtown') && splits.includes('Buckeye-Shaker Square'), 'the neighborhoods this check uses are not as it expects');
+  for (const h of splits) { const s = HOODS[h].wards.reduce((a, w) => a + w.share, 0); expect(s === 100, `the expected shares for ${h} add to ${s}, not 100`); }
+
+  // 1. nothing set: pick a neighborhood in the sheet. The notice, Remember off: what was set, Keep on this device, Undo; nothing is stored; the story ring follows.
+  {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    const before = await keys(p), asked0 = p.asked.length;
+    await picker(p);
+    await search(p, HOUGH); await clickChip(p, HOUGH);
+    expect(!(await has(p, '.cxm-sheet')), 'the sheet did not close after a neighborhood was chosen');
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_OFF(HOUGH, wardOf(HOUGH))), `the notice says: ${await noteText(p)}`);
+    const n = await p.evaluate(() => { const e = document.querySelector('.cxm-pnote'), r = e.getBoundingClientRect(), t = document.querySelector('.cxm-tabs').getBoundingClientRect(), live = e.closest('[role=status]'); return { live: !!live, bottomGap: Math.round(t.top - r.bottom), left: r.left, right: r.right, w: innerWidth, btns: [...e.querySelectorAll('button')].map((b) => ({ t: b.innerText.trim(), h: Math.round(b.getBoundingClientRect().height) })), z: getComputedStyle(e.closest('.cxm-pnote-live')).zIndex, over: document.elementFromPoint((r.left + r.right) / 2, r.top + 8) === e || e.contains(document.elementFromPoint((r.left + r.right) / 2, r.top + 8)) }; });
+    expect(n.live && n.bottomGap >= 4 && n.bottomGap <= 40 && n.left >= 0 && n.right <= n.w && n.over, `the notice is not a status region just above the tab bar, inside the screen and on top: ${JSON.stringify(n)}`);
+    expect(n.btns.map((b) => b.t).join('|') === `${KEEP}|${UNDO}` && n.btns.every((b) => b.h >= 44), `the notice buttons are ${JSON.stringify(n.btns)}`);
+    expect((await ring(p)).some((t) => new RegExp(`(Ward|Distrito) ${wardOf(HOUGH)}\\b`).test(t)), `the Today ring did not follow the place: ${JSON.stringify(await ring(p))}`);
+    expect((await stored(p)) === null && JSON.stringify(await keys(p)) === JSON.stringify(before), `choosing a place stored something with Remember off: ${await stored(p)}`);
+    expect(!/hough|ward|place/i.test(await p.evaluate(() => location.href)) && !p.asked.slice(asked0).some((u) => /hough|cx-place|place-/i.test(u)), 'the place reached the link or a request');
+    // pointer pick: focus returns to the page, not to the notice
+    expect(await p.evaluate(() => !document.activeElement.closest('.cxm-pnote') && document.activeElement !== document.body), 'after a touch or mouse pick, focus did not go back into the page');
+    // Keep on this device: the existing switch, the same storage
+    await clickText(p, KEEP, '.cxm-pnote button'); await wait(300);
+    const kept = JSON.parse((await stored(p)) || 'null');
+    expect(!!kept && kept.hood === HOUGH && kept.place === `ward-${wardOf(HOUGH)}` && Object.keys(kept).sort().join() === 'district,hood,place,saved,state,v', `Keep on this device did not save the place the way Remember does: ${JSON.stringify(kept)}`);
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_ON(HOUGH, wardOf(HOUGH))) && !(await p.evaluate((k) => [...document.querySelectorAll('.cxm-pnote button')].some((b) => b.innerText.trim() === k), KEEP)), `after Keep the notice says: ${await noteText(p)}`);
+    expect(JSON.stringify((await keys(p)).filter((k) => !before.includes(k))) === JSON.stringify([PF_KEY]), `Keep stored more than the place: ${JSON.stringify((await keys(p)).filter((k) => !before.includes(k)))}`);
+    // Undo after Keep: the place and the Remember setting go back together (nothing set, nothing remembered)
+    await clickText(p, UNDO, '.cxm-pnote button'); await wait(300);
+    expect((await stored(p)) === null, `Undo left a saved place behind: ${await stored(p)}`);
+    expect(RC_SP(await noteText(p)) === T('Your place is cleared.', 'Su lugar se borró.'), `after Undo, with nothing set before, the notice says: ${await noteText(p)}`);
+    expect(!(await ring(p)).some((t) => new RegExp(`(Ward|Distrito) ${wardOf(HOUGH)}\\b`).test(t)) && (await has(p, '.cxm-setplace')), 'after Undo the Today ring or the set-place row did not go back');
+    expect(await p.evaluate(() => !document.activeElement.closest('.cxm-pnote-live') || document.activeElement.closest('.cxm-pnote-t')), 'after Undo focus is lost');
+    await p.mouse.move(5, 5); await wait(4600);   // the pointer is off it: it leaves after about 4 seconds
+    expect(!(await has(p, '.cxm-pnote')), 'the notice after Undo did not leave after about 4 seconds');
+    await done(p);
+  }
+
+  // 2. Remember already on, with a place from before: the notice has Undo only; Undo puts back the old place, still remembered; the notice leaves after about 6 seconds, not under the pointer
+  {
+    const p = await open('/#phone', { mobile: true, easy: false, pre: seedPlace({ place: 'ward-7', hood: OHIO }) });
+    expect((await ring(p)).some((t) => /(Ward|Distrito) 7\b/.test(t)), 'the remembered place is not on Today');
+    await p.evaluate(() => { document.querySelector('.cxm-tabs button:nth-child(3)').click(); }); await wait(500);   // My place: choose from its list
+    await p.focus('.cxm-field select'); await p.select('.cxm-field select', HOUGH); await wait(500);
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_ON(HOUGH, wardOf(HOUGH))), `with Remember on the notice says: ${await noteText(p)}`);
+    expect((await p.$$eval('.cxm-pnote button', (b) => b.map((x) => x.innerText.trim()))).join('|') === UNDO, 'with Remember on the notice has more than Undo');
+    expect(JSON.parse(await stored(p)).hood === HOUGH, 'the remembered place was not updated to the new one');
+    expect(await p.evaluate(() => document.activeElement === document.querySelector('.cxm-field select')), 'a choice from the list moved focus off the list (arrow keys could not go on)');
+    await p.select('.cxm-field select', 'Glenville'); await wait(400);   // a second change while the notice is open: one Undo goes back to before the first
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_ON('Glenville', wardOf('Glenville'))), 'the notice did not show the latest change');
+    await clickText(p, UNDO, '.cxm-pnote button'); await wait(300);
+    expect(RC_SP(await noteText(p)) === T('Back to Ohio City, Ward 7.', 'De vuelta a Ohio City, Distrito 7.'), `after Undo the notice says: ${await noteText(p)}`);
+    const back = JSON.parse((await stored(p)) || 'null');
+    expect(!!back && back.hood === OHIO && back.place === 'ward-7', `Undo did not put the remembered place back: ${JSON.stringify(back)}`);
+    expect(await p.evaluate(() => document.querySelector('.cxm-field select').value) === OHIO, 'My place did not go back to the old neighborhood');
+    await done(p);
+  }
+  {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await picker(p); await search(p, OHIO); await clickChip(p, OHIO);
+    await p.mouse.move(5, 5);
+    await wait(1500);
+    const box = await p.evaluate(() => { const r = document.querySelector('.cxm-pnote').getBoundingClientRect(); return { x: r.left + r.width / 2, y: r.top + 6 }; });
+    await p.mouse.move(box.x, box.y); await wait(5500);   // the pointer is on it: past the 6 seconds it is still there
+    expect(await has(p, '.cxm-pnote'), 'the notice left while the pointer was on it');
+    await p.mouse.move(5, 5); await wait(6500);
+    expect(!(await has(p, '.cxm-pnote')), 'the notice did not leave about 6 seconds after the pointer went away');
+    await done(p);
+  }
+
+  // 3. A key chooses: focus goes to the notice text (not Keep), the timer is off, Tab reaches Keep then Undo, Escape closes it and gives focus back
+  {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await picker(p); await search(p, HOUGH);
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].find((x) => x.firstChild.nodeValue === 'Hough'); b.focus(); });
+    await p.keyboard.press('Enter'); await wait(500);
+    expect(await p.evaluate(() => document.activeElement && document.activeElement.classList.contains('cxm-pnote-t')), `after a key's choice focus is on ${await p.evaluate(() => document.activeElement && (document.activeElement.className || document.activeElement.tagName))}, not the notice text`);
+    await p.keyboard.press('Tab'); expect((await p.evaluate(() => document.activeElement.innerText.trim())) === KEEP, 'Tab from the notice text does not reach Keep on this device');
+    await p.keyboard.press('Tab'); expect((await p.evaluate(() => document.activeElement.innerText.trim())) === UNDO, 'the next Tab does not reach Undo');
+    await wait(7000);
+    expect(await has(p, '.cxm-pnote'), 'a key-chosen notice timed out');
+    await p.keyboard.press('Escape'); await wait(300);
+    expect(!(await has(p, '.cxm-pnote')) && (await p.evaluate(() => document.activeElement !== document.body)), 'Escape did not close the notice and keep focus in the page');
+    await done(p);
+  }
+  // reduced motion: the notice does not move
+  {
+    const p = await open('/#phone', { mobile: true, easy: false, media: [{ name: 'prefers-reduced-motion', value: 'reduce' }] });
+    await picker(p); await search(p, HOUGH); await clickChip(p, HOUGH);
+    expect(await p.evaluate(() => getComputedStyle(document.querySelector('.cxm-pnote')).animationName === 'none'), 'with reduced motion the notice still animates');
+    await done(p);
+  }
+
+  // 4. The split step, for every neighborhood no ward holds 70% of, at 390 and at 320: wards largest first, shares as whole percents adding to 100, "largest part" once, 44 px rows,
+  // and in every row the ward name and its share fully visible (each on one line, inside the row, side by side, never over one another)
+  for (const [w, hgt] of [[390, 844], [320, 640]]) {
+    const p = await open('/#phone', { mobile: true, easy: false, width: w, height: hgt });
+    await picker(p);
+    for (const h of splits) {
+      await search(p, h); await clickChip(p, h);
+      expect(await has(p, '.cxm-sheet .cxm-hp-wards') && !(await has(p, '.cxm-pnote')), `${h} at ${w}: choosing it did not open the ward step, or set a place at once`);
+      const s = await p.evaluate(() => {
+        const lines = (el) => { const r = document.createRange(); r.selectNodeContents(el); return new Set([...r.getClientRects()].filter((q) => q.width > 1).map((q) => Math.round(q.top))).size; };
+        return { h2: document.querySelector('.cxm-sheet h2').innerText.replace(/\s+/g, ' '), fine: document.querySelector('.cxm-sheet .cxm-hp > .cxm-fine').innerText.replace(/\s+/g, ' '),
+          rows: [...document.querySelectorAll('.cxm-hp-ward')].map((r) => {
+            const rr = r.getBoundingClientRect(), l = r.querySelector('strong'), sh = r.querySelector('.cxm-hp-share'), lr = l.getBoundingClientRect(), sr = sh ? sh.getBoundingClientRect() : null;
+            return { t: l.innerText.replace(/\s+/g, ' '), share: sh ? sh.innerText.trim() : null, small: (r.querySelector('small') || {}).innerText || '', h: Math.round(rr.height), checked: r.getAttribute('aria-checked'), role: r.getAttribute('role'),
+              labelLines: lines(l), shareLines: sh ? lines(sh) : 0, labelCut: l.scrollWidth > l.clientWidth + 1, shareCut: sh ? sh.scrollWidth > sh.clientWidth + 1 : false,
+              inside: lr.left >= rr.left && lr.right <= rr.right && lr.top >= rr.top && lr.bottom <= rr.bottom && (!sr || (sr.left >= rr.left && sr.right <= rr.right && sr.top >= rr.top && sr.bottom <= rr.bottom)), apart: !sr || lr.right <= sr.left + 0.5, shareW: sr ? Math.round(sr.width) : 0, right: sr ? Math.round(sr.right) : 0, rowRight: Math.round(rr.right) };
+          }) };
+      });
+      const E = HOODS[h].wards, list = E.length === 2 ? `${E[0].ward} ${T('and', 'y')} ${E[1].ward}` : `${E.slice(0, -1).map((x) => x.ward).join(', ')}${T(', and ', ' y ')}${E[E.length - 1].ward}`;
+      expect(s.h2 === T(`${h} touches Wards ${list}.`, `${h} toca los distritos ${list}.`), `${h} at ${w}: the step says "${s.h2}"`);
+      expect(s.rows.length === E.length + 1, `${h} at ${w}: ${s.rows.length} rows, not ${E.length + 1}`);
+      E.forEach((x, i) => { expect(s.rows[i] && s.rows[i].t === T(`Ward ${x.ward}`, `Distrito ${x.ward}`) && s.rows[i].share === `${x.share}%`, `${h} at ${w}: row ${i + 1} says "${s.rows[i] && s.rows[i].t} ${s.rows[i] && s.rows[i].share}", the file gives Ward ${x.ward} ${x.share}%`); });
+      const total = s.rows.slice(0, E.length).reduce((a, r) => a + Number((r.share || '').replace('%', '')), 0);
+      expect(total === 100 && s.rows.slice(0, E.length).every((r) => /^\d{1,2}%$/.test(r.share || '')), `${h} at ${w}: the shares on the page add to ${total}, or are not whole percents, not 100: ${JSON.stringify(s.rows.map((r) => r.share))}`);
+      expect(s.rows.filter((r) => r.small === T('largest part', 'la parte más grande')).length === 1 && s.rows[0].small === T('largest part', 'la parte más grande'), `${h} at ${w}: "largest part" is not on the first row only`);
+      expect(s.rows[E.length] && s.rows[E.length].t === T('I am not sure', 'No lo sé') && s.rows[E.length].small === T(`Use Ward ${E[0].ward}, the largest part, for now.`, `Usar el Distrito ${E[0].ward}, la parte más grande, por ahora.`), `${h} at ${w}: the I am not sure row says "${s.rows[E.length] && s.rows[E.length].t}" / "${s.rows[E.length] && s.rows[E.length].small}"`);
+      expect(s.rows.every((r) => r.h >= 44 && r.role === 'radio') && s.rows.every((r) => r.checked === 'false'), `${h} at ${w}: a row is under 44 px, is not a radio, or is chosen before a choice: ${JSON.stringify(s.rows.map((r) => [r.h, r.checked]))}`);
+      const cut = s.rows.slice(0, E.length).filter((r) => r.labelLines !== 1 || r.shareLines !== 1 || r.labelCut || r.shareCut || !r.inside || !r.apart || r.shareW < 40 || r.right > r.rowRight - 8);
+      expect(cut.length === 0, `${h} at ${w}: the ward name or its share wraps, is cut off, or runs into the other in a row: ${JSON.stringify(cut.map((r) => [r.t, r.share, r.labelLines, r.shareLines, r.inside, r.apart, r.shareW]))}`);
+      expect(new RegExp(T("land area of the neighborhood inside each ward, from the city's maps, rounded to whole percents that add to 100\\. They are not people and not a score", 'superficie del vecindario dentro de cada distrito, según los mapas de la ciudad, redondeados a números enteros que suman 100')).test(s.fine), `${h} at ${w}: the source line says: ${s.fine}`);
+      expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.querySelector('.cxm-sheet').scrollWidth <= innerWidth), `${h} at ${w}: the step is wider than the screen`);
+      await p.click('.cxm-hp-back'); await wait(250);
+      expect(await has(p, '.cxm-sheet .cxm-hp input[type=search]'), `${h} at ${w}: Back did not return to the list`);
+    }
+    if (w === 390) {   // a neighborhood with one big ward never shows the step
+      await search(p, HOUGH); await clickChip(p, HOUGH);
+      expect(!(await has(p, '.cxm-hp-wards')) && (await has(p, '.cxm-pnote')), 'Hough opened a ward step');
+    }
+    await done(p);
+  }
+  // choosing a ward in the step sets it; the step shows it chosen (solid blue, white text, a check) when reopened; "I am not sure" sets the largest and says so
+  for (const [h, pickIdx, unsure] of [['Downtown', 1, false], ['Buckeye-Shaker Square', 0, true], ['Downtown', 0, true]]) {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await picker(p); await search(p, h); await clickChip(p, h);
+    const E = HOODS[h].wards, w = unsure ? E[0].ward : E[pickIdx].ward;
+    await (await p.$$(unsure ? '.cxm-hp-unsure' : '.cxm-hp-ward'))[unsure ? 0 : pickIdx].click(); await wait(500);
+    expect(!(await has(p, '.cxm-sheet')) && RC_SP(await noteText(p)).startsWith(NOTE_OFF(h, w)), `${h}: the notice says: ${await noteText(p)}`);
+    if (unsure) expect(RC_SP(await noteText(p)).includes(T('You were not sure, so this is the largest part.', 'No estaba seguro, así que es la parte más grande.')), `${h}: "I am not sure" did not say it set the largest part: ${await noteText(p)}`);
+    expect((await ring(p)).some((t) => new RegExp(`(Ward|Distrito) ${w}\\b`).test(t)), `${h}: the Today ring did not follow the ward ${w}`);
+    expect(JSON.stringify(await keys(p)).indexOf('unsure') < 0, `${h}: something about being unsure was stored`);
+    await done(p);
+  }
+  {
+    const h = 'Downtown', E = HOODS[h].wards, p = await open('/#phone', { mobile: true, easy: false, pre: seedPlace({ place: `ward-${E[1].ward}`, hood: h }) });
+    await viaMeetings(p); await search(p, h); await clickChip(p, h);
+    const rows = await p.evaluate(() => [...document.querySelectorAll('.cxm-hp-ward')].map((r) => { const s = getComputedStyle(r); return { checked: r.getAttribute('aria-checked'), bg: s.backgroundColor, color: s.color, shadow: s.boxShadow, hasCheck: !!r.querySelector('svg') }; }));
+    expect(rows[1].checked === 'true' && rows[1].bg === 'rgb(47, 102, 243)' && rows[1].color === 'rgb(255, 255, 255)' && rows[1].shadow === 'none' && rows[1].hasCheck, `the chosen ward row is not solid blue with white text and a check: ${JSON.stringify(rows[1])}`);
+    expect(rows.filter((r) => r.checked === 'true').length === 1 && rows[0].bg !== 'rgb(47, 102, 243)', 'more than one ward row looks chosen');
+    await done(p);
+  }
+
+  // 5. The chosen chip is solid blue with white text, aria-pressed and aria-current; chips are at least 44 px; search is above Remember; the empty search says what it looked for
+  {
+    const p = await open('/#phone', { mobile: true, easy: false, pre: seedPlace({ place: `ward-${wardOf(HOUGH)}`, hood: HOUGH }) });
+    // the picker, reached from Meetings' Change: Hough is the chosen chip
+    await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(2)').click()); await wait(500);
+    await p.evaluate(() => document.getElementById('rf-folder-meetings').click()); await wait(900);
+    await p.evaluate(() => document.querySelector('.mt-you-place .cxm-link').click()); await wait(500);
+    const order = await p.evaluate(() => { const s = document.querySelector('.cxm-sheet'), i = s.querySelector('input[type=search]'), r = s.querySelector('.cxm-remember'); return { searchFirst: !!(i.compareDocumentPosition(r) & Node.DOCUMENT_POSITION_FOLLOWING), remember: /Remember this device|Recordar este dispositivo/.test(r.innerText), fine: /Remember this device|Recordar este dispositivo/.test(s.querySelector('.cxm-hp > .cxm-fine').innerText) }; });
+    expect(order.searchFirst && order.remember && order.fine, `the search is not above the Remember switch, or the switch or the fine print lost its words: ${JSON.stringify(order)}`);
+    const chosen = await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].find((x) => x.firstChild.nodeValue === 'Hough'), s = getComputedStyle(b); return { bg: s.backgroundColor, color: s.color, shadow: s.boxShadow, pressed: b.getAttribute('aria-pressed'), current: b.getAttribute('aria-current'), cls: b.className }; });
+    expect(chosen.bg === 'rgb(47, 102, 243)' && chosen.color === 'rgb(255, 255, 255)' && chosen.shadow === 'none' && chosen.pressed === 'true' && chosen.current === 'true', `the chosen chip is not solid blue with white text, aria-pressed and aria-current: ${JSON.stringify(chosen)}`);
+    expect(!(await p.evaluate(() => [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].some((b) => b.firstChild.nodeValue !== 'Hough' && b.getAttribute('aria-pressed') === 'true'))), 'a second chip looks chosen');
+    const tiny = await small(p, '.cxm-sheet .cxm-hp .cxm-chips button, .cxm-sheet .cxm-hp .cxm-switch, .cxm-sheet .cxm-hp .cxm-link, .cxm-sheet .cxm-hp input');
+    expect(tiny.length === 0, `controls under 44 px in the picker: ${tiny}`);
+    await search(p, 'Parma');
+    expect(RC_SP(await txt(p, '.cxm-hp-status')) === T('No neighborhood matches "Parma". Try the first letters, or pick your ward below.', 'Ningún vecindario coincide con "Parma". Pruebe con las primeras letras o elija su distrito abajo.'), `the empty search says: ${await txt(p, '.cxm-hp-status')}`);
+    expect((await count(p, '.cxm-sheet .cxm-hp .cxm-chips')) === 1 && /Ward 1|Distrito 1/.test((await txt(p, '.cxm-sheet .cxm-hp')) || ''), 'with no match the ward list is not offered below');
+    expect(!/has not reviewed these names|no ha revisado estos nombres/.test((await txt(p, '.cxm-hp-status')) || ''), 'the unreviewed-names notice shows with no alias');
+    await search(p, 'Hough');
+    expect(RC_SP(await txt(p, '.cxm-hp-status')) === '', 'a name found by its letters carries a status line');
+    await search(p, 'Slavic');
+    expect(RC_SP(await txt(p, '.cxm-hp-status')) === '' && (await p.evaluate(() => [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].some((b) => b.firstChild.nodeValue === 'Broadway-Slavic Village'))), 'Slavic Village did not find Broadway-Slavic Village by its letters alone');
+    await done(p);
+  }
+
+  // 6. The aliases: each pair in ext/cx-aliases-text.jsx finds its neighborhood and says "{name} is part of {neighborhood}.", once, with the unreviewed notice on that line only
+  {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await picker(p);
+    expect(ALIASES.length === 11 && ALIASES.every((a) => names.includes(a.hood) && a.alias && Number.isInteger(a.page)), `the alias list is not eleven rows with a page and a neighborhood from data/geo-2026.json: ${ALIASES.filter((a) => !names.includes(a.hood)).map((a) => a.hood)}`);
+    for (const a of ALIASES) {
+      await search(p, a.alias);
+      const st = RC_SP(await txt(p, '.cxm-hp-status'));
+      expect(st.startsWith(T(`${a.alias} is part of ${a.hood}.`, `${a.alias} es parte de ${a.hood}.`)), `typing "${a.alias}" says: ${st}`);
+      expect((st.match(new RegExp(T('has not reviewed these names', 'no ha revisado estos nombres'), 'g')) || []).length === 1, `typing "${a.alias}": the unreviewed-names notice is not shown once: ${st}`);
+      expect(await p.evaluate((h) => [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].some((b) => b.firstChild.nodeValue === h), a.hood), `typing "${a.alias}" did not offer ${a.hood}`);
+    }
+    await search(p, 'kamms corners');
+    expect(RC_SP(await txt(p, '.cxm-hp-status')).startsWith(T("Kamm's Corners is part of Kamm's.", "Kamm's Corners es parte de Kamm's.")), 'typing kamms corners (no capitals or apostrophe) did not find Kamm\'s Corners');
+    await search(p, 'Little');
+    expect(RC_SP(await txt(p, '.cxm-hp-status')).startsWith(T('Little Italy is part of University.', 'Little Italy es parte de University.')), 'typing Little (half a word) did not find Little Italy');
+    expect(!/%/.test((await txt(p, '.cxm-hp-status')) || ''), 'the alias line shows a percentage');
+    await search(p, 'Gordon');
+    await clickChip(p, 'Detroit Shoreway');   // an alias can lead to a split neighborhood: the step opens
+    expect(await has(p, '.cxm-hp-wards'), 'an alias that leads to a split neighborhood did not open the ward step');
+    await done(p);
+  }
+
+  // 7. My place: no place set shows Downtown as an example, never as the person's own; the ward maps and their whole-number captions are as they were
+  {
+    const p = await open('/?panel=place#phone', { mobile: true, easy: false });
+    const s = await p.evaluate(() => ({ label: document.querySelector('.cxm-field > span').innerText, opts: [...document.querySelectorAll('.cxm-field select option')].map((o) => o.textContent), val: document.querySelector('.cxm-field select').value, h1: document.querySelector('.cxm-h1').innerText, line: (document.querySelector('.cxm-status-line') || {}).innerText, btn: [...document.querySelectorAll('.cxm-page .cxm-btn2')].map((b) => b.innerText.trim()), caps: [...document.querySelectorAll('.cxm-pmap figcaption strong')].map((e) => e.innerText), maps: document.querySelectorAll('.cxm-pmap svg').length, home: [...document.querySelectorAll('.cxm-field select option')].some((o) => /\(home\)|\(mi hogar\)/.test(o.textContent)) }));
+    expect(s.label === T('Your neighborhood', 'Su vecindario') && s.opts[0] === T('Pick your neighborhood', 'Elija su vecindario') && s.val === '' && !s.home, `the My place list says ${JSON.stringify([s.label, s.opts[0], s.val])} with no place set`);
+    expect(s.line === T('Downtown is an example, not your place yet.', 'Downtown es un ejemplo, todavía no es su lugar.') && s.btn.includes(T('Make Downtown my place', 'Hacer de Downtown mi lugar')), `My place with no place does not say Downtown is an example: ${JSON.stringify([s.line, s.btn])}`);
+    expect(s.maps === 2 && s.caps.length === 2 && s.caps.every((c) => /^\d+%/.test(c) && !/\d\.\d%/.test(c)), `the ward maps or their whole-number captions changed: ${JSON.stringify(s.caps)}`);
+    await clickText(p, T('Make Downtown my place', 'Hacer de Downtown mi lugar'), '.cxm-page .cxm-btn2'); await wait(500);
+    expect(await has(p, '.cxm-sheet .cxm-hp-wards') && /Downtown/.test((await txt(p, '.cxm-sheet h2')) || ''), 'Make Downtown my place did not open Downtown\'s ward step');
+    await p.keyboard.press('Escape'); await wait(300);
+    await p.select('.cxm-field select', 'Buckeye-Shaker Square'); await wait(500);   // a split neighborhood from the list opens the step too
+    expect(await has(p, '.cxm-sheet .cxm-hp-wards') && !(await has(p, '.cxm-pnote')), 'choosing a split neighborhood in the My place list did not open the ward step');
+    await p.keyboard.press('Escape'); await wait(300);
+    await p.select('.cxm-field select', HOUGH); await wait(500);
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_OFF(HOUGH, wardOf(HOUGH))) && (await p.evaluate(() => document.querySelector('.cxm-h1').innerText)).startsWith(HOUGH), `choosing Hough in the My place list says: ${await noteText(p)}`);
+    expect(!(await p.evaluate(() => [...document.querySelectorAll('.cxm-status-line')].some((e) => /example|ejemplo/.test(e.innerText)))) && !(await p.evaluate(() => [...document.querySelectorAll('.cxm-page .cxm-btn2')].some((b) => /Make Downtown|Hacer de Downtown/.test(b.innerText)))), 'with a place set My place still says Downtown is an example');
+    const caps2 = await p.$$eval('.cxm-pmap figcaption strong', (e) => e.map((x) => x.innerText));
+    expect(caps2.every((c) => /^\d+%/.test(c) && !/\d\.\d%/.test(c)), `a caption on My place gained a decimal: ${JSON.stringify(caps2)}`);
+    await done(p);
+  }
+
+  // 8. Meetings: one place for the whole app. Choosing in Meetings' picker moves Today's ring, My place, Records' ward filter, and the ward record
+  {
+    const p = await open('/?panel=meetings#phone', { mobile: true, easy: false });
+    await p.click('.mt-you .mt-you-field'); await wait(500);
+    await search(p, HOUGH); await clickChip(p, HOUGH);
+    const w = wardOf(HOUGH);
+    expect(RC_SP(await noteText(p)).startsWith(NOTE_OFF(HOUGH, w)), `choosing in Meetings gave the notice: ${await noteText(p)}`);
+    expect(new RegExp(`^${T('Your place', 'Su lugar')}: ${HOUGH}, ${T('Ward', 'Distrito')} ${w}\\.\\s*${T('Change', 'Cambiar')}$`).test(RC_SP(await txt(p, '.mt-you .mt-you-place'))), `Meetings says: ${await txt(p, '.mt-you .mt-you-place')}`);
+    expect(await p.evaluate(() => document.activeElement !== document.body), 'after a pick in Meetings focus was lost (the field that opened the picker is gone, so it should go to the page)');
+    await p.evaluate(() => document.getElementById('rf-folder-latest').click());
+    for (let i = 0; i < 40 && !(await has(p, '.rf-ward select')); i++) await wait(150);
+    expect(await p.evaluate((w) => { const s = document.querySelector('.rf-ward select'); return !!s && [...s.options].some((o) => o.value === 'mine' && new RegExp(`(Ward|Distrito) ${w}\\b`).test(o.textContent)); }, w), 'the Records ward filter does not offer the place chosen in Meetings');
+    await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(1)').click()); await wait(500);
+    expect((await ring(p)).some((t) => new RegExp(`(Ward|Distrito) ${w}\\b`).test(t)), 'the Today ring did not follow the place chosen in Meetings');
+    await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(3)').click()); await wait(500);
+    expect((await p.evaluate(() => document.querySelector('.cxm-field select').value)) === HOUGH && (await txt(p, '.cxm-h1')).startsWith(HOUGH), 'My place did not follow the place chosen in Meetings');
+    expect(!(await p.evaluate(() => [...document.querySelectorAll('.cxm-status-line')].some((e) => /example|ejemplo/.test(e.innerText)))), 'My place still says Downtown is an example');
+    await p.evaluate(() => { const b = [...document.querySelectorAll('.cxm-drop-head')].find((x) => /ward's record|distrito/i.test(x.innerText)); b && b.click(); }); await wait(500);
+    expect(new RegExp(`(Ward|Distrito) ${w}\\b`).test((await txt(p, '.cxm-drop.open')) || ''), 'the ward record did not open on the place');
+    await done(p);
+  }
+  // priorities only: the neighborhood line and field above the person's matches; a ward with nothing on the agendas says so and keeps Change
+  {
+    const A = cityHallApi(), data = A.data, week = A.cxMtgWeek(data, etToday()).days.flatMap((d) => d.list), look = cityHallLook(A);
+    const empty = [...Array(15).keys()].map((i) => i + 1).find((x) => !A.cxMtgForYou(week, x, [], look).length);
+    if (empty) {
+      const p = await open('/?panel=meetings#phone', { mobile: true, easy: false, pre: seedPlace({ place: `ward-${empty}` }) });
+      expect(RC_SP(await txt(p, '.mt-you .mt-none, .mt-you .mt-you-none')) === T(`Nothing on this week's agendas names Ward ${empty}.`, `Nada en las agendas de esta semana nombra el Distrito ${empty}.`) || ES, `a ward with nothing on the agendas says: ${await txt(p, '.mt-you-none')}`);
+      expect(await has(p, '.mt-you .mt-you-place .cxm-link'), 'the zero result lost Change');
+      await done(p);
+    }
+  }
+
+  // 9. My priorities: the limit message and the counter together at the top and in view; Skip is never shown as chosen on a card nothing was chosen on
+  {
+    const five = JSON.stringify({ version: 2, values: { cost: 'most', housing: 'important', safety: 'deciding', education: 'most', freedom: 'important' }, stances: {} });
+    const p = await open('/?panel=priorities#phone', { mobile: true, easy: false, pre: `(() => { try { if (!sessionStorage.getItem('pf-p')) { localStorage.setItem('cleveland-civic-values-v2', ${JSON.stringify(five)}); sessionStorage.setItem('pf-p', '1'); } } catch (e) {} })()` });
+    const t = await p.evaluate(() => { const sh = document.querySelector('.cxm-sheet'), bar = document.querySelector('.cxm-prio-bar'), tiles = [...document.querySelectorAll('.cxm-sheet .cxm-tile')], skips = [...document.querySelectorAll('.cxm-sheet .cxm-tile .cxm-chips button')].filter((b) => /^(Skip|Omitir)$/.test(b.innerText.trim())); return { bar: bar ? bar.innerText.replace(/\s+/g, ' ') : '', top: bar ? bar.getBoundingClientRect().top - sh.getBoundingClientRect().top : -1, tileTop: tiles[0].getBoundingClientRect().top, barBottom: bar ? bar.getBoundingClientRect().bottom : 0, skips: skips.length, skipOn: skips.filter((b) => b.classList.contains('on') || b.getAttribute('aria-pressed') === 'true').length, tiles: tiles.length, label: [...document.querySelectorAll('.cxm-switch span')].map((s) => s.innerText) }; });
+    expect(t.bar.startsWith(T('That is five. Remove one to add another.', 'Son cinco. Quite una para agregar otra.')) && /5/.test(t.bar), `the limit message and counter at the top say: ${t.bar}`);
+    expect(t.barBottom <= t.tileTop + 1, 'the limit message and counter are not above the cards');
+    expect(t.skips === 8 && t.skipOn === 0, `Skip shows as chosen on ${t.skipOn} of ${t.skips} cards`);
+    const noChoice = await p.evaluate(() => [...document.querySelectorAll('.cxm-sheet .cxm-tile')].filter((tile) => ![...tile.querySelectorAll('.cxm-chips button')].some((b) => b.classList.contains('on') && !/^(Skip|Omitir)$/.test(b.innerText.trim()))).map((tile) => [...tile.querySelectorAll('.cxm-chips button')].filter((b) => /^(Skip|Omitir)$/.test(b.innerText.trim()) && (b.classList.contains('on') || b.getAttribute('aria-pressed') === 'true')).length).reduce((a, b) => a + b, 0));
+    expect(noChoice === 0, `Skip is shown as chosen on ${noChoice} cards with no choice`);
+    expect(t.label.some((l) => l === T('Remember on this device', 'Recordar en este dispositivo') || /Remember on this device|Recordar/.test(l)), 'the priorities Remember switch lost its words');
+    // a sixth is tried: the message stays at the top and in view while the list is scrolled to the last card
+    await p.evaluate(() => { const sh = document.querySelector('.cxm-sheet'); const tiles = [...document.querySelectorAll('.cxm-sheet .cxm-tile')]; const last = tiles[tiles.length - 1]; sh.scrollTop = last.offsetTop; });
+    await wait(300);
+    const inView = await p.evaluate(() => { const sh = document.querySelector('.cxm-sheet').getBoundingClientRect(), b = document.querySelector('.cxm-prio-bar').getBoundingClientRect(); return b.top >= sh.top && b.bottom <= sh.bottom && b.height > 20; });
+    expect(inView, 'scrolled to the last card, the limit message and counter are out of view');
+    await p.evaluate(() => { const tiles = [...document.querySelectorAll('.cxm-sheet .cxm-tile')]; const last = tiles[tiles.length - 1]; const b = last.querySelector('.cxm-chips button'); b.click(); });
+    await wait(300);
+    expect(await has(p, '.cxm-sheet .cxm-prio-limit'), 'the sixth try lost the limit message');
+    expect(await p.evaluate(() => [...document.querySelectorAll('.cxm-sheet .cxm-sr[role=status]')].some((s) => /That is five|Son cinco/.test(s.innerText))), 'the sixth try did not announce the limit to a screen reader');
+    await done(p);
+  }
+
+  // 10. A phone that is 320 px wide: the picker, the step, and the notice (Spanish long labels included) fit, with 44 px buttons
+  {
+    const p = await open('/#phone', { mobile: true, easy: false, width: 320, height: 640 });
+    await picker(p); await search(p, 'Downtown'); await clickChip(p, 'Downtown');
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth && document.querySelector('.cxm-sheet').scrollWidth <= innerWidth), 'the ward step is wider than a 320 px screen');
+    expect((await small(p, '.cxm-hp-ward, .cxm-hp-back')).length === 0, 'a ward row or Back is under 44 px at 320');
+    await (await p.$$('.cxm-hp-ward'))[1].click(); await wait(500);
+    const g = await p.evaluate(() => { const r = document.querySelector('.cxm-pnote').getBoundingClientRect(), t = document.querySelector('.cxm-tabs').getBoundingClientRect(); return { l: r.left, r: r.right, w: innerWidth, gap: t.top - r.bottom, btn: [...document.querySelectorAll('.cxm-pnote button')].map((b) => Math.round(b.getBoundingClientRect().height)), spill: [...document.querySelectorAll('.cxm-pnote *')].some((e) => e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).overflow !== 'visible') }; });
+    expect(g.l >= 0 && g.r <= g.w && g.gap >= 0 && g.btn.every((h) => h >= 44) && !g.spill, `the notice does not fit at 320 px: ${JSON.stringify(g)}`);
+    expect(await p.evaluate(() => document.documentElement.scrollWidth <= innerWidth), 'the page is wider than a 320 px screen with the notice open');
+    await done(p);
+  }
+  // axe, on the picker with an alias, the step, and the notice
+  {
+    const p = await open('/#phone', { mobile: true, easy: false });
+    await picker(p); await search(p, 'Little');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the picker: ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await search(p, 'Downtown'); await clickChip(p, 'Downtown');
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the ward step: ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await (await p.$$('.cxm-hp-ward'))[0].click(); await wait(500);
+    { const bad = await axeBad(p); expect(bad.length === 0, `axe on the notice: ` + bad.slice(0, 4).map((x) => `${x.id} ${x.target.slice(0, 60)}`).join('; ')); }
+    await done(p);
+  }
+};
+
+/* The agenda calendar in Records > Meetings (ext/cx-meetings.jsx, docs/plan-agenda-calendar.md): a part added under Your ward this week, nothing above it changed.
    Expected values come from site/meetings/meetings-2026.json and data/people-2026.json through this file's own small functions, never from the page's
    code, and the clock is fixed (AG_AT), so every status is known. The status of every card in the week, worked out here from the clock in Eastern time:
    Upcoming before the start time (the first of those shown also says Up next), Live now from the start for the 120 minutes the page assumes (the record
