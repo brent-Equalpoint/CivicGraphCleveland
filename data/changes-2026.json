@@ -1276,6 +1276,237 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-07T13:47:35+00:00",
+   "from": "2026-10-05T19:24:33+00:00",
+   "count": 1393,
+   "changes": [
+    {
+     "f": "923-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-06",
+       "recommended for approval",
+       "Development, Planning and Sustainability Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1031-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-06",
+       "recommended for approval",
+       "Development, Planning and Sustainability Committee"
+      ]
+     ]
+    },
+    {
+     "f": "927-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "924-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "921-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "902-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "758-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1236-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1234-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1233-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1232-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1204-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1166-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1035-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-05",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1235-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1229-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1205-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1162-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    }
+   ]
   }
  ]
 }
