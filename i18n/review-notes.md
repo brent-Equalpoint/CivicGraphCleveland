@@ -124,3 +124,10 @@ About 120 new entries in `i18n/manual.json` for `ext/cx-record.jsx` and `ext/cx-
 4 entries in `i18n/manual.json`, pinned by hand: the tab "Registros" (it replaces "Explorar"), its folder tabs "Lo más reciente", "Reuniones", and "Salas", and the Updated strip's screen-reader hint "Abre Registros." (it opened Novedades before).
 1. **"Lo más reciente"** is also the title of the Latest box on Today. At 320 px it wraps to two lines in its folder tab ("Lo más" over "reciente"); a shorter word that still means "the newest records" (for example "Lo último" or "Recientes") would fit on one line, if it reads well.
 2. **"Salas"** names the 17 rooms and is now the heading of that folder too.
+
+## What five offices can do (Oct 7, 2026)
+12 new entries in `i18n/manual.json` for `ext/cx-offices-text.jsx`: the ten "can" and "limits" lines for Attorney General, Auditor of State, Secretary of State, Treasurer of State, and County Executive, and the notice under them (unreviewed, and reviewed with a name and a day). The English is itself not yet reviewed (`python build.py --mark-offices-reviewed "Name"`).
+1. **Office titles:** "fiscal general" (Attorney General), "auditor del estado", "secretario de Estado", "tesorero del estado", and "Ejecutivo del Condado" (as elsewhere in the app). Check the capital letters (Secretaría de Estado de Ohio is used in a link).
+2. **"Term"** is "mandato" ("el mandato es de cuatro años"). **"Warrants"** (what the treasurer pays) is "órdenes de pago", a plain word, not the legal "libranzas".
+3. **"Indicted"** is "acusada formalmente"; **"public office"** (an agency being audited) is "oficina pública"; **"county prosecutor"** is "fiscal del condado".
+4. **The notice** reads "Nuestras palabras sencillas sobre lo que puede hacer este cargo. Una persona todavía no las ha revisado."; reviewed, it names the person and the day.

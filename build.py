@@ -206,6 +206,26 @@ def mark_votes_text_reviewed(who):
     print(f"marked the votes and actions text reviewed by {who} on {datetime.date.today().isoformat()}")
 
 
+def offices_text_fp():
+    """Fingerprint of the plain words for what five offices can do: everything between the OFFICES-TEXT markers in ext/cx-offices-text.jsx."""
+    src = open(os.path.join(EXT, "cx-offices-text.jsx"), encoding="utf-8").read()
+    m = re.search(r"/\* OFFICES-TEXT-START.*?OFFICES-TEXT-END \*/", src, re.S)
+    if not m:
+        sys.exit("build: the OFFICES-TEXT markers are missing from ext/cx-offices-text.jsx")
+    if re.search("[\u2013\u2014]", m.group(0)):
+        sys.exit("build: the offices text in ext/cx-offices-text.jsx has an em or en dash")
+    return hashlib.sha256(m.group(0).encode()).hexdigest()[:16]
+
+
+def mark_offices_reviewed(who):
+    """Record that a person read the plain words for what five offices can do against their sources, today."""
+    if not who:
+        sys.exit('usage: python build.py --mark-offices-reviewed "Your Name"')
+    path = os.path.join(ROOT, "data", "offices-text-reviewed.json")
+    write(path, json.dumps({"fp": offices_text_fp(), "checked": datetime.date.today().isoformat(), "by": who}, indent=1) + "\n")
+    print(f"marked the offices text reviewed by {who} on {datetime.date.today().isoformat()}")
+
+
 def align_block():
     """The sample questions for "how you line up" (docs/plan-alignment.md, step 2): everything between the ALIGN-TEXT markers in ext/cx-align-text.jsx."""
     src = open(os.path.join(EXT, "cx-align-text.jsx"), encoding="utf-8").read()
@@ -590,6 +610,12 @@ def main():
     vx_ok = vx.get("fp") == votes_text_fp()
     log(f"votes and actions text: {'reviewed by ' + vx['by'] + ' on ' + vx['checked'] if vx_ok else 'NOT reviewed by a person (' + ('text changed since review' if vx else 'never reviewed') + ')'}")
     ext_js += "/* ---- data/votes-text-reviewed.json ---- */\nconst CX_VOTES_TEXT_REVIEW = " + json.dumps({"ok": vx_ok, "by": vx.get("by") if vx_ok else None, "checked": vx.get("checked") if vx_ok else None}) + ";\n"
+    # the plain words for what five offices can do (ext/cx-offices-text.jsx): reviewed by a person only while their fingerprint still matches what that person read
+    of5_path = os.path.join(ROOT, "data", "offices-text-reviewed.json")
+    of5 = json.load(open(of5_path, encoding="utf-8")) if os.path.exists(of5_path) else {}
+    of5_ok = of5.get("fp") == offices_text_fp()
+    log(f"offices text: {'reviewed by ' + of5['by'] + ' on ' + of5['checked'] if of5_ok else 'NOT reviewed by a person (' + ('text changed since review' if of5 else 'never reviewed') + ')'}")
+    ext_js += "/* ---- data/offices-text-reviewed.json ---- */\nconst CX_OFFICES_REVIEW = " + json.dumps({"ok": of5_ok, "by": of5.get("by") if of5_ok else None, "checked": of5.get("checked") if of5_ok else None}) + ";\n"
     # the privacy policy (ext/cx-privacy.jsx): approved by a person only while its fingerprint still matches what they approved; no dash in its words
     _, policy = privacy_block()
     if re.search("[\u2013\u2014]", json.dumps(policy, ensure_ascii=False)):
@@ -672,7 +698,7 @@ def main():
     log(f"d3 parts: {len(d3_js)} bytes, {sha(d3_js.encode())} ({d3_ver})")
     ext_js += "\n/* ---- cx-d3.js (d3 force and zoom, ISC license, Mike Bostock) ---- */\n" + d3_js
     # v5.14 phone app: cxm-*.jsx reuse the same data and helpers as the desktop app
-    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-records.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
+    for name in ("cx-data.jsx", "cx-ui.jsx", "cx-leaders.jsx", "cx-headline.jsx", "cx-i18n.jsx", "cx-reasons.jsx", "cx-place.jsx", "cx-live.jsx", "cx-votes.jsx", "cx-story.jsx", "cx-seat.jsx", "cx-us.jsx", "cx-us-model.jsx", "cx-us-text.jsx", "cx-us-map.jsx", "cx-us-index.jsx", "cx-us-tree.jsx", "cx-records.jsx", "cx-align-text.jsx", "cx-align.jsx", "cx-meetings.jsx", "cx-votes-text.jsx", "cx-offices-text.jsx", "cx-record.jsx", "cx-levies.jsx", "cx-districts.jsx", "cx-nav.jsx", "cx-privacy.jsx",
                  "cxm-core.jsx", "cxm-banner.jsx", "cxm-easy.jsx", "cxm-today.jsx", "cxm-explore.jsx", "cxm-place.jsx", "cxm-people.jsx", "cxm-federal.jsx", "cxm-ballot.jsx", "cxm-more.jsx", "cxm-live.jsx"):
         jsx_path = os.path.join(EXT, name)
         if name == "cx-us-text.jsx":   # the committee lines travel in /us/explainers-2026.json, not in the page (us_text_lines)
@@ -689,6 +715,16 @@ def main():
     # 4. patches
     log("Applying patches:")
     src = patch(src, "export { Qh as default };", "export { CX_Root as default };", label="phone app: root switch")
+    # What this office can do (ext/cx-offices-text.jsx): qm() asks cxOfficeInfo() first, so the five offices with no words of their own (Attorney General,
+    # Auditor of State, Secretary of State, Treasurer of State, County Executive) get theirs and every other office gets exactly what it had. Every caller of qm()
+    # (the desktop's record and contest page and review, the phone's record, contest page, and review) therefore agrees; the notice that a person has not reviewed
+    # the words goes under them where they show.
+    src = patch(src, "function qm(e) {\n  let t = e.name.toLowerCase();\n", "function qm(e) {\n  let cxo = cxOfficeInfo(e);\n  if (cxo) return cxo;\n  let t = e.name.toLowerCase();\n", label="office words: qm asks the new words first")
+    src = patch(src, "          (0, W.jsx)(`p`, { children: i.limits }),\n", "          (0, W.jsx)(`p`, { children: i.limits }),\n          (0, W.jsx)(CxOfficeNote, { contest: t }),\n", label="office words: notice on the desktop candidate record")
+    src = patch(src, "                                (0, W.jsx)(`p`, {\n                                  children: qm(j.contest).can,\n                                }),\n",
+                "                                (0, W.jsx)(`p`, {\n                                  children: qm(j.contest).can,\n                                }),\n                                (0, W.jsx)(CxOfficeNote, { contest: j.contest }),\n", label="office words: notice on the desktop contest page")
+    src = patch(src, "                                (0, W.jsx)(`p`, {\n                                  children: qm(e.contest).can,\n                                }),\n",
+                "                                (0, W.jsx)(`p`, {\n                                  children: qm(e.contest).can,\n                                }),\n                                (0, W.jsx)(CxOfficeNote, { contest: e.contest }),\n", label="office words: notice on the desktop review")
     # v5.27 desktop: the rooms are folder tabs above the graph (ext/cx.css), so the arrow keys that move between them are left and right, not up and down.
     # The arrows only move the focus; Enter or Space opens the room (an arrow press used to open every room it passed, add a history entry, and redraw the map).
     src = patch(src, "        onValueChange: Me,\n        orientation: `vertical`,\n        className: `atlas-workspace`,",
@@ -1445,5 +1481,7 @@ if __name__ == "__main__":
         mark_privacy_reviewed(" ".join(sys.argv[2:]))
     elif len(sys.argv) > 1 and sys.argv[1] == "--mark-votes-text-reviewed":
         mark_votes_text_reviewed(" ".join(sys.argv[2:]))
+    elif len(sys.argv) > 1 and sys.argv[1] == "--mark-offices-reviewed":
+        mark_offices_reviewed(" ".join(sys.argv[2:]))
     else:
         main()
