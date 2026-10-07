@@ -1,25 +1,41 @@
-# Nightly refresh of the official records (Cleveland City Council's public Legistar record, the city's
-# ward maps, and ordinance texts), then a rebuild. Vercel redeploys when the commit lands.
+# Nightly refresh of the official records (Cleveland City Council's public Legistar record and the City Record's roll calls, the city's
+# ward maps, ordinance texts, the federal record, and on Mondays or when the committees change the committees' own words), then a rebuild.
+# Vercel redeploys when the commit lands.
 # Official records only: news items need a person's approval and never enter through this job.
-# If the new data looks broken, scripts/refresh.py keeps the old files and the job fails, so nothing
-# is published and GitHub emails the repository owner.
+# If the new data looks broken, scripts/refresh.py keeps the old files and the job fails. If any browser check fails, nothing is
+# published and the live site stays as it was. Either way the issue "Nightly records refresh failed" is opened or commented, so everyone
+# watching the repository is notified; the next night that passes closes it with a note.
+#
+# Four parts, so the checks fit well inside the time limit: the refresh and build on one machine; the browser checks of exactly that
+# build split across three machines (run.js --shard k/3, 2 at a time on each of their 4 processors, as in the Checks workflow); the publish
+# only when every part passed; then the note to the team. On one machine the checks alone took 25 minutes and a run was stopped at its
+# 30-minute limit (Oct 6, 2026); each part now takes about 7.
+# Run it by hand with "dry run" ticked to try it on any branch: the refresh, the build, and every check run, nothing is published, and no
+# issue is opened or closed.
 name: Nightly records refresh
 
 on:
   schedule:
     - cron: "17 10 * * *"   # 6:17 a.m. Eastern in daylight time, 5:17 a.m. in standard time
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Dry run: refresh, build, and check, but publish nothing and open or close no issue"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
   issues: write
 
 concurrency:
-  group: records-refresh
+  # a dry run never waits for the real one, nor holds it up
+  group: records-refresh${{ inputs.dry_run && '-dry-run' || '' }}
   cancel-in-progress: false
 
 jobs:
   refresh:
+    name: Refresh the records and build
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -34,7 +50,7 @@ jobs:
           node-version: "20"
           cache: npm
 
-      - name: Tools that read ordinance documents (PDF and .doc)
+      - name: Tools that read ordinance documents and the City Record (PDF and .doc)
         run: |
           sudo apt-get update
           sudo apt-get install -y --no-install-recommends poppler-utils libreoffice-writer-nogui
@@ -56,14 +72,11 @@ jobs:
           python scripts/packets.py
           python scripts/commit.py
 
-      - name: Build the app
-        run: python build.py
+      - name: Data safety check (the same one the release gate runs)
+        run: python scripts/refresh.py --check
 
-      - name: Check the built site (if this fails nothing is published and the live site stays as it was)
-        env:
-          CHROME_PATH: /usr/bin/google-chrome
-          CI: "true"
-        run: node scripts/checks/run.js
+      - name: Build the app (the records list and the council's dated actions are made here from data/)
+        run: python build.py
 
       - name: Flag summaries whose source changed
         if: hashFiles('dist/review-needed.json') != ''
@@ -73,11 +86,95 @@ jobs:
           cat dist/review-needed.json >> "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
 
-      - name: Publish (commit data and site; Vercel deploys the commit)
+      - name: What would be published
         run: |
+          git status --porcelain --untracked-files=all -- data site bench > changed.txt
+          {
+            echo "### Changed files in data/, site/, and bench/: $(wc -l < changed.txt)"
+            echo '```'
+            head -60 changed.txt
+            echo '```'
+          } | tee -a "$GITHUB_STEP_SUMMARY"
+          rm changed.txt
+
+      - name: Pack the refreshed records and the build for the checks and the publish
+        run: tar -czf refreshed.tgz data site bench dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: refreshed
+          path: refreshed.tgz
+          if-no-files-found: error
+          retention-days: 5
+
+  check:
+    name: Browser checks, part ${{ matrix.part }} of 3
+    needs: refresh
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [1, 2, 3]
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Packages
+        run: npm ci
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: refreshed
+
+      - name: The refreshed records and the build from the first part, exactly as they will be published
+        run: |
+          rm -rf data site bench dist
+          tar -xzf refreshed.tgz
+          rm refreshed.tgz
+          grep -E "^SITE .* site/index\.html" dist/build-log.txt
+
+      - name: Check the built site (if this fails nothing is published and the live site stays as it was)
+        env:
+          CHROME_PATH: /usr/bin/google-chrome
+          CI: "true"
+          CHECK_JOBS: "2"
+        run: node scripts/checks/run.js --shard ${{ matrix.part }}/3 --report check-results.json
+
+      - name: Keep the results for the note to the team
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nightly-check-results-${{ matrix.part }}
+          path: check-results.json
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publish:
+    name: Publish (commit data and site; Vercel deploys the commit)
+    needs: [refresh, check]
+    if: ${{ !inputs.dry_run }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: refreshed
+
+      - name: Commit and push what was checked
+        run: |
+          rm -rf data site bench
+          tar -xzf refreshed.tgz data site bench
+          rm refreshed.tgz
           git config user.name "civic-graph-refresh"
           git config user.email "civic-graph-refresh@users.noreply.github.com"
-          git add data site bench
+          git add -A data site bench
           if git diff --cached --quiet; then
             echo "Nothing changed."
             exit 0
@@ -85,16 +182,59 @@ jobs:
           git commit -m "Nightly records refresh $(date -u +%Y-%m-%d)"
           git push
 
-      - name: Tell the team when the refresh fails (an issue, so everyone watching the repository is notified)
-        if: failure()
+  report:
+    name: Tell the team
+    needs: [refresh, check, publish]
+    if: ${{ always() && !inputs.dry_run }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: nightly-check-results-*
+          path: results
+
+      - name: Open or comment on the issue when the refresh failed; close it when a night passes again
         env:
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          REFRESH: ${{ needs.refresh.result }}
+          CHECK: ${{ needs.check.result }}
+          PUBLISH: ${{ needs.publish.result }}
         run: |
           title="Nightly records refresh failed"
           url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
-          existing=$(gh issue list --state open --search "$title in:title" --json number --jq '.[0].number // empty')
+          day=$(date -u +%Y-%m-%d)
+          existing=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+          if [ "$REFRESH" = "success" ] && [ "$CHECK" = "success" ] && [ "$PUBLISH" = "success" ]; then
+            if [ -n "$existing" ]; then
+              gh issue comment "$existing" --body "The nightly refresh passed every check and published on $day. Closing. Run: $url"
+              gh issue close "$existing"
+            fi
+            exit 0
+          fi
+          {
+            echo "The nightly refresh failed on $day. Nothing was published, so the live site still shows the last good data and its own Updated time."
+            echo
+            if [ "$REFRESH" != "success" ]; then echo "- The refresh or the build: $REFRESH (if the new data looked broken, the old files were kept)"; fi
+            for k in 1 2 3; do
+              f="results/nightly-check-results-$k/check-results.json"
+              if [ -f "$f" ]; then
+                jq -r '.failed[] | "- \(.check): \(.lines | join(" / "))"' "$f"
+              elif [ "$REFRESH" = "success" ] && [ "$CHECK" != "success" ]; then
+                echo "- Browser checks, part $k of 3: no result (the part timed out or stopped before it could report)"
+              fi
+            done
+            if [ "$PUBLISH" = "failure" ] || [ "$PUBLISH" = "cancelled" ]; then echo "- The publish: $PUBLISH (most often main moved during the run; the next night publishes)"; fi
+            echo
+            echo "Open the run to see which step failed: $url"
+          } > body.md
+          cat body.md >> "$GITHUB_STEP_SUMMARY"
           if [ -n "$existing" ]; then
-            gh issue comment "$existing" --body "Failed again on $(date -u +%Y-%m-%d). Run: $url"
+            gh issue comment "$existing" --body-file body.md
           else
-            gh issue create --title "$title" --body "The nightly refresh failed on $(date -u +%Y-%m-%d). Nothing was published, so the live site still shows the last good data and its own Updated time. Open the run to see which step failed: $url"
+            gh issue create --title "$title" --body-file body.md
           fi
