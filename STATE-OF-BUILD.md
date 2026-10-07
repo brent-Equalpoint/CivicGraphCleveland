@@ -445,6 +445,28 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       County Council districts, U.S. House, and state legislature offices already had words. Not tried on a real phone.
     - **Build.** Two clean builds gave the same hashes: the offline file `0601713b5b2e30c53db955805a0f5b42363b305ccd88337ca7393320f4d51611`, `site/index.html`
       `b8824018a2d0f8fbf935368d7761a4043f0382b1ab39670072f8bd8029a498b4`.
+54. **Oct 7: the Governor and Lieutenant Governor contest says what the Lieutenant Governor is and does (branch `worktree-agent-aee1212bb446347de`, from main at `0f20573`; not released; numbering to be settled on merge).**
+    - **What a resident sees.** On the contest page, the candidate record, and "What might your choices affect?" on the phone, and on the contest page, the record's
+      drawer, and the "What could change?" cards on the computer, the Governor's words are exactly what they were. After them comes a separate line, labeled
+      "Lieutenant Governor.", with its own source link ("Lieutenant Governor source", Ohio Constitution Article III, Section 15) and the same small notice as the five
+      offices ("A person has not reviewed them yet"): the office runs on the same ticket as the governor, elected together on one joint vote; it takes over as governor if
+      the governor dies, resigns, is removed, or cannot serve because of a disability; it has the governor's powers only in those cases, though the governor may appoint
+      it to head a department or an office in the governor's own office. Where the record shows the Governor's own source link, the Lieutenant Governor's line follows that
+      link, so each link sits under the words it belongs to. The Governor's words alone still show no notice.
+    - **Where the code is.** `CX_OFFICE_TICKETS` (keyed by contest id, `contest-1`) between the OFFICES-TEXT markers in `ext/cx-offices-text.jsx`, so a change clears the
+      review mark; `cxOfficeTicket()`, `CxOfficeTicket`, and `CxOfficeNote` (which now takes `skipTicket`). `cxOfficeInfo()` is still null for that contest, so `qm()`
+      keeps the compiled words. `build.py`: the desktop record's existing notice patch passes `skipTicket`, and one new exact-match patch puts `CxOfficeTicket` after the
+      record's "Authority reference" link ("office words: a ticket's second office on the desktop candidate record"); the other desktop places are unchanged. The phone's
+      two record-style places in `ext/cxm-ballot.jsx` do the same. One CSS line in `ext/cx.css` (`.practice-drawer .cxm-src`) because the compiled drawer makes every link a block.
+    - **Sources.** `docs/source-notes-offices.md`, new section "Lieutenant Governor": Ohio Constitution Article III Sections 1, 1a, 2, 3, 15, 17, and Revised Code 107.01 and
+      141.011(B), read from codes.ohio.gov on Oct 7, 2026, with the words quoted. No section read gives the office a duty of its own beyond succession and being
+      appointed by the governor to lead a department or office; the notes say what was searched.
+    - **Review.** `data/offices-text-reviewed.json` does not exist; Brent reads the new line against its sections, then runs `python build.py --mark-offices-reviewed "Name"`
+      (the same command covers all six lines). **Spanish:** three drafts in `i18n/manual.json` (the line, its label, its link), listed in `i18n/review-notes.md` item 5.
+    - **Checks and tests.** `office-text` now also checks contest-1 on both layouts: the Governor's words unchanged, the Governor's link before the Lieutenant Governor's,
+      the Lieutenant Governor line and its link, then the notice once, no party, ranking, score, advice, prediction word, or dash (English and Spanish), plus axe on the phone
+      and desktop records. Planting a fault (the line not drawn) failed it in all six places; restored. `scripts/test_offices.js` (145 checks) and `scripts/test_offices.py` extended.
+    - **Not done.** Not tried on a real phone. The Lieutenant Governor's term (four years, Article III Section 2) is not in the line because the linked page does not state it.
 
 ---
 

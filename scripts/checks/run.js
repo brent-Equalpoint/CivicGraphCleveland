@@ -5503,7 +5503,9 @@ CHECKS['agenda-calendar'] = async () => {
    Treasurer of State, and County Executive now have their own words, a source link, and the notice that a person has not reviewed them (or
    who did, and when). On the phone (the contest page, the candidate record, the review) and on the computer (the contest page, the record's
    drawer, the "What could change" cards): each of the five shows its own words and link and the notice, never the generic line; Governor,
-   Congress, and the judges' words are exactly what they were, with no notice; our words have no party, ranking, score, advice, or dash. */
+   Congress, and the judges' words are exactly what they were, with no notice; our words have no party, ranking, score, advice, or dash.
+   The one exception is the Governor and Lieutenant Governor contest (contest-1): the Governor's words are still exactly the compiled app's, and
+   a Lieutenant Governor line follows them (with its own codes.ohio.gov link, the Governor's link kept before it) and then the notice, once. */
 const OFFICE_GENERIC = 'A detailed authority summary has not yet been reviewed for this office.';
 const OFFICE_NAMES = ['Attorney General', 'Auditor of State', 'Secretary of State', 'Treasurer of State', 'County Executive'];
 // the words these offices already had in the compiled app (never edited): they must read the same, with no notice under them
@@ -5512,6 +5514,7 @@ const OFFICE_KEEP = {
   'United States Senator': { can: 'Members of Congress introduce and vote on federal legislation. One member casts one vote; they do not decide alone.', limits: 'Federal law generally needs both chambers and presidential action, or a veto override. Campaign promises and past votes do not guarantee passage.' },
   'Justice of the Supreme Court': { can: 'Judges hear cases within their court’s authority and apply the law to the facts and legal questions presented.', limits: 'A judge’s party does not establish how they will rule. Case outcomes depend on evidence, applicable law and court procedures. No case-result forecasts are provided.' },
 };
+const GOV_URL = 'https://codes.ohio.gov/ohio-constitution/section-2.16';   // the compiled app's own link for the governor, kept
 const OFFICE_BAD_EN = /\b(democrat\w*|republican\w*|libertarian\w*|party|parties|partisan|best|better|worse|worst|rank\w*|scores?|should|ought|favorite|strongest|weakest|vote for|vote against)\b/i;
 const OFFICE_BAD_ES = /(demócrata|republican|libertari|partido|partidista|mejor|peor|puntaje|clasificaci|debería|favorit|votar por|votar en contra)/i;
 function officeWords() {   // the words as written in the source, between the OFFICES-TEXT markers
@@ -5524,15 +5527,23 @@ function officeWords() {   // the words as written in the source, between the OF
     const r = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'offices-text-reviewed.json'), 'utf8'));
     if (r.fp === require('crypto').createHash('sha256').update(blk[0]).digest('hex').slice(0, 16)) reviewed = r;
   } catch (e) { /* never reviewed */ }
-  return { words, reviewed };
+  const tk = /const CX_OFFICE_TICKETS = (\{[\s\S]*?\n\});\n/.exec(blk[0]);   // a ticket's added line, keyed by contest id
+  if (!tk) throw new Error('CX_OFFICE_TICKETS is missing from the OFFICES-TEXT block in ext/cx-offices-text.jsx');
+  return { words, reviewed, tickets: require('vm').runInNewContext('(' + tk[1] + ')') };
 }
 CHECKS['office-text'] = async () => {
   const ES = process.env.CHECK_LANG === 'es';
-  const { words, reviewed } = officeWords();
+  const { words, reviewed, tickets } = officeWords();
+  const TICKET = tickets['contest-1'] || {}, TICKET_OFFICE = 'Governor and Lieutenant Governor';   // the governor's contest: one joint ticket, the governor's words kept and a Lieutenant Governor line added
+  const BAD_ADVICE = /\b(should|ought|must|will|would|likely|predict\w*|promis\w*|win|wins|lose|loses|best|better|worse|strongest|weakest|vote for|vote against)\b|%/i;
+  const BAD_ADVICE_ES = /(debería|deberías|debe votar|probablemente|predic|prometer|ganará|ganar|mejor|peor|votar por|votar en contra)|%/i;
   const sp = (s) => (ES ? (ES_WORDS[s] || s) : s);   // our words in the page's language
   const nm = (s) => RC_SP(sp(s));
   const keys = Object.keys(words);
   expect(JSON.stringify(keys) === JSON.stringify(OFFICE_NAMES.map((n) => n.toLowerCase())), `ext/cx-offices-text.jsx holds words for ${keys.join(', ')}, not for exactly ${OFFICE_NAMES.join(', ')}`);
+  expect(JSON.stringify(Object.keys(tickets)) === JSON.stringify(['contest-1']) && TICKET.name === 'Lieutenant Governor' && /^https:\/\/codes\.ohio\.gov\//.test(TICKET.url || ''), `ext/cx-offices-text.jsx holds tickets for ${Object.keys(tickets).join(', ')}, not for exactly contest-1 with a Lieutenant Governor name and a codes.ohio.gov link`);
+  expect(!!TICKET.line && !/[–—]/.test(TICKET.line) && !OFFICE_BAD_EN.test(TICKET.line) && !BAD_ADVICE.test(TICKET.line) && (TICKET.line.match(/[^.!?]+[.!?]+(\s|$)/g) || []).length <= 2, `the Lieutenant Governor line has a dash, a party, ranking, score, advice, or prediction word, or more than two sentences: "${(TICKET.line || '').slice(0, 80)}"`);
+  if (ES) expect(!!ES_WORDS[TICKET.line] && !!ES_WORDS[`${TICKET.name}.`] && !!ES_WORDS[`${TICKET.name} source`] && !/[–—]/.test(ES_WORDS[TICKET.line]) && !OFFICE_BAD_ES.test(ES_WORDS[TICKET.line]) && !BAD_ADVICE_ES.test(ES_WORDS[TICKET.line]), 'the Lieutenant Governor line, its label, or its link has no Spanish, or a dash or a bad word in it');
   const NOTICE_EN = reviewed
     ? `Our plain words for what this office can do were read against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
     : 'Our plain words for what this office can do. A person has not reviewed them yet.';
@@ -5549,7 +5560,7 @@ CHECKS['office-text'] = async () => {
   const pageOf = (office) => { const w = words[office.toLowerCase()]; return w ? { can: nm(w.can), limits: nm(w.limits), url: w.url } : OFFICE_KEEP[office] ? { can: nm(OFFICE_KEEP[office].can), limits: nm(OFFICE_KEEP[office].limits), url: null } : { can: '(no words written for this office)', limits: '(no words written for this office)', url: null }; };
   // what a screen says about an office: its words in order (with the notice right after them for the five), the source link, never the generic line
   const judge = (where, office, text, links, o = {}) => {
-    const t = RC_SP(text), e = pageOf(office), five = OFFICE_NAMES.includes(office), tag = `${where}, ${office}`;
+    const t = RC_SP(text), e = pageOf(office), five = OFFICE_NAMES.includes(office), tag = `${where}, ${office}`, tk = office === TICKET_OFFICE;
     expect(!t.includes(RC_SP(OFFICE_GENERIC)) && !t.includes(nm(OFFICE_GENERIC)), `${tag}: shows the generic line "${OFFICE_GENERIC.slice(0, 40)}..." instead of its own words`);
     const i = t.indexOf(e.can);
     expect(i >= 0, `${tag}: does not say "${e.can.slice(0, 70)}...": ${t.slice(0, 160)}`);
@@ -5557,8 +5568,18 @@ CHECKS['office-text'] = async () => {
     if (o.limits) { const j = t.indexOf(e.limits, i); expect(j > i, `${tag}: does not say its limits after what it can do`); at = Math.max(at, j); }
     const k = t.indexOf(five ? notice : noticeBase);
     if (five) expect(k > at && (!o.limits || k > at), `${tag}: the notice "${notice.slice(0, 60)}..." is missing or not after the words`);
-    else expect(k < 0, `${tag}: an office that kept its words shows the new notice`);
+    else if (!tk) expect(k < 0, `${tag}: an office that kept its words shows the new notice`);
     if (five && o.link) expect(links.some((l) => l.href === e.url && l.blank), `${tag}: no link to ${e.url} (${JSON.stringify(links.slice(0, 5))})`);
+    if (tk) {   // the governor's words above are the compiled app's, untouched; the Lieutenant Governor line follows them, with its own link, and the notice follows it
+      const lg = nm(TICKET.line), a = t.indexOf(lg), kk = t.indexOf(notice, Math.max(a, 0));
+      expect(a > at, `${tag}: the Lieutenant Governor line is missing or not after the Governor's words: ${t.slice(0, 120)}`);
+      expect(kk > a && a >= 0, `${tag}: the notice is missing or not after the Lieutenant Governor line`);
+      expect(t.split(notice).length === 2, `${tag}: the notice shows ${t.split(notice).length - 1} times, not once`);
+      expect(t.indexOf(nm(`${TICKET.name}.`)) >= 0 && t.indexOf(nm(`${TICKET.name}.`)) < a, `${tag}: the line is not marked as the Lieutenant Governor's`);
+      expect(links.some((l) => l.href === TICKET.url && l.blank), `${tag}: no link to ${TICKET.url} (${JSON.stringify(links.slice(0, 5))})`);
+      if (o.link) { const gi = links.findIndex((l) => l.href === GOV_URL), li = links.findIndex((l) => l.href === TICKET.url); expect(gi >= 0 && li > gi, `${tag}: the Governor's own link (${GOV_URL}) is missing or not before the Lieutenant Governor's link (${gi}, ${li})`); }
+      if (a >= 0 && kk > a) { const own = t.slice(a, kk + notice.length); expect(!/[–—]/.test(own) && !(ES ? OFFICE_BAD_ES : OFFICE_BAD_EN).test(own) && !(ES ? BAD_ADVICE_ES : BAD_ADVICE).test(own), `${tag}: a party, ranking, score, advice, or dash in the Lieutenant Governor line: ${own.slice(0, 80)}`); }
+    }
     if (five && k >= 0) { const own = t.slice(i, k + notice.length); expect(!/[–—]/.test(own) && !(ES ? OFFICE_BAD_ES : OFFICE_BAD_EN).test(own), `${tag}: a party, ranking, score, advice word, or dash in our words: ${own.slice(0, 80)}`); }
   };
   const linksIn = (p, sel) => p.evaluate((sel) => [...document.querySelectorAll(`${sel} a[href]`)].map((a) => ({ href: a.getAttribute('href'), blank: a.target === '_blank' })), sel);
@@ -5575,24 +5596,25 @@ CHECKS['office-text'] = async () => {
     if (!(await clickIn(m, '.cxm-cand-rec'))) { expect(false, `phone, ${office}: no Record button`); continue; }
     judge('phone candidate record', office, await textIn(m, '.cxm-sheet'), await linksIn(m, '.cxm-sheet'), { limits: true, link: true });
     expect(await m.evaluate(() => document.documentElement.scrollWidth <= innerWidth), `phone candidate record, ${office}: wider than the screen`);
-    if (office === 'County Executive') {   // look at it: phone record (axe on the screen that carries the new words)
+    if (office === 'County Executive' || office === TICKET_OFFICE) {   // look at it: phone record (axe on the screen that carries the new words)
       const bad = await axeBad(m); expect(bad.length === 0, `axe on the phone candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`);
     }
     await clickIn(m, '.cxm-sheet-x');
     expect(!(await has(m, '.cxm-sheet')), `phone, ${office}: the sheet did not close`);
   }
   // "What might your choices affect?" on the Ballot tab: a pick in an office, then its words on that pick's card
-  for (const office of ['Treasurer of State', 'United States Senator']) {
+  for (const office of ['Treasurer of State', 'United States Senator', TICKET_OFFICE]) {
     await clickIn(m, '.cxm-row', { strong: [office, sp(office)] });
     await clickIn(m, '.cxm-cand'); await clickIn(m, '.cxm-sheet-x');
   }
   const cards = await m.evaluate(() => [...document.querySelectorAll('.cxm-tile')].filter((t) => t.querySelector('.cxm-kicker') && t.querySelector('.cxm-link')).map((t) => ({ kicker: t.querySelector('.cxm-kicker').innerText, text: t.innerText })));
-  for (const office of ['Treasurer of State', 'United States Senator']) {
-    const card = cards.find((c) => [office, sp(office)].includes(c.kicker)), five = OFFICE_NAMES.includes(office);
+  for (const office of ['Treasurer of State', 'United States Senator', TICKET_OFFICE]) {
+    const card = cards.find((c) => [office, sp(office)].includes(c.kicker)), five = OFFICE_NAMES.includes(office), tk = office === TICKET_OFFICE;
     if (!card) { expect(false, `phone, ${office}: no card on the Ballot tab after a pick (${cards.map((c) => c.kicker)})`); continue; }
     const r = RC_SP(card.text), e = pageOf(office);
     expect(r.includes(e.can), `phone choices card, ${office}: does not say "${e.can.slice(0, 60)}..."`);
-    expect(five ? r.includes(notice) : !r.includes(noticeBase), `phone choices card, ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(five || tk ? r.includes(notice) : !r.includes(noticeBase), `phone choices card, ${office}: the notice is ${five || tk ? 'missing' : 'shown for an office that kept its words'}`);
+    if (tk) expect(r.indexOf(nm(TICKET.line)) > r.indexOf(e.can) && r.indexOf(notice) > r.indexOf(nm(TICKET.line)) && r.split(notice).length === 2, `phone choices card, ${office}: the Lieutenant Governor line is missing, not after the Governor's words, or the notice is not once after it`);
     expect(!r.includes(nm(OFFICE_GENERIC)), `phone choices card, ${office}: shows the generic line`);
   }
   await done(m);
@@ -5608,24 +5630,25 @@ CHECKS['office-text'] = async () => {
     if (!(await clickIn(d, '.practice-candidate button'))) { expect(false, `desktop, ${office}: no Record & role button`); continue; }
     await wait(300);
     judge('desktop candidate record', office, await textIn(d, '.practice-drawer'), await linksIn(d, '.practice-drawer'), { limits: true, link: true });
-    if (office === 'County Executive') { const bad = await axeBad(d); expect(bad.length === 0, `axe on the desktop candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
+    if (office === 'County Executive' || office === TICKET_OFFICE) { const bad = await axeBad(d); expect(bad.length === 0, `axe on the desktop candidate record, ${office}: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
     await d.keyboard.press('Escape'); await wait(500);
     expect(!(await has(d, '.practice-drawer')), `desktop, ${office}: the record did not close`);
   }
   // "What could change?": a pick in an office, then its words on its card
-  for (const office of ['County Executive', 'United States Senator']) {
+  for (const office of ['County Executive', 'United States Senator', TICKET_OFFICE]) {
     await d.select('.practice-jump select', ids[office] || ids[sp(office)]); await wait(400);
     await clickIn(d, '.practice-candidate input'); await wait(300);
   }
   await clickIn(d, '[role=tab]', { re: '^3[.]' });
   await wait(500);
   const oc = await d.evaluate(() => [...document.querySelectorAll('.practice-outcome-grid .practice-card')].map((c) => ({ label: (c.querySelector('.pilot-label') || {}).textContent || '', text: c.innerText })));
-  for (const office of ['County Executive', 'United States Senator']) {
-    const card = oc.find((c) => [office, sp(office)].some((n) => c.label.toLowerCase() === n.toLowerCase())), five = OFFICE_NAMES.includes(office);
+  for (const office of ['County Executive', 'United States Senator', TICKET_OFFICE]) {
+    const card = oc.find((c) => [office, sp(office)].some((n) => c.label.toLowerCase() === n.toLowerCase())), five = OFFICE_NAMES.includes(office), tk = office === TICKET_OFFICE;
     if (!card) { expect(false, `desktop "What could change?", ${office}: no card after a pick (${oc.map((c) => c.label)})`); continue; }
     const o = RC_SP(card.text), e = pageOf(office);
     expect(o.includes(e.can), `desktop "What could change?", ${office}: does not say "${e.can.slice(0, 60)}..."`);
-    expect(five ? o.includes(notice) : !o.includes(noticeBase), `desktop "What could change?", ${office}: the notice is ${five ? 'missing' : 'shown for an office that kept its words'}`);
+    expect(five || tk ? o.includes(notice) : !o.includes(noticeBase), `desktop "What could change?", ${office}: the notice is ${five || tk ? 'missing' : 'shown for an office that kept its words'}`);
+    if (tk) expect(o.indexOf(nm(TICKET.line)) > o.indexOf(e.can) && o.indexOf(notice) > o.indexOf(nm(TICKET.line)) && o.split(notice).length === 2, `desktop "What could change?", ${office}: the Lieutenant Governor line is missing, not after the Governor's words, or the notice is not once after it`);
     expect(!o.includes(nm(OFFICE_GENERIC)), `desktop "What could change?", ${office}: shows the generic line`);
   }
   await done(d);

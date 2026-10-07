@@ -720,7 +720,10 @@ def main():
     # (the desktop's record and contest page and review, the phone's record, contest page, and review) therefore agrees; the notice that a person has not reviewed
     # the words goes under them where they show.
     src = patch(src, "function qm(e) {\n  let t = e.name.toLowerCase();\n", "function qm(e) {\n  let cxo = cxOfficeInfo(e);\n  if (cxo) return cxo;\n  let t = e.name.toLowerCase();\n", label="office words: qm asks the new words first")
-    src = patch(src, "          (0, W.jsx)(`p`, { children: i.limits }),\n", "          (0, W.jsx)(`p`, { children: i.limits }),\n          (0, W.jsx)(CxOfficeNote, { contest: t }),\n", label="office words: notice on the desktop candidate record")
+    src = patch(src, "          (0, W.jsx)(`p`, { children: i.limits }),\n", "          (0, W.jsx)(`p`, { children: i.limits }),\n          (0, W.jsx)(CxOfficeNote, { contest: t, skipTicket: !0 }),\n", label="office words: notice on the desktop candidate record")
+    # a ticket (the governor's contest) adds its second office's line after the governor's own link, so each link sits under the words it belongs to
+    src = patch(src, "            children: `Authority reference ↗`,\n          }),\n        ],\n      }),\n      (0, W.jsx)(`h3`, { children: `Evidence, then possibilities` }),\n",
+                "            children: `Authority reference ↗`,\n          }),\n          (0, W.jsx)(CxOfficeTicket, { contest: t }),\n        ],\n      }),\n      (0, W.jsx)(`h3`, { children: `Evidence, then possibilities` }),\n", label="office words: a ticket's second office on the desktop candidate record")
     src = patch(src, "                                (0, W.jsx)(`p`, {\n                                  children: qm(j.contest).can,\n                                }),\n",
                 "                                (0, W.jsx)(`p`, {\n                                  children: qm(j.contest).can,\n                                }),\n                                (0, W.jsx)(CxOfficeNote, { contest: j.contest }),\n", label="office words: notice on the desktop contest page")
     src = patch(src, "                                (0, W.jsx)(`p`, {\n                                  children: qm(e.contest).can,\n                                }),\n",

@@ -21,7 +21,8 @@ official county list (48 contests, 97 candidates), exactly five contests fall th
 | County Executive | contest-22 | 4 (2 can be chosen or opened; the list marks 2 removed) |
 
 No other office falls through. The Lieutenant Governor runs on one joint ticket with the Governor (Ohio Constitution Article III, Section 1a,
-"one vote shall be cast jointly"), so that contest uses the Governor's words, which say only what the governor does. Judges of the Court of
+"one vote shall be cast jointly"), so that contest uses the Governor's words from the compiled app, which say only what the governor does; the
+Lieutenant Governor's own added line is the last section below. Judges of the Court of
 Common Pleas and of the Court of Appeals match "judge", and the Supreme Court contests match "justice"; they keep their words.
 
 `build.py` makes `qm()` ask `cxOfficeInfo()` first (one exact-match patch, "office words: qm asks the new words first"). It matches the
@@ -122,6 +123,48 @@ contest name exactly, in lower case, against the five keys, so every other offic
   county budget, four years. Limits = Council holds the lawmaking power, adopts the budget, and confirms many of the Executive's appointments;
   at least eight Council members can pass a measure the Executive vetoed. The charter does not say when the office was last on the ballot, so our
   words do not.
+
+## Lieutenant Governor
+
+Added Oct 7, 2026 as a separate line after the Governor's words on the contest "Governor and Lieutenant Governor" (contest-1, one joint ticket).
+The Governor's own words are the compiled app's, unchanged, and show no notice; the added line shows its own source link and the notice that a
+person has not reviewed it. It is kept in `CX_OFFICE_TICKETS` (key `contest-1`), between the same OFFICES-TEXT markers, so a change to it clears
+the review mark like the other five. All pages read on Oct 7, 2026 from codes.ohio.gov, read only.
+
+- Link shown: https://codes.ohio.gov/ohio-constitution/section-3.15 (Article III, Section 15, succession in case of a vacancy in the office of governor)
+- **Ohio Constitution Article III, Section 1**, "Executive department; key state officers" (effective Oct. 13, 1885): "The executive department
+  shall consist of a governor, lieutenant governor, secretary of state, auditor of state, treasurer of state, and an attorney general, who shall be
+  elected on the first Tuesday after the first Monday in November, by the electors of the state".
+- **Ohio Constitution Article III, Section 1a**, "Joint vote cast for governor and lieutenant" (effective June 8, 1976): "In the general election
+  for governor and lieutenant governor, one vote shall be cast jointly for the candidates nominated by the same political party or petition."
+- **Ohio Constitution Article III, Section 3**, "Counting votes for key state officers" (effective Nov. 2, 1976): "The joint candidates having the
+  highest number of votes cast for governor and lieutenant governor and the person having the highest number of votes for any other office shall be
+  declared duly elected".
+- **Ohio Revised Code 107.01**, "Election - term" (effective March 10, 1978): "The governor shall be elected quadrennially, jointly with the
+  lieutenant governor, and shall hold his office for a term of four years."
+- **Ohio Constitution Article III, Section 15**, "Succession in case of vacancy in office of governor" (effective Nov. 2, 1976): "(A) In the case of
+  the death, conviction on impeachment, resignation, or removal, of the Governor, the Lieutenant Governor shall succeed to the office of Governor.
+  (B) When the Governor is unable to discharge the duties of office by reason of disability, the Lieutenant Governor shall serve as governor until the
+  Governor's disability terminates."; "(D) Any person serving as governor for the duration of the Governor's disability shall have the powers,
+  duties, and compensation of the office of governor. Any person who succeeds to the office of governor shall have the powers, duties, title, and
+  compensation of the office of governor."; "(E) No person shall simultaneously serve as Governor and Lieutenant Governor".
+- **Ohio Constitution Article III, Section 17** (effective Nov. 2, 1976): when both offices are vacant, "The officer next in line of succession to the
+  office of governor shall serve as governor ... until the newly elected governor has qualified."; if the governor-elect cannot take office, "the
+  lieutenant governor-elect shall assume the office of governor for the full term." (Not in our line: it is a rarer case.)
+- **Ohio Revised Code 141.011(B)** (effective Dec. 27, 2018): "If the governor appoints the lieutenant governor as an administrative department head or
+  as the head of an office within the office of the governor, the lieutenant governor may accept the salary for that office while serving as its head
+  in lieu of the salary for the office of lieutenant governor."
+- **Ohio Constitution Article III, Section 2** (effective Nov. 3, 1992) gives the lieutenant governor "four years" and limits the office to two
+  successive terms; our line has no term length, because the linked page (Section 15) states none.
+- Searched, and not found: no section of Chapter 107 (Governor) or the other chapters read (3, 101, 102, 103, 105, 109, 111, 118, 121, 122, 126,
+  141, 149) gives the lieutenant governor a duty of its own. The other mentions only list the office among the elected executive officers (in
+  definitions, exemptions, and lists of who receives a report, in Chapters 101, 107, and 121), and 141.01 sets its salary. So our line says the office has the governor's powers only when it takes the
+  governor's place, and names the one assignment the law mentions (141.011(B)).
+- Our words: what it is = runs on the same ticket as the governor, elected together on one joint vote (Article III, Sections 1a and 3; 107.01).
+  What it does = takes over as governor if the governor dies, resigns, is removed, or cannot serve because of a disability (Section 15(A) and (B));
+  the governor may appoint the lieutenant governor to head a department or an office in the governor's own office (141.011(B)). What it cannot do
+  alone = it has the governor's powers only in those cases (Section 15(D)). We say "is removed" for "conviction on impeachment ... or removal".
+  The line names no party, although Section 1a speaks of candidates "nominated by the same political party or petition".
 
 ## What these words do not say
 

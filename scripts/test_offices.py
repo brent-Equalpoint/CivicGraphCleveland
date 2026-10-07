@@ -55,6 +55,19 @@ class Stamp(unittest.TestCase):
         self.put(SRC.replace("The term is four years.", "The term is four years, as the code says.", 1))
         self.assertNotEqual(a, build.offices_text_fp())
 
+    def test_a_change_to_the_lieutenant_governor_line_changes_the_fingerprint(self):
+        # the ticket line sits between the markers, so changing it clears a person's review like any other office's words
+        self.assertIn("CX_OFFICE_TICKETS", SRC)
+        a = build.offices_text_fp()
+        self.put(SRC.replace("takes over as governor", "takes the governor's place", 1))
+        self.assertNotEqual(a, build.offices_text_fp())
+
+    def test_a_dash_in_the_lieutenant_governor_line_stops_the_build(self):
+        self.put(SRC.replace("The lieutenant governor has the governor’s powers only in those cases,", "The lieutenant governor has the governor’s powers only in those cases —", 1))
+        with self.assertRaises(SystemExit) as c:
+            build.offices_text_fp()
+        self.assertIn("dash", str(c.exception))
+
     def test_a_change_outside_the_markers_does_not(self):
         a = build.offices_text_fp()
         self.put(SRC.replace("function cxOfficeInfo(c) {", "function cxOfficeInfo(c) { /* a note */", 1))

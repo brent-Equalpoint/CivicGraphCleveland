@@ -1,6 +1,7 @@
 /* What five offices can do, for the candidate record and the contest page on the phone and the computer (docs/source-notes-offices.md).
    The compiled app's qm() has words for Governor, Congress, judges, the General Assembly, and County Council; build.py makes qm() ask
-   cxOfficeInfo() first, so these five offices (and no other) use the words below. Anything else gets exactly the words it had before. */
+   cxOfficeInfo() first, so these five offices (and no other) use the words below. Anything else gets exactly the words it had before.
+   The one ticket (the governor's contest) keeps the governor's words as they were and adds a line for the lieutenant governor after them. */
 
 /* OFFICES-TEXT-START
    Interpretive text: everything from here to OFFICES-TEXT-END. Each line says what the office does and what it cannot do alone, from the
@@ -37,6 +38,15 @@ const CX_OFFICES = {
     url: `https://cuyahogacounty.gov/council/legislation/cuyahoga-county-charter`,
   },
 };
+/* A ticket: two offices elected on one joint vote. The compiled app's words for the contest (the governor's) are left exactly as they are; the
+   line below is added after them, with its own source link, for the second office. Keys are contest ids. */
+const CX_OFFICE_TICKETS = {
+  "contest-1": {
+    name: `Lieutenant Governor`,
+    line: `The lieutenant governor runs on the same ticket as the governor, elected together on one joint vote, and takes over as governor if the governor dies, resigns, is removed, or cannot serve because of a disability. The lieutenant governor has the governor’s powers only in those cases, though the governor may appoint the lieutenant governor to head a department or an office in the governor’s own office.`,
+    url: `https://codes.ohio.gov/ohio-constitution/section-3.15`,
+  },
+};
 /* OFFICES-TEXT-END */
 
 /* ---------- pure: which words a contest uses, and what the notice says ---------- */
@@ -45,12 +55,32 @@ function cxOfficeInfo(c) {
   const k = c && typeof c.name === `string` ? c.name.toLowerCase() : ``;
   return Object.prototype.hasOwnProperty.call(CX_OFFICES, k) ? CX_OFFICES[k] : null;
 }
+/* the added line for a ticket's second office ({name, line, url}), or null for every contest that is not a ticket */
+function cxOfficeTicket(c) {
+  const k = c && typeof c.id === `string` ? c.id : ``;
+  return Object.prototype.hasOwnProperty.call(CX_OFFICE_TICKETS, k) ? CX_OFFICE_TICKETS[k] : null;
+}
 function cxOfficeReview() {
   const r = typeof CX_OFFICES_REVIEW !== `undefined` ? CX_OFFICES_REVIEW : { ok: !1 };
   return r.ok ? `Our plain words for what this office can do were read against Ohio law and the county charter by ${r.by} on ${cxLongDate(r.checked)}.` : `Our plain words for what this office can do. A person has not reviewed them yet.`;
 }
 
 /* ---------- the notice under the words, where they show ---------- */
-function CxOfficeNote({ contest }) {
+/* a ticket's added line, its own source link, and the notice; under the words, after the governor's own link where the record shows one */
+function CxOfficeTicket({ contest }) {
+  const t = cxOfficeTicket(contest);
+  if (!t) return null;
+  return (
+    <>
+      <p className="cxm-mut"><strong>{`${t.name}.`}</strong> {t.line}</p>
+      <CxmSrc href={t.url}>{`${t.name} source`}</CxmSrc>
+      <p className="cxm-fine">{cxOfficeReview()}</p>
+    </>
+  );
+}
+/* where the words show without a link under them, a ticket's added line follows at once; where a link follows (the record, the contest page on the
+   phone), the caller passes skipTicket and puts CxOfficeTicket after that link, so each link sits under the words it belongs to */
+function CxOfficeNote({ contest, skipTicket }) {
+  if (cxOfficeTicket(contest)) return skipTicket ? null : <CxOfficeTicket contest={contest} />;
   return cxOfficeInfo(contest) ? <p className="cxm-fine">{cxOfficeReview()}</p> : null;
 }

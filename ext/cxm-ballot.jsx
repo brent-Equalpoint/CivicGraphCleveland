@@ -160,8 +160,9 @@ function CxmContest({ id }) {
       {c.term && <small className="cxm-mut">{c.term}</small>}
       <p><strong>What this office can do.</strong> {info.can}</p>
       <p className="cxm-mut"><strong>Limits.</strong> {info.limits}</p>
-      <CxOfficeNote contest={c} />
+      <CxOfficeNote contest={c} skipTicket />
       <CxmSrc href={info.url}>Official authority source</CxmSrc>
+      <CxOfficeTicket contest={c} />
       {!onBallot && <p className="cxm-status-line">This race is not in the districts you set, so a choice here won't be kept. Set your districts on the Ballot tab.</p>}
       <h3 className="cxm-h3">Candidates <span>{cands.length}</span></h3>
       <p className="cxm-fine">Tap a name to practice your pick. Record opens what is on file for that candidate.</p>
@@ -362,8 +363,9 @@ function CxmCand({ id }) {
         <span className="cxm-kicker">What this office can do</span>
         <p>{info.can}</p>
         <p className="cxm-mut">{info.limits}</p>
-        <CxOfficeNote contest={c} />
+        <CxOfficeNote contest={c} skipTicket />
         <CxmSrc href={info.url}>Authority reference</CxmSrc>
+        <CxOfficeTicket contest={c} />
       </div>
       <h3 className="cxm-h3">Evidence, then possibilities</h3>
       <p className="cxm-mut">These are selected examples. A past vote records an action; a campaign statement records a promise. They are shown separately.</p>

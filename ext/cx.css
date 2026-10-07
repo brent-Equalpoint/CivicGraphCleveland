@@ -434,6 +434,7 @@
 
 /* v5.7: the ballot's record panel slides in from the right. Tailwind's centering uses the translate property, which transform:none did not cancel. */
 .practice-drawer[data-slot="dialog-content"] { translate: none !important; top: 0 !important; left: auto !important; right: 0 !important; bottom: 0 !important; }
+.practice-drawer .cxm-src { display: inline-flex; margin: 0 0 12px; }
 /* v5.7: when a personal page (My ballot, My leaders...) is open, the room tab stops looking selected, so only one item is highlighted.
    Since the folder-tab strip, build.py marks that tab inactive itself (data-state and aria-selected), so no rule is needed here. */
 
