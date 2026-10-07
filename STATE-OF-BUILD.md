@@ -519,6 +519,11 @@ Get-FileHash .\Cleveland-Civic-Graph-v5.html -Algorithm SHA256
       strip over Records. `design-look` re-recorded on purpose: the only diff is the four recorded `.cxm-fresh` entries on "phone today" (dark and light,
       Bento and Original) dropped.
 
+57. **Oct 7: People > Common ground no longer says "Answer yes or no to an idea with a documented record to place someone on the map."**
+    - Brent: "Get rid of this on the page. Extra info that's not needed." The grey line that showed under the map before any question was answered is gone
+      (`ext/cxm-people.jsx`); the map's own note and the question card below it say the same thing. Checks `people-tabs`, `screen-states`, `text-budget`, and
+      `design-look` pass without a new record. Shipped by the fast lane.
+
 ---
 
 ## 3. What is in the app right now

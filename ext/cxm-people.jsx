@@ -407,7 +407,6 @@ function CxmConstellation() {
               <circle cx="170" cy="140" r="17" className="cxm-you-dot" /><text x="170" y="144" className="cxm-you-t">You</text>
             </svg>
           </div>
-          {!stats.some((p) => p.total) && <p className="cxm-status-line" role="status">Answer yes or no to an idea with a documented record to place someone on the map.</p>}
           {(hl.size > 0 || contest || (office === `council` && home?.ward)) && <p className="cxm-fine cxm-key">{hl.size > 0 && <span>White ring: on the record for this question.</span>}{contest && <span>Dotted halo: your practice pick.</span>}{office === `council` && home?.ward && <span>Gold dot: your ward's member.</span>}</p>}
           {qcard}
           <CxmDrop title="How to read this map" sub="Nearer, missing records, and everyone's record">
