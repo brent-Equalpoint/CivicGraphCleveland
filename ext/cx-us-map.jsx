@@ -612,7 +612,7 @@ function CxUsmShape({ shape, color, line }) {
 /* The details sheet: on a computer it sits to the right of the map; on a phone it opens part way up, pulls up to near the top, and
    swipes down to close (the kit's sheet, vendor/relationship-map-kit/map/sheet.js). It also closes with Done, a tap on the map, and
    the back gesture (handled by the page). */
-function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, tail, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub, tall }) {
+function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo, soloOn, onIndex, sheetRef, onPeek, onMove, fresh, lead, tail, noActs, hid = `usm-sheet-h`, cls = ``, onRole, onSub, tall, rec }) {
   const bodyRef = u.useRef(null);
   const [all, setAll] = u.useState({});
   u.useEffect(() => { setAll({}); if (bodyRef.current) bodyRef.current.scrollTop = 0; }, [info.name]);
@@ -678,7 +678,8 @@ function CX_UsMapSheet({ info, phone, still, onClose, onPick, onProfile, onSolo,
         <button type="button" className="usm-done" onClick={onClose}>Done</button>
       </div>
       <div className="usm-sheet-body" ref={bodyRef}>
-        <h2 id={hid} className="usm-name">{info.name}{!/[.!?]$/.test(info.name) && <span className="usm-dot">.</span>}</h2>
+        {/* rec: the name is the record's (a person, a committee, a court), so it stays as the record writes it in both languages */}
+        <h2 id={hid} className="usm-name"><span {...(rec ? { 'data-no-translate': ``, lang: `en` } : {})}>{info.name}</span>{!/[.!?]$/.test(info.name) && <span className="usm-dot">.</span>}</h2>
         {lead}
         {info.sentence ? <p className="usm-sent">{info.sentence}</p> : null}
         {info.fact ? <p className="usm-fact">{info.fact}</p> : null}
@@ -1461,7 +1462,7 @@ function CX_UsMap({ phone, onExit }) {
     if (k > 0) { r.steps = r.steps.slice(0, r.steps.length - k); r.pushed -= k; r.skip += 1; try { globalThis.history.go(-k); } catch (e) { r.skip -= 1; } }
   };
   // the sheet takes its own step too: close it first, and do the next thing once that step is gone
-  const sheetThen =(then) => { const b = back.current; if (b.pushed === `sheet`) { b.then = then; setSheet(!1); } else { setSheet(!1); then(); } };
+  const sheetThen = (then) => { const b = back.current; if (b.pushed === `sheet`) { b.then = then; setSheet(!1); } else { setSheet(!1); then(); } };
 
   // ---- the back gesture closes the open sheet or panel instead of leaving the page (the kit's history layers)
   const layer = sheet ? `sheet` : phone && panel ? `panel` : ``;
@@ -1697,7 +1698,7 @@ function CX_UsMap({ phone, onExit }) {
           {results.map((n) => <li key={n.id}><button type="button" onClick={() => { setQ(``); if (phone) setSearchOn(!1); if (indexOn) { ixGo(n.id); return; } if (treeOn) { if (trR.current.find) trR.current.find(n.id); return; } if (solo && !solo.keep.has(n.i)) setSolo(null); pick(n.i, !0); }}><strong>{n.name}</strong><small>{kindWord(n)}{n.m ? `, ${cxStateName(n.m.state)}` : ``}</small></button></li>)}
         </ul>
       )}
-      {needle.length >= 2 && !results.length && (sky || indexOn || treeOn) &&<p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
+      {needle.length >= 2 && !results.length && (sky || indexOn || treeOn) && <p className="usm-results usm-none" role="status">Nothing in the record matches.</p>}
     </div>
   );
   const showPanel = (

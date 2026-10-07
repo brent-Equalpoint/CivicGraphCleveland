@@ -171,7 +171,7 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
   openR.current = open; stillR.current = still;
   const rootRef = u.useRef(null), scRef = u.useRef(null), sizerRef = u.useRef(null), innerRef = u.useRef(null), svgRef = u.useRef(null);
   const els = u.useRef(new Map());
-  const S = u.useRef({ cur: new Map(), raf: 0, scale: 1, W: 0, H: 0, links: [], hot: null, prog: new Map(), fitted: !1, focus: null, ct: 0, sw: 0, run: null, drag: null, pinch: null });
+  const S = u.useRef({ cur: new Map(), raf: 0, scale: 1, W: 0, H: 0, links: [], hot: null, prog: new Map(), fitted: !1, focus: null, ct: 0, sw: 0, run: null, drag: null, pinch: null, sizes: new WeakMap(), dirty: !1 });
   const memo = u.useRef({ m: null, groups: new Map(), kids: new Map() });
   if (memo.current.m !== model) memo.current = { m: model, groups: new Map(), kids: new Map() };
   const groupsOf = (l) => { const c = memo.current.groups; if (!c.has(l.id)) c.set(l.id, l.groups()); return c.get(l.id); };
@@ -303,8 +303,13 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
     const bh = Math.max(72, ...bEls.map((el) => el.offsetHeight));
     bEls.forEach((el) => { el.style.minHeight = `${bh}px`; });
     const hts = new Map();
-    // a drawer is as tall as the names in it and its own border, so nothing in it is ever cut off
-    V.forEach((x) => { const el = els.current.get(x.id); if (!el) return; hts.set(x.id, x.type === `drawer` ? (el.firstChild ? el.firstChild.offsetHeight + (el.offsetHeight - el.clientHeight) : 0) : x.type === `branch` ? bh : el.offsetHeight); });
+    // a drawer is as tall as the names in it and its own border, so nothing in it is ever cut off; each size is kept, so the
+    // ResizeObserver below places things again only when one really changed
+    V.forEach((x) => {
+      const el = els.current.get(x.id); if (!el) return;
+      const box = x.type === `drawer` ? el.firstChild : el; if (box) s.sizes.set(box, box.offsetHeight);
+      hts.set(x.id, x.type === `drawer` ? (el.firstChild ? el.firstChild.offsetHeight + (el.offsetHeight - el.clientHeight) : 0) : x.type === `branch` ? bh : el.offsetHeight);
+    });
     const P = cxUstPlace(V, hts, sw, phone, lv);
     s.links = P.links;
     const motion = !!anim && !stillR.current;
@@ -353,6 +358,7 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
       if (t < maxD) { s.raf = requestAnimationFrame(frame); if (rootRef.current) rootRef.current.dataset.moving = `1`; return; }
       s.raf = 0; s.prog = new Map(); draw(cur, s.prog);
       if (rootRef.current) delete rootRef.current.dataset.moving;
+      if (s.dirty) { s.dirty = !1; requestAnimationFrame(() => { if (s.run) s.run(!1); }); }   // a size that changed while things moved
       if (holdH !== P.H) { s.H = P.H; inner.style.height = `${P.H}px`; svg.setAttribute(`height`, P.H); svg.setAttribute(`viewBox`, `0 0 ${P.W} ${P.H}`); sz.style.height = `${P.H * s.scale}px`; }
     };
     if (motion && (fresh.size || V.some((x) => { const f = from.get(x.id), T0 = P.T.get(x.id); return x.leaving || !f || !T0 || Math.abs(f.x - T0.x) > 0.5 || Math.abs(f.y - T0.y) > 0.5 || Math.abs(f.h - T0.h) > 0.5; }))) s.raf = requestAnimationFrame(frame);
@@ -386,9 +392,19 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
   u.useEffect(() => {
     const s = S.current, sc = scRef.current; if (!sc || !globalThis.ResizeObserver) return undefined;
     let f = 0;
-    const again = () => { cancelAnimationFrame(f); f = requestAnimationFrame(() => { if (s.run) s.run(!1); }); };
-    const ro = new globalThis.ResizeObserver(again);
-    const watch = () => { ro.disconnect(); els.current.forEach((el, id) => ro.observe(id.startsWith(`d:`) && el.firstChild ? el.firstChild : el)); };
+    // a new element is reported at once with the size the picture was just laid out with: only a real change places things again, and
+    // never in the middle of a move (that would cut the move short); it waits for the move to end
+    const again = (entries) => {
+      if (!entries.some((e) => e.target.isConnected && Math.abs((s.sizes.has(e.target) ? s.sizes.get(e.target) : -1) - e.target.offsetHeight) > 0.5)) return;
+      if (s.raf) { s.dirty = !0; return; }
+      cancelAnimationFrame(f); f = requestAnimationFrame(() => { if (s.run) s.run(!1); });
+    };
+    const ro = new globalThis.ResizeObserver(again), seen = new Set();
+    const watch = () => {
+      const now = new Set(); els.current.forEach((el, id) => now.add(id.startsWith(`d:`) && el.firstChild ? el.firstChild : el));
+      seen.forEach((el) => { if (!now.has(el)) { ro.unobserve(el); seen.delete(el); } });
+      now.forEach((el) => { if (!seen.has(el)) { ro.observe(el); seen.add(el); } });
+    };
     watch(); s.watch = watch;
     // a window that changes width by more than a little fits again (the kit's resize)
     const ro2 = new globalThis.ResizeObserver(() => { const w = sc.clientWidth; if (Math.abs(w - s.sw) > 40) { s.sw = w; if (s.run) s.run(!1); fit(); } });
@@ -447,13 +463,13 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
   const card = (it, e, b, l, parent) => onCard({ i: it.i, word: it.note, from: parent ? parent.name : ``, path: pathOf(b, l, parent) }, e.currentTarget);
   const rows = (items, ctx) => items.map((it) => {
     const key = `${ctx.key}/${it.key}`, sid = `s:${key}`, isOpen = !!it.nest && union.has(sid);
-    const body = <><span className="ust-mk"><CxUsiShape shape={it.shape} color={it.color} /></span><span className="ust-rt"><b {...(it.rec ? REC : {})}>{it.name}</b>{it.note ? <span className="ust-w" {...(it.wrec ? REC : {})}>{it.note}</span> : null}</span></>;
+    const body = <><span className="ust-mk"><CxUsiShape shape={it.shape} color={it.color} /></span><span className="ust-rt"><b id={it.nest ? `ust-n-${cxUstDom(key)}` : undefined} {...(it.rec ? REC : {})}>{it.name}</b>{it.note ? <span className="ust-w" {...(it.wrec ? REC : {})}>{it.note}</span> : null}</span></>;
     if (it.act === `muted`) return <li key={`m-${it.name}`} className="ust-row"><p className="ust-nm ust-muted">{body}</p></li>;
     return (
       <li key={key} className="ust-row">
         <button type="button" className="ust-nm" data-col={ctx.col} data-k={it.key} data-ctx={ctx.key} aria-haspopup="dialog" onClick={(e) => card(it, e, ctx.b, ctx.l, ctx.parent)}>{body}</button>
         {it.nest && <button type="button" className="ust-pmb" data-col={ctx.col} data-skey={cxUstDom(key)} aria-expanded={isOpen} aria-controls={isOpen ? `ust-${cxUstDom(sid)}` : undefined} onClick={() => toggleSub(key, it)}><span>{cxUsmPlural(it.nest.n, it.nest.one, it.nest.many)}</span><CxUstPm /></button>}
-        {isOpen && <div className="ust-sub" id={`ust-${cxUstDom(sid)}`} role="group" aria-label={it.name}>{body0(kidsOf(key, it), { ...ctx, key, parent: it, cid: g.nodes[it.i].kind === `committee` ? g.nodes[it.i].c.id : null })}</div>}
+        {isOpen && <div className="ust-sub" id={`ust-${cxUstDom(sid)}`} role="group" aria-labelledby={`ust-n-${cxUstDom(key)}`}>{body0(kidsOf(key, it), { ...ctx, key, parent: it, cid: g.nodes[it.i].kind === `committee` ? g.nodes[it.i].c.id : null })}</div>}
       </li>
     );
   });
@@ -479,7 +495,7 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
   const drawer = (x) => {
     const l = x.l, ctx = { key: l.id, col: x.col, b: x.b, l, parent: null, cid: null };
     return (
-      <div key={x.id} ref={ref(x.id)} id={`ust-${cxUstDom(x.id)}`} data-tid={x.id} className={`ust-drawer ${x.leaving ? `ust-leaving` : ``}`} role="group" aria-label={l.name} style={{ '--sc': x.b.color }} inert={x.leaving ? `` : undefined} aria-hidden={x.leaving ? `true` : undefined}>
+      <div key={x.id} ref={ref(x.id)} id={`ust-${cxUstDom(x.id)}`} data-tid={x.id} className={`ust-drawer ${x.leaving ? `ust-leaving` : ``}`} role="group" aria-labelledby={`ust-t-${cxUstDom(l.id)}`} style={{ '--sc': x.b.color }} inert={x.leaving ? `` : undefined} aria-hidden={x.leaving ? `true` : undefined}>
         <div className="ust-dwin">
           {l.note ? <p className="ust-note">{l.note}</p> : null}
           {l.self ? <ul className="ust-rows ust-self">{rows([l.self], { ...ctx, key: `${l.id}^` })}</ul> : null}
@@ -500,7 +516,7 @@ function CX_UstTree({ data, g, M, phone, still, R, onCard }) {
       return <button type="button" {...common} className="ust-card ust-branch" style={{ '--sc': x.b.color }} aria-expanded={on} onClick={() => toggleBranch(x.b)}><b>{x.b.label}</b><CxUstCounts list={x.b.counts} /><CxUstPm /></button>;
     }
     const l = x.l, on = open.has(x.id);
-    return <button type="button" {...common} id={`ust-${cxUstDom(x.id)}`} className={`ust-card ust-list ${x.leaving ? `ust-leaving` : ``}`} style={{ '--sc': x.b.color }} aria-expanded={on} aria-controls={on ? `ust-${cxUstDom(`d:${l.id}`)}` : undefined} onClick={() => toggleList(l)}><b {...(l.rec ? REC : {})}>{l.name}</b><CxUstCounts list={l.counts} /><CxUstPm /></button>;
+    return <button type="button" {...common} id={`ust-${cxUstDom(x.id)}`} className={`ust-card ust-list ${x.leaving ? `ust-leaving` : ``}`} style={{ '--sc': x.b.color }} aria-expanded={on} aria-controls={on ? `ust-${cxUstDom(`d:${l.id}`)}` : undefined} onClick={() => toggleList(l)}><b id={`ust-t-${cxUstDom(l.id)}`} {...(l.rec ? REC : {})}>{l.name}</b><CxUstCounts list={l.counts} /><CxUstPm /></button>;
   };
   // for the browser checks: what is open, the zoom, and the picture's size
   const expose = (el) => { rootRef.current = el; if (el) el.cxTree = { open: [...open], closing: [...closing], scale: S.current.scale, W: S.current.W, H: S.current.H, branches: model.branches.map((b) => ({ id: b.id, label: b.label, lists: b.lists.map((l) => l.id) })) }; };
@@ -542,7 +558,7 @@ function cxUstDom(id) { return String(id).replace(/[^A-Za-z0-9_-]+/g, `-`); }
 function CX_UstCard({ g, M, data, o, phone, still, sheetRef, onClose, onProfile, onMap, onIndex }) {
   const n = g.nodes[o.i], sh = cxUsMapSheet(g, M, data, o.i), url = cxUstUrl(n);
   return (
-    <CX_UsMapSheet cls="usx-note ust-info" hid="usx-note-h" noActs tall phone={phone} still={still} sheetRef={sheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={onClose}
+    <CX_UsMapSheet cls="usx-note ust-info" hid="usx-note-h" noActs tall rec={M.nodes[o.i].kind !== `hub`} phone={phone} still={still} sheetRef={sheetRef} fresh onPeek={() => {}} onMove={() => {}} onClose={onClose}
       info={{ kicker: sh.kicker, name: sh.name, sentence: sh.sentence, fact: sh.fact, lists: [], src: sh.src }}
       lead={<>
         {o.path && o.path.length ? <p className="ust-path"><span>In </span>{o.path.map((p, k) => <u.Fragment key={k}>{k ? <span aria-hidden="true">{` › `}</span> : null}<span {...(p.rec ? CX_USI_REC : {})}>{p.t}</span></u.Fragment>)}</p> : null}
