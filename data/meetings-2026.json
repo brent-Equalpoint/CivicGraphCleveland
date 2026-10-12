@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-07T13:52:29+00:00",
+"retrieved_at": "2026-10-12T19:54:11+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
-"meetings": 141,
-"with_agenda": 141,
+"meetings": 146,
+"with_agenda": 146,
 "with_minutes": 10,
-"legislation_items": 1840
+"legislation_items": 1918
 },
 "meetings": [
 {
@@ -9413,7 +9413,7 @@
 "items": [
 [
 "1042-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -9432,6 +9432,327 @@
 "items": [
 [
 "688-2026",
+"recommended for approval"
+],
+[
+"1037-2026",
+"recommended for approval"
+],
+[
+"1038-2026",
+"recommended for approval"
+],
+[
+"1135-2026",
+"recommended for approval"
+]
+]
+},
+{
+"id": 3933,
+"date": "2026-10-12",
+"time": "9:30 AM",
+"body": "Municipal Services and Properties Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3933_A_Municipal_Services_and_Properties_Committee_26-10-12_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3933&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Ordinance 591-2026 will be heard for discussion purposes only. Meeting will be live broadcast. See meeting notice for details.",
+"items": [
+[
+"591-2026",
+""
+],
+[
+"1034-2026",
+"recommended for approval"
+],
+[
+"1037-2026",
+"recommended for approval"
+],
+[
+"1137-2026",
+"recommended for approval"
+],
+[
+"1167-2026",
+"recommended for denial"
+],
+[
+"1168-2026",
+"recommended for approval"
+],
+[
+"1169-2026",
+"recommended for approval"
+],
+[
+"1174-2026",
+"recommended for approval"
+],
+[
+"1175-2026",
+"recommended for approval"
+]
+]
+},
+{
+"id": 3931,
+"date": "2026-10-12",
+"time": "2:00 PM",
+"body": "Finance, Diversity, Equity and Inclusion Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3931_A_Finance%2C_Diversity%2C_Equity_and_Inclusion_Committee_26-10-12_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3931&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "ADDENDUM - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1034-2026",
+"recommended for approval"
+],
+[
+"1037-2026",
+"recommended for approval"
+],
+[
+"1137-2026",
+"recommended for approval"
+],
+[
+"688-2026",
+"recommended for approval"
+],
+[
+"923-2026",
+"recommended for approval"
+],
+[
+"950-2026",
+""
+],
+[
+"1031-2026",
+"recommended for approval"
+],
+[
+"1038-2026",
+"recommended for approval"
+],
+[
+"1042-2026",
+""
+],
+[
+"1043-2026",
+"recommended for approval"
+],
+[
+"1135-2026",
+"recommended for approval"
+],
+[
+"1235-2026",
+"recommended for approval"
+]
+]
+},
+{
+"id": 3932,
+"date": "2026-10-12",
+"time": "7:00 PM",
+"body": "City Council",
+"place": "Council Chambers",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3932_A_City_Council_26-10-12_Agenda.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3932&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "TENTATIVE AGENDA - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1252-2026",
+""
+],
+[
+"1253-2026",
+""
+],
+[
+"1254-2026",
+""
+],
+[
+"1255-2026",
+""
+],
+[
+"1256-2026",
+""
+],
+[
+"1257-2026",
+""
+],
+[
+"1258-2026",
+""
+],
+[
+"1259-2026",
+""
+],
+[
+"1260-2026",
+""
+],
+[
+"1261-2026",
+""
+],
+[
+"1262-2026",
+""
+],
+[
+"1263-2026",
+""
+],
+[
+"1264-2026",
+""
+],
+[
+"1265-2026",
+""
+],
+[
+"1266-2026",
+""
+],
+[
+"1267-2026",
+""
+],
+[
+"1268-2026",
+""
+],
+[
+"1269-2026",
+""
+],
+[
+"1270-2026",
+""
+],
+[
+"1271-2026",
+""
+],
+[
+"1272-2026",
+""
+],
+[
+"1273-2026",
+""
+],
+[
+"1274-2026",
+""
+],
+[
+"1275-2026",
+""
+],
+[
+"1276-2026",
+""
+],
+[
+"1240-2026",
+""
+],
+[
+"1241-2026",
+""
+],
+[
+"1242-2026",
+""
+],
+[
+"1243-2026",
+""
+],
+[
+"1244-2026",
+""
+],
+[
+"1245-2026",
+""
+],
+[
+"1246-2026",
+""
+],
+[
+"1248-2026",
+""
+],
+[
+"1249-2026",
+""
+],
+[
+"1250-2026",
+""
+],
+[
+"1251-2026",
+""
+],
+[
+"1247-2026",
+""
+],
+[
+"1237-2026",
+""
+],
+[
+"1238-2026",
+""
+],
+[
+"1239-2026",
+""
+],
+[
+"688-2026",
+""
+],
+[
+"923-2026",
+""
+],
+[
+"950-2026",
+""
+],
+[
+"1031-2026",
+""
+],
+[
+"1034-2026",
 ""
 ],
 [
@@ -9443,7 +9764,73 @@
 ""
 ],
 [
+"1042-2026",
+""
+],
+[
+"1043-2026",
+""
+],
+[
 "1135-2026",
+""
+],
+[
+"1137-2026",
+""
+],
+[
+"1235-2026",
+""
+]
+]
+},
+{
+"id": 3935,
+"date": "2026-10-13",
+"time": "1:30 PM",
+"body": "Workforce, Education, Training and Youth Development Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3935_A_Workforce%2C_Education%2C_Training_and_Youth_Development_Committee_26-10-13_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3935&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"745-2026",
+""
+],
+[
+"748-2026",
+""
+],
+[
+"911-2026",
+""
+]
+]
+},
+{
+"id": 3936,
+"date": "2026-10-14",
+"time": "9:30 AM",
+"body": "Safety Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3936_A_Safety_Committee_26-10-14_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3936&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "In addition to legislation. The committee will hold Operational Review hearings for Divisions of EMS, Correction & Public Safety Inspector General. The meeting will be live broadcast. See meeting notice for details.",
+"items": [
+[
+"1116-2026",
+""
+],
+[
+"1165-2026",
 ""
 ]
 ]

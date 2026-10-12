@@ -1507,6 +1507,539 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-12T19:49:39+00:00",
+   "from": "2026-10-07T13:47:35+00:00",
+   "count": 1438,
+   "changes": [
+    {
+     "f": "923-2026",
+     "st": [
+      "In Committee",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "688-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-08",
+       "recommended for approval",
+       "Utilities Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1235-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1175-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1174-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1169-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1168-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1167-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for denial",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1137-2026",
+     "st": [
+      "In Committee",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1135-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-08",
+       "recommended for approval",
+       "Utilities Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1043-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1038-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-08",
+       "recommended for approval",
+       "Utilities Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1037-2026",
+     "st": [
+      "Agenda Ready",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-08",
+       "recommended for approval",
+       "Utilities Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1034-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ],
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1031-2026",
+     "st": [
+      "In Committee",
+      "To be Passed/Adopted"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "recommended for approval",
+       "Finance, Diversity, Equity and Inclusion Committee"
+      ]
+     ]
+    },
+    {
+     "f": "Item-1275",
+     "new": true
+    },
+    {
+     "f": "Item-1274",
+     "new": true
+    },
+    {
+     "f": "Item-1273",
+     "new": true
+    },
+    {
+     "f": "Item-1272",
+     "new": true
+    },
+    {
+     "f": "Item-1271",
+     "new": true
+    },
+    {
+     "f": "1276-2026",
+     "new": true
+    },
+    {
+     "f": "1275-2026",
+     "new": true
+    },
+    {
+     "f": "1274-2026",
+     "new": true
+    },
+    {
+     "f": "1273-2026",
+     "new": true
+    },
+    {
+     "f": "1272-2026",
+     "new": true
+    },
+    {
+     "f": "1271-2026",
+     "new": true
+    },
+    {
+     "f": "1270-2026",
+     "new": true
+    },
+    {
+     "f": "1269-2026",
+     "new": true
+    },
+    {
+     "f": "1268-2026",
+     "new": true
+    },
+    {
+     "f": "1267-2026",
+     "new": true
+    },
+    {
+     "f": "1266-2026",
+     "new": true
+    },
+    {
+     "f": "1265-2026",
+     "new": true
+    },
+    {
+     "f": "1264-2026",
+     "new": true
+    },
+    {
+     "f": "1263-2026",
+     "new": true
+    },
+    {
+     "f": "1262-2026",
+     "new": true
+    },
+    {
+     "f": "1261-2026",
+     "new": true
+    },
+    {
+     "f": "1260-2026",
+     "new": true
+    },
+    {
+     "f": "1259-2026",
+     "new": true
+    },
+    {
+     "f": "1258-2026",
+     "new": true
+    },
+    {
+     "f": "1257-2026",
+     "new": true
+    },
+    {
+     "f": "1256-2026",
+     "new": true
+    },
+    {
+     "f": "1255-2026",
+     "new": true
+    },
+    {
+     "f": "1254-2026",
+     "new": true
+    },
+    {
+     "f": "1253-2026",
+     "new": true
+    },
+    {
+     "f": "1252-2026",
+     "new": true
+    },
+    {
+     "f": "1251-2026",
+     "new": true
+    },
+    {
+     "f": "1250-2026",
+     "new": true
+    },
+    {
+     "f": "1249-2026",
+     "new": true
+    },
+    {
+     "f": "1248-2026",
+     "new": true
+    },
+    {
+     "f": "1247-2026",
+     "new": true
+    },
+    {
+     "f": "1246-2026",
+     "new": true
+    },
+    {
+     "f": "1245-2026",
+     "new": true
+    },
+    {
+     "f": "1244-2026",
+     "new": true
+    },
+    {
+     "f": "1243-2026",
+     "new": true
+    },
+    {
+     "f": "1242-2026",
+     "new": true
+    },
+    {
+     "f": "1241-2026",
+     "new": true
+    },
+    {
+     "f": "1240-2026",
+     "new": true
+    },
+    {
+     "f": "1239-2026",
+     "new": true
+    },
+    {
+     "f": "1042-2026",
+     "steps": [
+      [
+       "2026-10-07",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1238-2026",
+     "new": true
+    },
+    {
+     "f": "1237-2026",
+     "new": true
+    },
+    {
+     "f": "1230-2026",
+     "st": [
+      "First Reading",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1229-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1176-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1173-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1170-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1165-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1162-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1116-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "950-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "911-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "748-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "745-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "591-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    }
+   ]
   }
  ]
 }

@@ -1,16 +1,26 @@
 {
- "checked_at": "2026-10-05",
- "checked": 131,
- "ok": 120,
+ "checked_at": "2026-10-12",
+ "checked": 185,
+ "ok": 173,
  "uncertain": 8,
  "about": "Weekly check of public source links (scripts/check_links.py). A link is shown to residents as broken only after it failed on two checks in a row.",
  "broken": [
+  {
+   "url": "https://clerk.house.gov/evs/",
+   "status": 404,
+   "kind": "gone",
+   "since": "2026-10-12",
+   "consecutive": 1,
+   "where": [
+    "cx-us-map.jsx"
+   ]
+  },
   {
    "url": "https://github.com/$",
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 1,
+   "consecutive": 2,
    "where": [
     "cx-seat.jsx"
    ]
@@ -20,7 +30,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 1,
+   "consecutive": 2,
    "where": [
     "cx-us.jsx"
    ]
@@ -30,7 +40,7 @@
    "status": 0,
    "kind": "unreachable",
    "since": "2026-10-05",
-   "consecutive": 1,
+   "consecutive": 2,
    "where": [
     "cxm-ballot.jsx"
    ]

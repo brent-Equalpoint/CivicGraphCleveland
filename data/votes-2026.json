@@ -1,12 +1,24 @@
 {
  "source": "The City Record, official publication of the Council of the City of Cleveland, published weekly by the City Clerk, Clerk of Council",
- "retrieved_at": "2026-10-07T13:50:04+00:00",
+ "retrieved_at": "2026-10-12T19:52:42+00:00",
  "parser": 2,
  "about": "How each member of Council voted where the City Record prints names: yea, nay, absent, or recused (printed as Recusal). A member in office who is not listed has no record here, and no record is not a no. A vote to suspend the rules prints only a tally and is not stored. Nothing is scored. Also kept, each with the issue it came from: the referral printed at a first reading, the approvals printed before a final vote, and the effective date printed with a law's full text. legistar_votes fills a roll call from Council's Legistar record only where the City Record prints no names; differs lists where the two records disagree.",
  "issues": [
   {
+   "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+   "label": "Record - October 9, 2026",
+   "bytes": 9034865,
+   "modified": "Fri, 09 Oct 2026 20:54:40 GMT",
+   "sha256": "5bc412579cde61853c6ff17f06928d8714a8291bc0471659257a60e1cba0e916",
+   "parser": 2,
+   "votes": 13,
+   "problems": [],
+   "held": [],
+   "veto_lines": []
+  },
+  {
    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-   "label": "Record - Oct. 2, 2026",
+   "label": "Record - October 2, 2026",
    "bytes": 2838766,
    "modified": "Fri, 02 Oct 2026 18:01:05 GMT",
    "sha256": "2998f59107b21f06accce9d5afbd2d06c6839ab248ba0f7712b52b39152c769a",
@@ -18,7 +30,7 @@
   },
   {
    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-   "label": "Record - Sept. 25, 2026",
+   "label": "Record - September 25, 2026",
    "bytes": 4375876,
    "modified": "Fri, 25 Sep 2026 19:24:08 GMT",
    "sha256": "fa46fdaff180bdb021bdb28b5d0f85fed634ce2ad7b4e887b9cd27584548424d",
@@ -12447,7 +12459,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1029-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1029-2026, council meeting of 2026-09-21"
    }
   },
   "1030-2026": {
@@ -12476,7 +12488,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1030-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1030-2026, council meeting of 2026-09-21"
    }
   },
   "1115-2026": {
@@ -12505,7 +12517,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1115-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1115-2026, council meeting of 2026-09-21"
    }
   },
   "1153-2026": {
@@ -12534,7 +12546,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1153-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1153-2026, council meeting of 2026-09-21"
    }
   },
   "1154-2026": {
@@ -12563,7 +12575,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1154-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1154-2026, council meeting of 2026-09-21"
    }
   },
   "1155-2026": {
@@ -12592,7 +12604,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1155-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1155-2026, council meeting of 2026-09-21"
    }
   },
   "1156-2026": {
@@ -12621,7 +12633,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1156-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1156-2026, council meeting of 2026-09-21"
    }
   },
   "1158-2026": {
@@ -12650,7 +12662,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1158-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1158-2026, council meeting of 2026-09-21"
    }
   },
   "1159-2026": {
@@ -12679,7 +12691,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 1159-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 1159-2026, council meeting of 2026-09-21"
    }
   },
   "456-2026": {
@@ -12708,7 +12720,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 456-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 456-2026, council meeting of 2026-09-21"
    }
   },
   "466-2026": {
@@ -12737,7 +12749,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 466-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 466-2026, council meeting of 2026-09-21"
    }
   },
   "750-2026": {
@@ -12766,7 +12778,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 750-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 750-2026, council meeting of 2026-09-21"
    }
   },
   "751-2026": {
@@ -12795,7 +12807,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 751-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 751-2026, council meeting of 2026-09-21"
    }
   },
   "752-2026": {
@@ -12824,7 +12836,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 752-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 752-2026, council meeting of 2026-09-21"
    }
   },
   "769-2026": {
@@ -12853,7 +12865,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 769-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 769-2026, council meeting of 2026-09-21"
    }
   },
   "903-2026": {
@@ -12882,7 +12894,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 903-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 903-2026, council meeting of 2026-09-21"
    }
   },
   "905-2026": {
@@ -12911,7 +12923,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 905-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 905-2026, council meeting of 2026-09-21"
    }
   },
   "909-2026": {
@@ -12940,7 +12952,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 909-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 909-2026, council meeting of 2026-09-21"
    }
   },
   "913-2026": {
@@ -12969,7 +12981,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 913-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 913-2026, council meeting of 2026-09-21"
    }
   },
   "929-2026": {
@@ -12998,7 +13010,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 929-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 929-2026, council meeting of 2026-09-21"
    }
   },
   "932-2026": {
@@ -13027,7 +13039,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 932-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 932-2026, council meeting of 2026-09-21"
    }
   },
   "933-2026": {
@@ -13056,7 +13068,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 933-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 933-2026, council meeting of 2026-09-21"
    }
   },
   "934-2026": {
@@ -13085,7 +13097,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, roll call on file 934-2026, council meeting of 2026-09-21"
+    "locator": "Record - September 25, 2026, roll call on file 934-2026, council meeting of 2026-09-21"
    }
   },
   "1033-2026": {
@@ -13114,7 +13126,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1033-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1033-2026, council meeting of 2026-09-28"
    }
   },
   "1044-2026": {
@@ -13144,7 +13156,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1044-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1044-2026, council meeting of 2026-09-28"
    }
   },
   "1136-2026": {
@@ -13173,7 +13185,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1136-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1136-2026, council meeting of 2026-09-28"
    }
   },
   "1138-2026": {
@@ -13202,7 +13214,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1138-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1138-2026, council meeting of 2026-09-28"
    }
   },
   "1139-2026": {
@@ -13231,7 +13243,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1139-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1139-2026, council meeting of 2026-09-28"
    }
   },
   "1140-2026": {
@@ -13260,7 +13272,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1140-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1140-2026, council meeting of 2026-09-28"
    }
   },
   "1141-2026": {
@@ -13289,7 +13301,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1141-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1141-2026, council meeting of 2026-09-28"
    }
   },
   "1142-2026": {
@@ -13318,7 +13330,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1142-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1142-2026, council meeting of 2026-09-28"
    }
   },
   "1143-2026": {
@@ -13347,7 +13359,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1143-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1143-2026, council meeting of 2026-09-28"
    }
   },
   "1144-2026": {
@@ -13376,7 +13388,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1144-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1144-2026, council meeting of 2026-09-28"
    }
   },
   "1145-2026": {
@@ -13405,7 +13417,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1145-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1145-2026, council meeting of 2026-09-28"
    }
   },
   "1146-2026": {
@@ -13434,7 +13446,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1146-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1146-2026, council meeting of 2026-09-28"
    }
   },
   "1147-2026": {
@@ -13463,7 +13475,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1147-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1147-2026, council meeting of 2026-09-28"
    }
   },
   "1148-2026": {
@@ -13492,7 +13504,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1148-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1148-2026, council meeting of 2026-09-28"
    }
   },
   "1149-2026": {
@@ -13521,7 +13533,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1149-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1149-2026, council meeting of 2026-09-28"
    }
   },
   "1150-2026": {
@@ -13550,7 +13562,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1150-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1150-2026, council meeting of 2026-09-28"
    }
   },
   "1151-2026": {
@@ -13579,7 +13591,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1151-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1151-2026, council meeting of 2026-09-28"
    }
   },
   "1152-2026": {
@@ -13608,7 +13620,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1152-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1152-2026, council meeting of 2026-09-28"
    }
   },
   "1161-2026": {
@@ -13637,7 +13649,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1161-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1161-2026, council meeting of 2026-09-28"
    }
   },
   "1177-2026": {
@@ -13666,7 +13678,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1177-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1177-2026, council meeting of 2026-09-28"
    }
   },
   "1178-2026": {
@@ -13695,7 +13707,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1178-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1178-2026, council meeting of 2026-09-28"
    }
   },
   "1179-2026": {
@@ -13724,7 +13736,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1179-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1179-2026, council meeting of 2026-09-28"
    }
   },
   "1180-2026": {
@@ -13753,7 +13765,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1180-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1180-2026, council meeting of 2026-09-28"
    }
   },
   "1181-2026": {
@@ -13782,7 +13794,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1181-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1181-2026, council meeting of 2026-09-28"
    }
   },
   "1182-2026": {
@@ -13811,7 +13823,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1182-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1182-2026, council meeting of 2026-09-28"
    }
   },
   "1183-2026": {
@@ -13840,7 +13852,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 1183-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 1183-2026, council meeting of 2026-09-28"
    }
   },
   "906-2026": {
@@ -13869,7 +13881,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 906-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 906-2026, council meeting of 2026-09-28"
    }
   },
   "907-2026": {
@@ -13898,7 +13910,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 907-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 907-2026, council meeting of 2026-09-28"
    }
   },
   "910-2026": {
@@ -13927,7 +13939,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 910-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 910-2026, council meeting of 2026-09-28"
    }
   },
   "930-2026": {
@@ -13956,7 +13968,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 930-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 930-2026, council meeting of 2026-09-28"
    }
   },
   "935-2026": {
@@ -13985,7 +13997,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 935-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 935-2026, council meeting of 2026-09-28"
    }
   },
   "936-2026": {
@@ -14014,7 +14026,7 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 936-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 936-2026, council meeting of 2026-09-28"
    }
   },
   "937-2026": {
@@ -14043,7 +14055,355 @@
    },
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, roll call on file 937-2026, council meeting of 2026-09-28"
+    "locator": "Record - October 2, 2026, roll call on file 937-2026, council meeting of 2026-09-28"
+   }
+  },
+  "1035-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1035-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1166-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1166-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1204-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1204-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1232-2026": {
+   "date": "2026-10-05",
+   "question": "Adoption",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1232-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1233-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1233-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1234-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1234-2026, council meeting of 2026-10-05"
+   }
+  },
+  "1236-2026": {
+   "date": "2026-10-05",
+   "question": "Adoption",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 1236-2026, council meeting of 2026-10-05"
+   }
+  },
+  "758-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 758-2026, council meeting of 2026-10-05"
+   }
+  },
+  "902-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 902-2026, council meeting of 2026-10-05"
+   }
+  },
+  "921-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 921-2026, council meeting of 2026-10-05"
+   }
+  },
+  "924-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "nay",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 14,
+    "nay": 1
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 924-2026, council meeting of 2026-10-05"
+   }
+  },
+  "927-2026": {
+   "date": "2026-10-05",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "nay",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "nay",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 13,
+    "nay": 2
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 927-2026, council meeting of 2026-10-05"
    }
   }
  },
@@ -14377,6 +14737,36 @@
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-18-26_0.pdf",
     "locator": "Record - September 18, 2026, roll call on file 1274-2024, council meeting of 2026-09-14"
    }
+  },
+  {
+   "file": "807-2025",
+   "date": "2026-10-05",
+   "question": "Laid on the table",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "yea",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "yea",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 15,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, roll call on file 807-2025, council meeting of 2026-10-05"
+   }
   }
  ],
  "referrals": {
@@ -14629,7 +15019,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1116-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1116-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14643,7 +15033,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1135-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1135-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14656,7 +15046,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1136-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1136-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14670,7 +15060,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1137-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1137-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14683,7 +15073,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1138-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1138-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14696,7 +15086,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1139-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1139-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14709,7 +15099,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1140-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1140-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14722,7 +15112,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1141-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1141-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14735,7 +15125,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1142-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1142-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14748,7 +15138,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1143-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1143-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14761,7 +15151,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1144-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1144-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14774,7 +15164,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1145-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1145-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14787,7 +15177,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1146-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1146-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14800,7 +15190,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1147-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1147-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14813,7 +15203,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1148-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1148-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14826,7 +15216,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1149-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1149-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14839,7 +15229,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1150-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1150-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14852,7 +15242,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1151-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1151-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14865,7 +15255,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1152-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1152-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14880,7 +15270,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1157-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1157-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -14893,7 +15283,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1162-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1162-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14906,7 +15296,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1163-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1163-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14919,7 +15309,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1164-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1164-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14933,7 +15323,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1165-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1165-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14947,7 +15337,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1166-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1166-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14962,7 +15352,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1167-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1167-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14977,7 +15367,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1168-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1168-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -14992,7 +15382,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1169-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1169-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15020,7 +15410,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1170-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1170-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15034,7 +15424,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1171-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1171-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15048,7 +15438,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1172-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1172-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15062,7 +15452,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1173-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1173-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15077,7 +15467,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1174-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1174-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15092,7 +15482,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1175-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1175-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15107,7 +15497,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1176-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1176-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15134,7 +15524,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1199-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1199-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -15147,7 +15537,22 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1203-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1203-2026, council meeting of 2026-09-28"
+    }
+   }
+  ],
+  "1205-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Referred to the Directors of Capital Projects; City Planning Commission; Finance; and Law; Committees on Municipal Services and Properties; Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1205-2026, council meeting of 2026-10-05"
     }
    }
   ],
@@ -15162,6 +15567,64 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-02/City%20Record%202-6-26.pdf",
      "locator": "Record - Feb. 6, 2026, file 122-2026, council meeting of 2026-02-02"
+    }
+   }
+  ],
+  "1229-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Referred to the Directors of Public Utilities; Finance; and Law; Committees on Utilities; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Utilities",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1229-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
+  "1230-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Referred to the Directors of Public Health; Development; Finance; and Law; Committees on Health, Human Services and the Arts; Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Health, Human Services and the Arts",
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1230-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
+  "1231-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Referred to the Directors of Development; Public Safety; City Planning Commission; Finance; and Law; Committees on Safety; Development, Planning and Sustainability; Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Safety",
+     "Development, Planning and Sustainability",
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1231-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
+  "1235-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Referred to the Director of Law; and Committee on Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1235-2026, council meeting of 2026-10-05"
     }
    }
   ],
@@ -18574,7 +19037,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1029-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1029-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -18601,7 +19064,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 1030-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 1030-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -18615,7 +19078,21 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1033-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1033-2026, council meeting of 2026-09-28"
+    }
+   }
+  ],
+  "1035-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Public Safety; Finance; and Law; Committees on Safety; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Safety",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1035-2026, council meeting of 2026-10-05"
     }
    }
   ],
@@ -18642,7 +19119,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1044-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1044-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18682,7 +19159,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1136-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1136-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18695,7 +19172,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1138-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1138-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18708,7 +19185,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1139-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1139-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18721,7 +19198,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1140-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1140-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18734,7 +19211,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1141-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1141-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18747,7 +19224,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1142-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1142-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18760,7 +19237,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1143-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1143-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18773,7 +19250,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1144-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1144-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18786,7 +19263,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1145-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1145-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18799,7 +19276,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1146-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1146-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18812,7 +19289,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1147-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1147-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18825,7 +19302,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1148-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1148-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18838,7 +19315,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1149-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1149-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18851,7 +19328,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1150-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1150-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18864,7 +19341,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1151-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1151-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -18877,7 +19354,21 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 1152-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 1152-2026, council meeting of 2026-09-28"
+    }
+   }
+  ],
+  "1166-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Public Health; Finance; and Law; Committees on Health, Human Services and the Arts; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Health, Human Services and the Arts",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 1166-2026, council meeting of 2026-10-05"
     }
    }
   ],
@@ -20143,7 +20634,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 456-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 456-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -20214,7 +20705,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 466-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 466-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21502,7 +21993,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 750-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 750-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21516,7 +22007,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 751-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 751-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21530,7 +22021,22 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 752-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 752-2026, council meeting of 2026-09-21"
+    }
+   }
+  ],
+  "758-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Public Utilities; City Planning Commission; Finance; and Law; Committees on Utilities; Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Utilities",
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 758-2026, council meeting of 2026-10-05"
     }
    }
   ],
@@ -21677,7 +22183,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 769-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 769-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21752,6 +22258,20 @@
     }
    }
   ],
+  "902-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Port Control; Finance; and Law; Committees on Transportation and Mobility; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Transportation and Mobility",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 902-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
   "903-2026": [
    {
     "date": "2026-09-21",
@@ -21762,7 +22282,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 903-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 903-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21789,7 +22309,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 905-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 905-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21803,7 +22323,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 906-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 906-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -21817,7 +22337,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 907-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 907-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -21831,7 +22351,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 909-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 909-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21860,7 +22380,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 910-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 910-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -21888,7 +22408,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 913-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 913-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -21957,6 +22477,35 @@
     }
    }
   ],
+  "921-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Capital Projects; City Planning Commission; Finance; and Law; Committees on Municipal Services and Properties; Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 921-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
+  "924-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Port Control; Finance; and Law; Committees on Transportation and Mobility; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Transportation and Mobility",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 924-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
   "926-2026": [
    {
     "date": "2026-09-14",
@@ -21971,6 +22520,23 @@
     }
    }
   ],
+  "927-2026": [
+   {
+    "date": "2026-10-05",
+    "text": "Approved by the Directors of Public Health; Development; Public Safety; City Planning Commission; Finance; and Law; Committees on Health, Human Services and the Arts; Development, Planning and Sustainability; Safety; Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Health, Human Services and the Arts",
+     "Development, Planning and Sustainability",
+     "Safety",
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+     "locator": "Record - October 9, 2026, file 927-2026, council meeting of 2026-10-05"
+    }
+   }
+  ],
   "929-2026": [
    {
     "date": "2026-09-21",
@@ -21981,7 +22547,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 929-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 929-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -22008,7 +22574,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 930-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 930-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -22022,7 +22588,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 932-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 932-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -22036,7 +22602,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 933-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 933-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -22050,7 +22616,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-     "locator": "Record - Sept. 25, 2026, file 934-2026, council meeting of 2026-09-21"
+     "locator": "Record - September 25, 2026, file 934-2026, council meeting of 2026-09-21"
     }
    }
   ],
@@ -22063,7 +22629,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 935-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 935-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -22076,7 +22642,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 936-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 936-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -22089,7 +22655,7 @@
     ],
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-     "locator": "Record - Oct. 2, 2026, file 937-2026, council meeting of 2026-09-28"
+     "locator": "Record - October 2, 2026, file 937-2026, council meeting of 2026-09-28"
     }
    }
   ],
@@ -22213,7 +22779,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1022-2026"
+    "locator": "Record - September 25, 2026, full text of file 1022-2026"
    }
   },
   "1023-2026": {
@@ -22221,7 +22787,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1023-2026"
+    "locator": "Record - September 25, 2026, full text of file 1023-2026"
    }
   },
   "1024-2026": {
@@ -22229,7 +22795,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1024-2026"
+    "locator": "Record - September 25, 2026, full text of file 1024-2026"
    }
   },
   "1025-2026": {
@@ -22237,7 +22803,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1025-2026"
+    "locator": "Record - September 25, 2026, full text of file 1025-2026"
    }
   },
   "1026-2026": {
@@ -22245,7 +22811,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1026-2026"
+    "locator": "Record - September 25, 2026, full text of file 1026-2026"
    }
   },
   "1027-2026": {
@@ -22253,7 +22819,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1027-2026"
+    "locator": "Record - September 25, 2026, full text of file 1027-2026"
    }
   },
   "1028-2026": {
@@ -22261,7 +22827,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1028-2026"
+    "locator": "Record - September 25, 2026, full text of file 1028-2026"
    }
   },
   "1029-2026": {
@@ -22269,7 +22835,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1029-2026"
+    "locator": "Record - October 2, 2026, full text of file 1029-2026"
    }
   },
   "103-2026": {
@@ -22285,7 +22851,15 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1030-2026"
+    "locator": "Record - October 2, 2026, full text of file 1030-2026"
+   }
+  },
+  "1033-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1033-2026"
    }
   },
   "1036-2026": {
@@ -22293,7 +22867,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1036-2026"
+    "locator": "Record - September 25, 2026, full text of file 1036-2026"
    }
   },
   "104-2026": {
@@ -22309,7 +22883,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1040-2026"
+    "locator": "Record - September 25, 2026, full text of file 1040-2026"
    }
   },
   "1041-2026": {
@@ -22317,7 +22891,15 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1041-2026"
+    "locator": "Record - September 25, 2026, full text of file 1041-2026"
+   }
+  },
+  "1044-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1044-2026"
    }
   },
   "1045-2026": {
@@ -22325,7 +22907,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1045-2026"
+    "locator": "Record - September 25, 2026, full text of file 1045-2026"
    }
   },
   "1046-2026": {
@@ -22333,7 +22915,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1046-2026"
+    "locator": "Record - September 25, 2026, full text of file 1046-2026"
    }
   },
   "105-2026": {
@@ -22365,7 +22947,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1073-2026"
+    "locator": "Record - September 25, 2026, full text of file 1073-2026"
    }
   },
   "108-2026": {
@@ -22405,7 +22987,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 1112-2026"
+    "locator": "Record - September 25, 2026, full text of file 1112-2026"
    }
   },
   "1115-2026": {
@@ -22413,7 +22995,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1115-2026"
+    "locator": "Record - October 2, 2026, full text of file 1115-2026"
    }
   },
   "112-2026": {
@@ -22432,12 +23014,116 @@
     "locator": "Record - Feb. 13, 2026, full text of file 113-2026"
    }
   },
+  "1136-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1136-2026"
+   }
+  },
+  "1138-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1138-2026"
+   }
+  },
+  "1139-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1139-2026"
+   }
+  },
   "114-2026": {
    "effective": "2026-02-05",
    "adopted": "2026-02-02",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-07/REVISED_City%20Record%202-13-26.pdf",
     "locator": "Record - Feb. 13, 2026, full text of file 114-2026"
+   }
+  },
+  "1140-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1140-2026"
+   }
+  },
+  "1141-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1141-2026"
+   }
+  },
+  "1142-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1142-2026"
+   }
+  },
+  "1143-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1143-2026"
+   }
+  },
+  "1144-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1144-2026"
+   }
+  },
+  "1145-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1145-2026"
+   }
+  },
+  "1146-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1146-2026"
+   }
+  },
+  "1147-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1147-2026"
+   }
+  },
+  "1148-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1148-2026"
+   }
+  },
+  "1149-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1149-2026"
    }
   },
   "115-2026": {
@@ -22448,12 +23134,36 @@
     "locator": "Record - Feb. 13, 2026, full text of file 115-2026"
    }
   },
+  "1150-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1150-2026"
+   }
+  },
+  "1151-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1151-2026"
+   }
+  },
+  "1152-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1152-2026"
+   }
+  },
   "1153-2026": {
    "effective": "2026-09-23",
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1153-2026"
+    "locator": "Record - October 2, 2026, full text of file 1153-2026"
    }
   },
   "1154-2026": {
@@ -22461,7 +23171,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1154-2026"
+    "locator": "Record - October 2, 2026, full text of file 1154-2026"
    }
   },
   "1155-2026": {
@@ -22469,7 +23179,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1155-2026"
+    "locator": "Record - October 2, 2026, full text of file 1155-2026"
    }
   },
   "1156-2026": {
@@ -22477,7 +23187,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1156-2026"
+    "locator": "Record - October 2, 2026, full text of file 1156-2026"
    }
   },
   "1158-2026": {
@@ -22485,7 +23195,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1158-2026"
+    "locator": "Record - October 2, 2026, full text of file 1158-2026"
    }
   },
   "1159-2026": {
@@ -22493,7 +23203,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 1159-2026"
+    "locator": "Record - October 2, 2026, full text of file 1159-2026"
    }
   },
   "116-2026": {
@@ -22504,6 +23214,14 @@
     "locator": "Record - Feb. 13, 2026, full text of file 116-2026"
    }
   },
+  "1161-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1161-2026"
+   }
+  },
   "117-2026": {
    "effective": "2026-03-26",
    "passed": "2026-03-23",
@@ -22512,12 +23230,68 @@
     "locator": "Record - April 3, 2026, full text of file 117-2026"
    }
   },
+  "1177-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1177-2026"
+   }
+  },
+  "1178-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1178-2026"
+   }
+  },
+  "1179-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1179-2026"
+   }
+  },
   "118-2026": {
    "effective": "2026-02-05",
    "passed": "2026-02-02",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-07/REVISED_City%20Record%202-13-26.pdf",
     "locator": "Record - Feb. 13, 2026, full text of file 118-2026"
+   }
+  },
+  "1180-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1180-2026"
+   }
+  },
+  "1181-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1181-2026"
+   }
+  },
+  "1182-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1182-2026"
+   }
+  },
+  "1183-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 1183-2026"
    }
   },
   "119-2026": {
@@ -23565,7 +24339,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 456-2026"
+    "locator": "Record - October 2, 2026, full text of file 456-2026"
    }
   },
   "457-2026": {
@@ -23613,7 +24387,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 466-2026"
+    "locator": "Record - October 2, 2026, full text of file 466-2026"
    }
   },
   "467-2026": {
@@ -24757,7 +25531,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 750-2026"
+    "locator": "Record - October 2, 2026, full text of file 750-2026"
    }
   },
   "751-2026": {
@@ -24765,7 +25539,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 751-2026"
+    "locator": "Record - October 2, 2026, full text of file 751-2026"
    }
   },
   "752-2026": {
@@ -24773,7 +25547,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 752-2026"
+    "locator": "Record - October 2, 2026, full text of file 752-2026"
    }
   },
   "753-2026": {
@@ -24909,7 +25683,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 769-2026"
+    "locator": "Record - October 2, 2026, full text of file 769-2026"
    }
   },
   "77-2026": {
@@ -25261,7 +26035,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 903-2026"
+    "locator": "Record - October 2, 2026, full text of file 903-2026"
    }
   },
   "904-2026": {
@@ -25269,7 +26043,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 904-2026"
+    "locator": "Record - September 25, 2026, full text of file 904-2026"
    }
   },
   "905-2026": {
@@ -25277,7 +26051,23 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 905-2026"
+    "locator": "Record - October 2, 2026, full text of file 905-2026"
+   }
+  },
+  "906-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 906-2026"
+   }
+  },
+  "907-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 907-2026"
    }
   },
   "908-2026": {
@@ -25293,7 +26083,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 909-2026"
+    "locator": "Record - October 2, 2026, full text of file 909-2026"
    }
   },
   "91-2026": {
@@ -25304,12 +26094,20 @@
     "locator": "Record - March 6, 2026, full text of file 91-2026"
    }
   },
+  "910-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 910-2026"
+   }
+  },
   "912-2026": {
    "effective": "2026-09-17",
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 912-2026"
+    "locator": "Record - September 25, 2026, full text of file 912-2026"
    }
   },
   "913-2026": {
@@ -25317,7 +26115,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 913-2026"
+    "locator": "Record - October 2, 2026, full text of file 913-2026"
    }
   },
   "916-2026": {
@@ -25325,7 +26123,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 916-2026"
+    "locator": "Record - September 25, 2026, full text of file 916-2026"
    }
   },
   "917-2026": {
@@ -25333,7 +26131,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 917-2026"
+    "locator": "Record - September 25, 2026, full text of file 917-2026"
    }
   },
   "918-2026": {
@@ -25341,7 +26139,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 918-2026"
+    "locator": "Record - September 25, 2026, full text of file 918-2026"
    }
   },
   "919-2026": {
@@ -25349,7 +26147,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 919-2026"
+    "locator": "Record - September 25, 2026, full text of file 919-2026"
    }
   },
   "920-2026": {
@@ -25357,7 +26155,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 920-2026"
+    "locator": "Record - September 25, 2026, full text of file 920-2026"
    }
   },
   "925-2026": {
@@ -25373,7 +26171,7 @@
    "passed": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 926-2026"
+    "locator": "Record - September 25, 2026, full text of file 926-2026"
    }
   },
   "929-2026": {
@@ -25381,7 +26179,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 929-2026"
+    "locator": "Record - October 2, 2026, full text of file 929-2026"
    }
   },
   "93-2026": {
@@ -25392,12 +26190,20 @@
     "locator": "Record - March 20, 2026, full text of file 93-2026"
    }
   },
+  "930-2026": {
+   "effective": "2026-10-01",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 930-2026"
+   }
+  },
   "932-2026": {
    "effective": "2026-09-23",
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 932-2026"
+    "locator": "Record - October 2, 2026, full text of file 932-2026"
    }
   },
   "933-2026": {
@@ -25405,7 +26211,7 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 933-2026"
+    "locator": "Record - October 2, 2026, full text of file 933-2026"
    }
   },
   "934-2026": {
@@ -25413,7 +26219,31 @@
    "passed": "2026-09-21",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
-    "locator": "Record - Oct. 2, 2026, full text of file 934-2026"
+    "locator": "Record - October 2, 2026, full text of file 934-2026"
+   }
+  },
+  "935-2026": {
+   "effective": "2026-10-28",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 935-2026"
+   }
+  },
+  "936-2026": {
+   "effective": "2026-10-28",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 936-2026"
+   }
+  },
+  "937-2026": {
+   "effective": "2026-10-28",
+   "passed": "2026-09-28",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
+    "locator": "Record - October 9, 2026, full text of file 937-2026"
    }
   },
   "938-2026": {
@@ -25557,7 +26387,7 @@
    "adopted": "2026-09-14",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
-    "locator": "Record - Sept. 25, 2026, full text of file 956-2026"
+    "locator": "Record - September 25, 2026, full text of file 956-2026"
    }
   },
   "957-2026": {
@@ -25617,18 +26447,18 @@
  ],
  "skipped": [],
  "counts": {
-  "issues": 40,
-  "files": 467,
-  "other": 11,
+  "issues": 41,
+  "files": 479,
+  "other": 12,
   "skipped": 0,
-  "referrals": 300,
-  "approvals": 260,
-  "effective": 429,
+  "referrals": 305,
+  "approvals": 267,
+  "effective": 462,
   "actions_held": 4,
   "legistar_items": 164,
   "legistar_votes": 1,
   "differs": 5,
-  "no_names": 12
+  "no_names": 0
  },
  "legistar_votes": {
   "4-2026": {
@@ -25720,7 +26550,7 @@
  ],
  "legistar": {
   "source": "https://webapi.legistar.com/v1/cityofcleveland (/events/{id}/eventitems, /eventitems/{id}/votes)",
-  "read_at": "2026-10-07T13:50:04+00:00",
+  "read_at": "2026-10-12T19:52:42+00:00",
   "items": [
    [
     97172,
@@ -29510,66 +30340,5 @@
   ],
   "held": []
  },
- "no_names": {
-  "1035-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1166-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1204-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1232-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1233-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1234-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "1236-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "758-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "902-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "921-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "924-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  },
-  "927-2026": {
-   "passed": "2026-10-05",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-09-28"
-  }
- }
+ "no_names": {}
 }
