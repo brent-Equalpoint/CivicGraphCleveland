@@ -4163,15 +4163,34 @@ async function axeBad(p) {
        DESIGN_UPDATE=1 node scripts/checks/run.js --only design-look
    and read the diff of design/look.json before committing. Text, dates, and counts are not compared; only how things look. */
 const LOOK_PROPS = ['color', 'backgroundColor', 'fontFamily', 'fontSize', 'fontWeight', 'lineHeight', 'letterSpacing', 'borderRadius', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'minHeight', 'borderTopWidth', 'borderTopColor'];
+/* The Updated strip under the header shows when the pulled records are 3 or more days old (ext/cx-live.jsx). The checks that assume fresh records ran on the day
+   of a nightly pull; when the nightly job is down for days, they would fail for a reason that is not theirs. This returns a script that runs the page as if the
+   records were pulled an hour ago, only when they are really old, and nothing otherwise. A check of the old-data strip pins its own clock (see records-feed). */
+function freshPre() {
+  try {
+    const at = Date.parse(JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'legistar-2026.json'), 'utf8')).retrieved_at);
+    if (!(Date.now() - at > 2 * 864e5)) return undefined;
+    return `(() => { const R = Date, off = ${at + 3600e3} - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
+  } catch (e) { return undefined; }
+}
+/* The look of "At City Hall" has a lead meeting, a heading, and a watch row only when a meeting is on the Clerk's calendar. Between meetings (and now, with none
+   listed) the page shows its empty state, so the look snapshot would change with the calendar and not with the design. This answers the meetings file with the real
+   record plus one Council meeting tomorrow evening, so the screen always has its next meeting; nothing else about the page changes. */
+function meetingsWithNext() {
+  const real = JSON.parse(fs.readFileSync(path.join(SITE, 'meetings', 'meetings-2026.json'), 'utf8'));
+  const d = new Date(Date.now() + 36 * 3600 * 1000), iso = d.toLocaleDateString('en-CA', { timeZone: 'America/New_York' });
+  const next = { id: 990001, date: iso, time: '7:00 PM', body: 'City Council', place: 'Council Chambers', agenda: 'https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/1/3786_A_City_Council_26-01-05_Agenda.pdf', minutes: null, page: 'https://cityofcleveland.legistar.com/Calendar.aspx', agenda_status: 'Final', minutes_status: 'Draft', note: '', items: [] };
+  return { ...real, meetings: [...real.meetings, next] };
+}
 const LOOK_PAGES = [
-  ['phone today', '/#phone', { mobile: true, easy: false }, null, ['.cxm-top', '.cxm-brand', '.cxm-top-actions .cxm-you', '.cxm-top-actions .cxm-lang', '.cxm-fresh', '.cxm-story-btn small', '.cxm-ring', '.cxm-count', '.cxm-count strong', '.cxm-h2', '.cxm-tabs button']],
+  ['phone today', '/#phone', { mobile: true, easy: false, pre: freshPre() }, null, ['.cxm-top', '.cxm-brand', '.cxm-top-actions .cxm-you', '.cxm-top-actions .cxm-lang', '.cxm-fresh', '.cxm-story-btn small', '.cxm-ring', '.cxm-count', '.cxm-count strong', '.cxm-h2', '.cxm-tabs button']],
   ['phone ballot', '/?panel=ballot#phone', { mobile: true, easy: false }, null, ['.cxm-keycard', '.cxm-keycard strong', '.cxm-tile', '.cxm-kicker']],
   ['phone story frame', '/#phone', { mobile: true, easy: false }, 'story', ['.cxm-story', '.cxm-bars i.on', '.cxm-story-who strong', '.cxm-story-big', '.cxm-story-small', '.cxm-story .cxm-kicker', '.cxm-story-text']],
   ['phone story figure', '/#phone', { mobile: true, easy: false }, 'figure', ['.cxm-story-fig', '.cxm-story-big']],
   ['phone number pad', '/#phone', { mobile: true, easy: false }, 'pad', ['.cxm-keys button', '.cxm-story .cxm-btn', '.cxm-story-fig']],
   ['phone levies', '/?panel=levies#phone', { mobile: true, easy: false }, null, ['.cxm-sheet', '.lv-tile', '.lv-tile-fig', '.lv-tile-per', '.lv-field input', '.lv-h2']],
   // At City Hall is Records > Meetings: the Records folder tabs (People's folder tabs) take the place of the full page's bar and back arrow
-  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false }, null, ['.cxm-recbar', '.cxm-recbar [aria-selected="true"]', '.cxm-recbar [aria-selected="false"]', '.mt-lead', '.mt-head', '.mt-watch', '.mt-days [aria-selected="true"]', '.mt-days [aria-selected="false"]', '.mt-daypanel', '.mt-group-h', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.cxm-kicker']],
+  ['phone city hall', '/?panel=meetings#phone', { mobile: true, easy: false, mock: { '/meetings/meetings-2026.json': meetingsWithNext() } }, null, ['.cxm-recbar', '.cxm-recbar [aria-selected="true"]', '.cxm-recbar [aria-selected="false"]', '.mt-lead', '.mt-head', '.mt-watch', '.mt-days [aria-selected="true"]', '.mt-days [aria-selected="false"]', '.mt-daypanel', '.mt-group-h', '.mt-item', '.mt-item small', '.mt-chip', '.mt-links', '.cxm-kicker']],
   // Records > Rooms (Explore as it was): the heading, the doors, a level heading, a room card plain and highlighted, the rail
   ['phone records rooms', '/?panel=explore#phone', { mobile: true, easy: false }, null, ['.cxm-rooms > .cxm-h1', '.cxm-rooms > .cxm-mut', '.cxm-searchbar', '.cxm-door', '.cxm-level-h', '.cxm-level-h .cxm-kicker', '.cxm-roomtile:not(.focus)', '.cxm-roomtile.focus', '.cxm-roomtile-q', '.cxm-roomtile-p', '.cxm-rail-track', '.cxm-tick:not(.on) i', '.cxm-tick.on i', '.cxm-end']],
   ['desktop stories', '/?panel=stories#desktop', {}, null, ['.cx-stories h1', '.cx-stories-pick button', '.cx-story-reader', '.cx-story-big', '.cx-story-small', '.cx-story-btn']],
@@ -4604,9 +4623,10 @@ CHECKS['tab-blue'] = async () => {
       const typeIn = (v) => p.evaluate(async (v) => { const w = (ms) => new Promise((r) => setTimeout(r, ms)); const i = document.querySelector('.cxm-sheet input[type=search]'); Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value').set.call(i, v); i.dispatchEvent(new Event('input', { bubbles: true })); await w(250); document.querySelector('.cxm-sheet .cxm-hp .cxm-chips button').click(); await w(450); }, v);
       await p.click('.cxm-setplace'); await wait(450);
       await typeIn(step ? 'Downtown' : 'Hough');
-      if (step) { await p.evaluate(() => document.querySelectorAll('.cxm-hp-ward')[1].click()); await wait(450); }
+      if (step) { await p.evaluate(() => { const c = document.querySelector('.cxm-sheet .cxm-hp .cxm-chips button'); if (c) c.click(); }); await wait(400); await p.evaluate(() => document.querySelectorAll('.cxm-hp-ward')[1].click()); await wait(450); }   // a big neighborhood opens its ward step when its chip is chosen (the same two steps as the placeStep screen)
       await p.evaluate(() => document.querySelector('.cxm-tabs button:nth-child(2)').click()); await wait(500);
       await p.evaluate(() => document.getElementById('rf-folder-meetings').click()); await wait(900);
+      await p.keyboard.press('Escape'); await wait(300);   // the notice that offers Undo sits over the Change link for a few seconds; Escape closes it (and only it)
       await p.click('.mt-you-place .cxm-link'); await wait(450);
       if (step) await typeIn('Downtown');
     }
@@ -5047,7 +5067,7 @@ CHECKS['records-feed'] = async () => {
     await t.evaluate(() => document.querySelectorAll('.cxm-tabs button')[0].click()); await wait(700);
     expect(!(await has(t, '.rf-page')) && (await has(t, '.rf-latest')), 'the Today tab did not return to Today from Records');
     // the Updated strip shows only when the data is old (3 or more days): with fresh data there is no strip; with old data it warns and opens What's new, never Latest
-    expect(!(await has(t, '.cxm-fresh')), 'the Updated strip shows although the data is fresh');
+    expect(!!freshPre() || !(await has(t, '.cxm-fresh')), 'the Updated strip shows although the data is fresh');   // when the pulled records are really old the strip is right to show; the old-records case below tests it
     { const at = (iso) => `(() => { const R = Date, off = R.parse(${JSON.stringify(iso)}) - R.now(); globalThis.Date = class extends R { constructor(...a) { if (a.length) super(...a); else super(R.now() + off); } static now() { return R.now() + off; } }; })()`;
       const o = await open('/#phone', { mobile: true, easy: false, pre: at(new Date(Date.now() + 6 * 864e5).toISOString()), settle: 1800 });
       const strip = await o.evaluate(() => ({ b: ((document.querySelector('.cxm-fresh b') || {}).innerText || '').replace(/\s+/g, ' ').trim(), hint: ((document.querySelector('.cxm-fresh-hint') || {}).textContent || '').trim() }));
@@ -5174,7 +5194,7 @@ CHECKS['records-tab'] = async () => {
     expect((await recFolderOf(t)) === want, `${what} opened ${(await recFolderOf(t)) || 'no Records folder'}, not ${want}`);
   }
   // with fresh data there is no Updated strip over Records (it shows only for old data; the records-feed check covers that)
-  expect(!(await has(t, '.cxm-fresh')), 'the Updated strip shows over Records although the data is fresh');
+  expect(!!freshPre() || !(await has(t, '.cxm-fresh')), 'the Updated strip shows over Records although the data is fresh');   // as in records-feed: with really old records the strip is right to show
   await folder(t, 'rooms'); await wait(800);
   await t.evaluate(() => [...document.querySelectorAll('.cxm-door')][0].click()); await wait(800);
   expect((await recFolderOf(t)) === 'meetings', 'the At City Hall door in Rooms did not open the Meetings folder');

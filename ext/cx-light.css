@@ -64,3 +64,5 @@ html[data-cx-mode="light"] .cxm-level-h circle.core { stroke: none; }
   html[data-cx-mode="light"] .cxm-rail-bubble { border: 2px solid var(--ink); }
 }
 html[data-cx-mode="light"] .cxm-tabs button.on { color: #1f4fd6; }
+/* the old-data notice under the header: its link takes the strip's own dark text color (the link color on this tint is 4.29 to 1 in the Original style); it stays underlined, so it is not told apart by color alone */
+html[data-cx-mode="light"] .cx-stale a { color: inherit; text-decoration: underline; }
