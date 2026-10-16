@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-12T19:50:08+00:00",
+"retrieved_at": "2026-10-16T16:57:24+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -3740,6 +3740,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved as amended",
+"City Council"
 ]
 ],
 "689-2026": [
@@ -3929,6 +3934,11 @@
 "2026-09-23",
 "recommended for approval",
 "Safety Committee"
+],
+[
+"2026-10-13",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
 ]
 ],
 "746-2026": [
@@ -3960,6 +3970,11 @@
 "2026-09-14",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-13",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
 ]
 ],
 "749-2026": [
@@ -4558,6 +4573,11 @@
 "2026-09-14",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-13",
+"recommended for approval",
+"Workforce, Education, Training and Youth Development Committee"
 ]
 ],
 "912-2026": [
@@ -4695,6 +4715,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved as amended",
+"City Council"
 ]
 ],
 "924-2026": [
@@ -5125,6 +5150,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved as amended",
+"City Council"
 ]
 ],
 "1032-2026": [
@@ -5166,6 +5196,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved",
+"City Council"
 ]
 ],
 "1035-2026": [
@@ -5207,6 +5242,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved as amended",
+"City Council"
 ]
 ],
 "1038-2026": [
@@ -5219,6 +5259,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved",
+"City Council"
 ]
 ],
 "1039-2026": [],
@@ -5253,6 +5298,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved as amended",
+"City Council"
 ]
 ],
 "1044-2026": [
@@ -5309,7 +5359,13 @@
 "City Council"
 ]
 ],
-"1116-2026": [],
+"1116-2026": [
+[
+"2026-10-14",
+"recommended for approval",
+"Safety Committee"
+]
+],
 "1135-2026": [
 [
 "2026-10-08",
@@ -5320,6 +5376,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved",
+"City Council"
 ]
 ],
 "1136-2026": [
@@ -5344,6 +5405,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"approved",
+"City Council"
 ]
 ],
 "1138-2026": [
@@ -5579,7 +5645,13 @@
 "1162-2026": [],
 "1163-2026": [],
 "1164-2026": [],
-"1165-2026": [],
+"1165-2026": [
+[
+"2026-10-14",
+"recommended for approval",
+"Safety Committee"
+]
+],
 "1166-2026": [
 [
 "2026-10-05",
@@ -5725,6 +5797,11 @@
 "2026-10-12",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-12",
+"adopted",
+"City Council"
 ]
 ],
 "1236-2026": [
@@ -5734,9 +5811,27 @@
 "City Council"
 ]
 ],
-"1237-2026": [],
-"1238-2026": [],
-"1239-2026": [],
+"1237-2026": [
+[
+"2026-10-12",
+"adopted",
+"City Council"
+]
+],
+"1238-2026": [
+[
+"2026-10-12",
+"adopted",
+"City Council"
+]
+],
+"1239-2026": [
+[
+"2026-10-12",
+"adopted",
+"City Council"
+]
+],
 "1240-2026": [],
 "1241-2026": [],
 "1242-2026": [],
@@ -5745,10 +5840,44 @@
 "1245-2026": [],
 "1246-2026": [],
 "1247-2026": [],
-"1248-2026": [],
-"1249-2026": [],
-"1250-2026": [],
-"1251-2026": []
+"1248-2026": [
+[
+"2026-10-12",
+"approved",
+"City Council"
+]
+],
+"1249-2026": [
+[
+"2026-10-12",
+"approved",
+"City Council"
+]
+],
+"1250-2026": [
+[
+"2026-10-12",
+"approved",
+"City Council"
+]
+],
+"1251-2026": [
+[
+"2026-10-12",
+"approved",
+"City Council"
+]
+],
+"1279-2026": [],
+"1280-2026": [],
+"1281-2026": [],
+"1282-2026": [],
+"1283-2026": [],
+"1284-2026": [],
+"1289-2026": [],
+"1290-2026": [],
+"1291-2026": [],
+"1292-2026": []
 },
 "addresses": {
 "4025 East 131st Street": {
@@ -6944,6 +7073,34 @@
 9,
 10
 ]
+},
+"1289-2026": {
+"file": "1289-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/85d5be3a-a71e-4ec8-8680-63f9ac757ed7.doc",
+"amounts": [
+38000.0
+],
+"limit": 38000.0,
+"wards": [
+9
+]
+},
+"1290-2026": {
+"file": "1290-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/6896d81c-02b4-4769-846b-4772260eed73.doc",
+"amounts": [
+10770.0
+],
+"limit": 10770.0,
+"wards": [
+9
+]
+},
+"1292-2026": {
+"file": "1292-2026",
+"text_url": null,
+"amounts": [],
+"limit": null
 }
 }
 }

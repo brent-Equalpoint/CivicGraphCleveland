@@ -1,6 +1,6 @@
 {
  "source": "https://webapi.legistar.com/v1/cityofcleveland",
- "retrieved_at": "2026-10-12T19:49:39+00:00",
+ "retrieved_at": "2026-10-16T16:57:06+00:00",
  "items": {
   "556-2026": {
    "file": "556-2026",
@@ -212,11 +212,11 @@
    "legistar": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37379&GUID=D43A8AB9-F560-43FC-83AA-DF51D1BC42F9",
    "summary_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/250ff3ef-cddd-4a5f-9fd0-cff8ab9da024.pdf",
    "summary": "1031-2026",
-   "text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/c2e28f69-81c6-4d75-a802-97928edb3304.doc",
+   "text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/1f3edf98-eade-4b1d-8e49-9c68baefaf33.docx",
    "whereas": [
     "this ordinance constitutes an emergency measure providing for the usual daily operation of a municipal department; now, therefore,"
    ],
-   "text_name": "1031-2026-Ag Legal Aid Society for eviction proceedings"
+   "text_name": "1031-2026-as amended-desk copy-Final"
   },
   "620-2026": {
    "file": "620-2026",

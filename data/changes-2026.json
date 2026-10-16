@@ -2040,6 +2040,549 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-16T16:57:06+00:00",
+   "from": "2026-10-12T19:49:39+00:00",
+   "count": 1467,
+   "changes": [
+    {
+     "f": "Item-1282",
+     "new": true
+    },
+    {
+     "f": "Item-1281",
+     "new": true
+    },
+    {
+     "f": "Item-1280",
+     "new": true
+    },
+    {
+     "f": "Item-1279",
+     "new": true
+    },
+    {
+     "f": "Item-1277",
+     "new": true
+    },
+    {
+     "f": "Item-1276",
+     "new": true
+    },
+    {
+     "f": "1299-2026",
+     "new": true
+    },
+    {
+     "f": "1298-2026",
+     "new": true
+    },
+    {
+     "f": "1297-2026",
+     "new": true
+    },
+    {
+     "f": "1296-2026",
+     "new": true
+    },
+    {
+     "f": "1295-2026",
+     "new": true
+    },
+    {
+     "f": "1294-2026",
+     "new": true
+    },
+    {
+     "f": "1293-2026",
+     "new": true
+    },
+    {
+     "f": "1292-2026",
+     "new": true
+    },
+    {
+     "f": "1291-2026",
+     "new": true
+    },
+    {
+     "f": "1290-2026",
+     "new": true
+    },
+    {
+     "f": "1289-2026",
+     "new": true
+    },
+    {
+     "f": "1288-2026",
+     "new": true
+    },
+    {
+     "f": "1287-2026",
+     "new": true
+    },
+    {
+     "f": "1286-2026",
+     "new": true
+    },
+    {
+     "f": "1285-2026",
+     "new": true
+    },
+    {
+     "f": "1284-2026",
+     "new": true
+    },
+    {
+     "f": "1283-2026",
+     "new": true
+    },
+    {
+     "f": "1282-2026",
+     "new": true
+    },
+    {
+     "f": "1281-2026",
+     "new": true
+    },
+    {
+     "f": "1280-2026",
+     "new": true
+    },
+    {
+     "f": "1279-2026",
+     "new": true
+    },
+    {
+     "f": "1165-2026",
+     "steps": [
+      [
+       "2026-10-14",
+       "recommended for approval",
+       "Safety Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1116-2026",
+     "steps": [
+      [
+       "2026-10-14",
+       "recommended for approval",
+       "Safety Committee"
+      ]
+     ]
+    },
+    {
+     "f": "911-2026",
+     "steps": [
+      [
+       "2026-10-13",
+       "recommended for approval",
+       "Workforce, Education, Training and Youth Development Committee"
+      ]
+     ]
+    },
+    {
+     "f": "748-2026",
+     "steps": [
+      [
+       "2026-10-13",
+       "recommended for approval",
+       "Workforce, Education, Training and Youth Development Committee"
+      ]
+     ]
+    },
+    {
+     "f": "745-2026",
+     "steps": [
+      [
+       "2026-10-13",
+       "recommended for approval",
+       "Workforce, Education, Training and Youth Development Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1278-2026",
+     "new": true
+    },
+    {
+     "f": "1277-2026",
+     "new": true
+    },
+    {
+     "f": "923-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "688-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1251-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1250-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1249-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1248-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1239-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "sp": [
+      "Richard A. Starr"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1238-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1237-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1235-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "adopted",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1137-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1135-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1043-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1038-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1037-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1034-2026",
+     "st": [
+      "Agenda Ready",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1031-2026",
+     "st": [
+      "To be Passed/Adopted",
+      "Passed"
+     ],
+     "steps": [
+      [
+       "2026-10-12",
+       "approved as amended",
+       "City Council"
+      ]
+     ]
+    },
+    {
+     "f": "1247-2026",
+     "st": [
+      "First Reading",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1246-2026",
+     "st": [
+      "First Reading",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1245-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1244-2026",
+     "st": [
+      "First Reading",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1243-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ],
+     "sp": [
+      "Stephanie Howse-Jones"
+     ]
+    },
+    {
+     "f": "1242-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1241-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1240-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1230-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1174-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1173-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1170-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1169-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1168-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1164-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1163-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1162-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "950-2026",
+     "st": [
+      "Agenda Ready",
+      "Held"
+     ]
+    }
+   ]
   }
  ]
 }

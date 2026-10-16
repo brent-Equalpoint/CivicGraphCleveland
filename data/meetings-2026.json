@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-12T19:54:11+00:00",
+"retrieved_at": "2026-10-16T17:02:02+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
-"meetings": 146,
-"with_agenda": 146,
+"meetings": 152,
+"with_agenda": 152,
 "with_minutes": 10,
-"legislation_items": 1918
+"legislation_items": 1933
 },
 "meetings": [
 {
@@ -9573,7 +9573,7 @@
 "page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3932&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
 "agenda_status": "Final",
 "minutes_status": "Draft",
-"note": "TENTATIVE AGENDA - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
 [
 "1252-2026",
@@ -9705,19 +9705,19 @@
 ],
 [
 "1248-2026",
-""
+"approved"
 ],
 [
 "1249-2026",
-""
+"approved"
 ],
 [
 "1250-2026",
-""
+"approved"
 ],
 [
 "1251-2026",
-""
+"approved"
 ],
 [
 "1247-2026",
@@ -9725,63 +9725,55 @@
 ],
 [
 "1237-2026",
-""
+"adopted"
 ],
 [
 "1238-2026",
-""
+"adopted"
 ],
 [
 "1239-2026",
-""
+"adopted"
 ],
 [
 "688-2026",
-""
+"approved as amended"
 ],
 [
 "923-2026",
-""
-],
-[
-"950-2026",
-""
+"approved as amended"
 ],
 [
 "1031-2026",
-""
+"approved as amended"
 ],
 [
 "1034-2026",
-""
+"approved"
 ],
 [
 "1037-2026",
-""
+"approved as amended"
 ],
 [
 "1038-2026",
-""
-],
-[
-"1042-2026",
-""
+"approved"
 ],
 [
 "1043-2026",
-""
+"approved as amended"
 ],
 [
 "1135-2026",
-""
+"approved"
 ],
 [
 "1137-2026",
-""
+"approved"
 ],
 [
 "1235-2026",
-""
+"adopted"
 ]
 ]
 },
@@ -9800,15 +9792,15 @@
 "items": [
 [
 "745-2026",
-""
+"recommended for approval"
 ],
 [
 "748-2026",
-""
+"recommended for approval"
 ],
 [
 "911-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -9827,13 +9819,168 @@
 "items": [
 [
 "1116-2026",
+"recommended for approval"
+],
+[
+"1165-2026",
+"recommended for approval"
+]
+]
+},
+{
+"id": 3937,
+"date": "2026-10-19",
+"time": "9:30 AM",
+"body": "Health, Human Services and the Arts Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3937_A_Health%2C_Human_Services_and_the_Arts_Committee_26-10-19_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3937&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1230-2026",
+""
+],
+[
+"1244-2026",
+""
+]
+]
+},
+{
+"id": 3938,
+"date": "2026-10-19",
+"time": "2:00 PM",
+"body": "Finance, Diversity, Equity and Inclusion Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3938_A_Finance%2C_Diversity%2C_Equity_and_Inclusion_Committee_26-10-19_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3938&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"745-2026",
+""
+],
+[
+"748-2026",
+""
+],
+[
+"911-2026",
+""
+],
+[
+"1042-2026",
+""
+],
+[
+"1116-2026",
+""
+],
+[
+"1162-2026",
 ""
 ],
 [
 "1165-2026",
 ""
+],
+[
+"1246-2026",
+""
+],
+[
+"1247-2026",
+""
 ]
 ]
+},
+{
+"id": 3939,
+"date": "2026-10-21",
+"time": "10:00 AM",
+"body": "Transportation and Mobility Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3939_A_Transportation_and_Mobility_Committee_26-10-21_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3939&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1168-2026",
+""
+],
+[
+"1169-2026",
+""
+],
+[
+"1170-2026",
+""
+],
+[
+"1173-2026",
+""
+],
+[
+"1174-2026",
+""
+],
+[
+"1175-2026",
+""
+]
+]
+},
+{
+"id": 3940,
+"date": "2026-10-22",
+"time": "10:00 AM",
+"body": "Operations Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3940_A_Operations_Committee_26-10-22_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3940&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": []
+},
+{
+"id": 3941,
+"date": "2026-10-22",
+"time": "1:00 PM",
+"body": "Development, Planning and Sustainability Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3941_A_Development%2C_Planning_and_Sustainability_Committee_26-10-22_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3941&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "COMMUNITY DEVELOPMENT BLOCK GRANT BUDGET HEARINGS - This meeting will be live broadcast. See meeting notice for details.",
+"items": []
+},
+{
+"id": 3942,
+"date": "2026-10-23",
+"time": "9:30 AM",
+"body": "Development, Planning and Sustainability Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3942_A_Development%2C_Planning_and_Sustainability_Committee_26-10-23_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3942&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "COMMUNITY DEVELOPMENT BLOCK GRANT BUDGET HEARINGS - Day 2 - This meeting will be live broadcast. See meeting notice for details.",
+"items": []
 }
 ]
 }
