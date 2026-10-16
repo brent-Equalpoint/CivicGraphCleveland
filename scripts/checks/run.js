@@ -214,7 +214,7 @@ async function ballotIssueStories() {
       expect(/Supports it/.test(more.all), `the Issue ${n} Read more names no supporter`);
       expect(/Raised a concern|Opposes it/.test(more.all) || /We found no named person speaking against/.test(more.all), `the Issue ${n} Read more shows no concern and does not say that none was found`);
       expect(WORDING[n].test(more.wording), `the Issue ${n} Read more does not quote its official ballot wording: "${more.wording.slice(0, 80)}"`);
-      expect(/A person has not yet read it against them|Read against its sources by/.test(more.all), `the Issue ${n} Read more does not say whether a person has reviewed it`);
+      expect(/Made from the sources linked above|Read against its sources by/.test(more.all), `the Issue ${n} Read more does not say where it comes from`);
       expect(more.bad === 0, `${more.bad} source links in the Issue ${n} story are not secure or do not open in a new tab`);
       expect(more.hrefs >= 3, `the Issue ${n} story links only ${more.hrefs} sources`);
       const ours = notQuoted(`${text} ${more.ours}`), hit = ours.match(OUR_ADVICE);
@@ -633,7 +633,7 @@ const CHECKS = {
       expect(/Issue 10/.test(t) && /Issue 11/.test(t), `the guide does not list Issues 10 and 11 (${url})`);
       expect(/\$79 a year for each \$100,000/.test(t) && /\$196 a year for each \$100,000/.test(t), `the county figures are missing (${url})`);
       expect(/Only in some places/.test(t) && (await count(p, '.lv-other')) >= 10, `the other tax issues are not listed (${url})`);
-      expect(/A person has not yet read them against those sources|Read against its sources by/.test(t), `the review status is not stated (${url})`);
+      expect(/The countywide stories were made from the sources linked in each one|Read against its sources by/.test(t), `the page does not say where the stories come from (${url})`);
       expect(!ADVICE.test(t), `the guide tells people how to vote (${url})`);
       await p.type('#lv-home', '250000'); await wait(200);
       t = await page();

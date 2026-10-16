@@ -512,7 +512,7 @@ function CxLevyBody({ issue }) {
         <summary>The official ballot wording</summary>
         <p className="lv-wtext">{issue.text.replace(/\s+/g, ` `).trim()}</p>
       </details>
-      <p className="lv-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `Made from the sources linked above. A person has not yet read it against them.`}</p>
+      <p className="lv-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `Made from the sources linked above.`}</p>
     </div>
   );
 }
@@ -556,7 +556,7 @@ function CxIssueBody({ issue }) {
         <p className="lv-wtext">{issue.text.replace(/\s+/g, ` `).trim()}</p>
         <p className="lv-note"><CxLevySrc k="list" /></p>
       </details>
-      <p className="lv-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `Made from the sources linked above. A person has not yet read it against them.`}</p>
+      <p className="lv-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `Made from the sources linked above.`}</p>
     </div>
   );
 }
@@ -647,7 +647,7 @@ function CX_Levies({ onPad, onOpen }) {
         <summary>How to read a levy</summary>
         <div className="lv-body">{CX_LEVY_TEXT.how.map((h) => <p key={h[0]}><b>{h[0]}.</b> {h[1]}</p>)}</div>
       </details>
-      <p className="sp-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `The countywide stories were made from the sources linked in each one. A person has not yet read them against those sources.`}{` The cost figures come straight from the official ballot wording. Sponsorship is not a vote, and a missing record is not a no.`}</p>
+      <p className="sp-note lv-review">{CX_LEVY_REVIEW.ok ? `Read against its sources by ${CX_LEVY_REVIEW.by} on ${CX_LEVY_REVIEW.checked}.` : `The countywide stories were made from the sources linked in each one.`}{` The cost figures come straight from the official ballot wording. Sponsorship is not a vote, and a missing record is not a no.`}</p>
       <p className="sp-note lv-review">Official source for everything on the ballot: <a href={CX_LEVY_SRC.boe.url} target="_blank" rel="noreferrer">Cuyahoga County Board of Elections<span className="sp-ext"> (opens in a new tab)</span></a>.</p>
     </section>
   );
