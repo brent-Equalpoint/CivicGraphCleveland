@@ -144,7 +144,7 @@ function CX_SeatProfile({ seatId }) {
           <dt>Office</dt><dd>{office}</dd>
           <dt>Area served</dt><dd>{isMayor ? `All of Cleveland` : `Ward ${seat.ward}`}</dd>
           <dt>Term</dt><dd>{termText}</dd>
-          {role && <><dt>Leadership role</dt><dd>{role}, from <SpLink href={CX_OFFICE_TEXT.rolesSource.url}>{CX_OFFICE_TEXT.rolesSource.label}</SpLink>. {rev.ok ? `Reviewed by ${rev.by} on ${cxLongDate(rev.checked)}.` : `A person has not yet checked this role against its source.`}</dd></>}
+          {role && <><dt>Leadership role</dt><dd>{role}, from <SpLink href={CX_OFFICE_TEXT.rolesSource.url}>{CX_OFFICE_TEXT.rolesSource.label}</SpLink>. {rev.ok ? `Reviewed by ${rev.by} on ${cxLongDate(rev.checked)}.` : ``}</dd></>}
           {!isMayor && <><dt>Committees</dt><dd>Council's public record in Legistar does not list committee seats. <SpLink href={CX_COUNCIL_SITE}>Council's website</SpLink> lists committee assignments.</dd></>}
           <dt>Official pages</dt>
           <dd>
@@ -158,7 +158,7 @@ function CX_SeatProfile({ seatId }) {
         <h2 id={sec(`does`)}>What this office does</h2>
         {lead && <p>{lead.summary}</p>}
         {lead && lead.authority && <ul className="sp-list">{lead.authority.map((a) => <li key={a}>{a}</li>)}</ul>}
-        <p className="sp-note">{rev.ok ? `This description was reviewed by ${rev.by} on ${cxLongDate(rev.checked)}.` : `A person has not yet reviewed this description against its source. Read it as a starting point, and check the source.`}</p>
+        <p className="sp-note">{rev.ok ? `This description was reviewed by ${rev.by} on ${cxLongDate(rev.checked)}.` : `Read it as a starting point, and check the source.`}</p>
         <p className="sp-src">Source: <SpLink href={lead.source.url}>{lead.source.label}</SpLink>.</p>
       </section>
 

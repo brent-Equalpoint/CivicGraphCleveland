@@ -1766,7 +1766,7 @@ const CHECKS = {
     expect(((await txt(p, '.usm-menu ul')) || '').replace(/\s+/g, ' ').trim() === 'Network People Votes by topic Compare members', `the left menu is "${await txt(p, '.usm-menu ul')}", not Network, People, Votes by topic, Compare members`);
     expect(((await txt(p, '.usm-pills')) || '').replace(/\s+/g, ' ').trim() === 'Sky Index Linked Tree', 'the views are not Sky, Index, Linked, Tree');
     await clickText(p, 'Show', '.usm-show-btn');
-    expect(/Preview/.test((await txt(p, '.usm-preview')) || '') && /not yet been read by a person/.test((await txt(p, '.usm-preview')) || ''), 'the map does not say its source terms are unconfirmed');
+    expect(/Preview/.test((await txt(p, '.usm-preview')) || '') && /public records pulled/.test((await txt(p, '.usm-preview')) || ''), 'the map does not say it is a preview built from public records');
     await clickText(p, 'Done', '.usm-panel .usm-done');
     // the Index (ext/cx-us-index.jsx; its own check is us-index): the six groups; a court, then the Chief Justice; Open profile opens their profile
     // page, whose record says who appointed them; Back returns to the same Index page
@@ -2779,7 +2779,7 @@ const CHECKS = {
     await click(p, `.ust-nm[data-ctx="leg.scom"][data-k="c:${firstCom.id}"]`); await wait(400);
     { const card = await p.evaluate(() => { const c = document.querySelector('.ust-info'); if (!c) return null; return { t: c.innerText, what: (c.querySelector('.usx-what') || {}).textContent || '', rev: (c.querySelector('.usx-review') || {}).textContent || '', btn: [...c.querySelectorAll('.usi-card-acts button')].length, web: (c.querySelector('.usi-card-acts a') || {}).href || '' }; });
       expect(!!card && card.t.includes(firstCom.name) && (ES ? card.what.length > 10 : card.what === (X.lines[firstCom.id] || [''])[0]) && card.rev && card.btn === 3 && /^https?:\/\//.test(card.web),`the committee's details card lacks its name, its lines, the review notice, the three buttons, or the website: ${JSON.stringify(card).slice(0, 200)}`);
-      if (card && !ES) expect(/not reviewed/.test(card.rev), 'the details card does not say a person has not reviewed the lines'); }
+      if (card && !ES) expect(/official text/.test(card.rev), 'the details card does not say where the lines come from'); }
     expect((await active(p)).inInfo, 'the details card did not take the focus');
     { const bad = await axeBad(p); expect(bad.length === 0, `axe on the details card: ${bad.slice(0, 3).map((x) => `${x.id} ${x.target.slice(0, 50)}`).join('; ')}`); }
     expect(!(await small(p, '.ust-info button, .ust-info a[href]')).length, `controls under 44 px on the details card: ${(await small(p, '.ust-info button, .ust-info a[href]')).slice(0, 4)}`);
@@ -2981,7 +2981,7 @@ const CHECKS = {
     const sheetWhat = await txt(d, '.usm-sheet .usx-what');
     expect(!!sheetWhat && sheetWhat === hover, `the sheet and the hover card say different first lines: "${sheetWhat}" / "${hover}"`);
     const sheetRev = await txt(d, '.usm-sheet .usx-review');
-    expect(!!sheetRev && (ES || /119th Congress/.test(sheetRev) && /not reviewed/.test(sheetRev)), `the sheet does not say whose words and which Congress, or that a person has not reviewed them: "${sheetRev}"`);
+    expect(!!sheetRev && (ES || /119th Congress/.test(sheetRev)), `the sheet does not say whose words and which Congress: "${sheetRev}"`);
     await d.evaluate(() => { const x = document.querySelector('.usm-sheet .usx-official'); if (x) x.open = true; }); await wait(200);
     const off = await d.evaluate(() => { const o = document.querySelector('.usm-sheet .usx-official'); if (!o) return null; const a = o.querySelector('.usx-src a'); return { quote: (o.querySelector('.usx-quote') || {}).innerText || '', href: a ? a.href : '', src: (o.querySelector('.usx-src') || {}).innerText || '', lang: (o.querySelector('.usx-quote') || {}).lang }; });
     expect(!!off && off.quote.length > 40 && /^https:\/\//.test(off.href) && /\d{4}/.test(off.src) && off.lang === 'en', `the committee's own words are not one tap down with a secure source, a pulled date, and lang="en": ${JSON.stringify(off).slice(0, 200)}`);
@@ -4782,7 +4782,7 @@ CHECKS['votes-actions'] = async () => {
       const own = (await p.evaluate(VA_OWN, '.rc-actions')) + ' ' + (await p.evaluate(VA_OWN, '.rc-positions'));
       expect(!VA_SCORE.test(own), `${lay} ${file}: a score or ranking word: ${(own.match(VA_SCORE) || [])[0]}`);
       expect(/Sponsorship is not a vote/.test(t), `${lay} ${file}: the sponsors are not marked as not a vote`);
-      expect(/A person has not reviewed this yet|Checked against the record by/.test(t), `${lay} ${file}: no review notice on our text`);
+      expect(/Made from the records linked on this page|Checked against the record by/.test(t), `${lay} ${file}: no source line on our text`);
       expect(new RegExp(`(panel=leg&file=${file})`).test(await p.evaluate(() => location.search)), `${lay} ${file}: the address does not name the file`);
       if (lay === 'phone') expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth && Math.round(document.querySelector('.cxm-sheet').getBoundingClientRect().width) <= innerWidth), `phone ${file}: the page is wider than the screen`);
       const small = await p.evaluate(VA_SMALL); expect(small.length === 0, `${lay} ${file}: controls under 44px: ${small.slice(0, 4)}`);
@@ -4893,7 +4893,7 @@ CHECKS['votes-actions'] = async () => {
   { const p = await open(`/?panel=leg&file=${samples[1][0]}#phone`, { mobile: true, easy: false, settle: 1800, pre: () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } });
     const t = (await txt(p, '.rc-actions')) || '';
     expect(/Fuente:/.test(t) && /a favor \(Yea\)/.test(t) && /obtenido el/.test(t), `Spanish: the record does not read in Spanish: ${t.slice(0, 120)}`);
-    expect(!/Source:|, pulled|A person has not reviewed this yet/.test(t), 'Spanish: English left in the record\'s own words');
+    expect(!/Source:|, pulled|Made from the records linked on this page/.test(t), 'Spanish: English left in the record\'s own words');
     await done(p); }
   // light mode, both styles: the record page passes the contrast rules
   for (const theme of ['bento', 'original']) {
@@ -5474,7 +5474,7 @@ CHECKS['place-flow'] = async () => {
     await search(p, 'Parma');
     expect(RC_SP(await txt(p, '.cxm-hp-status')) === T('No neighborhood matches "Parma". Try the first letters, or pick your ward below.', 'Ningún vecindario coincide con "Parma". Pruebe con las primeras letras o elija su distrito abajo.'), `the empty search says: ${await txt(p, '.cxm-hp-status')}`);
     expect((await count(p, '.cxm-sheet .cxm-hp .cxm-chips')) === 1 && /Ward 1|Distrito 1/.test((await txt(p, '.cxm-sheet .cxm-hp')) || ''), 'with no match the ward list is not offered below');
-    expect(!/has not reviewed these names|no ha revisado estos nombres/.test((await txt(p, '.cxm-hp-status')) || ''), 'the unreviewed-names notice shows with no alias');
+    expect(!/Neighborhood names from the City Planning Commission|Nombres de vecindarios del plan/.test((await txt(p, '.cxm-hp-status')) || ''), 'the names notice shows with no alias');
     await search(p, 'Hough');
     expect(RC_SP(await txt(p, '.cxm-hp-status')) === '', 'a name found by its letters carries a status line');
     await search(p, 'Slavic');
@@ -5491,7 +5491,7 @@ CHECKS['place-flow'] = async () => {
       await search(p, a.alias);
       const st = RC_SP(await txt(p, '.cxm-hp-status'));
       expect(st.startsWith(T(`${a.alias} is part of ${a.hood}.`, `${a.alias} es parte de ${a.hood}.`)), `typing "${a.alias}" says: ${st}`);
-      expect((st.match(new RegExp(T('has not reviewed these names', 'no ha revisado estos nombres'), 'g')) || []).length === 1, `typing "${a.alias}": the unreviewed-names notice is not shown once: ${st}`);
+      expect((st.match(new RegExp(T('Neighborhood names from the City Planning Commission', 'Nombres de vecindarios del plan'), 'g')) || []).length === 1, `typing "${a.alias}": the names notice is not shown once: ${st}`);
       expect(await p.evaluate((h) => [...document.querySelectorAll('.cxm-sheet .cxm-hp .cxm-chips button')].some((b) => b.firstChild.nodeValue === h), a.hood), `typing "${a.alias}" did not offer ${a.hood}`);
     }
     await search(p, 'kamms corners');
@@ -5919,8 +5919,8 @@ CHECKS['office-text'] = async () => {
   if (ES) expect(!!ES_WORDS[TICKET.line] && !!ES_WORDS[`${TICKET.name}.`] && !!ES_WORDS[`${TICKET.name} source`] && !/[–—]/.test(ES_WORDS[TICKET.line]) && !OFFICE_BAD_ES.test(ES_WORDS[TICKET.line]) && !BAD_ADVICE_ES.test(ES_WORDS[TICKET.line]), 'the Lieutenant Governor line, its label, or its link has no Spanish, or a dash or a bad word in it');
   const NOTICE_EN = reviewed
     ? `Checked against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
-    : 'A person has not reviewed this yet.';
-  const notice = nm(NOTICE_EN), noticeBase = nm(reviewed ? 'Checked against Ohio law and the county charter' : 'A person has not reviewed this yet.');
+    : 'Made from Ohio law and the county charter, linked here.';
+  const notice = nm(NOTICE_EN), noticeBase = nm(reviewed ? 'Checked against Ohio law and the county charter' : 'Made from Ohio law and the county charter, linked here.');
   if (ES && !reviewed) expect(!!ES_WORDS[NOTICE_EN], 'the notice has no Spanish');
   for (const n of OFFICE_NAMES) {
     const w = words[n.toLowerCase()] || {};

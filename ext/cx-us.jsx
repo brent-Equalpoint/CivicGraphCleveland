@@ -246,7 +246,7 @@ function CX_UsVotes({ vd, people }) {
         ))}
       </ul>
       {rows.length > shown.length && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 25)}>Show 25 more of {rows.length - shown.length}</button></p>}
-      <p className="us-hint">Topics are the Congressional Research Service's policy areas, as Congress.gov labels each bill. Votes on a nomination or a matter that is not a bill have no policy area. {vd.counts.house} House and {vd.counts.senate} Senate recorded votes are held{vd.senate_waiting ? `; ${vd.senate_waiting} older Senate votes are still being added` : ``}. A member is only listed for votes held while they were in that chamber. These sources have not been read by a person for terms of use.</p>
+      <p className="us-hint">Topics are the Congressional Research Service's policy areas, as Congress.gov labels each bill. Votes on a nomination or a matter that is not a bill have no policy area. {vd.counts.house} House and {vd.counts.senate} Senate recorded votes are held{vd.senate_waiting ? `; ${vd.senate_waiting} older Senate votes are still being added` : ``}. A member is only listed for votes held while they were in that chamber.</p>
     </section>
   );
 }
@@ -311,7 +311,7 @@ function CX_UsTopics({ data }) {
         ))}
       </ul>
       {items.length > more && <p><button type="button" className="cx-link-button" onClick={() => setMore(more + 15)}>Show 15 more of {items.length - more}</button></p>}
-      <p className="us-hint">Not voting is not a no, and a vote is on one question: a yea on a rule or a motion is not a yea on the bill. These sources have not been read by a person for terms of use.</p>
+      <p className="us-hint">Not voting is not a no, and a vote is on one question: a yea on a rule or a motion is not a yea on the bill.</p>
     </div>
   );
 }
@@ -758,7 +758,7 @@ function CX_UsGraph({ phone, start }) {
         <div>{phone ? <h2 id="us-h" className={start ? `us-sr` : ``}>United States</h2> : <h1 id="us-h">United States</h1>}<p className="us-lede">Congress, its committees, and the federal agencies, from public records. Pick anything to see what it connects to, in words.</p></div>
         <div className="us-tabs" role="group" aria-label="View">{tabs.map(([id, t]) => <button key={id} type="button" aria-pressed={view === id} className={view === id ? `on` : ``} onClick={() => setView(id)}>{t}</button>)}</div>
       </header>
-      {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. The terms of those sources have not yet been read by a person, so treat it as a working view, not a finished record. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}
+      {phone ? <details className="us-preview us-preview-d"><summary>About these sources (a preview)</summary><p role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p></details> : <p className="us-preview" role="note">Preview. This is built from public-domain, Federal Register, and Federal Judicial Center records pulled {cxShortDate(cxDayET(Date.parse(data.retrieved_at)))}. Party is shown only as a dated, sourced field. Nothing here ranks or scores anyone.</p>}
       {view !== `mine` && view !== `topics` && <>
       <div className="us-tools">
         <label className="us-search"><span>Find a person, committee, or agency</span><input type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Husted, Agriculture, Treasury" /></label>

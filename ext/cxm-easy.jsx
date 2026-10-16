@@ -35,7 +35,7 @@ function CxeProfile({ seat, onFull }) {
       <h1>{name}</h1>
       <p className="cxe-step">Council Member, Ward {w}{person ? `. Term: ${cxLongDate(person.start)} to ${cxLongDate(person.end)}` : ``}</p>
       <h2 className="cxe-h2">The job</h2>
-      <p className="cxe-text">{CX_OFFICE_TEXT.council.summary}{rev.ok ? `` : ` A person has not yet reviewed this description, so check the source.`}</p>
+      <p className="cxe-text">{CX_OFFICE_TEXT.council.summary}{rev.ok ? `` : ` Check the source for the full text.`}</p>
       <h2 className="cxe-h2">This year</h2>
       <p className="cxe-text">{name.split(` `)[0]} led {cxmPl(parts.own.length, `proposal`, `proposals`)}, joined {cxmPl(parts.joined.length, `other`, `others`)}, and signed for a city department on {parts.dept.length}. These are counts, not grades. Putting your name on a proposal is not the same as voting for it.</p>
       <h2 className="cxe-h2">The ward</h2>

@@ -105,11 +105,11 @@ ok(A.cxOfficeInfo(null) === null && A.cxOfficeInfo(undefined) === null && A.cxOf
 
 /* the notice: unreviewed it says so; reviewed it names the person and the day, and no longer says a person has not reviewed it */
 const un = A.cxOfficeReview();
-ok(/A person has not reviewed this yet\./.test(un) && !/Checked against/.test(un), `the unreviewed notice: ${un}`);
+ok(/Made from Ohio law and the county charter/.test(un) && !/Checked against/.test(un), `the unreviewed notice: ${un}`);
 const rv = run({ ok: true, by: 'Ada Reviewer', checked: '2026-10-07' }).cxOfficeReview();
 ok(/Checked against Ohio law and the county charter by Ada Reviewer on October 7, 2026\./.test(rv) && !/has not reviewed/.test(rv), `the reviewed notice: ${rv}`);
 const none = vm.runInContext(`${longDate}\n${pure}\n;cxOfficeReview()`, vm.createContext({}));
-ok(/has not reviewed/.test(none), 'with no review record at all it says a person has not reviewed it');
+ok(/Made from Ohio law/.test(none), 'with no review record at all it says where the words come from');
 
 /* where it is wired */
 const build = read('build.py'), ballot = read('ext/cxm-ballot.jsx');

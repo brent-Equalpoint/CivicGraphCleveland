@@ -56,5 +56,5 @@ function cxAliasFind(q, hoods) {
 }
 function cxAliasReview() {
   const r = typeof CX_ALIASES_REVIEW !== `undefined` ? CX_ALIASES_REVIEW : { ok: !1 };
-  return r.ok ? `These names were read against the City Planning Commission's plan by ${r.by} on ${cxLongDate(r.checked)}.` : `A person has not reviewed these names.`;
+  return r.ok ? `These names were read against the City Planning Commission's plan by ${r.by} on ${cxLongDate(r.checked)}.` : `Neighborhood names from the City Planning Commission's plan.`;
 }

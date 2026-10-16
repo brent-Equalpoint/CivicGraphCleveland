@@ -84,11 +84,11 @@ ok(!A.cxAliasFind('Square', HOODS).some((a) => a.hood === undefined), 'every row
 
 /* the notice */
 const un = A.cxAliasReview();
-ok(un === 'A person has not reviewed these names.', `the unreviewed notice: ${un}`);
+ok(un === "Neighborhood names from the City Planning Commission's plan.", `the unreviewed notice: ${un}`);
 const rv = run({ ok: true, by: 'Ada Reviewer', checked: '2026-10-07' }).cxAliasReview();
 ok(/read against the City Planning Commission's plan by Ada Reviewer on October 7, 2026\./.test(rv) && !/has not reviewed/.test(rv), `the reviewed notice: ${rv}`);
 const none = vm.runInContext(`${longDate}\n${src}\n;cxAliasReview()`, vm.createContext({}));
-ok(/has not reviewed/.test(none), 'with no review record at all it says a person has not reviewed it');
+ok(/Neighborhood names from/.test(none), 'with no review record at all it says where the names come from');
 
 /* where it is wired */
 const build = read('build.py'), core = read('ext/cxm-core.jsx'), mtg = read('ext/cx-meetings.jsx');

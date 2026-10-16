@@ -129,7 +129,7 @@ function cxmRegisterStory() {
     frames.push({ k: `Paper form`, big: `Prefer paper? Mail it or bring it in.`, small: `A mailed form must be postmarked by the deadline.`, src: CX_REG_BOE });
   }
   frames.push({ k: `After the deadline`, big: `Missed it? Contact the Board of Elections.`, small: `Ohio has no same-day registration. A late form counts for the next election.`, type: `link`, link: { label: `Contact the Board of Elections`, url: CX_REG_BOE.url } });
-  frames.push({ k: `Do it on the official site`, big: `We cannot register you. The official sites can.`, small: `We only link to them and send nothing about you. A person has not yet checked these steps against the official pages.`, src: CX_REG_SOS });
+  frames.push({ k: `Do it on the official site`, big: `We cannot register you. The official sites can.`, small: `We only link to them and send nothing about you.`, src: CX_REG_SOS });
   return { id: `register`, label: `Register`, ini: `RV`, name: `Register to vote`, when: open ? `Deadline: Monday, Oct. 5` : `The deadline was Monday, Oct. 5`, source: CX_REG_BOE, frames };
 }
 function cxmSamePerson(a, b) {

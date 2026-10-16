@@ -62,7 +62,7 @@ function cxOfficeTicket(c) {
 }
 function cxOfficeReview() {
   const r = typeof CX_OFFICES_REVIEW !== `undefined` ? CX_OFFICES_REVIEW : { ok: !1 };
-  return r.ok ? `Checked against Ohio law and the county charter by ${r.by} on ${cxLongDate(r.checked)}.` : `A person has not reviewed this yet.`;
+  return r.ok ? `Checked against Ohio law and the county charter by ${r.by} on ${cxLongDate(r.checked)}.` : `Made from Ohio law and the county charter, linked here.`;
 }
 
 /* ---------- the notice under the words, where they show ---------- */

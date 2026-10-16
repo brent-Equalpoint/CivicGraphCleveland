@@ -102,7 +102,7 @@ function CX_VotesSection({ person, first }) {
         <ul className="sp-list">{list.map((v) => <CxVoteLine key={v.file + v.date + v.question} v={v} who={first} />)}</ul>
         {tabled.length > 0 && <p className="sp-note">{cxmPl(tabled.length, `of these is a vote on laying a file on the table`, `of these are votes on laying a file on the table`)}. Those are listed but not counted above, because a yea on tabling is not a yea on the proposal.</p>}
       </details>
-      <p className="sp-src">Source: <a href={CX_CITY_RECORD} target="_blank" rel="noreferrer">The City Record<span className="sp-ext"> (opens in a new tab)</span></a>, published weekly by the City Clerk, Clerk of Council. Pulled {cxShortDate(cxDayET(Date.parse(CX_VOTES.retrieved_at)))}. A person has not yet read the City Record's terms of use.</p>
+      <p className="sp-src">Source: <a href={CX_CITY_RECORD} target="_blank" rel="noreferrer">The City Record<span className="sp-ext"> (opens in a new tab)</span></a>, published weekly by the City Clerk, Clerk of Council. Pulled {cxShortDate(cxDayET(Date.parse(CX_VOTES.retrieved_at)))}.</p>
     </>
   );
 }

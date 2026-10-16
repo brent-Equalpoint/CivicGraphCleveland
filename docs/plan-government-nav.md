@@ -199,6 +199,8 @@ So there are two routes, and the plan uses both:
 - **One live claim is unsupported.** The app's governor pilot says Amy Acton's campaign supports free school meals for all public-school students and Ohio funding; her page says less. Fix or confirm before Nov 3.
 - **Some quotes are about other races or years** and should be dropped or labeled.
 
+**Update, Oct 16:** the "A person has not reviewed this yet" notice is gone from every page, at Brent's direction. Unreviewed text now says only where it comes from; reviewed text still names the reviewer and the day. So "shown with its review line" below means the reviewer line appears once a person has reviewed it, and nothing is said before. Race research stays hidden until reviewed (decision 8), because that text is about named candidates.
+
 **Already done for the issues.** The levies guide (`ext/cx-levies.jsx`, between the LEVY-TEXT markers) already holds sourced entries for State Issue 3 and county Issues 10, 11, 12, 13, and 14, each with the official wording, what happens if it passes or fails, and both sides with named, quoted voices. They were written from sources read on Oct 5, 2026. **No one has reviewed them**: there is no `data/levies-reviewed.json`, so the page says "A person has not reviewed this yet". For the issues, the work before Nov 3 is the review (Brent reads each against its sources and runs `python build.py --mark-levies-reviewed "Name"`), not new writing. The candidate races are the new work.
 
 What a packet or an entry holds is the same either way: the claim, the exact quote, the link, the day it was retrieved, the kind of evidence (from the table above), and who read it.

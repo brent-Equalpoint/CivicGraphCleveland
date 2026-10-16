@@ -49,7 +49,7 @@ Each important idea is said once where it can be misread, and findable everywher
 4. Both sides of a levy, with names and dates, and the line saying when a side has no quoted voice.
 5. Party and term dates shown as dated, sourced fields.
 6. The statement that nothing personal leaves the browser, on the screens that take an address or answers.
-7. The note that a person has not yet reviewed interpretive text, until one has.
+7. ~~The note that a person has not yet reviewed interpretive text, until one has.~~ Removed from every page on Oct 16, 2026 at Brent's direction: residents did not understand it. Text a person has reviewed still shows "Checked against [source] by [name] on [date]." Text no one has reviewed says only where it comes from ("Made from the sources linked above."). The review itself, and the commands that record it, are unchanged.
 
 ### What can shrink
 

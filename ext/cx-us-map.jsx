@@ -933,7 +933,7 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
                 : <section key={L.key} id={`usmp-l-${L.key}`} className="usmp-list">{head}{body}</section>;
             })}
           </section>
-          <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. The terms of those sources have not yet been read by a person.`}</p>
+          <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}.`}</p>
         </div>
       </article>
     </div>
@@ -1732,7 +1732,7 @@ function CX_UsMap({ phone, onExit }) {
           <p className="usm-note">Circles are people, hexagons are committees and courts, and squares are agencies. A committee is a filled hexagon; a court is an outlined one. A ring is a branch, with its total. Things sit near what they are tied to on the record. Distance is not a rank.</p>
           {!phone && <p className="usm-note">Keys: ] and [ move, Enter selects, Esc clears, S solos, arrows pan, + and - zoom, / searches.</p>}
         </div>
-        <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. The terms of those sources have not yet been read by a person. Party is never shown on the map.`}</p>
+        <p className="us-preview usm-preview">{`Preview. Built from public records pulled ${pulled}. Party is never shown on the map.`}</p>
         {phone && <button type="button" className="usm-btn usm-wide" onClick={() => goPage(`topics`)}>Votes by topic</button>}
         {phone && <button type="button" className="usm-btn usm-wide" onClick={() => goCompare()}>Compare members</button>}
       </div>

@@ -2089,7 +2089,16 @@
   "Amy Acton’s campaign page says: “That's why I'm fighting for free breakfast and lunch.” It does not say who would pay for it.": "La página de campaña de Amy Acton dice: “That's why I'm fighting for free breakfast and lunch.” No dice quién lo pagaría.",
   "If adopted and funded, free meals could reduce participating families’ meal expenses. A governor cannot fund it alone; lawmakers and implementation agencies would be involved.": "Si se adopta y se financia, las comidas gratuitas podrían reducir los gastos de comida de las familias participantes. Un gobernador no puede financiarlo solo; participarían legisladores y agencias encargadas de aplicarlo.",
   "Made from the sources linked above.": "Este texto se hizo a partir de las fuentes enlazadas arriba.",
-  "The countywide stories were made from the sources linked in each one.": "Las historias sobre los asuntos de todo el condado se hicieron a partir de las fuentes enlazadas en cada una."
+  "The countywide stories were made from the sources linked in each one.": "Las historias sobre los asuntos de todo el condado se hicieron a partir de las fuentes enlazadas en cada una.",
+  "Neighborhood names from the City Planning Commission's plan.": "Nombres de vecindarios del plan de la Comisión de Planificación de la Ciudad.",
+  "Made from Ohio law and the county charter, linked here.": "Hecho a partir de la ley de Ohio y la carta del condado, enlazadas aquí.",
+  "Made from the records linked on this page.": "Hecho a partir de los registros enlazados en esta página.",
+  "Read it as a starting point, and check the source.": "Léala como punto de partida y revise la fuente.",
+  "We only link to them and send nothing about you.": "Solo enlazamos a ellos y no enviamos nada sobre usted.",
+  "From the official text.": "Del texto oficial.",
+  "From the official rules linked on each step.": "De las reglas oficiales enlazadas en cada paso.",
+  "Not voting is not a no, and a vote is on one question: a yea on a rule or a motion is not a yea on the bill.": "No votar no significa estar en contra, y cada voto es sobre una sola pregunta: un voto a favor de una regla o de una moción no es un voto a favor del proyecto de ley.",
+  "Check the source for the full text.": "Consulte la fuente para ver el texto completo."
  },
  "masked": {
   "{n} lists": "{n} listas",
@@ -2523,7 +2532,8 @@
   "Checked against the official text by {*} on {*}. The text is for the {n}th Congress.": "{*} lo comparó con el texto oficial el {*}. El texto es del {n}.º Congreso.",
   "Checked against the official text by {*} on {*}.": "{*} lo comparó con el texto oficial el {*}.",
   "Checked against Ohio law and the county charter by {*} on {d}.": "{*} lo comparó con la ley de Ohio y la carta del condado el {d}.",
-  "Checked against the record by {*} on {d}.": "{*} lo comparó con el registro el {d}."
+  "Checked against the record by {*} on {d}.": "{*} lo comparó con el registro el {d}.",
+  "From official text for the {n}th Congress.": "Del texto oficial del {n}.º Congreso."
  },
  "keep": [
   "1234 E 116th St, Cleveland",

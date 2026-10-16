@@ -38,7 +38,7 @@ function cxRecPulled(iso) { return iso ? cxLongDate(cxDayET(Date.parse(iso))) : 
 function cxRecSeatOf(name) { const w = CX_SPONSOR_WARD[name]; return w ? `ward-${w}` : null; }
 function cxRecReview() {
   const r = typeof CX_VOTES_TEXT_REVIEW !== `undefined` ? CX_VOTES_TEXT_REVIEW : { ok: !1 };
-  return r.ok ? `Checked against the record by ${r.by} on ${cxLongDate(r.checked)}.` : `A person has not reviewed this yet.`;
+  return r.ok ? `Checked against the record by ${r.by} on ${cxLongDate(r.checked)}.` : `Made from the records linked on this page.`;
 }
 function CxRecLink({ href, children }) {
   if (!href) return <>{children}</>;
