@@ -98,7 +98,7 @@ const vd = JSON.parse(fs.readFileSync(path.join(ROOT, 'data', 'us-votes-2026.jso
   let n = 0;
   for (const [k, list] of kinds) for (const i of list) {
     const P = A.cxUsProfile(g, M, d, vd, i), name = g.nodes[i].name; n++;
-    if (!P.kicker || !P.name || !P.sentence.length || !P.record.length) { fail(`${name}: the profile is missing its kicker, name, sentence, or record`); continue; }
+    if (!P.kicker || !P.name || (!P.sentence.length && P.kind !== 'committee') || !P.record.length) { fail(`${name}: the profile is missing its kicker, name, sentence, or record`); continue; }   // a committee's chamber, size, and chair are in At a glance and From the record, so its profile carries no sentence
     const words = ours(P);
     if (/\b(Republican|Democrat|Democratic|Independent|conservative|liberal|moderate)\b/i.test(words)) fail(`${name}: a party or ideology word outside the Party row`);
     if (/\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\branked\b|\brank(ing)? (?!member)/i.test(words)) fail(`${name}: a score or strength word: ${words.match(/\b(strong|some|light)\b|\bscores?\b|\bmatch(es|ed)?\b|%|\bpercent|\branked\b/i)}`);
