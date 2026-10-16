@@ -259,7 +259,7 @@ function CxmSeat({ seatId }) {
       )}
       {seat.ward > 0 && (
         <section className="cxm-section">
-          <h3 className="cxm-h3"><i className="cxm-rd own" /> What {first} led, in plain words <span>{parts.own.length}</span></h3>
+          <h3 className="cxm-h3"><i className="cxm-rd own" /> What {first} led <span>{parts.own.length}</span></h3>
           {!parts.own.length && <p className="cxm-mut">No proposals led by this member are in the 2026 record.</p>}
           {CX_ACTIONS.map((a) => {
             const list = byPrio(parts.own.filter((x) => x.m.action === a.id));

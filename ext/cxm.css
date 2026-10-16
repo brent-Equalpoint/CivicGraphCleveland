@@ -1355,7 +1355,7 @@ html[data-cx-theme] .atlas-shell .sp p.pv-when { color: #e1ded8; }
 .lv-said { list-style: none; margin: 8px 0; padding: 0; display: grid; gap: 10px; }
 .lv-said li { padding: 12px 14px; border-radius: 12px; background: #ffffff0d; }
 .lv-said li.lv-for { background: #9fe6c317; }
-.lv-said li.lv-concern { background: #ffd1a91a; }
+.lv-said li.lv-concern, .lv-said li.lv-against { background: #ffd1a91a; }
 .lv-side { display: inline-block; margin-left: 8px; padding: 1px 9px; border-radius: 999px; background: #ffffff1f; font-size: 13.5px; font-weight: 600; }
 .lv-quote { display: block; margin-top: 4px; }
 .lv-wording > summary, .lv-other summary { min-height: 44px; font-weight: 600; cursor: pointer; }
@@ -1422,7 +1422,7 @@ html[data-cx-theme="original"] .lv-tile { background: var(--acc, #c2410c); }
 /* a long word may never push a story line past the screen */
 .cxm-story-big, .cxm-story-small, .cxm-story-fig, .cx-story-big, .cx-story-small { overflow-wrap: break-word; max-width: 100%; }
 /* color is never the only signal: a concern gets a dashed outline, support a solid one, on top of the words and the tint */
-.lv-concern .lv-side { border: 1px dashed currentColor; background: transparent; }
+.lv-concern .lv-side, .lv-against .lv-side { border: 1px dashed currentColor; background: transparent; }
 .lv-for .lv-side { border: 1px solid currentColor; }
 
 /* ---- v5.17 light mode (design/tokens.json, docs/plan-light-mode.md): the mode is html[data-cx-mode="light"|"dark"]; dark is the look above and does not change ---- */

@@ -290,13 +290,13 @@ function cxUsxRoleKey(word) {
 /* the sentence under our lines: whose words they are, which Congress the official text is from, and whether a person has read them */
 function cxUsxReviewLine(X) {
   const cong = cxOrd((X && X.congress) || 119);
-  return CX_US_TEXT_REVIEW.ok ? `Our plain words, read against the official text by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}. The official text is for the ${cong} Congress.`
-    : `Our plain words, from official text for the ${cong} Congress. A person has not reviewed them yet.`;
+  return CX_US_TEXT_REVIEW.ok ? `Checked against the official text by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}. The text is for the ${cong} Congress.`
+    : `From official text for the ${cong} Congress. A person has not reviewed this yet.`;
 }
 
 /* the short form, for small places (the hover card, a role's note) */
 function cxUsxShortReview() {
-  return CX_US_TEXT_REVIEW.ok ? `Our plain words, read against the official text by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}.` : `Our plain words. A person has not reviewed them yet.`;
+  return CX_US_TEXT_REVIEW.ok ? `Checked against the official text by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}.` : `A person has not reviewed this yet.`;
 }
 
 /* a word from the record (Chair, Chairman, Ranking Member, Ex officio, Member...) as a button that opens what the post means */
@@ -425,7 +425,7 @@ function CX_UsxStory({ onClose }) {
           </div>
         )}
         {!asText && fr.src ? <CxSource source={fr.src} cls="cxm-story-src2 cxm-story-ussrc" /> : null}
-        <p className="cxm-story-usreview">{CX_US_TEXT_REVIEW.ok ? `Read against its sources by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}.` : `Our plain words, from the official rules linked on each step. A person has not reviewed them yet.`}</p>
+        <p className="cxm-story-usreview">{CX_US_TEXT_REVIEW.ok ? `Read against its sources by ${CX_US_TEXT_REVIEW.by} on ${CX_US_TEXT_REVIEW.checked}.` : `From the official rules linked on each step. A person has not reviewed this yet.`}</p>
         {!asText && <div className="cxm-story-usnav">
           <button type="button" className="cxm-btn2" onClick={prev} disabled={f === 0}>Back</button>
           <span>{`Step ${f + 1} of ${s.frames.length}`}</span>

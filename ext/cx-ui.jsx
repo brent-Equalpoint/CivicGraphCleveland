@@ -107,7 +107,6 @@ function CX_SimpleGuide({ room, onSelect, onTerm, onRegistry }) {
         )}
         {step === 1 && (
           <>
-            <span className="simple-guide-kicker">IN PLAIN WORDS</span>
             <h3>A few words that unlock this topic</h3>
             <dl className="simple-guide-facts">
               {termEntries.map((t) => (

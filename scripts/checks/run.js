@@ -195,7 +195,7 @@ async function ballotIssueStories() {
     }
     const text = frames.map((f) => f.text).join(' | ');
     expect(/Someone who supports it|Who supports it/.test(text), `the Issue ${n} story names no supporter`);
-    expect(/A concern raised|We found no named opponent/.test(text), `the Issue ${n} story shows no concern and does not say that none was found`);
+    expect(/A concern raised|Someone who opposes it|We found no named opponent/.test(text), `the Issue ${n} story shows no concern and does not say that none was found`);
     const links = frames.flatMap((f) => f.link);
     expect(links.some((a) => /^https:\/\/boe\.cuyahogacounty\.gov\//.test(a.href) && a.target === '_blank'), `the Issue ${n} story has no secure link to the official wording that opens in a new tab`);
     expect(frames[frames.length - 1].more, `the Issue ${n} story does not end with Read more`);
@@ -212,7 +212,7 @@ async function ballotIssueStories() {
       for (const h of ['What it asks', 'How it works now', 'What changes if it passes', 'What happens if it fails', 'How it got on the ballot', 'What people have said', 'Questions to ask yourself', 'The official ballot wording'])
         expect(more.all.includes(h), `the Issue ${n} Read more lacks "${h}"`);
       expect(/Supports it/.test(more.all), `the Issue ${n} Read more names no supporter`);
-      expect(/Raised a concern/.test(more.all) || /We found no named person speaking against/.test(more.all), `the Issue ${n} Read more shows no concern and does not say that none was found`);
+      expect(/Raised a concern|Opposes it/.test(more.all) || /We found no named person speaking against/.test(more.all), `the Issue ${n} Read more shows no concern and does not say that none was found`);
       expect(WORDING[n].test(more.wording), `the Issue ${n} Read more does not quote its official ballot wording: "${more.wording.slice(0, 80)}"`);
       expect(/A person has not yet read it against them|Read against its sources by/.test(more.all), `the Issue ${n} Read more does not say whether a person has reviewed it`);
       expect(more.bad === 0, `${more.bad} source links in the Issue ${n} story are not secure or do not open in a new tab`);
@@ -885,7 +885,7 @@ const CHECKS = {
       expect(/How to read these cards/.test(words.text) && words.names.includes("Open a council member's profile") && words.names.includes('Which leaders'), 'the My leaders labels are not the new ones'); }
     // Their record opens the person's own record (what they led, their latest), and Profile the neutral page, each in a sheet
     await clickText(p, 'Their record', '.cxm-prof-actions button'); await wait(800);
-    expect(await has(p, '.cxm-sheet .cxm-prof-head') && !(await has(p, '.cxm-sheet .sp')) && /What .+ led, in plain words/.test((await txt(p, '.cxm-sheet')) || ''), 'Their record did not open the member\'s own record');
+    expect(await has(p, '.cxm-sheet .cxm-prof-head') && !(await has(p, '.cxm-sheet .sp')) && /What .+ led/.test((await txt(p, '.cxm-sheet')) || ''), 'Their record did not open the member\'s own record');
     await p.evaluate(() => document.querySelector('.cxm-sheet-x').click()); await wait(400);
     await clickText(p, 'Profile', '.cxm-prof-actions button'); await wait(800);
     expect(await has(p, '.cxm-sheet .sp .sp-office'), 'Profile did not open the neutral profile');
@@ -4762,7 +4762,7 @@ CHECKS['votes-actions'] = async () => {
       const own = (await p.evaluate(VA_OWN, '.rc-actions')) + ' ' + (await p.evaluate(VA_OWN, '.rc-positions'));
       expect(!VA_SCORE.test(own), `${lay} ${file}: a score or ranking word: ${(own.match(VA_SCORE) || [])[0]}`);
       expect(/Sponsorship is not a vote/.test(t), `${lay} ${file}: the sponsors are not marked as not a vote`);
-      expect(/A person has not reviewed them yet|were read against the record by/.test(t), `${lay} ${file}: no review notice on the plain words`);
+      expect(/A person has not reviewed this yet|Checked against the record by/.test(t), `${lay} ${file}: no review notice on our text`);
       expect(new RegExp(`(panel=leg&file=${file})`).test(await p.evaluate(() => location.search)), `${lay} ${file}: the address does not name the file`);
       if (lay === 'phone') expect(await p.evaluate(() => document.documentElement.scrollWidth === innerWidth && Math.round(document.querySelector('.cxm-sheet').getBoundingClientRect().width) <= innerWidth), `phone ${file}: the page is wider than the screen`);
       const small = await p.evaluate(VA_SMALL); expect(small.length === 0, `${lay} ${file}: controls under 44px: ${small.slice(0, 4)}`);
@@ -4873,7 +4873,7 @@ CHECKS['votes-actions'] = async () => {
   { const p = await open(`/?panel=leg&file=${samples[1][0]}#phone`, { mobile: true, easy: false, settle: 1800, pre: () => { try { localStorage.setItem('cx-lang', 'es'); sessionStorage.setItem('cx-es-note', '1'); } catch (e) {} } });
     const t = (await txt(p, '.rc-actions')) || '';
     expect(/Fuente:/.test(t) && /a favor \(Yea\)/.test(t) && /obtenido el/.test(t), `Spanish: the record does not read in Spanish: ${t.slice(0, 120)}`);
-    expect(!/Source:|, pulled|Our plain words/.test(t), 'Spanish: English left in the record\'s own words');
+    expect(!/Source:|, pulled|A person has not reviewed this yet/.test(t), 'Spanish: English left in the record\'s own words');
     await done(p); }
   // light mode, both styles: the record page passes the contrast rules
   for (const theme of ['bento', 'original']) {
@@ -5898,9 +5898,9 @@ CHECKS['office-text'] = async () => {
   expect(!!TICKET.line && !/[–—]/.test(TICKET.line) && !OFFICE_BAD_EN.test(TICKET.line) && !BAD_ADVICE.test(TICKET.line) && (TICKET.line.match(/[^.!?]+[.!?]+(\s|$)/g) || []).length <= 2, `the Lieutenant Governor line has a dash, a party, ranking, score, advice, or prediction word, or more than two sentences: "${(TICKET.line || '').slice(0, 80)}"`);
   if (ES) expect(!!ES_WORDS[TICKET.line] && !!ES_WORDS[`${TICKET.name}.`] && !!ES_WORDS[`${TICKET.name} source`] && !/[–—]/.test(ES_WORDS[TICKET.line]) && !OFFICE_BAD_ES.test(ES_WORDS[TICKET.line]) && !BAD_ADVICE_ES.test(ES_WORDS[TICKET.line]), 'the Lieutenant Governor line, its label, or its link has no Spanish, or a dash or a bad word in it');
   const NOTICE_EN = reviewed
-    ? `Our plain words for what this office can do were read against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
-    : 'Our plain words for what this office can do. A person has not reviewed them yet.';
-  const notice = nm(NOTICE_EN), noticeBase = nm('Our plain words for what this office can do');
+    ? `Checked against Ohio law and the county charter by ${reviewed.by} on ${new Date(`${reviewed.checked}T12:00:00`).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}.`
+    : 'A person has not reviewed this yet.';
+  const notice = nm(NOTICE_EN), noticeBase = nm(reviewed ? 'Checked against Ohio law and the county charter' : 'A person has not reviewed this yet.');
   if (ES && !reviewed) expect(!!ES_WORDS[NOTICE_EN], 'the notice has no Spanish');
   for (const n of OFFICE_NAMES) {
     const w = words[n.toLowerCase()] || {};

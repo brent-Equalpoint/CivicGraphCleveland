@@ -180,9 +180,9 @@ const CX_ISSUE_TEXT = {
       [`for`, `Theresa Gavarone, Republican state senator, Aug. 3, 2026`, `“By enshrining this language in the (Ohio) Constitution, we are really setting a floor, so that future general assemblies won’t be able to go backwards.”`, `shnb0803`],
       [`for`, `The Vindicator's editorial board, Sept. 19, 2026`, `Endorsed Issue 3: “We agree with the extra sticking power of inclusion of photo identification mandates in the Ohio Constitution.”`, `vindy`],
       [`for`, `Amy Acton, Democratic nominee for governor, and the Ohio Republican Party`, `Signal Ohio reported that Acton supports Issue 3 and that the Ohio Republican Party is running the campaign for it.`, `sig0901`],
-      [`concern`, `The official argument against Issue 3, by state lawmakers Bill DeMora, Terrence Upchurch, and Desiree Tims`, `“Today in Ohio you can use your digital wallet to fly but not to vote. This amendment locks out future technology that will be both more secure and more available.” As quoted by Signal Ohio.`, `sig0901`],
-      [`concern`, `ACLU of Ohio, Sept. 22, 2026`, `Opposes Issue 3. It says “putting these requirements in the state constitution leaves the possibility that some forms of ID could become obsolete, and thus unusable.”`, `aclu`],
-      [`concern`, `The Ohio Legislative Black Caucus Foundation and Ohio Citizen Action`, `Have announced their opposition to Issue 3, Signal Ohio reported.`, `sig0901`],
+      [`against`, `The official argument against Issue 3, by state lawmakers Bill DeMora, Terrence Upchurch, and Desiree Tims`, `“Today in Ohio you can use your digital wallet to fly but not to vote. This amendment locks out future technology that will be both more secure and more available.” As quoted by Signal Ohio.`, `sig0901`],
+      [`against`, `ACLU of Ohio, Sept. 22, 2026`, `Opposes Issue 3. It says “putting these requirements in the state constitution leaves the possibility that some forms of ID could become obsolete, and thus unusable.”`, `aclu`],
+      [`against`, `The Ohio Legislative Black Caucus Foundation and Ohio Citizen Action`, `Have announced their opposition to Issue 3, Signal Ohio reported.`, `sig0901`],
       [`concern`, `Marisa Nahem, Ohio Democratic Party spokesperson`, `Called it “an unnecessary ballot initiative that doesn’t change the current law.”`, `sig0901`],
       [`concern`, `Marcell Strbich, retired Air Force officer, at a hearing on the House version in May 2026`, `A concern from the other side, that it does not go far enough: “Most Ohioans support universal photo ID, yet many voters will not realize they’re being asked to enshrine this clause of unequal treatment, photo ID for in-person voters only, with no requirement for mail-in absentee ballots.”`, `ocj0601`],
     ],
@@ -194,7 +194,7 @@ const CX_ISSUE_TEXT = {
       { k: `If it passes`, big: `Nothing changes at the polls right away.`, small: `The rule moves into the constitution, so changing it later would take another statewide vote. Lawmakers could still set the ID rules for voting by mail.`, src: `sig0804` },
       { k: `If it fails`, big: `The photo ID law stays as it is.`, small: `A no vote does not repeal it. Lawmakers could still change that law with a regular bill.`, src: `sig0901` },
       { k: `Someone who supports it`, q: !0, big: `“Photo ID is a proven method to protect Ohio's elections and improve voter confidence.”`, small: `The official argument for it, by state lawmakers Adam Bird, Heidi Workman, Jane Timken, and Theresa Gavarone, as quoted by The Vindicator`, src: `vindy` },
-      { k: `A concern raised`, q: !0, big: `“This amendment locks out future technology that will be both more secure and more available.”`, small: `The official argument against it, by state lawmakers Bill DeMora, Terrence Upchurch, and Desiree Tims, as quoted by Signal Ohio`, src: `sig0901` },
+      { k: `Someone who opposes it`, q: !0, big: `“This amendment locks out future technology that will be both more secure and more available.”`, small: `The official argument against it, by state lawmakers Bill DeMora, Terrence Upchurch, and Desiree Tims, as quoted by Signal Ohio`, src: `sig0901` },
       { type: `link`, link: `list`, k: `What to check next`, big: `Is your ID on the list, and not expired?`, small: `The official wording is on the Board of Elections issue list, in English and Spanish.` },
       { type: `more`, k: `Your call`, big: `Is it right for you?`, small: `We do not tell you how to vote. Open Read more for the reasons, both sides, and the official wording.` },
     ],
@@ -516,14 +516,15 @@ function CxLevyBody({ issue }) {
     </div>
   );
 }
-/* what named people have said, each with their side in words (and a solid or dashed outline), never a colored dot */
+/* what named people have said, each with their side in words (and a solid or dashed outline), never a colored dot.
+   Three sides: `for` (Supports it), `against` (Opposes it: the source says they oppose it), and `concern` (Raised a concern: a worry or a question that is not opposition) */
 function CxLevySaid({ rows }) {
   return (
     <ul className="lv-said">
       {rows.map((s, n) => (
         <li key={n} className={`lv-${s[0]}`}>
           <b>{s[1]}</b>
-          <span className="lv-side">{s[0] === `for` ? `Supports it` : `Raised a concern`}</span>
+          <span className="lv-side">{s[0] === `for` ? `Supports it` : s[0] === `against` ? `Opposes it` : `Raised a concern`}</span>
           <span className="lv-quote">{s[2]}</span><CxLevySrc k={s[3]} />
         </li>
       ))}

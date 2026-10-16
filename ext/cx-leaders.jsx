@@ -523,7 +523,7 @@ function CX_Leaders({ onGo, onPanel }) {
     <section className="civic-page cx-leaders">
       <span className="atlas-eyebrow"><CXI.Users size={15} /> MY PRIORITIES × WHAT LEADERS DID</span>
       <h1>What has your council member actually worked on?</h1>
-      <p className="civic-lede">Pick what matters to you. Then choose a council member to see, in plain words, the proposals they led this year and how those connect to your priorities. Everything comes from Cleveland's official legislative record.</p>
+      <p className="civic-lede">Pick what matters to you. Then choose a council member to see the proposals they led this year and how those connect to your priorities. Everything comes from Cleveland's official legislative record.</p>
 
       <div className="civic-card cx-howto">
         <h2>How to read this</h2>
@@ -586,7 +586,7 @@ function CX_Leaders({ onGo, onPanel }) {
       )}
       {view === `grid` && <>
       <h2 className="cx-h2">Council members, by ward</h2>
-      <p className="cx-note">Each bar counts this year's proposals on one of your priorities, split by role. Select a member to open a plain-English explanation on the right.</p>
+      <p className="cx-note">Each bar counts this year's proposals on one of your priorities, split by role. Select a member to see their work on the right.</p>
       <div className="cx-bar-legend" aria-hidden="true">
         <span><i className="cx-dot cx-dot-own" /> Led</span>
         <span><i className="cx-dot cx-dot-joined" /> Joined</span>
@@ -677,7 +677,7 @@ function CX_Leaders({ onGo, onPanel }) {
 
           {seat.ward > 0 && (
             <section className="cx-topic">
-              <h3><i className="cx-dot cx-dot-own" aria-hidden="true" /> What {seat.name.split(` `)[0]} led, in plain words <span>{parts.own.length}</span></h3>
+              <h3><i className="cx-dot cx-dot-own" aria-hidden="true" /> What {seat.name.split(` `)[0]} led <span>{parts.own.length}</span></h3>
               {!parts.own.length && <p className="atlas-muted">No proposals led by this member are in the 2026 record.</p>}
               {CX_ACTIONS.map((a) => {
                 const list = byPriorityFirst(parts.own.filter((x) => x.m.action === a.id));

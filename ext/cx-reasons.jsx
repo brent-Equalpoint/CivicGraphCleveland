@@ -142,7 +142,7 @@ function CX_Why({ q }) {
       <section className="cx-why">
         <h4>Why supporters backed it</h4>
         <ul>{r.points.map((p) => <li key={p}>{p}</li>)}</ul>
-        <p className="cx-why-note">In plain English, from the reasons written into the official record by the people who brought it. This is their case for it, not a neutral review.</p>
+        <p className="cx-why-note">From the reasons the sponsors wrote into the official record. This is their case, not a neutral review.</p>
         {r.file in CX_DRIFT && <p className="cx-why-drift" role="note">The official record for {r.file} changed after this summary was checked{CX_DRIFT[r.file] ? ` on ${cxShortDate(CX_DRIFT[r.file])}` : ``}. Read the source to confirm it still holds.</p>}
         <p className="cx-why-src">Sources: {links.map(([t, href], i) => <u.Fragment key={href}>{i ? ` · ` : ``}<a href={href} target="_blank" rel="noreferrer">{t} <CXI.Ext size={11} /></a></u.Fragment>)}</p>
       </section>

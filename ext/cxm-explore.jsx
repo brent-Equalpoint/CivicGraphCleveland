@@ -463,7 +463,7 @@ function CxmRoom({ roomId }) {
         <CxmSeg label="Guided view" items={[[0, `Start`], [1, `Meaning`], [2, `Power`], [3, `Proof`]]} value={step} onChange={setStep} />
         {step === 0 && <div className="cxm-fade"><h3 aria-level="2">{room.question}</h3><p><CX_Definable text={room.answer} onTerm={term} limit={2} /></p>
           {room.prompts?.length > 0 && <div className="cxm-chips">{room.prompts.map((p) => <button key={p.label} type="button" onClick={() => open(p.node)}>{p.label}</button>)}</div>}</div>}
-        {step === 1 && <div className="cxm-fade"><span className="cxm-kicker">In plain words</span>{termEntries.map((t) => <div key={t.term} className="cxm-term"><button type="button" className="cxm-link" onClick={() => term(t.term)}>{t.term}</button><p>{t.meaning}</p></div>)}</div>}
+        {step === 1 && <div className="cxm-fade">{termEntries.map((t) => <div key={t.term} className="cxm-term"><button type="button" className="cxm-link" onClick={() => term(t.term)}>{t.term}</button><p>{t.meaning}</p></div>)}</div>}
         {step === 2 && <div className="cxm-fade"><span className="cxm-kicker">Who can act</span><p className="cxm-mut">Suggested stops, not a chain of command.</p>{pathNodes.map((n, i) => <button key={n.id} type="button" className="cxm-row" onClick={() => open(n.id)}><span><strong>{i + 1}. {n.name}</strong><small>{n.region}</small></span><CXI.Arrow size={15} /></button>)}</div>}
         {step === 3 && <div className="cxm-fade"><span className="cxm-kicker">Check the record</span><div className="cxm-chips static">{Object.entries(counts).map(([k, c]) => <span key={k}><CxmEvidence state={k} /> {c}</span>)}</div><p>{room.gap}</p><CxmSrc href={room.actionUrl}>{room.action}</CxmSrc></div>}
       </div>

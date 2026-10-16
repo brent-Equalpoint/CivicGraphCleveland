@@ -498,6 +498,7 @@ function cxUsProfile(g, M, data, vd, i) {
     rec(`subs`, `Subcommittees`, c.subcommittees.length ? c.subcommittees.map((s) => s.name) : `None listed`, src(`committees`));
     if (c.url) rec(`page`, `Official page`, c.url, src(`committees`), { link: c.url });
     P.cid = c.id;
+    P.sentence = []; P.fact = ``;   // the chamber, the size and the chair are already in At a glance and From the record
     list(`members`, `Members`, mem.map((x) => ({ i: x.i, name: x.n.name, sub: `${x.n.m.chamber === `senate` ? `Senator` : `Representative`}, ${cxStateName(x.n.m.state)}`, word: cxUsmRole(x.e.rel), role: !0 })));
     // each subcommittee opens to its own two lines and its official words (CX_UsxLines)
     list(`subcommittees`, `Subcommittees`, c.subcommittees.map((s) => ({ i: null, xid: s.id, name: s.name, sub: s.chair ? `Chair: ${s.chair}` : `No chair listed`, word: `Subcommittee` })), { map: !1 });
@@ -861,8 +862,8 @@ function CX_UsProfile({ g, M, P, phone, still, back, bar, pulled, onBack, onMap,
           <p className="usmp-kicker">{P.kicker}</p>
           <h1 id="usmp-h" className="usmp-name" tabIndex={-1}>{P.name}{!/[.!?]$/.test(P.name) && <span className="usm-dot">.</span>}</h1>
           {P.kind === `committee` && P.cid && <CX_UsxLines id={P.cid} onHow={onHow} />}
-          <p className="usmp-sent">{P.sentence.map((s, k) => <u.Fragment key={k}>{k ? ` ` : null}<span>{s}</span></u.Fragment>)}</p>
-          <p className="usmp-fact">{P.fact}</p>
+          {P.sentence.length > 0 && <p className="usmp-sent">{P.sentence.map((s, k) => <u.Fragment key={k}>{k ? ` ` : null}<span>{s}</span></u.Fragment>)}</p>}
+          {P.fact && <p className="usmp-fact">{P.fact}</p>}
           <div className="usmp-acts">
             <button type="button" className="usm-btn usm-pri" onClick={onMap}>Show on the map</button>
             <button type="button" className="usm-btn" onClick={onIndex}>Explore in Index</button>
