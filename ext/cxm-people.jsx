@@ -150,7 +150,7 @@ function CxmProfiles() {
         <CxmSeg label="Order" items={[[`ward`, `Ward order`], [`common`, `Most common ground first`]]} value={order} onChange={setOrder} />
       </div>
       <CxmDrop title="How to read these cards" sub="What has your council member actually worked on?">
-        <p>Think of City Council like a group project. The person who writes a proposal is the <strong>lead</strong>. Classmates can <strong>join</strong> it. City departments also turn in a lot of routine paperwork, like contract renewals, and a council member has to <strong>sign</strong> it so it can move forward. Signing that paperwork is part of the job, like a manager signing timesheets. It says little about what they personally care about.</p>
+        <p>The council member who writes a proposal is its <strong>lead</strong>. Other members can <strong>join</strong> it. City departments also send routine items, such as contract renewals, and a council member has to <strong>sign</strong> them for them to move forward. Signing says little about what that member personally cares about.</p>
         <dl className="cxm-dl">
           <div><dt><i className="cxm-sdot" aria-hidden="true" />Led</dt><dd>Their own proposals. This is the clearest sign of what they are working on.</dd></div>
           <div><dt><i className="cxm-sdot cxm-s-joined" aria-hidden="true" />Joined</dt><dd>A colleague's proposal they signed on to support.</dd></div>

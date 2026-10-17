@@ -2124,7 +2124,16 @@
   "The cost, what it pays for, and what people say.": "El costo, para qué sirve y qué dice la gente.",
   "marked.": "marcados.",
   "Who decides, what a vote means, and where to get help.": "Quién decide, qué significa un voto y dónde obtener ayuda.",
-  "This is not an election office. Confirm rules with the Board of Elections.": "Esta no es una oficina electoral. Confirme las reglas con la Junta Electoral."
+  "This is not an election office. Confirm rules with the Board of Elections.": "Esta no es una oficina electoral. Confirme las reglas con la Junta Electoral.",
+  "Choosing this means you care about jobs, local businesses, and whether public deals bring jobs and other benefits to people who live here.": "Elegir esto significa que a usted le importan los empleos, los negocios locales y si los acuerdos públicos traen empleos y otros beneficios a las personas que viven aquí.",
+  "Choosing this means you care about preventing harm, getting help fast in an emergency, and how the people who enforce laws answer to the public.": "Elegir esto significa que a usted le importa prevenir el daño, recibir ayuda rápida en una emergencia y cómo las personas que hacen cumplir las leyes rinden cuentas al público.",
+  "Choosing this means you care which schools and programs Cleveland children can reach, and who makes those decisions.": "Elegir esto significa que a usted le importa a qué escuelas y programas pueden llegar los niños de Cleveland, y quién toma esas decisiones.",
+  "In 2025, 15.8% of tested Cleveland children under 6 had elevated blood lead levels, compared with about 2.5% nationally. The rate is falling.": "En 2025, el 15.8% de los niños de Cleveland menores de 6 años que se hicieron la prueba tenía niveles elevados de plomo en la sangre, frente a cerca del 2.5% a nivel nacional. La tasa va bajando.",
+  "Project Clean Lake is a 25-year sewer project, 2011 to 2036, to cut sewage overflows into Lake Erie by about 4 billion gallons a year, mostly with underground tunnels.": "Project Clean Lake es un proyecto de alcantarillado de 25 años, de 2011 a 2036, para reducir los desbordamientos de aguas residuales al lago Erie en unos 4 mil millones de galones al año, sobre todo con túneles subterráneos.",
+  "The council member who writes a proposal is its <1>lead</1>. Other members can <2>join</2> it. City departments also send routine items, such as contract renewals, and a council member has to <3>sign</3> them for them to move forward. Signing says little about what that member personally cares about.": "El miembro del Concejo que escribe una propuesta es quien la <1>encabeza</1>. Otros miembros pueden <2>sumarse</2> a ella. Los departamentos de la ciudad también envían trámites rutinarios, como renovaciones de contratos, y un miembro del Concejo tiene que <3>firmarlos</3> para que puedan avanzar. Firmar dice poco sobre lo que a ese miembro le importa personalmente.",
+  "The council member who writes a proposal is its": "El miembro del Concejo que escribe una propuesta es quien la",
+  "it. City departments also send routine items, such as contract renewals, and a council member has to": "a ella. Los departamentos de la ciudad también envían trámites rutinarios, como renovaciones de contratos, y un miembro del Concejo tiene que",
+  "them for them to move forward. Signing says little about what that member personally cares about.": "para que puedan avanzar. Firmar dice poco sobre lo que a ese miembro le importa personalmente."
  },
  "masked": {
   "{n} lists": "{n} listas",
@@ -2560,7 +2569,8 @@
   "Checked against Ohio law and the county charter by {*} on {d}.": "{*} lo comparó con la ley de Ohio y la carta del condado el {d}.",
   "Checked against the record by {*} on {d}.": "{*} lo comparó con el registro el {d}.",
   "From official text for the {n}th Congress.": "Del texto oficial del {n}.º Congreso.",
-  "{*} council members cover parts of {*}. Check which side of the line your address is on.": "{*} miembros del Concejo cubren partes de {*}. Verifique de qué lado de la línea está su dirección."
+  "{*} council members cover parts of {*}. Check which side of the line your address is on.": "{*} miembros del Concejo cubren partes de {*}. Verifique de qué lado de la línea está su dirección.",
+  "{*}: Ward {*} on the 2014 map, Ward {*} now.": "{*}: Distrito {*} en el mapa de 2014, Distrito {*} ahora."
  },
  "keep": [
   "1234 E 116th St, Cleveland",

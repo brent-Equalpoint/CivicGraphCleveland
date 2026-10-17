@@ -28,7 +28,6 @@ const CX_LEVEL_LABEL = { most: `Most important`, important: `Important`, decidin
 const CX_GUIDES = {
   cost: {
     means: `Choosing this means you want to know what public decisions cost your household: taxes, utility bills, fees, and debts the city takes on that residents pay back later.`,
-    like: `Think of it like checking the monthly payment, not just the sticker price.`,
     facts: [
       [`Cleveland charges a 2.5% income tax. Residents pay it on what they earn, and people who live elsewhere pay it on work done inside the city.`, `CCA Division of Taxation`, `https://www.ccaohio.gov/tax-rates`, `2026`],
       [`Cleveland Public Power is the city's own electric company. In 2024, City Council approved its first rate increases since 1983: about $4.85 more a month in 2025 and $3.45 more in 2026.`, `Ideastream`, `https://www.ideastream.org/government-politics/2024-11-05/cleveland-city-council-approves-electricity-rate-increases-for-2025-and-2026`, `2024`],
@@ -41,7 +40,6 @@ const CX_GUIDES = {
   },
   housing: {
     means: `Choosing this means you care whether people can find, keep, and afford a safe home in Cleveland, as renters and as owners.`,
-    like: `Think of housing rules like the rules of a board game: they decide how many houses get built, who can rent them, and what counts as safe.`,
     facts: [
       [`Cleveland gives a 15-year property tax break on new or rehabbed homes. The size of the break depends on the neighborhood. Large apartment projects must include some affordable units or pay a fee. These rules started Jan. 1, 2024.`, `City of Cleveland`, `https://www.clevelandohio.gov/city-hall/departments/community-development/programs-services/tax-abatement`, `2024`],
       [`Those tax breaks mean less money for schools for now. The county estimated the Cleveland school district went without about $41.5 million in 2025 because of abated properties.`, `Signal Cleveland`, `https://signalcleveland.org/cleveland-metropolitan-school-district-cmsd-tax-abatements-city-council-bibb-recall/`, `2025`],
@@ -53,8 +51,7 @@ const CX_GUIDES = {
     ask: [`How many rentals in our ward are lead-safe certified, and what happens with the rest?`, `Should abatement rules change to protect school funding, and how would that affect new building?`, `How will the short-term rental rules be enforced on my street?`],
   },
   safety: {
-    means: `Choosing this means you care about preventing harm, getting help fast in an emergency, and making sure the people with power to enforce laws are held accountable.`,
-    like: `Think of it like a team with a referee: players need to be able to do their jobs, and someone needs to be able to call a foul.`,
+    means: `Choosing this means you care about preventing harm, getting help fast in an emergency, and how the people who enforce laws answer to the public.`,
     facts: [
       [`Since 2015, Cleveland police have worked under a federal consent decree, a court-enforced reform agreement that followed a Justice Department finding of excessive force.`, `Ideastream`, `https://www.ideastream.org/law-justice/2026-05-08/judge-rejects-clevelands-request-to-end-federal-police-consent-decree`, `2026`],
       [`In May 2026, the federal judge declined to end the decree. He noted progress but found the city had not yet met all of its terms.`, `Signal Cleveland`, `https://signalcleveland.org/cleveland-police-consent-decree-solomon-oliver-what-happens-next/`, `May 2026`],
@@ -66,8 +63,7 @@ const CX_GUIDES = {
     ask: [`Which consent decree requirements are still unfinished, and what is the plan?`, `How many mental health crisis teams serve our police district?`, `How are liquor permit and nuisance concerns in our ward being handled?`],
   },
   education: {
-    means: `Choosing this means you care whether Cleveland children can reach strong schools and programs, and who gets to make those decisions.`,
-    like: `Think of it like a school bus route: who draws the route decides who gets picked up, how long the ride is, and where it ends.`,
+    means: `Choosing this means you care which schools and programs Cleveland children can reach, and who makes those decisions.`,
     facts: [
       [`Cleveland voters do not elect the school board. Under a 1998 Ohio law, the mayor appoints the nine-member CMSD board from names given by a nominating panel. In 2002, voters chose to keep this system.`, `Signal Cleveland`, `https://signalcleveland.org/timeline-25-years-of-mayoral-control-over-cleveland-public-schools/`, `2023`],
       [`The Cleveland Plan, passed by the state legislature in 2012, gave schools more flexibility with performance-based accountability. Voters passed a school levy in 2012 and renewed or increased it in 2016 and 2020.`, `Signal Cleveland`, `https://signalcleveland.org/timeline-25-years-of-mayoral-control-over-cleveland-public-schools/`, `2023`],
@@ -80,7 +76,6 @@ const CX_GUIDES = {
   },
   freedom: {
     means: `Choosing this means you care about equal treatment under the law, protection from discrimination, and which personal choices government can or cannot limit.`,
-    like: `Think of it like the rules of a public park: everyone gets in, and the rules apply the same way to everybody.`,
     facts: [
       [`Cleveland's fair housing law bans housing discrimination based on traits including race, religion, disability, familial status, sexual orientation, and gender identity. The city's Office of Fair Housing takes complaints at 216-664-2018.`, `City of Cleveland`, `https://www.clevelandohio.gov/city-hall/departments/community-development/programs-services/fair-housing`, `2026`],
       [`City Council created the Community Relations Board in 1945 to improve relations between racial and cultural groups.`, `Encyclopedia of Cleveland History`, `https://case.edu/ech/articles/c/cleveland-community-relations-board`, `historical`],
@@ -92,8 +87,7 @@ const CX_GUIDES = {
     ask: [`How many fair housing complaints does the city get each year, and how are they resolved?`, `Which state laws currently limit what Cleveland can do on issues residents care about?`, `How can residents reach the Community Relations Board today?`],
   },
   growth: {
-    means: `Choosing this means you care about jobs, local businesses, and whether public deals bring real opportunity to people who live here.`,
-    like: `Think of it like planting a garden with public money: you want to know what grows, how long it takes, and who gets to eat from it.`,
+    means: `Choosing this means you care about jobs, local businesses, and whether public deals bring jobs and other benefits to people who live here.`,
     facts: [
       [`Cleveland's 2003 Fannie Lewis Law required residents to work 20% of construction hours on large city projects. A 2016 state law banned residency hiring quotas, and the Ohio Supreme Court upheld that state law in 2019.`, `Court News Ohio`, `https://www.courtnewsohio.gov/cases/2019/SCO/0924/180097.asp`, `2019`],
       [`In 2024, City Council created a downtown tax-increment financing (TIF) district that sets aside new property tax growth for public projects. The city projected about $3.4 billion through 2065.`, `Signal Cleveland`, `https://signalcleveland.org/understanding-clevelands-bet-on-a-tif-district-to-raise-money-for-downtown/`, `2024`],
@@ -105,10 +99,9 @@ const CX_GUIDES = {
   },
   environment: {
     means: `Choosing this means you care about clean air and water, lead-safe homes, and who carries the health risk or the cleanup bill.`,
-    like: `Think of it like a shared kitchen: whoever makes the mess, somebody has to clean it, and everyone breathes the same air.`,
     facts: [
-      [`Lead is still a serious problem for Cleveland children. In 2025, 15.8% of tested children under 6 had elevated blood lead levels, far above the national estimate of about 2.5%, though the rate is falling.`, `Signal Cleveland`, `https://signalcleveland.org/childhood-lead-poisoning-numbers-dropping-in-cleveland/`, `Oct. 2025`],
-      [`Project Clean Lake is a 25-year sewer project, 2011 to 2036, to cut sewage overflows into Lake Erie by about 4 billion gallons a year, mostly with huge underground tunnels.`, `NEORSD`, `https://www.neorsd.org/community/about-the-project-clean-lake-program/`, `2026`],
+      [`In 2025, 15.8% of tested Cleveland children under 6 had elevated blood lead levels, compared with about 2.5% nationally. The rate is falling.`, `Signal Cleveland`, `https://signalcleveland.org/childhood-lead-poisoning-numbers-dropping-in-cleveland/`, `Oct. 2025`],
+      [`Project Clean Lake is a 25-year sewer project, 2011 to 2036, to cut sewage overflows into Lake Erie by about 4 billion gallons a year, mostly with underground tunnels.`, `NEORSD`, `https://www.neorsd.org/community/about-the-project-clean-lake-program/`, `2026`],
       [`About $2.4 billion had been spent or committed on Project Clean Lake by March 2026. Sewer customers pay for it through their bills.`, `NEORSD`, `https://www.neorsd.org/community/about-the-project-clean-lake-program/`, `March 2026`],
       [`Cleveland updated its Climate Action Plan in April 2025, aiming for net-zero emissions by 2050 and naming poor air quality, extreme heat, and heavy storms as its main climate hazards.`, `City of Cleveland`, `https://www.clevelandohio.gov/news/cleveland-releases-updated-climate-action-plans-and-community-toolkit-reaffirming-climate`, `April 2025`],
     ],
@@ -118,7 +111,6 @@ const CX_GUIDES = {
   },
   trust: {
     means: `Choosing this means you want to see where public money goes, who approved it, and whether it delivered what was promised.`,
-    like: `Think of it like a family budget with receipts: the plan says what you meant to spend, the receipts show what you actually spent.`,
     facts: [
       [`Cleveland's 2026 budget is about $2.3 billion in total. The general fund, which pays for police, fire, EMS, and trash pickup, is about $920 million, and public safety is 46% of it.`, `Signal Cleveland`, `https://signalcleveland.org/cleveland-city-budget-2026-first-look-mayor-justin-bibb-city-council/`, `2026`],
       [`City Council passes the budget and authorizes spending. The Board of Control, made up of the mayor and department directors, then awards contracts within those limits.`, `Signal Cleveland`, `https://signalcleveland.org/clevelands-board-of-control-votes-to-spend-taxpayer-money-what-is-it-explainer/`, `2024`],
@@ -231,7 +223,6 @@ function CX_PriorityGuide({ id, level }) {
     <details className="cx-guide" open={chosen}>
       <summary><CXI.Book size={14} /> {chosen ? `What choosing this means in Cleveland` : `What this means in Cleveland`}</summary>
       <p className="cx-guide-means">{g.means}</p>
-      <p className="cx-guide-like">{g.like}</p>
       <h4>In Cleveland</h4>
       <ul className="cx-guide-facts">
         {g.facts.map(([t, src, url, when]) => (
@@ -527,7 +518,7 @@ function CX_Leaders({ onGo, onPanel }) {
 
       <div className="civic-card cx-howto">
         <h2>How to read this</h2>
-        <p className="cx-guide-like">Think of City Council like a group project. The person who writes a proposal is the <strong>lead</strong>. Classmates can <strong>join</strong> it. City departments also turn in a lot of routine paperwork, like contract renewals, and a council member has to <strong>sign</strong> it so it can move forward. Signing that paperwork is part of the job, like a manager signing timesheets. It says little about what they personally care about.</p>
+        <p className="cx-guide-like">The council member who writes a proposal is its <strong>lead</strong>. Other members can <strong>join</strong> it. City departments also send routine items, such as contract renewals, and a council member has to <strong>sign</strong> them for them to move forward. Signing says little about what that member personally cares about.</p>
         <dl className="cx-roles">
           <div><dt><i className="cx-dot cx-dot-own" aria-hidden="true" /> Led</dt><dd>Their own proposals. This is the clearest sign of what they are working on.</dd></div>
           <div><dt><i className="cx-dot cx-dot-joined" aria-hidden="true" /> Joined</dt><dd>A colleague's proposal they signed on to support.</dd></div>

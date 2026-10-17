@@ -256,7 +256,6 @@ function CxmPriorityGuide({ id }) {
       <CxmKicker>What this means in Cleveland</CxmKicker>
       <h2 className="cxm-h2">{w?.label}</h2>
       <p>{g.means}</p>
-      <p className="cxm-mut">{g.like}</p>
       <h3 className="cxm-h3">In Cleveland</h3>
       {g.facts.map(([t, src, url, when]) => <p key={t}>{t} <CxmSrc href={url}>{src}, {when}</CxmSrc></p>)}
       <h3 className="cxm-h3">Who decides</h3>

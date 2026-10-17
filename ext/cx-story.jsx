@@ -145,7 +145,7 @@ function cxmHoodStory(hood) {
   if (!now.length) return null;
   const b = before[0], n0 = now[0];
   const frames = [];
-  if (b && b.ward !== n0.ward) frames.push({ k: `Your ward`, big: `${hood} and Ward ${b.ward}: it's complicated.`, small: `${Math.round(b.share * 100)}% of ${hood} was Ward ${b.ward} on the 2014 map, used through 2025.` });
+  if (b && b.ward !== n0.ward) frames.push({ k: `Your ward`, big: `${hood}: Ward ${b.ward} on the 2014 map, Ward ${n0.ward} now.`, small: `${Math.round(b.share * 100)}% of ${hood} was Ward ${b.ward} on the 2014 map, used through 2025.` });
   else frames.push({ k: `Your ward`, big: `${hood} and Ward ${n0.ward}: still together.`, small: `The ward number stayed the same when the map changed from 17 wards to 15.` });
   frames.push({ k: `The new map`, big: `${Math.round(n0.share * 100)}% of ${hood} is now Ward ${n0.ward}.`, small: `${now.slice(1).map((r) => `${Math.round(r.share * 100)}% Ward ${r.ward}`).join(`, `)}${now.length > 1 ? `. ` : ``}Shares are by land area, not by how many people live there.` });
   const m14 = b ? cxPlMember(`wards2014`, b.ward).trim() : ``, m26 = cxPlMember(`wards2026`, n0.ward).trim();
