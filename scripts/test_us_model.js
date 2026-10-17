@@ -134,7 +134,7 @@ eq(g.nodes.filter((n) => n.kind === 'agency').length, data.agencies.length, 'eve
 // Sky layout: same data, same picture; nobody overlaps; everyone is inside their cluster; committees sit on the rim
 const g2 = A.cxUsSky(A.cxUsGraph(data));
 eq(g.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), g2.nodes.map((n) => [Math.round(n.x * 100), Math.round(n.y * 100)]), 'two builds give the same positions');
-eq(g.clusters.map((c) => [c.id, c.count]), [['senate', 100], ['house', 439], ['exec', 260], ['joint', 5], ['judicial', data.judiciary.judges.length]], 'the clusters and their counts');
+eq(g.clusters.map((c) => [c.id, c.count]), [['senate', 100], ['house', 439], ['exec', data.counts.agencies], ['joint', 5], ['judicial', data.judiciary.judges.length]], 'the clusters and their counts');
 for (const ch of ['senate', 'house']) {
   const c = g.clusters.find((k) => k.id === ch), ms = g.nodes.filter((n) => n.kind === 'member' && n.group === ch);
   let min = 1e9; for (let i = 0; i < ms.length; i++) for (let j = i + 1; j < ms.length; j++) min = Math.min(min, Math.hypot(ms[i].x - ms[j].x, ms[i].y - ms[j].y));
