@@ -39,18 +39,18 @@ function CxmBallot() {
     <div className="cxm-page cxm-rise">
       <CxmKicker>{over ? `The November 3 election is over.` : `Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.`}</CxmKicker>
       <CxmH1>My ballot</CxmH1>
-      <p className="cxm-lede">{over ? `Your ballot, to look back on. Follow the evidence.` : `Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.`}</p>
-      <p className="cxm-status-line"><span>This never casts a vote. Choices stay in this visit unless you choose to save on this browser. Manual practice ballot · precinct not verified.</span></p>
+      <p className="cxm-lede">{over ? `Your ballot, to look back on. Follow the evidence.` : `Try a choice. Follow the evidence.`}</p>
+      <p className="cxm-status-line"><span>This never casts a vote. Choices stay on this page unless you save them. Practice ballot, precinct not verified.</span></p>
       {cxmRegisterStory() && (
         <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-reg" onClick={() => setOverlay({ type: `story`, list: [cxmRegisterStory()], i: 0, f: 0 })}>
           <span><strong>{cxmDaysTo(CX_REG_DATE) === 0 ? `Register to vote: today is the deadline` : cxmDaysTo(CX_REG_DATE) > 0 ? `Register to vote` : `Not registered? Here is where you stand`}</strong><small>A short walkthrough with links to the official sites.</small></span><b>RV</b>
         </button>
       )}
       <CxmDates />
-      <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}All times are Eastern time. An application requests a ballot; it is not your completed ballot.</p>
+      <p className="cxm-fine">{days > 0 ? `${days} days to Election Day. ` : ``}Times are Eastern. An application is not a completed ballot.</p>
       <div className="cxm-tile cxm-tile-acc">
         <strong>Set my districts</strong>
-        <p className="cxm-mut">Your address, not your ward, decides your full ballot. Type your address and your districts are found on this phone, or pick them yourself. Nothing is saved or sent.</p>
+        <p className="cxm-mut">Your address, not your ward, decides your ballot. Districts are found on this phone. Nothing is saved or sent.</p>
         <button type="button" className="cxm-btn cxm-btn-dark" onClick={() => setOverlay({ type: `districts` })}>Find my districts by address</button>
         <div className="cxm-dgrid">
           {CXM_DISTRICTS.map(([k, label]) => (
@@ -62,7 +62,7 @@ function CxmBallot() {
             </label>
           ))}
         </div>
-        <p className="cxm-fine">Only odd-numbered County Council districts are on the ballot this year. Countywide races and issues are included. Add your districts and local issues from the official ballot. We do not infer them from a city ward.</p>
+        <p className="cxm-fine">Countywide races and issues are included. Add your districts and local issues from the official ballot.</p>
         <CxmSrc href={ah}>Check with the Board of Elections</CxmSrc>
       </div>
       <div className="cxm-tile">
@@ -80,7 +80,7 @@ function CxmBallot() {
       )}
       {cxmIssueStories().length > 0 && (
         <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-issues" onClick={() => setOverlay({ type: `story`, list: cxmIssueStories(), i: 0, f: 0 })}>
-          <span><strong>The other questions on every ballot in the county</strong><small>Short stories for State Issue 3 and county Issues 12, 13, and 14: what each asks, and what people on each side say.</small></span><b><CxStoryArt id="ballot" /></b>
+          <span><strong>The other questions on every ballot in the county</strong><small>Short stories on State Issue 3 and county Issues 12 to 14.</small></span><b><CxStoryArt id="ballot" /></b>
         </button>
       )}
       {groups.map(([g, list]) => (
@@ -106,7 +106,7 @@ function CxmBallot() {
       <button type="button" className="cxm-btn cxm-wide" onClick={() => openSheet(`review`)}>Review my practice ballot ({chosenN} chosen)</button>
       <div className="cxm-tile">
         <strong>Your practice ballot</strong>
-        <p className="cxm-mut">{chosenN} of {items.length} races and issues marked. Choices stay in this browser. Anyone using this browser profile could see saved choices.</p>
+        <p className="cxm-mut">{chosenN} of {items.length} marked. Choices stay in this browser, so anyone using it could see them.</p>
         <button type="button" className={`cxm-switch ${practice.saved ? `on` : ``}`} aria-pressed={practice.saved} onClick={() => practice.remember(!practice.saved)}><span>Save on this browser<small>{practice.saved ? `Saved in this browser` : `Visit only · reload clears choices unless saved`}</small></span><i><b /></i></button>
         <button type="button" className="cxm-link" onClick={() => practice.clear()}>Clear my practice data</button>
         {practice.message && <p className="cxm-fine" role="status">{practice.message}</p>}
@@ -137,7 +137,7 @@ function CxmBallot() {
             <div key={r.name} className="cxm-glance"><strong>{r.name}</strong><small>{r.area}</small><ul className="cxm-list">{r.people.map(([n, p]) => <li key={n}>{n} · {p}</li>)}</ul>{r.writeins && <small className="cxm-fine">Valid write-ins: {r.writeins}</small>}</div>
           ))}
         </CxmDrop>
-        <p className="cxm-fine">Source review: September 22, 2026. This guide is a dated snapshot, not an election office. Confirm current instructions with the Board of Elections.</p>
+        <p className="cxm-fine">Reviewed September 22, 2026. This is not an election office. Confirm rules with the Board of Elections.</p>
       </section>
     </div>
   );
@@ -315,7 +315,7 @@ function CxmOutcomes({ items }) {
     <section className="cxm-section">
       <CxmKicker>What could happen, with limits</CxmKicker>
       <h2 className="cxm-h2">What might your choices affect?</h2>
-      <p className="cxm-mut">Start with the person or proposal you selected. A future outcome depends on other voters, other officials, laws, funding and implementation. We do not calculate winning odds or promise results.</p>
+      <p className="cxm-mut">A result depends on other voters, officials, and funding. We do not predict outcomes.</p>
       {!chosen.length && <p className="cxm-status-line">Make a practice choice first. You can still open any candidate's record from a race above.</p>}
       {chosen.map((it) => {
         const v = st.selections[it.id];

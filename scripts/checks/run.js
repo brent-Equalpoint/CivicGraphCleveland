@@ -6049,7 +6049,7 @@ CHECKS['load-states'] = async () => {
     agBody: 'The agenda by kind comes from this website, and it did not arrive. The links below still open it. Check your connection, then try again.',
     mtgOffTitle: 'The meeting record needs the hosted site.', mtgOffBody: 'It is not part of the offline file. The rest of this file still works.',
     fedOffTitle: 'The people in Washington are not in the offline file.', fedOffBody: 'They load from the hosted site. People in Cleveland and the rest of this file still work.',
-    kickerLive: 'Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.', ledeLive: 'Your ballot. A little clearer. Try a choice. Follow the evidence. Take your time.',
+    kickerLive: 'Tuesday, Nov. 3 · Polls open 6:30 a.m. to 7:30 p.m.', ledeLive: 'Try a choice. Follow the evidence.',
     kickerOver: 'The November 3 election is over.', ledeOver: 'Your ballot, to look back on. Follow the evidence.',
     boxHead: 'No record on file yet.', boxBody: 'This candidate is on the official list. We have not added any votes or statements for them, and that is not the same as nothing existing. No match or outcome is inferred.',
   };

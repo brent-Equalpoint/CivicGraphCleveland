@@ -146,7 +146,7 @@ function CxmRooms() {
   return (
     <div className="cxm-page cxm-rise cxm-rooms" ref={pageRef}>
       <CxmH1>Rooms</CxmH1>
-      <p className="cxm-mut">Scroll down to zoom out, from your block all the way to Washington. {Uh.length} rooms, each answering one question.</p>
+      <p className="cxm-mut">{Uh.length} rooms, each answering one question.</p>
       <button type="button" className="cxm-searchbar" onClick={() => openSheet(`search`)}><CXI.Search size={18} /> Search records, people, laws, terms</button>
       <div className="cxm-doors" role="group" aria-label="Start with a topic">
         <button type="button" className="cxm-door" onClick={() => setRecFolder(`meetings`)}><CXI.Landmark size={18} /><strong>At City Hall</strong><small>Council meetings, agendas, and what was decided.</small></button>

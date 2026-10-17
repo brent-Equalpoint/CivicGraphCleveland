@@ -236,8 +236,8 @@ function cxMtgStory(data, today) {
 /* what For you reads besides the meeting record is the shared ward matcher's CX_WARD_LOOK (ext/cx-live.jsx) */
 const CX_MTG_DAY3 = [`Sun`, `Mon`, `Tue`, `Wed`, `Thu`, `Fri`, `Sat`];
 /* the Clerk's notice as two pieces: what it says (official wording, kept as written) and the broadcast line (which can be translated) */
-function CxMtgNote({ note, tag = `p`, className }) {
-  const [t, live] = cxMtgNoteParts(note);
+function CxMtgNote({ note, tag = `p`, className, noLive }) {
+  const [t, live0] = cxMtgNoteParts(note), live = noLive ? `` : live0;   // noLive: the card already has its own how-to-watch line
   if (!t && !live) return null;
   const Tag = tag;
   return <Tag className={className}>{t ? <span>{t}</span> : null}{t && live ? ` ` : null}{live ? <span>{live}</span> : null}</Tag>;
@@ -308,7 +308,7 @@ function CxMtgMeet({ m, today, onOpen, date }) {
         <CXI.Chevron size={18} className="cxm-chev" />
       </summary>
       <div className="mt-meet-body">
-        <CxMtgNote note={m.note} className="cxm-fine" />
+        <CxMtgNote note={m.note} className="cxm-fine" noLive />
         {m.place && <p className="cxm-fine">{m.place}</p>}
         {m.items.length > 0 && <CxMtgAgenda m={m} onOpen={onOpen} past={past} />}
         <CxMtgLinks m={m} past={past} />

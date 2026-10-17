@@ -242,7 +242,7 @@ function CX_Records({ home = null, onFile, onPerson, step = 20 }) {
       )}
       {shown.length > n && <button type="button" className="rf-show" onClick={() => { focusAt.current = n; setN(n + step); }}>{`Show ${Math.min(step, shown.length - n)} more`}</button>}
       <div className="rf-foot">
-        <p className="cxm-fine">Each card says where it comes from and when that record was pulled. The words for what happened are ours; the record's own words are in Details.</p>
+        <p className="cxm-fine">Each card shows its source. Our words say what happened; the record's own words are in Details.</p>
         <p className="cxm-fine">{cxRecReview()}</p>
         <p className="cxm-fine">Sponsorship is not a vote. A missing record is not a no.</p>
       </div>

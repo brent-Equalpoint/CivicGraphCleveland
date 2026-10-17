@@ -58,7 +58,7 @@ function CxmPlace() {
     <div className="cxm-page cxm-rise">
       <CxmKicker>Who decides here?</CxmKicker>
       <CxmH1>{hood}</CxmH1>
-      <p className="cxm-mut">Everything here comes from public records: the city's ward maps, Council's legislative database, and the ordinance text. Nothing scores anyone. Where the record is silent, it says so.</p>
+      <p className="cxm-mut">From public records. Where the record is silent, it says so.</p>
       <label className="cxm-field"><span>Your neighborhood</span>
         <select value={placed} onChange={(e) => { const h = e.target.value, w = cxmHoodWard(h); if (!h) return; if (cxmHoodSplit(h)) openSheet(`home`, { step: h }); else pickPlace({ hood: h, ward: w ? w.ward : null, share: w ? w.share : 0 }, `select`); }}>{!placed && <option value="">Pick your neighborhood</option>}{D.hoods.map((h) => <option key={h} value={h}>{h}{home?.hood === h ? ` (home)` : ``}</option>)}</select>
       </label>
@@ -68,12 +68,12 @@ function CxmPlace() {
           <div className="cxm-row2 cxm-hp-example"><button type="button" className="cxm-btn2" onClick={() => openSheet(`home`, { step: `Downtown` })}>Make Downtown my place</button></div>
         </>
       )}
-      <p className="cxm-fine">In 2025 Council redrew the map from 17 wards to 15. Blue marks the wards that cover {hood}; the outline is the neighborhood's official boundary.</p>
+      <p className="cxm-fine">In 2025 Council redrew the map from 17 wards to 15. Blue marks the wards that cover {hood}.</p>
       <div className="cxm-pmaps">
         <CxmPlaceMap layer="wards2014" hood={hood} wards={D.before} title="2014 to 2025 (17 wards)" />
         <CxmPlaceMap layer="wards2026" hood={hood} wards={D.now} title="From 2026 (15 wards)" />
       </div>
-      {complicated && <p className="cxm-status-line">Relationship status with Ward {before0.ward}: it's complicated. The 2026 map moved most of {hood} to Ward {now0.ward}.</p>}
+      {complicated && <p className="cxm-status-line">The 2026 map moved most of {hood} from Ward {before0.ward} to Ward {now0.ward}.</p>}
       {localCards.length > 0 && (
         <section className="cxm-section">
           <CxmKicker>Closest to you · {cxmHomeLabel(home)}</CxmKicker>
@@ -102,7 +102,7 @@ function CxmPlace() {
           ))}
           <h4 className="cxm-h4" aria-level="2">Before (2014 to 2025)</h4>
           {D.before.map((r) => <div key={r.ward} className="cxm-row cxm-row-static"><span><strong>Ward {r.ward} · {Math.round(r.share * 100)}%</strong><small>{cxPlMember(`wards2014`, r.ward) ? `Listed in the city's map file: ${cxPlMember(`wards2014`, r.ward)}` : ``}</small></span></div>)}
-          <p className="cxm-fine">Shares are by land area, not by how many people live there. {D.now.length > 1 ? `With ${D.now.length} council members covering parts of ${hood}, check which side of the line your address is on before you call.` : ``}</p>
+          <p className="cxm-fine">Shares are by land area, not population. {D.now.length > 1 ? `${D.now.length} council members cover parts of ${hood}. Check which side of the line your address is on.` : ``}</p>
           <div className="cxm-row-links"><CxmSrc href={CX_GEO.src.wards2014}>2014 ward map</CxmSrc><CxmSrc href={CX_GEO.src.wards2026}>2026 ward map (Ord. No. 1-2025)</CxmSrc><CxmSrc href={CX_GEO.src.spa}>Neighborhood boundaries</CxmSrc></div>
         </CxmPlaceSec>
         <CxmPlaceSec id="dec" open={open} setOpen={setOpen} title={`Decisions tied to ${hood}`} sum={`${cxmPl(D.items.length, `decision`, `decisions`)} in 2026 by address or name`}>

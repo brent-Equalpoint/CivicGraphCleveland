@@ -451,7 +451,7 @@ function CxmApp({ deskEasy, onLeaveEasy }) {
               {tab === `people` && <CxmPeople />}
               {tab === `ballot` && <CxmBallot />}
             </CxBoundary>
-            <p className="cxm-foot">Public sources. Visible gaps. No scores. Council records pulled {cxFresh().when} (Eastern), checked every night.</p>
+            <p className="cxm-foot">Public records, pulled {cxFresh().when} (Eastern).</p>
           </main>
           {/* tapping the Records tab while on it returns it to its top level: an open room in Rooms closes (go closes a sheet over it) */}
           <nav className="cxm-tabs" aria-label="Sections">
