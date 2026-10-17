@@ -110,6 +110,12 @@ sheet, card (`cxm-card`), chip, notice banner, drop-down row (`CxmDrop`). New co
 
 - Plain English, about an eighth-grade reading level. Short sentences. "You" and "your".
 - **No em dashes or en dashes anywhere**, in either language. Use a period, comma, or colon. (`test_i18n.py`, reading)
+- **Voice: warm and unbiased.** Warm means a kind, direct "you" and short sentences. Unbiased means no adjective that takes a side, no
+  word that tells the reader what to feel or how to vote, and both sides given the same weight and the same kind of source.
+- **Short by default.** The first thing a person sees is one clean line about what is shown. Anything longer sits one tap away
+  (a fold or the source link). Some things must be explained, but briefly: what it is, what it does, how it affects you.
+- **Legislation and rules in plain English, with no analogies.** Say directly what the item is, what it does, and how it affects a
+  resident. Do not compare it to something else. Every claim ends in its source (record, date, link).
 - Say what changes for a resident. Receipts: the record, the date, the link.
 - Name the people who spoke, with their role and the date. Quote exactly; if a quote came from a summary, mark it for checking.
 - Do not guess a person's gender or pronouns from a name; write titles without gender in Spanish. (`i18n/review-notes.md`)

@@ -2113,7 +2113,18 @@
   "The 2026 map moved most of": "El mapa de 2026 trasladó la mayor parte de",
   "from Ward": "del Distrito",
   "Shares are by land area, not population.": "Las proporciones se calculan por superficie de terreno, no por población.",
-  "Try a choice. Follow the evidence.": "Pruebe una opción. Siga la evidencia."
+  "Try a choice. Follow the evidence.": "Pruebe una opción. Siga la evidencia.",
+  "Try a choice. Follow the evidence. Nothing here casts a vote.": "Pruebe una opción. Siga la evidencia. Nada aquí emite un voto.",
+  "days to Election Day.": "días para el Día de las Elecciones.",
+  "More about this practice ballot": "Más sobre esta boleta de práctica",
+  "Practice ballot, precinct not verified. Choices stay on this page unless you save them, so anyone using this browser could see saved ones.": "Boleta de práctica, precinto sin verificar. Las opciones se quedan en esta página a menos que usted las guarde, así que cualquier persona que use este navegador podría ver las guardadas.",
+  "Reviewed September 22, 2026.": "Revisado el 22 de septiembre de 2026.",
+  "Your address decides your ballot. Nothing is saved or sent.": "Su dirección decide su boleta. No se guarda ni se envía nada.",
+  "Open a race to see the record. A missing record is not a no.": "Abra una contienda para ver el registro. Un registro faltante no es un no.",
+  "The cost, what it pays for, and what people say.": "El costo, para qué sirve y qué dice la gente.",
+  "marked.": "marcados.",
+  "Who decides, what a vote means, and where to get help.": "Quién decide, qué significa un voto y dónde obtener ayuda.",
+  "This is not an election office. Confirm rules with the Board of Elections.": "Esta no es una oficina electoral. Confirme las reglas con la Junta Electoral."
  },
  "masked": {
   "{n} lists": "{n} listas",
