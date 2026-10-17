@@ -2583,6 +2583,62 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-17T13:44:30+00:00",
+   "from": "2026-10-16T16:57:06+00:00",
+   "count": 1474,
+   "changes": [
+    {
+     "f": "Item-1278",
+     "new": true
+    },
+    {
+     "f": "1306-2026",
+     "new": true
+    },
+    {
+     "f": "1304-2026",
+     "new": true
+    },
+    {
+     "f": "1303-2026",
+     "new": true
+    },
+    {
+     "f": "1302-2026",
+     "new": true
+    },
+    {
+     "f": "1301-2026",
+     "new": true
+    },
+    {
+     "f": "1300-2026",
+     "new": true
+    },
+    {
+     "f": "1246-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1243-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1205-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    }
+   ]
   }
  ]
 }
