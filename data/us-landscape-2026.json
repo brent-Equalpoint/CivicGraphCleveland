@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-16T16:57:47+00:00",
+"retrieved_at": "2026-10-17T13:45:07+00:00",
 "congress": 119,
 "sources": {
 "members": "https://unitedstates.github.io/congress-legislators/legislators-current.json",
@@ -12,14 +12,14 @@
 "cabinet": "https://www.whitehouse.gov/administration/cabinet/"
 },
 "about": "The federal landscape. Party is the party on each member's current term, a sourced and dated field, never inferred from votes. Agencies are those with Federal Register documents since the cutoff; older ones are counted, not shown.",
-"agency_cutoff": "2024-10-26",
-"agencies_left_out": 213,
+"agency_cutoff": "2024-10-27",
+"agencies_left_out": 212,
 "counts": {
 "members": 539,
 "senate": 100,
 "house": 439,
 "committees": 49,
-"agencies": 260,
+"agencies": 261,
 "cabinet": 21,
 "courts": 106,
 "judges": 845,
@@ -25283,7 +25283,7 @@
 "parent_id": null,
 "blurb": "The Department of Agriculture works to improve and maintain farm income and to develop and expand markets abroad for agricultural products. The Department helps to curb and cure poverty, hunger, and malnutrition. It works to enhance the environment and to maintain production capacity by helping landowners protect the soil, water, forests, and other natural resources.",
 "url": "http://www.usda.gov/wps/portal/usda/usdahome",
-"documents_since_cutoff": 1200
+"documents_since_cutoff": 1208
 },
 {
 "id": 621,
@@ -25363,7 +25363,7 @@
 "parent_id": null,
 "blurb": "The Department of Commerce encourages, serves, and promotes the Nation's international trade, economic growth, and technological advancement. The Department provides a wide variety of programs through the competitive free enterprise system. It offers assistance and information to increase America's competitiveness in the world economy; administers programs to prevent unfair foreign trade competition;",
 "url": "http://www.commerce.gov/",
-"documents_since_cutoff": 5121
+"documents_since_cutoff": 5141
 },
 {
 "id": 57,
@@ -25403,7 +25403,7 @@
 "parent_id": null,
 "blurb": "The Commodity Futures Trading Commission, the Federal regulatory agency for futures trading, was established by the Commodity Futures Trading Commission Act of 1974 (7 U.S.C. 4a). The Commission began operation in April 1975, and its authority to regulate futures trading was renewed by Congress in 1978, 1982, 1986, 1992, 1995, and 2000.",
 "url": "http://www.cftc.gov/index.htm",
-"documents_since_cutoff": 148
+"documents_since_cutoff": 151
 },
 {
 "id": 573,
@@ -25423,7 +25423,7 @@
 "parent_id": null,
 "blurb": "The Consumer Product Safety Commission was established as an independent regulatory agency by the Consumer Product Safety Act (15 U.S.C. 2051 et seq.) in 1973 and reauthorized by the Consumer Product Safety Improvement Act of 2008. The Commission consists of up to five members, who are appointed by the President with the advice and consent of the Senate, for 7-year terms.",
 "url": "http://www.cpsc.gov/",
-"documents_since_cutoff": 120
+"documents_since_cutoff": 122
 },
 {
 "id": 91,
@@ -25433,7 +25433,7 @@
 "parent_id": null,
 "blurb": "The Corporation for National and Community Service engages Americans of all ages and backgrounds in community-based service that addresses the Nation's educational, public safety, environmental, and other human needs to achieve direct and demonstrable results.",
 "url": "http://www.nationalservice.gov/",
-"documents_since_cutoff": 51
+"documents_since_cutoff": 52
 },
 {
 "id": 578,
@@ -25463,7 +25463,7 @@
 "parent_id": null,
 "blurb": "The Department of Defense is responsible for providing the military forces needed to deter war and protect the security of our country. The major elements of these forces are the Army, Navy, Marine Corps, and Air Force, consisting of about 1.3 million men and women on active duty. They are backed, in case of emergency, by the 825,000 members of the Reserve and National Guard.",
 "url": "http://www.defense.gov/",
-"documents_since_cutoff": 1437
+"documents_since_cutoff": 1451
 },
 {
 "id": 109,
@@ -25533,7 +25533,7 @@
 "parent_id": null,
 "blurb": "The Department of Energy's mission is to foster a secure and reliable energy system that is environmentally and economically sustainable; to be a responsible steward of the Nation's nuclear weapons; to clean up the Department's facilities; to lead in the physical sciences and advance the biological, environmental, and computational sciences;",
 "url": "http://www.doe.gov/",
-"documents_since_cutoff": 3625
+"documents_since_cutoff": 3632
 },
 {
 "id": 145,
@@ -25543,7 +25543,7 @@
 "parent_id": null,
 "blurb": "The Environmental Protection Agency protects human health and safeguards the natural environment.",
 "url": "http://www.epa.gov/",
-"documents_since_cutoff": 1945
+"documents_since_cutoff": 1950
 },
 {
 "id": 147,
@@ -25563,7 +25563,7 @@
 "parent_id": null,
 "blurb": "Under authority of the Reorganization Act of 1939 (5 U.S.C. 133-133r, 133t note), various agencies were transferred to the Executive Office of the President by the President's Reorganization Plans I and II of 1939 (5 U.S.C. app.), effective July 1, 1939. Executive Order 8248 of September 8, 1939, established the divisions of the Executive Office and defined their functions.",
 "url": "https://www.whitehouse.gov/eop/",
-"documents_since_cutoff": 750
+"documents_since_cutoff": 753
 },
 {
 "id": 151,
@@ -25573,7 +25573,7 @@
 "parent_id": null,
 "blurb": "The Export-Import Bank of the United States helps the private sector to create and maintain U.S. jobs by financing exports of the Nation's goods and services. To accomplish this mission, the Bank offers a variety of loan, guarantee, and insurance programs to support transactions that would not be awarded to U.S. companies without the Bank's assistance.",
 "url": "http://www.exim.gov/",
-"documents_since_cutoff": 94
+"documents_since_cutoff": 95
 },
 {
 "id": 154,
@@ -25613,7 +25613,7 @@
 "parent_id": null,
 "blurb": "The Federal Communications Commission regulates interstate and foreign communications by radio, television, wire, satellite, and cable. It is responsible for the orderly development and operation of broadcast services and the provision of rapid, efficient nationwide and worldwide telephone and telegraph services at reasonable rates.",
 "url": "http://www.fcc.gov/",
-"documents_since_cutoff": 844
+"documents_since_cutoff": 859
 },
 {
 "id": 164,
@@ -25673,7 +25673,7 @@
 "parent_id": null,
 "blurb": "The Federal Maritime Commission regulates the waterborne foreign commerce of the United States. It ensures that U.S. oceanborne trades are open to all on fair and equitable terms and protects against concerted activities and unlawful practices.",
 "url": "http://www.fmc.gov/",
-"documents_since_cutoff": 143
+"documents_since_cutoff": 144
 },
 {
 "id": 179,
@@ -25723,7 +25723,7 @@
 "parent_id": null,
 "blurb": "The Federal Retirement Thrift Investment Board administers the Thrift Savings Plan, which provides Federal employees the opportunity to save for additional retirement security.",
 "url": "http://www.frtib.gov/",
-"documents_since_cutoff": 42
+"documents_since_cutoff": 43
 },
 {
 "id": 192,
@@ -25753,7 +25753,7 @@
 "parent_id": null,
 "blurb": "The General Services Administration (GSA) was established by section 101 of the Federal Property and Administrative Services Act of 1949 (40 U.S.C. 751).",
 "url": "http://www.gsa.gov/",
-"documents_since_cutoff": 268
+"documents_since_cutoff": 269
 },
 {
 "id": 213,
@@ -25813,7 +25813,7 @@
 "parent_id": null,
 "blurb": "The Department of Homeland Security (DHS) was established by the Homeland Security Act of 2002, (6 U.S.C. 101 note). The Department came into existence on January 24, 2003, and is administered under the supervision and direction of the Secretary of Homeland Security.",
 "url": "http://www.dhs.gov/",
-"documents_since_cutoff": 2274
+"documents_since_cutoff": 2276
 },
 {
 "id": 228,
@@ -25853,7 +25853,7 @@
 "parent_id": null,
 "blurb": "The Department of the Interior protects and provides access to our Nation's natural and cultural heritage and honors our trust responsibilities to tribes and our commitments to island communities. The Department of the Interior was created by act of March 3, 1849 (43 U.S.C. 1451), which transferred to it the General Land Office, the Office of Indian Affairs, the Pension Office, and the Patent Office.",
 "url": "http://www.doi.gov/",
-"documents_since_cutoff": 3290
+"documents_since_cutoff": 3294
 },
 {
 "id": 255,
@@ -25913,7 +25913,7 @@
 "parent_id": null,
 "blurb": "The U.S. Department of Justice serves as counsel for its citizens. It represents them in enforcing the law in the public interest. Through its thousands of lawyers, investigators, and agents, the Department plays the key role in protection against criminals and subversion, ensuring healthy business competition, safeguarding the consumer, and enforcing drug, immigration, and naturalization laws.",
 "url": "http://www.justice.gov/",
-"documents_since_cutoff": 1513
+"documents_since_cutoff": 1525
 },
 {
 "id": 271,
@@ -25923,7 +25923,7 @@
 "parent_id": null,
 "blurb": "The Department of Labor (DOL) was created by act of March 4, 1913 (29 U.S.C. 551). A Bureau of Labor was first created by Congress by act of June 24, 1884, in the Interior Department. The Bureau of Labor later became independent as a Department of Labor without executive rank by act of June 13, 1888.",
 "url": "http://www.dol.gov/",
-"documents_since_cutoff": 1092
+"documents_since_cutoff": 1094
 },
 {
 "id": 276,
@@ -25933,7 +25933,7 @@
 "parent_id": null,
 "blurb": "The Legal Services Corporation (LSC) is a private, nonprofit corporation established by the Legal Services Act of 1974, as amended (42 U.S.C. 2996), to seek to ensure equal access to justice under the law for all Americans. LSC is headed by an 11-member Board of Directors, appointed by the President and confirmed by the Senate. By law, the Board is bipartisan;",
 "url": "http://www.lsc.gov/",
-"documents_since_cutoff": 45
+"documents_since_cutoff": 46
 },
 {
 "id": 277,
@@ -25953,7 +25953,7 @@
 "parent_id": null,
 "blurb": "The Office of Management and Budget (OMB), formerly the Bureau of the Budget, was established in the Executive Office of the President pursuant to Reorganization Plan No. 1 of 1939 (5 U.S.C. app.).",
 "url": "http://www.whitehouse.gov/omb/",
-"documents_since_cutoff": 115
+"documents_since_cutoff": 116
 },
 {
 "id": 281,
@@ -26013,7 +26013,7 @@
 "parent_id": null,
 "blurb": "The National Archives and Records Administration (NARA) is the successor agency to the National Archives Establishment, which was created in 1934 and subsequently incorporated into the General Services Administration as the National Archives and Records Service in 1949. NARA was established as an independent agency in the executive branch of the Government by act of October 19, 1984 (44 U.S.C.",
 "url": "http://www.archives.gov/",
-"documents_since_cutoff": 78
+"documents_since_cutoff": 79
 },
 {
 "id": 308,
@@ -26153,7 +26153,7 @@
 "parent_id": null,
 "blurb": "The Nuclear Regulatory Commission licenses and regulates civilian use of nuclear energy to protect public health and safety and the environment.",
 "url": "https://www.nrc.gov/",
-"documents_since_cutoff": 817
+"documents_since_cutoff": 819
 },
 {
 "id": 385,
@@ -26203,7 +26203,7 @@
 "parent_id": null,
 "blurb": "The Office of Personnel Management administers a merit system to ensure compliance with personnel laws and regulations and assists agencies in recruiting, examining, and promoting people on the basis of their knowledge and skills, regardless of their race, religion, sex, political influence, or other nonmerit factors.",
 "url": "https://www.federalregister.gov/agencies/personnel-management-office",
-"documents_since_cutoff": 177
+"documents_since_cutoff": 184
 },
 {
 "id": 409,
@@ -26213,7 +26213,7 @@
 "parent_id": null,
 "blurb": "The Postal Regulatory Commission develops and implements a modern system of postal rate regulation. The Postal Regulatory Commission is the successor agency to the Postal Rate Commission, which was created by the Postal Reorganization Act, as amended (39 U.S.C. 3601-3604).",
 "url": "https://www.federalregister.gov/agencies/postal-regulatory-commission",
-"documents_since_cutoff": 509
+"documents_since_cutoff": 511
 },
 {
 "id": 410,
@@ -26223,7 +26223,7 @@
 "parent_id": null,
 "blurb": "The United States Postal Service provides mail processing and delivery services to individuals and businesses within the United States. The Postal Service was created as an independent establishment of the executive branch by the Postal Reorganization Act (39 U.S.C. 101 et seq.), approved August 12, 1970. The present United States Postal Service commenced operations on July 1, 1971.",
 "url": "https://www.federalregister.gov/agencies/postal-service",
-"documents_since_cutoff": 1465
+"documents_since_cutoff": 1468
 },
 {
 "id": 438,
@@ -26283,7 +26283,7 @@
 "parent_id": null,
 "blurb": "The Securities and Exchange Commission administers Federal securities laws that seek to provide protection for investors; to ensure that securities markets are fair and honest; and, when necessary, to provide the means to enforce securities laws through sanctions. The Securities and Exchange Commission (SEC) was created under authority of the Securities Exchange Act of 1934 (15 U.S.C.",
 "url": "https://www.federalregister.gov/agencies/securities-and-exchange-commission",
-"documents_since_cutoff": 4854
+"documents_since_cutoff": 4858
 },
 {
 "id": 467,
@@ -26303,7 +26303,7 @@
 "parent_id": null,
 "blurb": "The Small Business Administration aids, counsels, assists, and protects the interests of small business; ensures that small business concerns receive a fair portion of Government purchases, contracts, and subcontracts, as well as of the sales of Government property;",
 "url": "https://www.federalregister.gov/agencies/small-business-administration",
-"documents_since_cutoff": 698
+"documents_since_cutoff": 700
 },
 {
 "id": 470,
@@ -26333,7 +26333,7 @@
 "parent_id": null,
 "blurb": "The Department of State advises the President in the formulation and execution of foreign policy and promotes the long-range security and well-being of the United States. The Department determines and analyzes the facts relating to American overseas interests, makes recommendations on policy and future action, and takes the necessary steps to carry out established policy.",
 "url": "https://www.federalregister.gov/agencies/state-department",
-"documents_since_cutoff": 603
+"documents_since_cutoff": 604
 },
 {
 "id": 477,
@@ -26393,7 +26393,7 @@
 "parent_id": null,
 "blurb": "The Department of Transportation (DOT) was established by an act of Congress on October 15, 1966. The Department’s first official day of operation was April 1, 1967. [http://www.dot.gov/about.html]",
 "url": "https://www.federalregister.gov/agencies/transportation-department",
-"documents_since_cutoff": 4657
+"documents_since_cutoff": 4673
 },
 {
 "id": 497,
@@ -26403,7 +26403,7 @@
 "parent_id": null,
 "blurb": "The U.S. Department of the Treasury was established by act of 1789.",
 "url": "https://home.treasury.gov/",
-"documents_since_cutoff": 1497
+"documents_since_cutoff": 1500
 },
 {
 "id": 606,
@@ -26483,7 +26483,17 @@
 "parent_id": null,
 "blurb": "The establishment of the Veterans Administration (VA) came in 1930 when Congress authorized the President to \"consolidate and coordinate Government activities affecting war veterans.\" The three component agencies (the Veterans Bureau, the Bureau of Pensions of the Interior Department, and the National Home for Disabled Volunteer Soldiers) became bureaus within the Veterans Administration.",
 "url": "https://www.federalregister.gov/agencies/veterans-affairs-department",
-"documents_since_cutoff": 520
+"documents_since_cutoff": 522
+},
+{
+"id": 2,
+"slug": "administration-office-executive-office-of-the-president",
+"name": "Administration Office, Executive Office of the President",
+"short_name": "OA",
+"parent_id": 538,
+"blurb": "The Office of Administration (OA) was created by Reorganization Plan No. 1 of 1977 and Executive Order 12028. As a component of the Executive Office of the President, the Office's primary function is to provide common administrative and support services for the various agencies and offices of the EOP.",
+"url": "https://www.whitehouse.gov",
+"documents_since_cutoff": 1
 },
 {
 "id": 5,
@@ -26513,7 +26523,7 @@
 "parent_id": 12,
 "blurb": "The Agricultural Marketing Service (AMS) was established by the Secretary of Agriculture on April 2, 1972, under the authority of Reorganization Plan No. 2 of 1953 (5 U.S.C. app.) and other authorities. The Service administers standardization, grading, certification, market news, marketing orders, research and promotion, and regulatory programs.",
 "url": "http://www.ams.usda.gov",
-"documents_since_cutoff": 177
+"documents_since_cutoff": 178
 },
 {
 "id": 10,
@@ -26563,7 +26573,7 @@
 "parent_id": 12,
 "blurb": "The Animal and Plant Health Inspection Service was reestablished by the Secretary of Agriculture on March 14, 1977, pursuant to authority contained in 5 U.S.C. 301 and Reorganization Plan No. 2 of 1953 (5 U.S.C. app.).",
 "url": "http://www.aphis.usda.gov/",
-"documents_since_cutoff": 160
+"documents_since_cutoff": 161
 },
 {
 "id": 23,
@@ -26653,7 +26663,7 @@
 "parent_id": 227,
 "blurb": "The United States Coast Guard was established by act of January 28, 1915 (14 U.S.C. 1) and became a component of the Department of Transportation on April 1, 1967, pursuant to the Department of Transportation Act of October 15, 1966.",
 "url": "http://www.uscg.mil/",
-"documents_since_cutoff": 900
+"documents_since_cutoff": 902
 },
 {
 "id": 76,
@@ -26733,7 +26743,7 @@
 "parent_id": 103,
 "blurb": "The Defense Acquisition Regulations System (DARS) develops and maintains acquisition rules and guidance to facilitate the acquisition workforce as they acquire the goods and services DoD requires to ensure America's warfighters continued worldwide success.",
 "url": "http://www.acq.osd.mil/dpap/dars/index.html",
-"documents_since_cutoff": 76
+"documents_since_cutoff": 79
 },
 {
 "id": 115,
@@ -26753,7 +26763,7 @@
 "parent_id": 268,
 "blurb": "The Drug Enforcement Administration (DEA) is the lead Federal agency in enforcing narcotics and controlled substances laws and regulations. DEA also enforces the Federal money laundering and bulk currency smuggling statutes when the funds involved in the transactions or smuggling are derived from the sale of narcotics. It was created in July 1973 by Reorganization Plan No. 2 of 1973 (5 U.S.C. app.).",
 "url": "http://www.justice.gov/dea/",
-"documents_since_cutoff": 542
+"documents_since_cutoff": 553
 },
 {
 "id": 118,
@@ -26763,7 +26773,7 @@
 "parent_id": 54,
 "blurb": "The Bureau of Economic Analysis (BEA) promotes a better understanding of the U.S. economy by providing the most timely, relevant, and accurate economic accounts data in an objective and cost-effective manner. BEA's economic statistics are closely watched and provide a comprehensive picture of the U.S. economy.",
 "url": "http://www.bea.gov/",
-"documents_since_cutoff": 36
+"documents_since_cutoff": 37
 },
 {
 "id": 120,
@@ -26793,7 +26803,7 @@
 "parent_id": 271,
 "blurb": "The Employee Benefits Security Administration (EBSA) promotes and protects the pension, health, and other benefits of the over 150 million participants and beneficiaries in over 6 million private sector employee benefit plans. In administering its responsibilities, EBSA assists workers in understanding their rights and protecting their benefits;",
 "url": "http://www.dol.gov/ebsa/",
-"documents_since_cutoff": 68
+"documents_since_cutoff": 69
 },
 {
 "id": 133,
@@ -26873,7 +26883,7 @@
 "parent_id": 492,
 "blurb": "The Federal Aviation Administration (FAA), formerly the Federal Aviation Agency, was established by the Federal Aviation Act of 1958 (72 Stat. 731). The agency became a component of the Department of Transportation in 1967 pursuant to the Department of Transportation Act (49 U.S.C. 106). The mission of the FAA is to regulate civil aviation and U.S.",
 "url": "http://www.faa.gov/",
-"documents_since_cutoff": 2413
+"documents_since_cutoff": 2423
 },
 {
 "id": 160,
@@ -26933,7 +26943,7 @@
 "parent_id": 136,
 "blurb": "The Federal Energy Regulatory Commission (FERC) is an independent agency within the Department of Energy which regulates the interstate transmission of electricity, natural gas, and oil. FERC has retained many of the functions of the Federal Power Commission, such as setting rates and charges for the transportation and sale of natural gas and the transportation of oil by pipelines, as well the valuation of such...",
 "url": "http://www.ferc.gov/",
-"documents_since_cutoff": 3049
+"documents_since_cutoff": 3056
 },
 {
 "id": 170,
@@ -26943,7 +26953,7 @@
 "parent_id": 492,
 "blurb": "The Federal Highway Administration (FHWA) was established as an agency of the Department of Transportation by the Department of Transportation Act (49 U.S.C. 104). Title 23 of the United States Code and other supporting legislation authorize the Administration's various activities. FHWA's mission is to improve mobility on our Nation's highways through national leadership, innovation, and program delivery.",
 "url": "http://www.fhwa.dot.gov/",
-"documents_since_cutoff": 229
+"documents_since_cutoff": 230
 },
 {
 "id": 181,
@@ -27043,7 +27053,7 @@
 "parent_id": 253,
 "blurb": "The U.S. Fish and Wildlife Service is the only agency in the Federal government whose primary responsibility is the conservation and management of fish, wildlife, plants and their habitats for the American people. Its origins date back to 1871 when Congress established the U.S. Commission of Fish and Fisheries to study why the nation’s food fishes were decreasing and recommend ways to reverse that decline.",
 "url": "http://www.fws.gov/",
-"documents_since_cutoff": 373
+"documents_since_cutoff": 374
 },
 {
 "id": 201,
@@ -27123,7 +27133,7 @@
 "parent_id": 12,
 "blurb": "The U.S.Forest Service was established in 1905 under the Transfer Act of February 1, 1905 (16 U.S.C. 472) which transferred the Federal forest reserves and the responsibility for their management from the Department of the Interior to the Department of Agriculture.",
 "url": "https://www.fs.usda.gov",
-"documents_since_cutoff": 162
+"documents_since_cutoff": 168
 },
 {
 "id": 212,
@@ -27223,7 +27233,7 @@
 "parent_id": 497,
 "blurb": "The Office of the Commissioner of Internal Revenue was established by act of July 1, 1862 (26 U.S.C. 7802). The Internal Revenue Service (IRS) is responsible for administering and enforcing the internal revenue laws and related statutes, except those relating to alcohol, tobacco, firearms, and explosives.",
 "url": "http://www.irs.gov/",
-"documents_since_cutoff": 586
+"documents_since_cutoff": 587
 },
 {
 "id": 261,
@@ -27233,7 +27243,7 @@
 "parent_id": 54,
 "blurb": "The International Trade Administration (ITA) was established on January 2, 1980, by the Secretary of Commerce to promote world trade and to strengthen the international trade and investment position of the United States. ITA is responsible for nonagricultural trade operations of the U.S. Government and supports the trade policy negotiation efforts of the U.S. Trade Representative.",
 "url": "http://trade.gov/",
-"documents_since_cutoff": 2103
+"documents_since_cutoff": 2117
 },
 {
 "id": 603,
@@ -27273,7 +27283,7 @@
 "parent_id": 271,
 "blurb": "The Office of Labor-Management Standards (OLMS) can trace its origin back to the passage of the Labor-Management Reporting and Disclosure Act of 1959, as amended (LMRDA) on September 14, 1959. LMRDA was enacted by Congress to ensure certain basic standards of democracy and fiscal responsibility in labor organizations representing employees in private industry.",
 "url": "http://www.dol.gov/olms/",
-"documents_since_cutoff": 7
+"documents_since_cutoff": 8
 },
 {
 "id": 275,
@@ -27373,7 +27383,7 @@
 "parent_id": 492,
 "blurb": "The National Highway Traffic Safety Administration (NHTSA) was established by the Highway Safety Act of 1970 (23 U.S.C. 401 note) to help reduce the number of deaths, injuries, and economic losses resulting from motor vehicle crashes on the Nation's highways. The Administration carries out programs relating to the safety performance of motor vehicles and related equipment;",
 "url": "https://www.federalregister.gov/agencies/national-highway-traffic-safety-administration",
-"documents_since_cutoff": 295
+"documents_since_cutoff": 296
 },
 {
 "id": 347,
@@ -27453,7 +27463,7 @@
 "parent_id": 54,
 "blurb": "The National Oceanic and Atmospheric Administration (NOAA) was formed on October 3, 1970, by Reorganization Plan No. 4 of 1970 (5 U.S.C. app.).",
 "url": "https://www.federalregister.gov/agencies/national-oceanic-and-atmospheric-administration",
-"documents_since_cutoff": 1982
+"documents_since_cutoff": 1986
 },
 {
 "id": 362,
@@ -27463,7 +27473,7 @@
 "parent_id": 253,
 "blurb": "The National Park Service was established in the Department of the Interior on August 25, 1916 (16 U.S.C. 1).",
 "url": "https://www.federalregister.gov/agencies/national-park-service",
-"documents_since_cutoff": 1962
+"documents_since_cutoff": 1964
 },
 {
 "id": 372,
@@ -27533,7 +27543,7 @@
 "parent_id": 253,
 "blurb": "The Bureau of Ocean Energy Management (BOEM) was established by Department of the Interior Secretarial Order 3299 of May 19, 2010, which restructured the former Mineral Management Service, dividing its responsibilities into three new bureaus--The Bureau of Ocean Energy Management (BOEM), the Bureau of Safety and Environmental Enforcement (BSEE) and the Office of Natural Resources Revenue (ONRR).",
 "url": "http://www.boem.gov/",
-"documents_since_cutoff": 69
+"documents_since_cutoff": 70
 },
 {
 "id": 592,
@@ -27593,7 +27603,7 @@
 "parent_id": 492,
 "blurb": "The Pipeline and Hazardous Materials Safety Administration (PHMSA) was established on November 20, 2004 under the Norman Y. Mineta Research and Special Programs Improvement Act of 2004 (Pub. L. 108-426).",
 "url": "https://www.federalregister.gov/agencies/pipeline-and-hazardous-materials-safety-administration",
-"documents_since_cutoff": 315
+"documents_since_cutoff": 318
 },
 {
 "id": 437,

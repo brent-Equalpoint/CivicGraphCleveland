@@ -1,8 +1,8 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-16T16:57:06+00:00",
+"retrieved_at": "2026-10-17T13:44:30+00:00",
 "filter": "MatterIntroDate >= 2026-01-01",
-"count": 1467,
+"count": 1474,
 "matters": [
 {
 "id": 36207,
@@ -21960,7 +21960,7 @@ null,
 "id": 37572,
 "file": "1205-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "In Committee",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Capital Projects to enter into one or more agreements with the cities of Brook Park and Parma to resurface a portion of Brookpark Road located in the City of Cleveland; giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio for the improvement; authorizing agreements; and authorizing payment to the City of Brook Park for the City of Cleveland’s portion of the improvement.",
 "intro": "2026-10-01",
 "passed": null,
@@ -22718,7 +22718,7 @@ null,
 "id": 37617,
 "file": "1243-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "In Committee",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Development to apply for and accept a grant from the United States Department of Housing and Urban Development for the NORA Village project; authorizing the Director to enter into a grant agreement with Northern Ohio Recovery Association, or its designee to implement the project.",
 "intro": "2026-10-09",
 "passed": null,
@@ -22778,7 +22778,7 @@ null,
 "id": 37620,
 "file": "1246-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Extending the moratorium on the review and issuance of all use, building and zoning permits, certificates of occupancy, and other license or permit applications, including licenses or permits issued by the Department of Public Utilities, for data centers in the City until the earlier of the effective date of any newly enacted or amended codified ordinances sections regulating data centers or January 29, 2027.",
 "intro": "2026-10-09",
 "passed": null,
@@ -23647,6 +23647,18 @@ null,
 "sponsor_ids": []
 },
 {
+"id": 37672,
+"file": "Item-1278",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "CIty Council Agenda Notice 10/19/2026",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37672&GUID=915847B2-3536-4114-A5B5-93AFCAC1BFD5",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
 "id": 37673,
 "file": "Item-1279",
 "type": "Item",
@@ -23836,6 +23848,102 @@ null,
 ],
 "sponsor_ids": [
 255
+]
+},
+{
+"id": 37686,
+"file": "1300-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Lauren Golonka",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37686&GUID=86E2B5F1-3F6C-44C3-80BB-36D0769C66AF",
+"sponsors": [
+"Brian Kazy"
+],
+"sponsor_ids": [
+199
+]
+},
+{
+"id": 37687,
+"file": "1301-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Cahzidy Tinch",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37687&GUID=1F594719-B33B-45CB-A139-63785B57B628",
+"sponsors": [
+"Brian Kazy"
+],
+"sponsor_ids": [
+199
+]
+},
+{
+"id": 37688,
+"file": "1302-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Kellyn Donahoe",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37688&GUID=6C0CB930-EB14-4CBD-A9AA-92D64E0EF2A1",
+"sponsors": [
+"Brian Kazy"
+],
+"sponsor_ids": [
+199
+]
+},
+{
+"id": 37689,
+"file": "1303-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Brianna Kazy",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37689&GUID=5035C7E5-7B09-4A4E-B95B-5FA2D2BAFEED",
+"sponsors": [
+"Brian Kazy"
+],
+"sponsor_ids": [
+199
+]
+},
+{
+"id": 37690,
+"file": "1304-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Kymir Mills",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37690&GUID=39769E79-D9E9-4D8E-9A34-622CFD5F8411",
+"sponsors": [
+"Brian Kazy"
+],
+"sponsor_ids": [
+199
+]
+},
+{
+"id": 37692,
+"file": "1306-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Commemoration Resolution for Mario Luis Treviño",
+"intro": "2026-10-16",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37692&GUID=D5035E29-50FC-4F35-AF4C-DD0DD2C6BF5D",
+"sponsors": [
+"Austin Davis"
+],
+"sponsor_ids": [
+265
 ]
 }
 ]
