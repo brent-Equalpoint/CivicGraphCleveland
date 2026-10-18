@@ -169,7 +169,7 @@ function CxmContest({ id }) {
       <CxOfficeTicket contest={c} />
       {!onBallot && <p className="cxm-status-line">This race is not in the districts you set, so a choice here won't be kept. Set your districts on the Ballot tab.</p>}
       <h3 className="cxm-h3">Candidates <span>{cands.length}</span></h3>
-      <p className="cxm-fine">Tap a name to practice your pick. Record opens what is on file for that candidate.</p>
+      <p className="cxm-fine">Tap a name to practice your pick.</p>
       {cands.map((x) => (
         <div key={x.id} className="cxm-cand-row">
           <button type="button" className={`cxm-cand ${sel === x.id ? `on` : ``}`} aria-pressed={sel === x.id} onClick={() => pick(x.id)}>
@@ -186,7 +186,7 @@ function CxmContest({ id }) {
       </div>
       {others.length > 0 && <p className="cxm-fine">Also on the county list but not valid: {others.map((x) => `${x.name} (${x.status})`).join(`, `)}.</p>}
       {office && <button type="button" className="cxm-btn cxm-wide" onClick={() => openOffice(office)}>{office === `governor` ? `See their stated plans next to your answers` : `See their past votes next to your answers`}</button>}
-      <p className="cxm-fine">Your choice stays in this browser. Party labels come from the Board of Elections candidate list (page {c.page}). A party does not establish how someone will decide.</p>
+      <p className="cxm-fine">Your choice stays in this browser. Party comes from the Board of Elections list (page {c.page}) and does not show how someone will decide.</p>
       <CxmSrc href={Bm}>Official candidate list</CxmSrc>
     </div>
   );
@@ -206,7 +206,7 @@ function CxmIssue({ id }) {
       <h2 className="cxm-h2">{g.title}</h2>
       {story && (
         <button type="button" className="cxm-card cxm-card-acc cxm-keycard cxm-keycard-issues" onClick={() => { closeSheet(); setOverlay({ type: `story`, list: story.list, i: story.i, f: 0 }); }}>
-          <span><strong>Read the short story</strong><small>What it asks, what changes, and what people on each side say, with sources.</small></span><b><CxStoryArt id={story.list[story.i].id} /></b>
+          <span><strong>Read the short story</strong><small>What it asks and what people on each side say.</small></span><b><CxStoryArt id={story.list[story.i].id} /></b>
         </button>
       )}
       {!Ym(i) && <p className="cxm-status-line">A detailed plain-language review is not loaded for this issue. Read the official wording below.</p>}

@@ -2137,7 +2137,11 @@
   "Council's 2026 record: legislation, meetings, and votes.": "El registro del Concejo de 2026: legislación, reuniones y votos.",
   "Shares are by land area, not population. Earlier names come from the city's map file.": "Las proporciones se calculan por superficie, no por población. Los nombres anteriores vienen del archivo de mapas de la ciudad.",
   "Shares are by land area, not population. Earlier names come from the city's map file. Check which side of the line your address is on.": "Las proporciones se calculan por superficie, no por población. Los nombres anteriores vienen del archivo de mapas de la ciudad. Compruebe de qué lado de la línea está su dirección.",
-  "Three quick questions": "Tres preguntas rápidas"
+  "Three quick questions": "Tres preguntas rápidas",
+  "Tap a name to practice your pick.": "Toque un nombre para practicar su elección.",
+  "Your choice stays in this browser. Party comes from the Board of Elections list (page": "Su elección se queda en este navegador. El partido viene de la lista de la Junta Electoral (página",
+  ") and does not show how someone will decide.": ") y no indica cómo decidirá una persona.",
+  "What it asks and what people on each side say.": "Qué pregunta y qué dice la gente de cada lado."
  },
  "masked": {
   "{n} lists": "{n} listas",
