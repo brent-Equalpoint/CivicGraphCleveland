@@ -220,7 +220,7 @@ function CX_Records({ home = null, onFile, onPerson, step = 20 }) {
   const wardValue = mine ? `mine` : String(f.ward || ``);
   return (
     <div className="rf">
-      <p className="rf-lead">Every dated record in City Council's 2026 public record: legislation, meetings, and roll call votes.</p>
+      <p className="rf-lead">Council's 2026 record: legislation, meetings, and votes.</p>
       <div className="rf-filters">
         <CX_RecPills name="days" label="When" items={CX_REC_TIMES} value={f.days} onChange={(v) => set(`days`, v)} />
         <CX_RecPills name="type" label="Kind" items={CX_REC_TYPES} value={f.type} onChange={(v) => set(`type`, v)} counts={kinds} />
@@ -242,8 +242,6 @@ function CX_Records({ home = null, onFile, onPerson, step = 20 }) {
       )}
       {shown.length > n && <button type="button" className="rf-show" onClick={() => { focusAt.current = n; setN(n + step); }}>{`Show ${Math.min(step, shown.length - n)} more`}</button>}
       <div className="rf-foot">
-        <p className="cxm-fine">Each card shows its source. Our words say what happened; the record's own words are in Details.</p>
-        <p className="cxm-fine">{cxRecReview()}</p>
         <p className="cxm-fine">Sponsorship is not a vote. A missing record is not a no.</p>
       </div>
     </div>

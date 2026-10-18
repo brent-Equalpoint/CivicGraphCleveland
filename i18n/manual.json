@@ -2133,7 +2133,11 @@
   "The council member who writes a proposal is its <1>lead</1>. Other members can <2>join</2> it. City departments also send routine items, such as contract renewals, and a council member has to <3>sign</3> them for them to move forward. Signing says little about what that member personally cares about.": "El miembro del Concejo que escribe una propuesta es quien la <1>encabeza</1>. Otros miembros pueden <2>sumarse</2> a ella. Los departamentos de la ciudad también envían trámites rutinarios, como renovaciones de contratos, y un miembro del Concejo tiene que <3>firmarlos</3> para que puedan avanzar. Firmar dice poco sobre lo que a ese miembro le importa personalmente.",
   "The council member who writes a proposal is its": "El miembro del Concejo que escribe una propuesta es quien la",
   "it. City departments also send routine items, such as contract renewals, and a council member has to": "a ella. Los departamentos de la ciudad también envían trámites rutinarios, como renovaciones de contratos, y un miembro del Concejo tiene que",
-  "them for them to move forward. Signing says little about what that member personally cares about.": "para que puedan avanzar. Firmar dice poco sobre lo que a ese miembro le importa personalmente."
+  "them for them to move forward. Signing says little about what that member personally cares about.": "para que puedan avanzar. Firmar dice poco sobre lo que a ese miembro le importa personalmente.",
+  "Council's 2026 record: legislation, meetings, and votes.": "El registro del Concejo de 2026: legislación, reuniones y votos.",
+  "Shares are by land area, not population. Earlier names come from the city's map file.": "Las proporciones se calculan por superficie, no por población. Los nombres anteriores vienen del archivo de mapas de la ciudad.",
+  "Shares are by land area, not population. Earlier names come from the city's map file. Check which side of the line your address is on.": "Las proporciones se calculan por superficie, no por población. Los nombres anteriores vienen del archivo de mapas de la ciudad. Compruebe de qué lado de la línea está su dirección.",
+  "Three quick questions": "Tres preguntas rápidas"
  },
  "masked": {
   "{n} lists": "{n} listas",

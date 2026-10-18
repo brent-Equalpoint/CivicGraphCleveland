@@ -262,7 +262,7 @@ function CxMtgItem({ i, onOpen, past, children }) {
   const x = cxmMatter(i[0]);
   return (
     <button type="button" className="mt-item" onClick={() => onOpen(i[0])}>
-      <span><strong>{x ? cxHeadline(x.title) : `Legislation ${i[0]}`}</strong>{children || <small><span>{i[0]}</span>{` · `}<span>{!i[1] && past ? `No action recorded` : cxMtgAction(i[1])}</span></small>}</span>
+      <span><strong>{x ? cxHeadline(x.title) : `Legislation ${i[0]}`}</strong>{children || <small><span>{i[0]}</span>{i[1] || past ? <>{` · `}<span>{!i[1] && past ? `No action recorded` : cxMtgAction(i[1])}</span></> : null}</small>}</span>
     </button>
   );
 }

@@ -101,8 +101,8 @@ function CxmPlace() {
             </div>
           ))}
           <h4 className="cxm-h4" aria-level="2">Before (2014 to 2025)</h4>
-          {D.before.map((r) => <div key={r.ward} className="cxm-row cxm-row-static"><span><strong>Ward {r.ward} · {Math.round(r.share * 100)}%</strong><small>{cxPlMember(`wards2014`, r.ward) ? `Listed in the city's map file: ${cxPlMember(`wards2014`, r.ward)}` : ``}</small></span></div>)}
-          <p className="cxm-fine">Shares are by land area, not population. {D.now.length > 1 ? `${D.now.length} council members cover parts of ${hood}. Check which side of the line your address is on.` : ``}</p>
+          {D.before.map((r) => <div key={r.ward} className="cxm-row cxm-row-static"><span><strong>Ward {r.ward} · {Math.round(r.share * 100)}%</strong><small>{cxPlMember(`wards2014`, r.ward) || ``}</small></span></div>)}
+          <p className="cxm-fine">{D.now.length > 1 ? `Shares are by land area, not population. Earlier names come from the city's map file. Check which side of the line your address is on.` : `Shares are by land area, not population. Earlier names come from the city's map file.`}</p>
           <div className="cxm-row-links"><CxmSrc href={CX_GEO.src.wards2014}>2014 ward map</CxmSrc><CxmSrc href={CX_GEO.src.wards2026}>2026 ward map (Ord. No. 1-2025)</CxmSrc><CxmSrc href={CX_GEO.src.spa}>Neighborhood boundaries</CxmSrc></div>
         </CxmPlaceSec>
         <CxmPlaceSec id="dec" open={open} setOpen={setOpen} title={`Decisions tied to ${hood}`} sum={`${cxmPl(D.items.length, `decision`, `decisions`)} in 2026 by address or name`}>

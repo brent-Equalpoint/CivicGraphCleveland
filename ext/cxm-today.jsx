@@ -133,7 +133,6 @@ function CxmToday() {
           <button key={m.id} type="button" className="cxm-card cxm-moment-card" onClick={() => setOverlay({ type: `moment`, list: moments, i, lens: 0 })}>
             <span className="cxm-kicker cxm-soft">{m.kicker}</span>
             <strong>{m.teaser}</strong>
-            <small>Tap to zoom from you to the city</small>
           </button>
         ))}
       </section>

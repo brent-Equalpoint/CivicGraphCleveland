@@ -23,18 +23,9 @@ function cxmFirstSentence(t) {
 }
 /* The line under a room card. Each wording is one whole line (singular and plural written out), so a translation never glues pieces together. */
 function cxmRoomPulse(r) {
-  const n = r.nodes.length, o = r.nodes.filter((x) => x.evidence === `official`).length, l = r.nodes.filter((x) => x.kind === `legislation`).length;
-  const k = `${n === 1 ? 1 : `n`}${o === 1 ? 1 : `n`}${l > 1 ? `n` : l}`;
-  if (k === `nn0`) return `${n} records · ${o} official sources`;
-  if (k === `nn1`) return `${n} records · ${o} official sources · ${l} law or proposal`;
-  if (k === `nnn`) return `${n} records · ${o} official sources · ${l} laws or proposals`;
-  if (k === `n10`) return `${n} records · ${o} official source`;
-  if (k === `n11`) return `${n} records · ${o} official source · ${l} law or proposal`;
-  if (k === `n1n`) return `${n} records · ${o} official source · ${l} laws or proposals`;
-  if (k === `1n0`) return `${n} record · ${o} official sources`;
-  if (k === `1n1`) return `${n} record · ${o} official sources · ${l} law or proposal`;
-  if (k === `110`) return `${n} record · ${o} official source`;
-  return `${n} record · ${o} official source · ${l} law or proposal`;
+  const n = r.nodes.length, o = r.nodes.filter((x) => x.evidence === `official`).length;
+  if (n === 1) return o === 1 ? `${n} record · ${o} official source` : `${n} record · ${o} official sources`;
+  return o === 1 ? `${n} records · ${o} official source` : `${n} records · ${o} official sources`;
 }
 
 /* Where you are on Explore, shared by the list and the rail. The level is the level of the card on the reading line (45% down the list),
@@ -156,7 +147,7 @@ function CxmRooms() {
         })}
       </div>
       <section className="cxm-section" aria-label="Check yourself">
-        <button type="button" className="cxm-row" onClick={() => openSheet(`check`, { room: `overview`, node: (Uh.find((r) => r.id === `overview`)?.path || [])[0] })}><span><strong>Resident check</strong><small>Three questions every resident should be able to answer</small></span><CXI.Arrow size={15} /></button>
+        <button type="button" className="cxm-row" onClick={() => openSheet(`check`, { room: `overview`, node: (Uh.find((r) => r.id === `overview`)?.path || [])[0] })}><span><strong>Resident check</strong><small>Three quick questions</small></span><CXI.Arrow size={15} /></button>
       </section>
       {levels.map((lv, i) => (
         <section key={lv.id} data-level={i} className="cxm-level">
@@ -182,7 +173,7 @@ function CxmRooms() {
           })}
         </section>
       ))}
-      <div className="cxm-end"><strong>You've zoomed all the way out.</strong><span>Scroll up to come home.</span></div>
+      <div className="cxm-end"><strong>You've zoomed all the way out.</strong></div>
     </div>
   );
 }
