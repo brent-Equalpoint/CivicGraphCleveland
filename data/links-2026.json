@@ -1,5 +1,5 @@
 {
- "checked_at": "2026-10-12",
+ "checked_at": "2026-10-19",
  "checked": 185,
  "ok": 173,
  "uncertain": 8,
@@ -10,7 +10,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-12",
-   "consecutive": 1,
+   "consecutive": 2,
    "where": [
     "cx-us-map.jsx"
    ]
@@ -20,7 +20,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 2,
+   "consecutive": 3,
    "where": [
     "cx-seat.jsx"
    ]
@@ -30,7 +30,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 2,
+   "consecutive": 3,
    "where": [
     "cx-us.jsx"
    ]
@@ -40,7 +40,7 @@
    "status": 0,
    "kind": "unreachable",
    "since": "2026-10-05",
-   "consecutive": 2,
+   "consecutive": 3,
    "where": [
     "cxm-ballot.jsx"
    ]

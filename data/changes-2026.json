@@ -2645,6 +2645,37 @@
    "from": "2026-10-17T13:44:30+00:00",
    "count": 1474,
    "changes": []
+  },
+  {
+   "at": "2026-10-19T16:59:55+00:00",
+   "from": "2026-10-18T14:02:21+00:00",
+   "count": 1474,
+   "changes": [
+    {
+     "f": "1244-2026",
+     "steps": [
+      [
+       "2026-10-19",
+       "recommended for approval",
+       "Health, Human Services and the Arts Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1245-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1203-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    }
+   ]
   }
  ]
 }

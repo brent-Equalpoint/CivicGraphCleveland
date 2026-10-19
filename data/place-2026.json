@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-18T14:02:41+00:00",
+"retrieved_at": "2026-10-19T17:00:10+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -5836,7 +5836,13 @@
 "1241-2026": [],
 "1242-2026": [],
 "1243-2026": [],
-"1244-2026": [],
+"1244-2026": [
+[
+"2026-10-19",
+"recommended for approval",
+"Health, Human Services and the Arts Committee"
+]
+],
 "1245-2026": [],
 "1246-2026": [],
 "1247-2026": [],
