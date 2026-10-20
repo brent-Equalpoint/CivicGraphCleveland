@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-19T17:06:28+00:00",
+"retrieved_at": "2026-10-20T15:12:07+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
 "meetings": 153,
 "with_agenda": 153,
 "with_minutes": 10,
-"legislation_items": 1972
+"legislation_items": 1977
 },
 "meetings": [
 {
@@ -9842,7 +9842,7 @@
 "items": [
 [
 "1230-2026",
-""
+"recommended for approval"
 ],
 [
 "1244-2026",
@@ -9864,40 +9864,44 @@
 "note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
 [
+"1245-2026",
+"recommended for approval"
+],
+[
 "745-2026",
-""
+"recommended for approval"
 ],
 [
 "748-2026",
-""
+"recommended for approval"
 ],
 [
 "911-2026",
-""
+"recommended for approval"
 ],
 [
 "1042-2026",
-""
+"recommended for approval"
 ],
 [
 "1116-2026",
-""
+"recommended for approval"
 ],
 [
 "1162-2026",
-""
+"recommended for approval"
 ],
 [
 "1165-2026",
-""
+"recommended for approval"
 ],
 [
 "1246-2026",
-""
+"recommended for approval"
 ],
 [
 "1247-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -9912,7 +9916,7 @@
 "page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3943&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
 "agenda_status": "Final",
 "minutes_status": "Draft",
-"note": "TENTATIVE AGENDA - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
 [
 "1285-2026",
@@ -9987,6 +9991,22 @@
 ""
 ],
 [
+"1308-2026",
+""
+],
+[
+"1309-2026",
+""
+],
+[
+"1310-2026",
+""
+],
+[
+"1311-2026",
+""
+],
+[
 "1280-2026",
 ""
 ],
@@ -10008,67 +10028,67 @@
 ],
 [
 "1279-2026",
-""
+"approved"
 ],
 [
 "1289-2026",
-""
+"approved"
 ],
 [
 "1290-2026",
-""
+"approved"
 ],
 [
 "1291-2026",
-""
+"approved"
 ],
 [
 "1292-2026",
-""
+"approved"
+],
+[
+"1307-2026",
+"adopted"
 ],
 [
 "745-2026",
-""
+"approved"
 ],
 [
 "748-2026",
-""
+"approved"
 ],
 [
 "911-2026",
-""
+"approved as amended"
 ],
 [
 "1042-2026",
-""
+"approved"
 ],
 [
 "1116-2026",
-""
+"approved"
 ],
 [
 "1162-2026",
-""
+"approved as amended"
 ],
 [
 "1165-2026",
-""
+"approved"
 ],
 [
-"1230-2026",
-""
-],
-[
-"1244-2026",
-""
+"1245-2026",
+"approved as amended"
 ],
 [
 "1246-2026",
-""
+"approved"
 ],
 [
 "1247-2026",
-""
+"adopted"
 ]
 ]
 },
