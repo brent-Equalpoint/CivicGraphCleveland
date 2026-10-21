@@ -3002,6 +3002,125 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-21T15:15:43+00:00",
+   "from": "2026-10-20T15:07:24+00:00",
+   "count": 1480,
+   "changes": [
+    {
+     "f": "1175-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1174-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1173-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1170-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1169-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1168-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-21",
+       "recommended for approval",
+       "Transportation and Mobility Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1284-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1283-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1281-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    },
+    {
+     "f": "1280-2026",
+     "st": [
+      "First Reading",
+      "Administrative Review"
+     ]
+    }
+   ]
   }
  ]
 }

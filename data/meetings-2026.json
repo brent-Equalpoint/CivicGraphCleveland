@@ -1,6 +1,6 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-20T15:12:07+00:00",
+"retrieved_at": "2026-10-21T15:21:00+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
@@ -10107,27 +10107,27 @@
 "items": [
 [
 "1168-2026",
-""
+"recommended for approval"
 ],
 [
 "1169-2026",
-""
+"recommended for approval"
 ],
 [
 "1170-2026",
-""
+"recommended for approval"
 ],
 [
 "1173-2026",
-""
+"recommended for approval"
 ],
 [
 "1174-2026",
-""
+"recommended for approval"
 ],
 [
 "1175-2026",
-""
+"recommended for approval"
 ]
 ]
 },

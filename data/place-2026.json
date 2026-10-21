@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-20T15:07:44+00:00",
+"retrieved_at": "2026-10-21T15:16:14+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -5752,6 +5752,11 @@
 "2026-10-12",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
 ]
 ],
 "1169-2026": [
@@ -5759,17 +5764,39 @@
 "2026-10-12",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
 ]
 ],
-"1170-2026": [],
+"1170-2026": [
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
+]
+],
 "1171-2026": [],
 "1172-2026": [],
-"1173-2026": [],
+"1173-2026": [
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
+]
+],
 "1174-2026": [
 [
 "2026-10-12",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
 ]
 ],
 "1175-2026": [
@@ -5777,6 +5804,11 @@
 "2026-10-12",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-21",
+"recommended for approval",
+"Transportation and Mobility Committee"
 ]
 ],
 "1176-2026": [],
