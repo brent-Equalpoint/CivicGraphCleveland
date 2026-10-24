@@ -1,9 +1,21 @@
 {
  "source": "The City Record, official publication of the Council of the City of Cleveland, published weekly by the City Clerk, Clerk of Council",
- "retrieved_at": "2026-10-20T15:11:07+00:00",
+ "retrieved_at": "2026-10-24T14:15:58+00:00",
  "parser": 2,
  "about": "How each member of Council voted where the City Record prints names: yea, nay, absent, or recused (printed as Recusal). A member in office who is not listed has no record here, and no record is not a no. A vote to suspend the rules prints only a tally and is not stored. Nothing is scored. Also kept, each with the issue it came from: the referral printed at a first reading, the approvals printed before a final vote, and the effective date printed with a law's full text. legistar_votes fills a roll call from Council's Legistar record only where the City Record prints no names; differs lists where the two records disagree.",
  "issues": [
+  {
+   "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+   "label": "Record - October 23, 2026",
+   "bytes": 2201970,
+   "modified": "Fri, 23 Oct 2026 17:46:11 GMT",
+   "sha256": "3ea6f03bd56bca1f3f403a13bc42a74ae280f42f87b1022c66198f3b4041b0c8",
+   "parser": 2,
+   "votes": 16,
+   "problems": [],
+   "held": [],
+   "veto_lines": []
+  },
   {
    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-16-26%20compressed.pdf",
    "label": "Record - October 16, 2026",
@@ -14910,6 +14922,470 @@
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-16-26%20compressed.pdf",
     "locator": "Record - October 16, 2026, roll call on file 923-2026, council meeting of 2026-10-12"
    }
+  },
+  "1042-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "nay",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "nay",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 10,
+    "nay": 2
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1042-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1116-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1116-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1162-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1162-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1165-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1165-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1245-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1245-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1246-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "nay",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 11,
+    "nay": 1
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1246-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1247-2026": {
+   "date": "2026-10-19",
+   "question": "Adoption",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "yea",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 13,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1247-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1279-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1279-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1289-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1289-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1290-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1290-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1291-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1291-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1292-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1292-2026, council meeting of 2026-10-19"
+   }
+  },
+  "1307-2026": {
+   "date": "2026-10-19",
+   "question": "Adoption",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 1307-2026, council meeting of 2026-10-19"
+   }
+  },
+  "745-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 745-2026, council meeting of 2026-10-19"
+   }
+  },
+  "748-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 748-2026, council meeting of 2026-10-19"
+   }
+  },
+  "911-2026": {
+   "date": "2026-10-19",
+   "question": "Passage",
+   "members": {
+    "Austin Davis": "yea",
+    "Blaine A. Griffin": "yea",
+    "Brian Kazy": "yea",
+    "Charles Slife": "yea",
+    "Deborah A. Gray": "absent",
+    "Jasmin Santana": "absent",
+    "Joseph T. Jones": "yea",
+    "Kevin Conwell": "yea",
+    "Kevin L. Bishop": "absent",
+    "Kris Harsh": "yea",
+    "Michael Polensek": "yea",
+    "Nikki Hudson": "yea",
+    "Richard A. Starr": "yea",
+    "Stephanie Howse-Jones": "yea",
+    "Tanmay Shah": "yea"
+   },
+   "tally": {
+    "yea": 12,
+    "nay": 0
+   },
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, roll call on file 911-2026, council meeting of 2026-10-19"
+   }
   }
  },
  "other": [
@@ -16245,6 +16721,76 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-16-26%20compressed.pdf",
      "locator": "Record - October 16, 2026, file 1247-2026, council meeting of 2026-10-12"
+    }
+   }
+  ],
+  "1280-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Referred to the Directors of Public Works; Finance; and Law; Committees on Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1280-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1281-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Referred to the Directors of Public Works; Finance; and Law; Committees on Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1281-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1282-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Referred to the Directors of Building and Housing; City Planning Commission; Finance; and Law; Committees on Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1282-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1283-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Referred to the Directors of Parks and Recreation; Finance; and Law; Committees on Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1283-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1284-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Referred to the Directors of Public Works; Finance; and Law; Committees on Municipal Services and Properties; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1284-2026, council meeting of 2026-10-19"
     }
    }
   ],
@@ -19788,6 +20334,20 @@
     }
    }
   ],
+  "1042-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Port Control; Finance; and Law; Committees on Transportation and Mobility; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Transportation and Mobility",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1042-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
   "1043-2026": [
    {
     "date": "2026-10-12",
@@ -19839,6 +20399,20 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-07/REVISED_City%20Record%202-13-26.pdf",
      "locator": "Record - Feb. 13, 2026, file 109-2026, council meeting of 2026-02-09"
+    }
+   }
+  ],
+  "1116-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Public Safety; Finance; and Law; Committees on Safety; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Safety",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1116-2026, council meeting of 2026-10-19"
     }
    }
   ],
@@ -20078,6 +20652,33 @@
     }
    }
   ],
+  "1162-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Community Police Commission; Finance; and Law; Committee on Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1162-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1165-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Public Safety; Finance; and Law; Committees on Safety; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Safety",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1165-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
   "1166-2026": [
    {
     "date": "2026-10-05",
@@ -20169,6 +20770,47 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-16-26%20compressed.pdf",
      "locator": "Record - October 16, 2026, file 1235-2026, council meeting of 2026-10-12"
+    }
+   }
+  ],
+  "1245-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Finance; and Law; Committee on Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1245-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1246-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Public Utilities; City Planning Commission; Finance; and Law; Committees on Utilities; Development, Planning and Sustainability; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Utilities",
+     "Development, Planning and Sustainability",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1246-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
+  "1247-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Director of Law; and Committee on Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 1247-2026, council meeting of 2026-10-19"
     }
    }
   ],
@@ -22688,6 +23330,21 @@
     }
    }
   ],
+  "745-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Public Safety; Finance; and Law; Committees on Safety; Workforce, Education, Training and Youth Development; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Safety",
+     "Workforce, Education, Training and Youth Development",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 745-2026, council meeting of 2026-10-19"
+    }
+   }
+  ],
   "746-2026": [
    {
     "date": "2026-08-19",
@@ -22714,6 +23371,21 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-08/City%20Record%208-21-26.pdf",
      "locator": "Record - August 21, 2026, file 747-2026, council meeting of 2026-08-19"
+    }
+   }
+  ],
+  "748-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Parks and Recreation; Finance; and Law; Committees on Municipal Services and Properties; Workforce, Education, Training and Youth Development; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Workforce, Education, Training and Youth Development",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 748-2026, council meeting of 2026-10-19"
     }
    }
   ],
@@ -23128,6 +23800,21 @@
     "anchor": {
      "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-2-26.pdf",
      "locator": "Record - October 2, 2026, file 910-2026, council meeting of 2026-09-28"
+    }
+   }
+  ],
+  "911-2026": [
+   {
+    "date": "2026-10-19",
+    "text": "Approved by the Directors of Parks and Recreation; Finance; and Law; Committees on Municipal Services and Properties; Workforce, Education, Training and Youth Development; and Finance, Diversity, Equity and Inclusion.",
+    "committees": [
+     "Municipal Services and Properties",
+     "Workforce, Education, Training and Youth Development",
+     "Finance, Diversity, Equity and Inclusion"
+    ],
+    "anchor": {
+     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+     "locator": "Record - October 23, 2026, file 911-2026, council meeting of 2026-10-19"
     }
    }
   ],
@@ -23616,12 +24303,28 @@
     "locator": "Record - October 2, 2026, full text of file 1030-2026"
    }
   },
+  "1031-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1031-2026"
+   }
+  },
   "1033-2026": {
    "effective": "2026-10-01",
    "passed": "2026-09-28",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
     "locator": "Record - October 9, 2026, full text of file 1033-2026"
+   }
+  },
+  "1034-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1034-2026"
    }
   },
   "1035-2026": {
@@ -23638,6 +24341,22 @@
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
     "locator": "Record - September 25, 2026, full text of file 1036-2026"
+   }
+  },
+  "1037-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1037-2026"
+   }
+  },
+  "1038-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1038-2026"
    }
   },
   "104-2026": {
@@ -23662,6 +24381,14 @@
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-09/City%20Record%209-25-26.pdf",
     "locator": "Record - September 25, 2026, full text of file 1041-2026"
+   }
+  },
+  "1043-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1043-2026"
    }
   },
   "1044-2026": {
@@ -23784,12 +24511,28 @@
     "locator": "Record - Feb. 13, 2026, full text of file 113-2026"
    }
   },
+  "1135-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1135-2026"
+   }
+  },
   "1136-2026": {
    "effective": "2026-10-01",
    "passed": "2026-09-28",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-9-2026_0.pdf",
     "locator": "Record - October 9, 2026, full text of file 1136-2026"
+   }
+  },
+  "1137-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1137-2026"
    }
   },
   "1138-2026": {
@@ -24136,12 +24879,76 @@
     "locator": "Record - October 16, 2026, full text of file 1234-2026"
    }
   },
+  "1235-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1235-2026"
+   }
+  },
   "1236-2026": {
    "effective": "2026-10-06",
    "adopted": "2026-10-05",
    "anchor": {
     "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%2010-16-26%20compressed.pdf",
     "locator": "Record - October 16, 2026, full text of file 1236-2026"
+   }
+  },
+  "1237-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1237-2026"
+   }
+  },
+  "1238-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1238-2026"
+   }
+  },
+  "1239-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1239-2026"
+   }
+  },
+  "1248-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1248-2026"
+   }
+  },
+  "1249-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1249-2026"
+   }
+  },
+  "1250-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1250-2026"
+   }
+  },
+  "1251-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 1251-2026"
    }
   },
   "131-2026": {
@@ -26064,6 +26871,14 @@
     "locator": "Record - June 12, 2026, full text of file 687-2026"
    }
   },
+  "688-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 688-2026"
+   }
+  },
   "689-2026": {
    "effective": "2026-07-20",
    "passed": "2026-07-15",
@@ -27000,6 +27815,14 @@
     "locator": "Record - October 16, 2026, full text of file 921-2026"
    }
   },
+  "923-2026": {
+   "effective": "2026-10-16",
+   "passed": "2026-10-12",
+   "anchor": {
+    "url": "https://www.clevelandcitycouncil.gov/sites/default/files/2026-10/City%20Record%20October%2023%202006.pdf",
+    "locator": "Record - October 23, 2026, full text of file 923-2026"
+   }
+  },
   "924-2026": {
    "effective": "2026-10-06",
    "passed": "2026-10-05",
@@ -27305,18 +28128,18 @@
  ],
  "skipped": [],
  "counts": {
-  "issues": 42,
-  "files": 496,
+  "issues": 43,
+  "files": 512,
   "other": 12,
   "skipped": 0,
-  "referrals": 313,
-  "approvals": 277,
-  "effective": 474,
+  "referrals": 318,
+  "approvals": 287,
+  "effective": 491,
   "actions_held": 4,
   "legistar_items": 164,
   "legistar_votes": 1,
   "differs": 5,
-  "no_names": 16
+  "no_names": 0
  },
  "legistar_votes": {
   "4-2026": {
@@ -27408,7 +28231,7 @@
  ],
  "legistar": {
   "source": "https://webapi.legistar.com/v1/cityofcleveland (/events/{id}/eventitems, /eventitems/{id}/votes)",
-  "read_at": "2026-10-20T15:11:07+00:00",
+  "read_at": "2026-10-24T14:15:58+00:00",
   "items": [
    [
     97172,
@@ -31198,86 +32021,5 @@
   ],
   "held": []
  },
- "no_names": {
-  "1042-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1116-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1162-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1165-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1245-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1246-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1247-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1279-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1289-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1290-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1291-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1292-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "1307-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "745-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "748-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  },
-  "911-2026": {
-   "passed": "2026-10-19",
-   "reason": "issue_not_out",
-   "latest_meeting": "2026-10-12"
-  }
- }
+ "no_names": {}
 }

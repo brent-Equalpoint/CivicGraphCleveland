@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-21T15:21:00+00:00",
+"retrieved_at": "2026-10-24T14:17:08+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
-"meetings": 153,
-"with_agenda": 153,
+"meetings": 161,
+"with_agenda": 161,
 "with_minutes": 10,
-"legislation_items": 1977
+"legislation_items": 2045
 },
 "meetings": [
 {
@@ -10171,6 +10171,395 @@
 "agenda_status": "Final",
 "minutes_status": "Draft",
 "note": "COMMUNITY DEVELOPMENT BLOCK GRANT BUDGET HEARINGS - Day 2 - This meeting will be live broadcast. See meeting notice for details.",
+"items": []
+},
+{
+"id": 3950,
+"date": "2026-10-26",
+"time": "9:30 AM",
+"body": "Municipal Services and Properties Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3950_A_Municipal_Services_and_Properties_Committee_26-10-26_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3950&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "ADDENDUM II - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"591-2026",
+""
+],
+[
+"1176-2026",
+""
+],
+[
+"1205-2026",
+""
+],
+[
+"1240-2026",
+""
+],
+[
+"1241-2026",
+""
+],
+[
+"1242-2026",
+""
+],
+[
+"1280-2026",
+""
+],
+[
+"1281-2026",
+""
+],
+[
+"1284-2026",
+""
+]
+]
+},
+{
+"id": 3948,
+"date": "2026-10-26",
+"time": "12:00 PM",
+"body": "City Council Caucus Meeting",
+"place": "Cleveland City Hall, 601 Lakeside Ave., Rm 220, City Council Offices (Large Conference Rm)",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3948_A_City_Council_Caucus_Meeting_26-10-26_Agenda.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3948&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "See meeting notice for details.",
+"items": []
+},
+{
+"id": 3946,
+"date": "2026-10-26",
+"time": "2:00 PM",
+"body": "Finance, Diversity, Equity and Inclusion Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3946_A_Finance%2C_Diversity%2C_Equity_and_Inclusion_Committee_26-10-26_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3946&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"931-2026",
+""
+],
+[
+"1032-2026",
+""
+],
+[
+"1168-2026",
+""
+],
+[
+"1169-2026",
+""
+],
+[
+"1173-2026",
+""
+],
+[
+"1174-2026",
+""
+],
+[
+"1175-2026",
+""
+],
+[
+"1244-2026",
+""
+]
+]
+},
+{
+"id": 3947,
+"date": "2026-10-26",
+"time": "7:00 PM",
+"body": "City Council",
+"place": "Council Chambers",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3947_A_City_Council_26-10-26_Agenda.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3947&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "TENTATIVE AGENDA - Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1327-2026",
+""
+],
+[
+"1328-2026",
+""
+],
+[
+"1329-2026",
+""
+],
+[
+"1330-2026",
+""
+],
+[
+"1331-2026",
+""
+],
+[
+"1332-2026",
+""
+],
+[
+"1333-2026",
+""
+],
+[
+"1334-2026",
+""
+],
+[
+"1335-2026",
+""
+],
+[
+"1336-2026",
+""
+],
+[
+"1337-2026",
+""
+],
+[
+"1338-2026",
+""
+],
+[
+"1339-2026",
+""
+],
+[
+"1340-2026",
+""
+],
+[
+"1317-2026",
+""
+],
+[
+"1318-2026",
+""
+],
+[
+"1319-2026",
+""
+],
+[
+"1320-2026",
+""
+],
+[
+"1321-2026",
+""
+],
+[
+"1322-2026",
+""
+],
+[
+"1323-2026",
+""
+],
+[
+"1324-2026",
+""
+],
+[
+"1341-2026",
+""
+],
+[
+"1316-2026",
+""
+],
+[
+"1325-2026",
+""
+],
+[
+"1326-2026",
+""
+],
+[
+"1312-2026",
+""
+],
+[
+"1313-2026",
+""
+],
+[
+"1314-2026",
+""
+],
+[
+"1315-2026",
+""
+],
+[
+"591-2026",
+""
+],
+[
+"931-2026",
+""
+],
+[
+"1032-2026",
+""
+],
+[
+"1168-2026",
+""
+],
+[
+"1169-2026",
+""
+],
+[
+"1173-2026",
+""
+],
+[
+"1174-2026",
+""
+],
+[
+"1175-2026",
+""
+],
+[
+"1205-2026",
+""
+],
+[
+"1240-2026",
+""
+],
+[
+"1241-2026",
+""
+],
+[
+"1242-2026",
+""
+],
+[
+"1244-2026",
+""
+]
+]
+},
+{
+"id": 3949,
+"date": "2026-10-27",
+"time": "9:30 AM",
+"body": "Development, Planning and Sustainability Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3949_A_Development%2C_Planning_and_Sustainability_Committee_26-10-27_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3949&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1039-2026",
+""
+],
+[
+"1163-2026",
+""
+],
+[
+"1164-2026",
+""
+],
+[
+"1170-2026",
+""
+],
+[
+"1203-2026",
+""
+],
+[
+"1243-2026",
+""
+]
+]
+},
+{
+"id": 3944,
+"date": "2026-10-28",
+"time": "9:30 AM",
+"body": "Safety Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3944_A_Safety_Committee_26-10-28_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3944&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "The Committee will hold Operational Review hearings for various divisions of Public Safety. This meeting will be live broadcast. See meeting notice for details.",
+"items": []
+},
+{
+"id": 3934,
+"date": "2026-10-29",
+"time": "10:00 AM",
+"body": "Utilities Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3934_A_Utilities_Committee_26-10-29_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3934&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"items": [
+[
+"1172-2026",
+""
+],
+[
+"1229-2026",
+""
+]
+]
+},
+{
+"id": 3951,
+"date": "2026-10-29",
+"time": "1:00 PM",
+"body": "Safety Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/10/3951_A_Safety_Committee_26-10-29_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3951&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "The Committee will hold Operational Review hearings for various safety-related offices. The meeting will be live broadcast. See meeting notice for details.",
 "items": []
 }
 ]

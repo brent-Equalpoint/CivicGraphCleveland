@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-21T15:16:14+00:00",
+"retrieved_at": "2026-10-24T14:02:24+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -6062,7 +6062,23 @@
 "adopted",
 "City Council"
 ]
-]
+],
+"1312-2026": [],
+"1313-2026": [],
+"1314-2026": [],
+"1315-2026": [],
+"1316-2026": [],
+"1317-2026": [],
+"1318-2026": [],
+"1319-2026": [],
+"1320-2026": [],
+"1321-2026": [],
+"1322-2026": [],
+"1323-2026": [],
+"1324-2026": [],
+"1325-2026": [],
+"1326-2026": [],
+"1341-2026": []
 },
 "addresses": {
 "4025 East 131st Street": {
@@ -6499,6 +6515,7 @@
 },
 "5517 Memphis Avenue": {
 "files": [
+"1312-2026",
 "890-2026"
 ],
 "matched": "5517 MEMPHIS AVE, CLEVELAND, OH, 44144",
@@ -6751,6 +6768,50 @@
 "ward2026": 1,
 "ward2014": 1,
 "hood": "Lee-Harvard"
+},
+"3259 West 25th Street": {
+"files": [
+"1314-2026"
+],
+"matched": "3259 W 25TH ST, CLEVELAND, OH, 44109",
+"lon": -81.700121,
+"lat": 41.465484,
+"ward2026": 14,
+"ward2014": 14,
+"hood": "Tremont"
+},
+"3995 Jennings Road": {
+"files": [
+"1315-2026"
+],
+"matched": "3995 JENNINGS RD, CLEVELAND, OH, 44109",
+"lon": -81.687709,
+"lat": 41.447717,
+"ward2026": 14,
+"ward2014": 12,
+"hood": "Brooklyn Centre"
+},
+"1300 Ontario Street": {
+"files": [
+"1319-2026"
+],
+"matched": "1300 ONTARIO ST, CLEVELAND, OH, 44113",
+"lon": -81.695831,
+"lat": 41.501974,
+"ward2026": 8,
+"ward2014": 3,
+"hood": "Downtown"
+},
+"2001 Payne Avenue": {
+"files": [
+"1323-2026"
+],
+"matched": "2001 PAYNE AVE, CLEVELAND, OH, 44114",
+"lon": -81.677825,
+"lat": 41.505404,
+"ward2026": 8,
+"ward2014": 7,
+"hood": "Downtown"
 }
 },
 "funds": {
@@ -7297,6 +7358,17 @@
 "text_url": null,
 "amounts": [],
 "limit": null
+},
+"1325-2026": {
+"file": "1325-2026",
+"text_url": "https://cityofcleveland.legistar1.com/cityofcleveland/attachments/95beb33a-83e9-4ae5-9f2c-1bacaad24021.doc",
+"amounts": [
+2500.0
+],
+"limit": 2500.0,
+"wards": [
+10
+]
 }
 }
 }

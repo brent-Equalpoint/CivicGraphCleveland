@@ -3121,6 +3121,340 @@
      ]
     }
    ]
+  },
+  {
+   "at": "2026-10-24T14:01:51+00:00",
+   "from": "2026-10-21T15:15:43+00:00",
+   "count": 1518,
+   "changes": [
+    {
+     "f": "1341-2026",
+     "new": true
+    },
+    {
+     "f": "1340-2026",
+     "new": true
+    },
+    {
+     "f": "1339-2026",
+     "new": true
+    },
+    {
+     "f": "1338-2026",
+     "new": true
+    },
+    {
+     "f": "1337-2026",
+     "new": true
+    },
+    {
+     "f": "1336-2026",
+     "new": true
+    },
+    {
+     "f": "1335-2026",
+     "new": true
+    },
+    {
+     "f": "1334-2026",
+     "new": true
+    },
+    {
+     "f": "1333-2026",
+     "new": true
+    },
+    {
+     "f": "1332-2026",
+     "new": true
+    },
+    {
+     "f": "1331-2026",
+     "new": true
+    },
+    {
+     "f": "1330-2026",
+     "new": true
+    },
+    {
+     "f": "1329-2026",
+     "new": true
+    },
+    {
+     "f": "1328-2026",
+     "new": true
+    },
+    {
+     "f": "1327-2026",
+     "new": true
+    },
+    {
+     "f": "1326-2026",
+     "new": true
+    },
+    {
+     "f": "1325-2026",
+     "new": true
+    },
+    {
+     "f": "1324-2026",
+     "new": true
+    },
+    {
+     "f": "1323-2026",
+     "new": true
+    },
+    {
+     "f": "1322-2026",
+     "new": true
+    },
+    {
+     "f": "1321-2026",
+     "new": true
+    },
+    {
+     "f": "1320-2026",
+     "new": true
+    },
+    {
+     "f": "Item-1290",
+     "new": true
+    },
+    {
+     "f": "Item-1289",
+     "new": true
+    },
+    {
+     "f": "Item-1288",
+     "new": true
+    },
+    {
+     "f": "Item-1287",
+     "new": true
+    },
+    {
+     "f": "Item-1286",
+     "new": true
+    },
+    {
+     "f": "Item-1285",
+     "new": true
+    },
+    {
+     "f": "Item-1284",
+     "new": true
+    },
+    {
+     "f": "Item-1283",
+     "new": true
+    },
+    {
+     "f": "1319-2026",
+     "new": true
+    },
+    {
+     "f": "1318-2026",
+     "new": true
+    },
+    {
+     "f": "1317-2026",
+     "new": true
+    },
+    {
+     "f": "1316-2026",
+     "new": true
+    },
+    {
+     "f": "1315-2026",
+     "new": true
+    },
+    {
+     "f": "1314-2026",
+     "new": true
+    },
+    {
+     "f": "1313-2026",
+     "new": true
+    },
+    {
+     "f": "1312-2026",
+     "new": true
+    },
+    {
+     "f": "1284-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1283-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1281-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1280-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1244-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1243-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1242-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1241-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1240-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1229-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1205-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1203-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1176-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1175-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1174-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1173-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1172-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1170-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1169-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1168-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1164-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1163-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1039-2026",
+     "st": [
+      "Administrative Review",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "1032-2026",
+     "st": [
+      "In Committee",
+      "Agenda Ready"
+     ]
+    },
+    {
+     "f": "931-2026",
+     "st": [
+      "Held",
+      "Agenda Ready"
+     ]
+    }
+   ]
   }
  ]
 }

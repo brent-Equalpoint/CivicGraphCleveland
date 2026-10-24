@@ -1,8 +1,8 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-21T15:15:43+00:00",
+"retrieved_at": "2026-10-24T14:01:51+00:00",
 "filter": "MatterIntroDate >= 2026-01-01",
-"count": 1480,
+"count": 1518,
 "matters": [
 {
 "id": 36207,
@@ -17132,7 +17132,7 @@ null,
 "id": 37276,
 "file": "931-2026",
 "type": "Emergency Ordinance",
-"status": "Held",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Directors of Parks and Recreation and/or Capital Projects to enter into an agreement with the Cleveland Browns Stadium Company LLC to reimburse the Cleveland Browns for the emergency repairs made to Huntington Bank Field performed by the Cleveland Browns Stadium Company LLC.",
 "intro": "2026-08-13",
 "passed": null,
@@ -18832,7 +18832,7 @@ null,
 "id": 37380,
 "file": "1032-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Capital Projects to issue a permit to 1293 West 9th Street, LLC to encroach into the public right-of-way of West 9th Street by installing, using and maintaining a new elevated concrete landing, ramp, and stairs.",
 "intro": "2026-09-10",
 "passed": null,
@@ -18980,7 +18980,7 @@ null,
 "id": 37387,
 "file": "1039-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Directors of Community Development, Public Health and Public Works to transfer various permanent parcels for the control, possession, and use of the Department of Development Industrial-Commercial Land Bank for future redevelopment.",
 "intro": "2026-09-10",
 "passed": null,
@@ -21144,7 +21144,7 @@ null,
 "id": 37524,
 "file": "1163-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE To amend Section 1 of Ordinance No. 1147-08, passed September 29, 2008, relating to designating the St. Jerome Church, School, Convent, and Rectory as a Cleveland Landmark.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21164,7 +21164,7 @@ null,
 "id": 37525,
 "file": "1164-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE To amend Section 1 of Ordinance No. 1148-08, passed September 29, 2008, relating to designating the St. Mary of the Assumption (also known as St. Mary’s Collinwood) Church, School, Gymnasium, and Rectory as a Cleveland Landmark.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21246,7 +21246,7 @@ null,
 "id": 37529,
 "file": "1168-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to replace the deck of the Warren Road bridge over IR-90; and authorizing agreements.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21268,7 +21268,7 @@ null,
 "id": 37530,
 "file": "1169-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to resurface Stokes Boulevard from Martin Luther King Jr., Drive to Chester Avenue; authorizing agreements; and causing payment to the State for the City’s share of the improvement.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21292,7 +21292,7 @@ null,
 "id": 37531,
 "file": "1170-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Determining the method of making the public improvement of designing and constructing a nuisance biofilm treatment plant, including removal of current equipment at Cleveland Hopkins International Airport; authorizing the Director of Port Control to enter into one or more contracts for the making of the improvement.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21334,7 +21334,7 @@ null,
 "id": 37533,
 "file": "1172-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Utilities to amend Contract No. CT-2004-LS-2024*024 to substitute the name of the lessor from City Rose, Ltd. to Darley Holdings Group LLC or its designees and to extend the term to a seven-year term with one five-year option to renew, exercisable with additional legislative authority.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21354,7 +21354,7 @@ null,
 "id": 37534,
 "file": "1173-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Port Control to enter into one or more contracts with Fire Force, Inc. for professional services necessary to provide the Airport Rescue and Firefighting personnel annual FAA certification training, for a period of one year, with three one-year options to renew, exercisable by the Director of Port Control.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21386,7 +21386,7 @@ null,
 "id": 37536,
 "file": "1174-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to construct the Target Speed Pilot Project countermeasures on a portion of St. Clair Avenue; authorizing agreements; and causing payment to the State for the City’s share of the improvement.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21414,7 +21414,7 @@ null,
 "id": 37537,
 "file": "1175-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to construct the improvement of resurfacing Wade Park Avenue from East 66th Street to East 118th Street; authorizing agreements; and causing payment to the State for the City’s share of the improvement.",
 "intro": "2026-09-24",
 "passed": null,
@@ -21440,7 +21440,7 @@ null,
 "id": 37538,
 "file": "1176-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Mayor and/or the appropriate director to enter into a Host Agreement with The Los Angeles Organizing Committee for the Olympic and Paralympic Games 2028 (“LA28”), and one or more agreements with a local organizing committee and/or sponsor(s), and other entities for the City to host the torch relay through a portion of the City of Cleveland through the State of Ohio.",
 "intro": "2026-09-25",
 "passed": null,
@@ -21926,7 +21926,7 @@ null,
 "id": 37570,
 "file": "1203-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Designating the State Vocational Planning Center as a Cleveland Landmark.",
 "intro": "2026-09-28",
 "passed": null,
@@ -21960,7 +21960,7 @@ null,
 "id": 37572,
 "file": "1205-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Capital Projects to enter into one or more agreements with the cities of Brook Park and Parma to resurface a portion of Brookpark Road located in the City of Cleveland; giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio for the improvement; authorizing agreements; and authorizing payment to the City of Brook Park for the City of Cleveland’s portion of the improvement.",
 "intro": "2026-10-01",
 "passed": null,
@@ -22364,7 +22364,7 @@ null,
 "id": 37596,
 "file": "1229-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE To amend Section 1 of Ordinance No. 600-2026, passed July 15, 2026, relating to contracts with ST Engineering Telematic Wireless Ltd, for upgrades and modifications to manage the Bright City lighting system.",
 "intro": "2026-10-01",
 "passed": null,
@@ -22648,7 +22648,7 @@ null,
 "id": 37614,
 "file": "1240-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to resurface Shaker Boulevard from Buckeye Road to the east corporation line in the City of Cleveland; authorizing agreements; and causing payment to the State for the City’s share of the improvement.",
 "intro": "2026-10-09",
 "passed": null,
@@ -22670,7 +22670,7 @@ null,
 "id": 37615,
 "file": "1241-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE  Authorizing the Director of Capital Projects to apply to the District One Public Works Integrating Committee for state funding to resurface State Road from Burger Avenue to Hillcrest Avenue and authorizing the Director of Finance, or appropriate director, to accept the funding from the Ohio Public Works Commission; giving consent of the City of Cleveland to the Director of Transportation of the State of Ohio to construct the improvement; authorizing agreements; and causing payment to the State for the City’s share of the improvement.",
 "intro": "2026-10-09",
 "passed": null,
@@ -22694,7 +22694,7 @@ null,
 "id": 37616,
 "file": "1242-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Safety to enter into an agreement with the Cleveland Municipal School district also known as Cleveland Metropolitan School District relating to the purchase, lease and redevelopment of Miles School located at 11918 Miles Avenue to facilitate a new administration building for Fire and EMS and to include offices for Public Safety Administration; authorizing the Mayor and the Commissioner of Purchases and Supplies to purchase the building and property; authorizing the leaseback of a portion of the building and property to the school district for a term of thirty years; determining the method of making the public improvement of renovating the building and property; authorizing contracts, accepting grants and gifts, and authorizing the direct employment of the necessary labor to implement, for the Department of Public Safety and/or Office of Capital Projects.",
 "intro": "2026-10-09",
 "passed": null,
@@ -22718,7 +22718,7 @@ null,
 "id": 37617,
 "file": "1243-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Development to apply for and accept a grant from the United States Department of Housing and Urban Development for the NORA Village project; authorizing the Director to enter into a grant agreement with Northern Ohio Recovery Association, or its designee to implement the project.",
 "intro": "2026-10-09",
 "passed": null,
@@ -22740,7 +22740,7 @@ null,
 "id": 37618,
 "file": "1244-2026",
 "type": "Emergency Ordinance",
-"status": "In Committee",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE To repeal various sections of Chapter 365 and 240 of the Codified Ordinances of the City of Cleveland, 1976, as amended by various ordinances; to supplement the Codified Ordinances by enacting new Sections 365.01 through 365.10, 240.05 through 240.08, all related to lead safe certificate program, lead safety, and various civil penalties; and to repeal Section 7 of Ordinance No. 747-2019, passed July 24, 2019.",
 "intro": "2026-10-09",
 "passed": null,
@@ -23446,7 +23446,7 @@ null,
 "id": 37659,
 "file": "1280-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Works to enter into an agreement with Road Worthy, Inc., for the Vehicle Lifecycle Workforce Development Initiative by donating City fleet vehicles, for a period of three years.",
 "intro": "2026-10-15",
 "passed": null,
@@ -23466,7 +23466,7 @@ null,
 "id": 37660,
 "file": "1281-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Works to enter into one or more contracts without competitive bidding with Sutphen Corporation, to provide repair and maintenance services to a fire truck currently under warranty with Sutphen Corporation, for the Division of Motor Vehicle Maintenance, Department of Public Works.",
 "intro": "2026-10-15",
 "passed": null,
@@ -23506,7 +23506,7 @@ null,
 "id": 37662,
 "file": "1283-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "In Committee",
 "title": "AN EMERGENCY ORDINANCE To authorize the Director of Parks and Recreation to enter into an amendment to Lease Agreement No. CT-4501-LA2025*0026 with the Cavaliers D-League, LLC to change certain terms of the lease.",
 "intro": "2026-10-15",
 "passed": null,
@@ -23526,7 +23526,7 @@ null,
 "id": 37663,
 "file": "1284-2026",
 "type": "Emergency Ordinance",
-"status": "Administrative Review",
+"status": "Agenda Ready",
 "title": "AN EMERGENCY ORDINANCE Authorizing the purchase by one or more requirement contracts of signal support poles and installation, if necessary, for the Division of Traffic Engineering, Department of Public Works, for a period not to exceed two years; and to repeal Ordinance No. 1446-2025, passed November 24, 2025, relating to a public improvement by requirement contract for the purchase, repair, and installation of signal support poles.",
 "intro": "2026-10-15",
 "passed": null,
@@ -24040,6 +24040,602 @@ null,
 ],
 "sponsor_ids": [
 199
+]
+},
+{
+"id": 37698,
+"file": "1312-2026",
+"type": "Emergency Resolution",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY RESOLUTION Objecting to the transfer of liquor license of a D1, D2, D3 and D3A Liquor Permit to 5517 Memphis Avenue.",
+"intro": "2026-10-21",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37698&GUID=258EF03D-68B3-449F-A481-1AF0D5792A0F",
+"sponsors": [
+"Nikki Hudson"
+],
+"sponsor_ids": [
+264
+]
+},
+{
+"id": 37699,
+"file": "1313-2026",
+"type": "Emergency Resolution",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY RESOLUTION Objecting to the transfer of ownership of a C2 and C2X Liquor Permit to 3022 West25th Street.",
+"intro": "2026-10-21",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37699&GUID=086514FD-470E-4E44-9EDE-5350AA1A62D0",
+"sponsors": [
+"Jasmin Santana"
+],
+"sponsor_ids": [
+244
+]
+},
+{
+"id": 37700,
+"file": "1314-2026",
+"type": "Emergency Resolution",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY RESOLUTION Objecting to the transfer of ownership of a C1 Liquor Permit 3259 West 25th Street.",
+"intro": "2026-10-21",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37700&GUID=585ED971-77E5-4DE7-B8BB-923522BBB669",
+"sponsors": [
+"Jasmin Santana"
+],
+"sponsor_ids": [
+244
+]
+},
+{
+"id": 37701,
+"file": "1315-2026",
+"type": "Emergency Resolution",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY RESOLUTION Objecting to the transfer of ownership of a D5 Liquor Permit to 3995 Jennings Road.",
+"intro": "2026-10-21",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37701&GUID=A6459E94-0C12-41AA-8FC8-F31CC2D359EB",
+"sponsors": [
+"Jasmin Santana"
+],
+"sponsor_ids": [
+244
+]
+},
+{
+"id": 37702,
+"file": "1316-2026",
+"type": "Emergency Ordinance",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY ORDINANCE To amend Sections 31 and 39 of Ordinance No. 194-2021, passed March 29, 2021, as amended by various ordinances, relating to salaries for various classifications.",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37702&GUID=C6D7D574-AF85-4DC2-9BD4-C8BA81B20066",
+"sponsors": [
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+238,
+236
+]
+},
+{
+"id": 37703,
+"file": "1317-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of Human Resources to enter into one or more contracts with CTI Audit Solutions, Inc., to provide claims audit services for Anthem Blue Cross Blue Shield and Medical Mutual of Ohio, for the Department of Human Resources, for a period of one year.",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37703&GUID=EDC6712A-276E-411D-BE70-A72360350AB9",
+"sponsors": [
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+238,
+236
+]
+},
+{
+"id": 37704,
+"file": "1318-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Determining the method of making the public improvement of maintaining, repairing and modifying two Central Detention Basin structure outlets; and authorizing the Director of Port Control to enter into one or more public improvement contracts for the making of the improvement.",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37704&GUID=E7838C1C-82A4-4379-A9D0-22B17154D6F8",
+"sponsors": [
+"Charles Slife",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+246,
+238,
+236
+]
+},
+{
+"id": 37705,
+"file": "1319-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of Finance to lease certain space located in the Justice Center at 1300 Ontario Street from Cuyahoga County, for a term of one year, with five one-year options to renew, for the public purpose of providing office and administrative space used by the Cleveland Municipal Court.",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37705&GUID=E65E697B-71E0-41E0-8F16-2AF37C2A68B7",
+"sponsors": [
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+238,
+236
+]
+},
+{
+"id": 37706,
+"file": "Item-1283",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Municipal Services and Properties Committee Notice 10/26/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37706&GUID=C5680858-7A3D-4452-945A-BA492ECE9741",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37707,
+"file": "Item-1284",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "City Council Caucus Meeting Notice 10/26/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37707&GUID=A2878214-7FFB-43E6-8EDA-3CF6A5595694",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37708,
+"file": "Item-1285",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Finance, Diversity, Equity and Inclusion Committee Notice 10/26/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37708&GUID=E3C12FF7-E3D2-4A93-8A24-034BB34F98FB",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37709,
+"file": "Item-1286",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "CIty Council Meeting Agenda Notice 10/26/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37709&GUID=1E9A3A60-5B63-4F37-BB41-321FF932F86F",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37710,
+"file": "Item-1287",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Development, Planning and Sustainability Committee Notice 10/27/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37710&GUID=508AE83F-ACA3-4FEB-9777-CA3B278100EE",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37711,
+"file": "Item-1288",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Safety Committee Notice 10/28/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37711&GUID=9B4FD64B-7265-4AFB-8034-3BD28B8A31EA",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37712,
+"file": "Item-1289",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Utilities Committee Notice 10/29/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37712&GUID=F7363C98-32CF-4201-8EFD-1A2579B2B192",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37713,
+"file": "Item-1290",
+"type": "Item",
+"status": "Agenda Ready",
+"title": "Safety Committee Notice 10/29/2026",
+"intro": "2026-10-22",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37713&GUID=D16B94D1-BF3A-454F-9FC7-4AD176822816",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37714,
+"file": "1320-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of Public Safety to amend Lease Agreement No. LS2018-24 with Cuyahoga County for the lease of certain space located on various floors of the Justice Center to extend the term for an additional 14-month period, beginning October 2, 2026, with an additional one-year option to renew, exercisable by the Director of Public Safety, and to reduce the amount of parking spaces and square footage currently leased by the Division of Police.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37714&GUID=69C19F44-6AFA-4A91-B9F8-91A28472C924",
+"sponsors": [
+"Michael Polensek",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+191,
+238,
+236
+]
+},
+{
+"id": 37715,
+"file": "1321-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of Community Development to enter into contracts and expend grants from the United States Department of Housing and Urban Development for Program Year 2026 under Title I of the Housing and Community Development Act of 1974, for the 2026 Community Development Block Grant Program, HOME Investment Partnerships Act Program, Emergency Solutions Grant Program, and the Housing Opportunities for Persons with AIDS Program.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37715&GUID=881B9C3B-901A-4139-A16D-4F2EB2E0AD3E",
+"sponsors": [
+"Jasmin Santana",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+244,
+238,
+236
+]
+},
+{
+"id": 37716,
+"file": "1322-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Determining the method of making the public improvement of designing, installing and constructing various energy conservation measures at the City’s Divisions of Fire and Emergency Medical Service facilities; authorizing the Director of Capital Projects to enter into one or more guaranteed energy saving performance contracts for a guaranteed maximum price with Leopardo Energy, LLC, for the making of the improvement and professional services for procurement modifications and to enter into an amendment of a contract with NV5 Consultants, Inc., for owner’s representative services; authorizing the Director of Public Works to enter into one or more maintenance agreements; authorizing the Director of Finance to enter into one or more installment payment contracts to finance the improvements; and authorizing other documents.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37716&GUID=7008E2C0-E184-4087-8229-1ABF1C2186DD",
+"sponsors": [
+"Kevin L. Bishop",
+"Jasmin Santana",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+241,
+244,
+238,
+236
+]
+},
+{
+"id": 37717,
+"file": "1323-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Determining the method of making the public improvement of constructing, rehabilitating and renovating 2001 Payne Avenue; authorizing the Director of Capital Projects to enter into one or more public improvement contracts for the making of the improvement; enter into one or more professional service contracts for the improvement; to apply for and accept gifts and grants; and authorizing the direct employment of the necessary labor, for the Department of Capital Projects.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37717&GUID=C98F678C-9ECD-468C-BDB7-C51A5C1536AD",
+"sponsors": [
+"Stephanie Howse-Jones",
+"Kevin L. Bishop",
+"Jasmin Santana",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+257,
+241,
+244,
+238,
+236
+]
+},
+{
+"id": 37718,
+"file": "1324-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE Authorizing the purchase by one or more contracts of one Aircraft Rescue and Fire Fighting incident command vehicle, for the Department of Port Control.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37718&GUID=9FDBE9DA-595C-401A-A989-7868261C44CA",
+"sponsors": [
+"Charles Slife",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+246,
+238,
+236
+]
+},
+{
+"id": 37719,
+"file": "1325-2026",
+"type": "Emergency Ordinance",
+"status": "Agenda Ready",
+"title": "AN EMERGENCY ORDINANCE Authorizing the Director of the Department of City Planning to enter into agreement with Reserve Care for the Regional Convening Project through the use of Ward 10 Casino Revenue Fund.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37719&GUID=04CD86C7-6011-4B1C-BCC6-D928896E8587",
+"sponsors": [
+"Michael Polensek"
+],
+"sponsor_ids": [
+191
+]
+},
+{
+"id": 37720,
+"file": "1326-2026",
+"type": "Ordinance",
+"status": "First Reading",
+"title": "AN ORDINANCE To amend Sections 3001.1.6, 3001.1.7, 3003.3.3, 327.01 and 333.01 of the Codified Ordinances of Cleveland, Ohio, 1976, as amended or enacted by various ordinances, relating to the Form-Based Code.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37720&GUID=E5299434-3583-4B34-8756-FDD9FD11C2F2",
+"sponsors": [
+"Jasmin Santana",
+"Blaine A. Griffin",
+"By Departmental Request"
+],
+"sponsor_ids": [
+244,
+238,
+236
+]
+},
+{
+"id": 37721,
+"file": "1327-2026",
+"type": "Communication",
+"status": "Agenda Ready",
+"title": "#10019941-1. Transfer of Ownership Application, D3 D2 D3A D2X. GC East LLC., 2175 Cornell Rd., (Ward 6). Received.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37721&GUID=3AAA577F-A2FF-4E9C-AFCD-61C7D8350ED6",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37722,
+"file": "1328-2026",
+"type": "Communication",
+"status": "Agenda Ready",
+"title": "#10020438-1. Transfer of License Application, D3 D2 D3A D1. Bourbon & Bubbles LLC., 2821 Detroit Ave. (Ward 7).",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37722&GUID=87E1DD67-114B-42CE-91D1-35999993B615",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37723,
+"file": "1329-2026",
+"type": "Communication",
+"status": "Agenda Ready",
+"title": "#10020997-1. New License Application, C1. Kocian Meats & Marketplace 4058 St. Clair Ave. (Ward 8).",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37723&GUID=452121C7-542F-4DDC-91D0-23D8EFD3DFE3",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37724,
+"file": "1330-2026",
+"type": "Communication",
+"status": "Agenda Ready",
+"title": "#10021083-1. Transfer of Ownership Application, C2 C2X. 61 St. Deli & Market LLC., 6029 Superior Ave. (Ward 8).",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37724&GUID=56652DF5-424D-434B-A0B1-5E7F047DBBE6",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37725,
+"file": "1331-2026",
+"type": "Communication",
+"status": "Agenda Ready",
+"title": "#10013815-1. Transfer of Ownership Application, C2 C2X. RAED Food, Inc., 1163 East 123rd St. (Ward 9).",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37725&GUID=72B5A582-A49F-41F3-A777-6325F61D81D4",
+"sponsors": [],
+"sponsor_ids": []
+},
+{
+"id": 37726,
+"file": "1332-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Renault D. “Ren” Turner, Sr",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37726&GUID=2B33736B-1FAB-4316-8F3F-FEBF98A4DA70",
+"sponsors": [
+"Richard A. Starr"
+],
+"sponsor_ids": [
+255
+]
+},
+{
+"id": 37727,
+"file": "1333-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Wallace Baker",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37727&GUID=5B87D321-A53F-4903-8894-E217F7999F01",
+"sponsors": [
+"Kevin L. Bishop"
+],
+"sponsor_ids": [
+241
+]
+},
+{
+"id": 37728,
+"file": "1334-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for John William Bachmann",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37728&GUID=07F0B6EA-F72C-48C1-9CD4-D0855E715969",
+"sponsors": [
+"Richard A. Starr"
+],
+"sponsor_ids": [
+255
+]
+},
+{
+"id": 37729,
+"file": "1335-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Edyza Francesca Barnes",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37729&GUID=55EC4CF9-9561-48C3-863D-2B437FB09CAA",
+"sponsors": [
+"Richard A. Starr"
+],
+"sponsor_ids": [
+255
+]
+},
+{
+"id": 37730,
+"file": "1336-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Condolence Resolution for Deacon Willie Seabon Jr.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37730&GUID=D96F5588-432B-491E-9A69-55743FA390C5",
+"sponsors": [
+"Joseph T. Jones"
+],
+"sponsor_ids": [
+240
+]
+},
+{
+"id": 37731,
+"file": "1337-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Congratulations Resolution for Rid-All Foundation",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37731&GUID=D710D3DE-E730-40DF-9FF3-9ACBAAE61226",
+"sponsors": [
+"Richard A. Starr"
+],
+"sponsor_ids": [
+255
+]
+},
+{
+"id": 37732,
+"file": "1338-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Dir. Karnese McKenzie",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37732&GUID=24BBB3C8-43A5-4DE7-AB4D-9D73246A269B",
+"sponsors": [
+"Kevin Conwell"
+],
+"sponsor_ids": [
+192
+]
+},
+{
+"id": 37733,
+"file": "1339-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for William Tell Sr.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37733&GUID=4E7B2AAE-9862-43AA-9304-1F4BB7D65918",
+"sponsors": [
+"Michael Polensek"
+],
+"sponsor_ids": [
+191
+]
+},
+{
+"id": 37734,
+"file": "1340-2026",
+"type": "Ceremonial Resolution",
+"status": "Agenda Ready",
+"title": "Recognition Resolution for Sachsenheim Hall",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37734&GUID=1A37FABE-DE67-4C4D-BF34-8C907ACB38C5",
+"sponsors": [
+"Nikki Hudson"
+],
+"sponsor_ids": [
+264
+]
+},
+{
+"id": 37735,
+"file": "1341-2026",
+"type": "Emergency Ordinance",
+"status": "First Reading",
+"title": "AN EMERGENCY ORDINANCE To supplement the Codified Ordinances of Cleveland, Ohio, 1976 by enacting new Section 603.13 relating to hunting or trapping.",
+"intro": "2026-10-23",
+"passed": null,
+"url": "https://cityofcleveland.legistar.com/LegislationDetail.aspx?ID=37735&GUID=912E819F-61BF-4467-8984-7D24D6839CAA",
+"sponsors": [
+"Michael Polensek"
+],
+"sponsor_ids": [
+191
 ]
 }
 ]
