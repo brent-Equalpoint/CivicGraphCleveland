@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-24T14:06:00+00:00",
+"retrieved_at": "2026-10-25T14:28:16+00:00",
 "congress": 119,
 "sources": {
 "members": "https://unitedstates.github.io/congress-legislators/legislators-current.json",
@@ -12,7 +12,7 @@
 "cabinet": "https://www.whitehouse.gov/administration/cabinet/"
 },
 "about": "The federal landscape. Party is the party on each member's current term, a sourced and dated field, never inferred from votes. Agencies are those with Federal Register documents since the cutoff; older ones are counted, not shown.",
-"agency_cutoff": "2024-11-03",
+"agency_cutoff": "2024-11-04",
 "agencies_left_out": 212,
 "counts": {
 "members": 539,
