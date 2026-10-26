@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-25T14:38:03+00:00",
+"retrieved_at": "2026-10-26T17:00:22+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
 "meetings": 161,
 "with_agenda": 161,
 "with_minutes": 10,
-"legislation_items": 2045
+"legislation_items": 2049
 },
 "meetings": [
 {
@@ -10188,23 +10188,23 @@
 "items": [
 [
 "591-2026",
-""
+"withdrawn"
 ],
 [
 "1176-2026",
-""
+"recommended for approval"
 ],
 [
 "1205-2026",
-""
+"recommended for denial"
 ],
 [
 "1240-2026",
-""
+"recommended for approval"
 ],
 [
 "1241-2026",
-""
+"recommended for approval"
 ],
 [
 "1242-2026",
@@ -10212,15 +10212,15 @@
 ],
 [
 "1280-2026",
-""
+"recommended for approval"
 ],
 [
 "1281-2026",
-""
+"recommended for approval"
 ],
 [
 "1284-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -10251,6 +10251,22 @@
 "minutes_status": "Draft",
 "note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": [
+[
+"1205-2026",
+""
+],
+[
+"1240-2026",
+""
+],
+[
+"1241-2026",
+""
+],
+[
+"1280-2026",
+""
+],
 [
 "931-2026",
 ""

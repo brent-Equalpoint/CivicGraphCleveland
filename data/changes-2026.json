@@ -3461,6 +3461,115 @@
    "from": "2026-10-24T14:01:51+00:00",
    "count": 1518,
    "changes": []
+  },
+  {
+   "at": "2026-10-26T16:48:50+00:00",
+   "from": "2026-10-25T14:23:25+00:00",
+   "count": 1518,
+   "changes": [
+    {
+     "f": "591-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-26",
+       "withdrawn",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1284-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1281-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1280-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1241-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1240-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1205-2026",
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for denial",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1176-2026",
+     "st": [
+      "Agenda Ready",
+      "In Committee"
+     ],
+     "steps": [
+      [
+       "2026-10-26",
+       "recommended for approval",
+       "Municipal Services and Properties Committee"
+      ]
+     ]
+    },
+    {
+     "f": "1282-2026",
+     "st": [
+      "Administrative Review",
+      "In Committee"
+     ]
+    },
+    {
+     "f": "1242-2026",
+     "st": [
+      "Agenda Ready",
+      "Held"
+     ]
+    }
+   ]
   }
  ]
 }

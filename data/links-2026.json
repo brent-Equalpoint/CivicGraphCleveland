@@ -1,8 +1,8 @@
 {
- "checked_at": "2026-10-19",
+ "checked_at": "2026-10-26",
  "checked": 185,
- "ok": 173,
- "uncertain": 8,
+ "ok": 170,
+ "uncertain": 9,
  "about": "Weekly check of public source links (scripts/check_links.py). A link is shown to residents as broken only after it failed on two checks in a row.",
  "broken": [
   {
@@ -10,7 +10,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-12",
-   "consecutive": 2,
+   "consecutive": 3,
    "where": [
     "cx-us-map.jsx"
    ]
@@ -20,9 +20,29 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 3,
+   "consecutive": 4,
    "where": [
     "cx-seat.jsx"
+   ]
+  },
+  {
+   "url": "https://uscode.house.gov/view.xhtml?req=granuleid:USC-prelim-title28-section41&num=0&edition=prelim",
+   "status": 404,
+   "kind": "gone",
+   "since": "2026-10-26",
+   "consecutive": 1,
+   "where": [
+    "cx-us-map.jsx"
+   ]
+  },
+  {
+   "url": "https://www.clevelandmetroschools.org/division-of-external-affairs/office-of-the-ceo/about-the-ceo",
+   "status": 0,
+   "kind": "unreachable",
+   "since": "2026-10-26",
+   "consecutive": 1,
+   "where": [
+    "build.py"
    ]
   },
   {
@@ -30,7 +50,7 @@
    "status": 404,
    "kind": "gone",
    "since": "2026-10-05",
-   "consecutive": 3,
+   "consecutive": 4,
    "where": [
     "cx-us.jsx"
    ]
@@ -40,7 +60,7 @@
    "status": 0,
    "kind": "unreachable",
    "since": "2026-10-05",
-   "consecutive": 3,
+   "consecutive": 4,
    "where": [
     "cxm-ballot.jsx"
    ]

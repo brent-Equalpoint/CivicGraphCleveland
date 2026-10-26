@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-25T14:23:40+00:00",
+"retrieved_at": "2026-10-26T16:49:16+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -2803,6 +2803,11 @@
 "2026-05-11",
 "read and referred to administrative review",
 "City Council"
+],
+[
+"2026-10-26",
+"withdrawn",
+"Municipal Services and Properties Committee"
 ]
 ],
 "592-2026": [
@@ -5811,7 +5816,13 @@
 "Transportation and Mobility Committee"
 ]
 ],
-"1176-2026": [],
+"1176-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
 "1177-2026": [
 [
 "2026-09-28",
@@ -5870,7 +5881,13 @@
 "City Council"
 ]
 ],
-"1205-2026": [],
+"1205-2026": [
+[
+"2026-10-26",
+"recommended for denial",
+"Municipal Services and Properties Committee"
+]
+],
 "1229-2026": [],
 "1230-2026": [
 [
@@ -5941,8 +5958,20 @@
 "City Council"
 ]
 ],
-"1240-2026": [],
-"1241-2026": [],
+"1240-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"1241-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
 "1242-2026": [],
 "1243-2026": [],
 "1244-2026": [
@@ -6023,11 +6052,29 @@
 "City Council"
 ]
 ],
-"1280-2026": [],
-"1281-2026": [],
+"1280-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
+"1281-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
 "1282-2026": [],
 "1283-2026": [],
-"1284-2026": [],
+"1284-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Municipal Services and Properties Committee"
+]
+],
 "1289-2026": [
 [
 "2026-10-19",
