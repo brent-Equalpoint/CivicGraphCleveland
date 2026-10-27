@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-26T16:49:16+00:00",
+"retrieved_at": "2026-10-27T15:54:50+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -4860,7 +4860,13 @@
 "City Council"
 ]
 ],
-"931-2026": [],
+"931-2026": [
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
+]
+],
 "932-2026": [
 [
 "2026-09-17",
@@ -5197,6 +5203,11 @@
 "2026-09-28",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1033-2026": [
@@ -5301,7 +5312,13 @@
 "City Council"
 ]
 ],
-"1039-2026": [],
+"1039-2026": [
+[
+"2026-10-27",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
 "1040-2026": [
 [
 "2026-09-14",
@@ -5709,8 +5726,20 @@
 "City Council"
 ]
 ],
-"1163-2026": [],
-"1164-2026": [],
+"1163-2026": [
+[
+"2026-10-27",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
+"1164-2026": [
+[
+"2026-10-27",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
 "1165-2026": [
 [
 "2026-10-14",
@@ -5762,6 +5791,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1169-2026": [
@@ -5774,6 +5808,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1170-2026": [
@@ -5781,6 +5820,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-27",
+"withdrawn",
+"Development, Planning and Sustainability Committee"
 ]
 ],
 "1171-2026": [],
@@ -5790,6 +5834,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1174-2026": [
@@ -5802,6 +5851,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1175-2026": [
@@ -5814,6 +5868,11 @@
 "2026-10-21",
 "recommended for approval",
 "Transportation and Mobility Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1176-2026": [
@@ -5873,7 +5932,13 @@
 ]
 ],
 "1199-2026": [],
-"1203-2026": [],
+"1203-2026": [
+[
+"2026-10-27",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
 "1204-2026": [
 [
 "2026-10-05",
@@ -5886,6 +5951,11 @@
 "2026-10-26",
 "recommended for denial",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1229-2026": [],
@@ -5963,6 +6033,11 @@
 "2026-10-26",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1241-2026": [
@@ -5970,15 +6045,31 @@
 "2026-10-26",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1242-2026": [],
-"1243-2026": [],
+"1243-2026": [
+[
+"2026-10-27",
+"recommended for approval",
+"Development, Planning and Sustainability Committee"
+]
+],
 "1244-2026": [
 [
 "2026-10-19",
 "recommended for approval",
 "Health, Human Services and the Arts Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1245-2026": [
@@ -6057,6 +6148,11 @@
 "2026-10-26",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1281-2026": [
@@ -6064,6 +6160,11 @@
 "2026-10-26",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1282-2026": [],
@@ -6073,6 +6174,11 @@
 "2026-10-26",
 "recommended for approval",
 "Municipal Services and Properties Committee"
+],
+[
+"2026-10-26",
+"recommended for approval",
+"Finance, Diversity, Equity and Inclusion Committee"
 ]
 ],
 "1289-2026": [
