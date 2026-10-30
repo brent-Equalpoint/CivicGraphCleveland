@@ -1,13 +1,13 @@
 {
 "source": "https://webapi.legistar.com/v1/cityofcleveland",
-"retrieved_at": "2026-10-27T16:06:08+00:00",
+"retrieved_at": "2026-10-30T16:58:21+00:00",
 "year": 2026,
 "about": "Meetings of Cleveland City Council and its committees from the city's Legistar record. Each meeting links to its agenda, its minutes once posted, and the city's meeting page. Testimony and public comment are not in this record.",
 "counts": {
-"meetings": 161,
-"with_agenda": 161,
+"meetings": 164,
+"with_agenda": 164,
 "with_minutes": 10,
-"legislation_items": 2049
+"legislation_items": 2053
 },
 "meetings": [
 {
@@ -10444,47 +10444,59 @@
 ],
 [
 "931-2026",
-""
+"denied"
 ],
 [
 "1032-2026",
-""
+"approved"
 ],
 [
 "1168-2026",
-""
+"approved"
 ],
 [
 "1169-2026",
-""
+"approved as amended"
 ],
 [
 "1173-2026",
-""
+"approved"
 ],
 [
 "1174-2026",
-""
+"approved as amended"
 ],
 [
 "1175-2026",
-""
+"approved as amended"
 ],
 [
 "1205-2026",
-""
+"approved as amended"
 ],
 [
 "1240-2026",
-""
+"approved as amended"
 ],
 [
 "1241-2026",
-""
+"approved as amended"
 ],
 [
 "1244-2026",
-""
+"approved as amended"
+],
+[
+"1280-2026",
+"approved"
+],
+[
+"1281-2026",
+"approved as amended"
+],
+[
+"1284-2026",
+"approved as amended"
 ]
 ]
 },
@@ -10552,15 +10564,15 @@
 "page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3934&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
 "agenda_status": "Final",
 "minutes_status": "Draft",
-"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
+"note": "Addendum II - In addition to legislation, The Utilities Committee will hear a presentation on Cleveland Public Power's Strategic Plan and Cost of Service Rate Study. This meeting will be live broadcast. See meeting notice for details.",
 "items": [
 [
 "1172-2026",
-""
+"recommended for approval"
 ],
 [
 "1229-2026",
-""
+"recommended for approval"
 ]
 ]
 },
@@ -10576,6 +10588,53 @@
 "agenda_status": "Final",
 "minutes_status": "Draft",
 "note": "The Committee will hold Operational Review hearings for various safety-related offices. The meeting will be live broadcast. See meeting notice for details.",
+"items": []
+},
+{
+"id": 3954,
+"date": "2026-11-04",
+"time": "1:00 PM",
+"body": "Safety Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/11/3954_A_Safety_Committee_26-11-04_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3954&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "The Federal Monitoring Team will be providing an update on the Cleveland Division of Police's compliance with the Consent Decree. This meeting will be live broadcast. See meeting notice for details.",
+"items": []
+},
+{
+"id": 3955,
+"date": "2026-11-05",
+"time": "10:00 AM",
+"body": "Utilities Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/11/3955_A_Utilities_Committee_26-11-05_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3955&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Ordinance 1171-2026 will be heard for discussion purpose only. This meeting will be live broadcast. See meeting notice for details.",
+"items": [
+[
+"1171-2026",
+""
+]
+]
+},
+{
+"id": 3956,
+"date": "2026-11-05",
+"time": "12:30 PM",
+"body": "Mayor's Appointments Committee",
+"place": "Mercedes Cotner Committee Room 217",
+"agenda": "https://cityofcleveland.legistar1.com/cityofcleveland/meetings/2026/11/3956_A_Mayor%27s_Appointments_Committee_26-11-05_Committee_Calendar.pdf",
+"minutes": null,
+"page": "https://cityofcleveland.legistar.com/MeetingDetail.aspx?LEGID=3956&GID=635&G=2EB18EF1-2C21-4D1D-85C9-B38100AB8FFD",
+"agenda_status": "Final",
+"minutes_status": "Draft",
+"note": "Meeting will be live broadcast: YouTube: https://www.youtube.com/user/ClevelandCityCouncil * Cleveland TV Channel 20 (Spectrum Cable TV) * TV 20 Livestream online: http://ClevelandOhio.gov/TV20 * www.clevelandcitycouncil.gov",
 "items": []
 }
 ]

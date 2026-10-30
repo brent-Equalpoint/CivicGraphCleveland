@@ -1,6 +1,6 @@
 {
  "source": "The City Record, official publication of the Council of the City of Cleveland, published weekly by the City Clerk, Clerk of Council",
- "retrieved_at": "2026-10-24T14:15:58+00:00",
+ "retrieved_at": "2026-10-30T16:57:05+00:00",
  "parser": 2,
  "about": "How each member of Council voted where the City Record prints names: yea, nay, absent, or recused (printed as Recusal). A member in office who is not listed has no record here, and no record is not a no. A vote to suspend the rules prints only a tally and is not stored. Nothing is scored. Also kept, each with the issue it came from: the referral printed at a first reading, the approvals printed before a final vote, and the effective date printed with a law's full text. legistar_votes fills a roll call from Council's Legistar record only where the City Record prints no names; differs lists where the two records disagree.",
  "issues": [
@@ -28139,7 +28139,7 @@
   "legistar_items": 164,
   "legistar_votes": 1,
   "differs": 5,
-  "no_names": 0
+  "no_names": 13
  },
  "legistar_votes": {
   "4-2026": {
@@ -28231,7 +28231,7 @@
  ],
  "legistar": {
   "source": "https://webapi.legistar.com/v1/cityofcleveland (/events/{id}/eventitems, /eventitems/{id}/votes)",
-  "read_at": "2026-10-24T14:15:58+00:00",
+  "read_at": "2026-10-30T16:57:05+00:00",
   "items": [
    [
     97172,
@@ -32021,5 +32021,71 @@
   ],
   "held": []
  },
- "no_names": {}
+ "no_names": {
+  "1032-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1168-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1169-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1173-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1174-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1175-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1205-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1240-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1241-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1244-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1280-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1281-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  },
+  "1284-2026": {
+   "passed": "2026-10-26",
+   "reason": "issue_not_out",
+   "latest_meeting": "2026-10-19"
+  }
+ }
 }

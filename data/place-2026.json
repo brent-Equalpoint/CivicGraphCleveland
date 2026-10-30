@@ -1,5 +1,5 @@
 {
-"retrieved_at": "2026-10-27T15:54:50+00:00",
+"retrieved_at": "2026-10-30T16:43:51+00:00",
 "sources": {
 "legistar": "https://webapi.legistar.com/v1/cityofcleveland",
 "geocoder": "https://geocoding.geo.census.gov/geocoder/locations/onelineaddress",
@@ -4865,6 +4865,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"denied",
+"City Council"
 ]
 ],
 "932-2026": [
@@ -5208,6 +5213,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved",
+"City Council"
 ]
 ],
 "1033-2026": [
@@ -5796,6 +5806,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved",
+"City Council"
 ]
 ],
 "1169-2026": [
@@ -5813,6 +5828,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1170-2026": [
@@ -5828,7 +5848,13 @@
 ]
 ],
 "1171-2026": [],
-"1172-2026": [],
+"1172-2026": [
+[
+"2026-10-29",
+"recommended for approval",
+"Utilities Committee"
+]
+],
 "1173-2026": [
 [
 "2026-10-21",
@@ -5839,6 +5865,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved",
+"City Council"
 ]
 ],
 "1174-2026": [
@@ -5856,6 +5887,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1175-2026": [
@@ -5873,6 +5909,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1176-2026": [
@@ -5956,9 +5997,20 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
-"1229-2026": [],
+"1229-2026": [
+[
+"2026-10-29",
+"recommended for approval",
+"Utilities Committee"
+]
+],
 "1230-2026": [
 [
 "2026-10-19",
@@ -6038,6 +6090,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1241-2026": [
@@ -6050,6 +6107,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1242-2026": [],
@@ -6070,6 +6132,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1245-2026": [
@@ -6153,6 +6220,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved",
+"City Council"
 ]
 ],
 "1281-2026": [
@@ -6165,6 +6237,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1282-2026": [],
@@ -6179,6 +6256,11 @@
 "2026-10-26",
 "recommended for approval",
 "Finance, Diversity, Equity and Inclusion Committee"
+],
+[
+"2026-10-26",
+"approved as amended",
+"City Council"
 ]
 ],
 "1289-2026": [
